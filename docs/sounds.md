@@ -37,7 +37,7 @@ music notes) take the delay send — it makes the room sound like a room.
 
 | Sound | Recipe |
 | --- | --- |
-| **Rain** | White-noise loop → highpass 550 → lowpass 5200 → gain. Target gain = `world.rain × 0.11`, eased (τ 0.8 s). A 0.09 Hz LFO adds ±0.015 so the rain "breathes". |
+| **Rain** | White-noise loop → highpass 550 → lowpass 5200 → gain. Target gain = `world.rain × 0.11`, eased (τ 0.8 s). Two detuned LFOs (~0.045–0.10 Hz and ~0.095–0.155 Hz, rates re-randomized every 7–19 s) add a combined ±`rain × 0.018` swell so the rain "breathes" irregularly — depth scales with the rain level, so no swell remains when the rain stops. |
 | **Fire rumble** | Noise loop → lowpass 240 → gain 0.05 on the fire bus. |
 | **Fire crackles** | Scheduled every 50–450 ms (72% fire): noise burst → bandpass 700–3500 Hz (Q 2.2) → 15–65 ms exponential decay, peak 0.02–0.10. 6% chance of a deep pop (70–110 Hz sine, 90 ms). |
 

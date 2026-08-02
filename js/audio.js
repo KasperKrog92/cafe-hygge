@@ -8,6 +8,7 @@
   let master, sfx, amb, musicBus, fireBus, delaySend;
   let noiseBuf = null;
   let rainGain = null;
+  let rainLfo1, rainLfo2, rainSwell1, rainSwell2;
 
   const S = (SND.settings = { volume: 0.7, muted: false, rain: true, fire: true, music: true });
   try { Object.assign(S, JSON.parse(localStorage.getItem('cafe-hygge-audio') || '{}')); } catch (e) {}
@@ -104,12 +105,21 @@
     rainGain = gainNode(0);
     src.connect(hp); hp.connect(lp); lp.connect(rainGain); rainGain.connect(amb);
     src.start();
-    // slow swell so the rain "breathes"
-    const lfo = ctx.createOscillator();
-    lfo.frequency.value = 0.09;
-    const lg = gainNode(0.015);
-    lfo.connect(lg); lg.connect(rainGain.gain);
-    lfo.start();
+    /* Slow swell so the rain "breathes". Two detuned LFOs at incommensurate
+       rates drift in and out of phase, so the swell never settles into a
+       rhythm; their frequencies also wander (see SND.update). Depth gains
+       start at 0 and are scaled by the live rain level each update — the
+       breathing dies out completely when the rain does. */
+    rainLfo1 = ctx.createOscillator();
+    rainLfo1.frequency.value = 0.07;
+    rainSwell1 = gainNode(0);
+    rainLfo1.connect(rainSwell1); rainSwell1.connect(rainGain.gain);
+    rainLfo1.start();
+    rainLfo2 = ctx.createOscillator();
+    rainLfo2.frequency.value = 0.121;
+    rainSwell2 = gainNode(0);
+    rainLfo2.connect(rainSwell2); rainSwell2.connect(rainGain.gain);
+    rainLfo2.start();
   }
 
   function startFireRumble() {
@@ -371,13 +381,23 @@
   /* ---------- per-frame scheduling ---------- */
 
   let crackleT = 0.3;
+  let swellT = 5;
 
   SND.update = function (dt, world) {
     if (!ctx) return;
 
-    // rain follows the weather outside
-    const target = S.rain && !S.muted ? world.rain * 0.11 : 0;
-    rainGain.gain.setTargetAtTime(target, ctx.currentTime, 0.8);
+    // rain follows the weather outside; the swell depth follows the rain
+    const rainLvl = S.rain && !S.muted ? world.rain : 0;
+    rainGain.gain.setTargetAtTime(rainLvl * 0.11, ctx.currentTime, 0.8);
+    rainSwell1.gain.setTargetAtTime(rainLvl * 0.011, ctx.currentTime, 0.8);
+    rainSwell2.gain.setTargetAtTime(rainLvl * 0.007, ctx.currentTime, 0.8);
+    // let the swell rates wander so the breathing never turns rhythmic
+    swellT -= dt;
+    if (swellT <= 0) {
+      swellT = 7 + Math.random() * 12;
+      rainLfo1.frequency.setTargetAtTime(0.045 + Math.random() * 0.055, ctx.currentTime, 3);
+      rainLfo2.frequency.setTargetAtTime(0.095 + Math.random() * 0.06, ctx.currentTime, 3);
+    }
 
     // fire crackles
     if (S.fire && !S.muted) {
