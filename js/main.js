@@ -1,13 +1,77 @@
-/* Café Hygge — boot, loop, and the little control bar */
+/* Café Hygge — boot, loop, viewport manager, and the little control bar */
 (function () {
   'use strict';
 
-  const canvas = document.getElementById('cafe');
-  const g = canvas.getContext('2d');
+  /* ---------- canvases ----------
+     Everything renders into an offscreen 960×600 master canvas; the visible
+     canvas shows either the full 16:10 master or its 960×540 16:9 crop,
+     scaled by a whole number of *device* pixels (never fractional) so art
+     pixels stay uniform. */
+
+  const master = document.createElement('canvas');
+  master.width = SCENE.W;
+  master.height = SCENE.H;
+  const g = master.getContext('2d');
   g.imageSmoothingEnabled = false;
+
+  const canvas = document.getElementById('cafe');
+  const out = canvas.getContext('2d');
+  const stage = document.getElementById('stage');
 
   const world = SIM.create();
   window.__world = world; // handy for tinkering in the console
+
+  /* ---------- viewport manager ----------
+     Cover-fit: the master has croppable overscan (visible height 540–600,
+     visible width 936–960), so any window aspect between ~1.56 and 16:9 is
+     filled edge-to-edge with zero letterbox. Exact integer device-pixel
+     scales (e.g. fullscreen 1920×1080 / 1920×1200 → ×2) present through the
+     crisp pixelated path; fractional scales use "sharp bilinear": nearest-
+     neighbour upscale to the next integer on the backing canvas, then a
+     smooth CSS downscale to the exact window size — full-bleed without
+     uneven-pixel shimmer. Aspects outside the overscan budget (ultrawide,
+     portrait) get the minimal letterbox on one axis only. */
+
+  const view = { x: 0, y: SCENE.VIEW_Y, w: SCENE.VIEW_W, h: SCENE.VIEW_H };
+
+  function fit() {
+    const dpr = window.devicePixelRatio || 1;
+    const vw = Math.round(stage.clientWidth * dpr);   // viewport in device px
+    const vh = Math.round(stage.clientHeight * dpr);
+    if (!vw || !vh) return;
+    const A = vw / vh;
+
+    // choose the crop window inside the overscan budgets
+    let mw = SCENE.W;
+    let mh = Math.max(SCENE.VIEW_H, Math.min(SCENE.H, Math.round(SCENE.W / A)));
+    if (mw / mh > A) mw = Math.max(SCENE.VIEW_MIN_W, Math.min(SCENE.W, Math.round(mh * A)));
+    view.w = mw;
+    view.h = mh;
+    view.x = (SCENE.W - mw) >> 1;
+    // distribute vertical crop like the designed 16:9 crop (36 top / 24 bottom)
+    view.y = Math.round((SCENE.H - mh) * (SCENE.VIEW_Y / (SCENE.H - SCENE.VIEW_H)));
+
+    const scale = Math.min(vw / mw, vh / mh);
+    const sInt = Math.round(scale);
+    const integer = sInt >= 1 && Math.abs(scale - sInt) < 0.002;
+    const k = integer ? sInt : Math.max(1, Math.ceil(scale));
+
+    canvas.width = mw * k;
+    canvas.height = mh * k;
+    const s = integer ? sInt : scale;
+    canvas.style.width = (mw * s / dpr) + 'px';
+    canvas.style.height = (mh * s / dpr) + 'px';
+    canvas.style.imageRendering = integer ? 'pixelated' : 'auto';
+    out.imageSmoothingEnabled = false;
+  }
+
+  window.addEventListener('resize', fit);
+  document.addEventListener('fullscreenchange', fit);
+  (function watchDPR() { // display move / zoom changes devicePixelRatio
+    matchMedia('(resolution: ' + (window.devicePixelRatio || 1) + 'dppx)')
+      .addEventListener('change', function () { fit(); watchDPR(); }, { once: true });
+  })();
+  fit();
 
   /* ---------- UI ---------- */
 
@@ -56,7 +120,7 @@
   });
   btnFull.addEventListener('click', function () {
     if (document.fullscreenElement) document.exitFullscreen();
-    else document.getElementById('stage').requestFullscreen();
+    else stage.requestFullscreen();
   });
   vol.addEventListener('input', function () {
     SND.settings.volume = vol.value / 100;
@@ -77,13 +141,13 @@
   }
   document.addEventListener('mousemove', pokeControls);
 
-  // click the cat to say hello
+  // click the cat to say hello (client coords → master-canvas coords)
   canvas.addEventListener('click', function (e) {
     const r = canvas.getBoundingClientRect();
-    const x = (e.clientX - r.left) * (480 / r.width);
-    const y = (e.clientY - r.top) * (270 / r.height);
+    const x = (e.clientX - r.left) / r.width * view.w + view.x;
+    const y = (e.clientY - r.top) / r.height * view.h + view.y;
     const cat = world.cat;
-    if (Math.hypot(x - cat.x, y - (cat.y - 4)) < 16) SIM.petCat(world);
+    if (Math.hypot(x - cat.x, y - (cat.y - 8)) < 32) SIM.petCat(world);
   });
 
   /* ---------- render ---------- */
@@ -99,6 +163,8 @@
     SCENE.drawLighting(g, world);
     ents.bubbles.forEach(function (b) { SCENE.drawBubble(g, b.x, b.y, b.icon); });
     SCENE.drawCaption(g, world);
+    // present: blit the chosen view of the master at an integer scale
+    out.drawImage(master, view.x, view.y, view.w, view.h, 0, 0, canvas.width, canvas.height);
   }
 
   /* ---------- loop ---------- */

@@ -16,11 +16,9 @@ html, body {
 }
 
 canvas#cafe {
-  aspect-ratio: 16 / 9;
-  width: min(100vw, calc(100vh * 16 / 9));
-  height: auto;
+  /* size + image-rendering are set by the viewport manager in main.js
+     (integer device-pixel scaling of the 960×600 master canvas) */
   image-rendering: pixelated;
-  image-rendering: crisp-edges;
   background: #14100e;
 }
 

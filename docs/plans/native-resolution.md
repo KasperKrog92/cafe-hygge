@@ -4,7 +4,11 @@
 fullscreen or large-window at **1920×1080 (16:9)** and **1920×1200 (16:10)** —
 instead of being a 480×270 buffer stretched ×4.
 
-**Status:** planned, not started.
+**Status:** Phases 0, 1, 3 and 4 executed 2026-08-02. Phase 2 (the detail
+art pass) is deliberately **pending** until the
+[proportion pass](visual-proportion-pass.md) lands, per the sequencing
+contract below. See *Execution notes* at the bottom for what shipped and
+where it deviates from this plan.
 **Pairs with:** [visual-proportion-pass.md](visual-proportion-pass.md) — read
 the *Sequencing the two plans* section at the bottom before starting either.
 
@@ -143,3 +147,35 @@ risk), then execute the **[proportion pass](visual-proportion-pass.md)** on the
 960 canvas (geometry changes while sprites are still simple), and only then do
 **Phase 2's detail pass** — so every sprite is redrawn exactly once, at its
 final size and proportion.
+
+## Execution notes (2026-08-02)
+
+- **Transform:** every coordinate migrated as **x′ = 2x, y′ = 2y + 36** in one
+  pass — the ×2 and the 16:10 shift together, so `SCENE.L` and all draw code
+  are in final master coordinates (16:9 crop = rows 36–576). Speeds,
+  velocities, radii and thresholds doubled; durations/probabilities untouched.
+- **The Phase 1 gate** ran as an A/B harness (temporary `_verify/` folder,
+  deleted after): the pre-migration scene.js rendered through
+  `translate(0,36); scale(2,2)` was pixel-diffed against the baked output
+  across 11 tests (scene day/night/brew, furniture, people matrix, cat
+  states, bubbles, lighting, particles, caption). All pixel-exact; the flame
+  region was masked (its `Math.round` on a time-varying height legitimately
+  differs by ±1 px from the scaled original) and eyeballed instead. One real
+  bug found and fixed by the gate: the `glow()` radial-gradient inner radius.
+- **Static background cache** (Phase 0.2) turned out fully static — day/night
+  tint lives in the lighting pass — so it renders **once**, not per lighting
+  bucket. `SCENE.invalidateBG()` exists for future state-dependent statics.
+  Wall picture frame moved to the dynamic layer (it overlaps the window frame
+  edge and must paint after it). Measured draw+present: ~0.11 ms/frame.
+- **§4 deviation (owner request):** strict integer-or-letterbox was replaced
+  by **cover-fit**. The view rect flexes inside overscan budgets (visible
+  height 540–600, width 936–960 via `SCENE.VIEW_MIN_W`) so any window aspect
+  ~1.56–1.78 fills edge-to-edge with no black borders; fractional scales
+  present via sharp-bilinear (nearest ×⌈s⌉ then smooth downscale), exact
+  integer scales (both fullscreen targets → ×2, incl. Windows 125%/150%
+  display scaling, verified) stay pure pixelated. Ultrawide/portrait get a
+  minimal one-axis letterbox.
+- Phase 3 content: picture rail + full-length lamp cords in the top strip;
+  floorboards extend through the bottom strip (loops run to `H`).
+- Phase 4: night/day jump, order cycle, cat relocation, click mapping, DPR
+  matrix and perf all verified in-browser; console clean.

@@ -7,7 +7,10 @@ scale — the owner's observation is correct, and it's measurable (§1). This
 plan unifies the scales, then fixes the composition issues that the rescale
 exposes.
 
-**Status:** planned, not started.
+**Status:** planned, not started. The resolution plan's Phases 0/1/3/4 have
+landed: the live code is now on the 960×600 master, migrated as
+**x′ = 2x, y′ = 2y + 36** — so a value quoted below at 480-scale corresponds
+to `2·x` / `2·y + 36` in today's code, and new target sizes double.
 **Pairs with:** [native-resolution.md](native-resolution.md) — see its
 *Sequencing* note: geometry changes here happen after the mechanical ×2, before
 the sprite detail pass. All numbers below are quoted at the **current 480×270

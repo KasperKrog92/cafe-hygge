@@ -44,16 +44,25 @@ requestAnimationFrame:
   SIM.update(world, dt)        // clock → weather → door → spawning → barista
                                // → patrons → cat → particles → captions
   SND.update(dt, world)        // rain gain, fire crackles, music box notes
-  render():
-    SCENE.drawScene(g, world)          // background: wall/floor/window/door/
-                                       // fireplace/menu/shelves/lamps/machine
+  render():                    // all drawing targets the 960×600 master canvas
+    SCENE.drawScene(g, world)          // blit static-background cache, then the
+                                       // dynamic layer: window/door/wall frame/
+                                       // lamps/flames/clock hands/candles/machine
     drawables = SCENE.furnitureDrawables(world)  // tables, stools, armchair,
                  ++ SIM.entityDrawables(world)   // counter, plants + people, cat
     sort by baseline y, draw           // painter's algorithm (see art.md)
     SCENE.drawParticles(g, world)
     SCENE.drawLighting(g, world)       // multiply tint + additive glows + vignette
     bubbles, caption                   // drawn after lighting so they stay legible
+    blit view rect of master → visible canvas   // see Rendering contracts
 ```
+
+The **static-background cache** is an offscreen 960×600 canvas holding
+everything wall-mounted that never changes (wall, floor, rugs, fireplace
+masonry, menu, shelves, firewood). Day/night tinting happens in the lighting
+pass, so the cache is render-once (call `SCENE.invalidateBG()` if a future
+change makes it state-dependent). Per-frame background cost is one
+`drawImage` — measured draw+present is ≈0.1 ms/frame at ×2 presentation.
 
 A 250 ms `setInterval` runs `SIM.update`/`SND.update` (dt = 0.25) **only when
 `document.hidden`** — the café keeps living and sounding when the tab is
@@ -64,13 +73,27 @@ hidden; rAF resumes seamlessly on return.
 `walker(entity, dt)` advances an entity along `entity.path` (array of
 waypoints), sets `pose` (`walk`/`stand`) and `facing`, returns `true` on
 arrival. `makePath(e, tx, ty)` builds L-shaped routes via the walking lane
-(`L.lane = 166`): vertical to lane → horizontal → vertical to target. The
-barista has hand-built paths behind the counter (y = 122) and exits through
-the gap at `L.baristaExitX = 305`.
+(`L.lane = 368`): vertical to lane → horizontal → vertical to target. The
+barista has hand-built paths behind the counter (y = 280) and exits through
+the gap at `L.baristaExitX = 610`.
 
 ## Rendering contracts
 
-- Fixed internal canvas 480×270; CSS scales it with `image-rendering: pixelated`.
+- Everything renders to an offscreen **960×600 (16:10) master canvas**
+  (`SCENE.W × SCENE.H`); the sim and all draw code live in master
+  coordinates and never learn about crops or scale.
+- The **viewport manager** in main.js cover-fits the window each
+  resize/fullscreen/DPR change: it picks a view rect inside the overscan
+  budgets (visible width 936–960 via `SCENE.VIEW_MIN_W`, height 540–600; the
+  designed 16:9 crop is rows 36–576, `SCENE.VIEW_Y`/`VIEW_H`), computes the
+  scale in *device* pixels (CSS px × devicePixelRatio — so Windows display
+  scaling still lands on clean integers; 1920×1080 and 1920×1200 fullscreen
+  are both an exact ×2), and blits that rect to the visible canvas. Integer
+  scales present with `image-rendering: pixelated`; fractional scales use
+  sharp-bilinear (nearest-neighbour upscale to the next integer on the
+  backing canvas, then a smooth CSS downscale) so windows fill edge-to-edge
+  without uneven-pixel shimmer. Aspects outside the overscan budget get a
+  minimal letterbox on one axis. Canvas clicks map back through the view rect.
 - `SCENE.L` is the single source of truth for positions. Sim logic must
   reference it, never duplicate coordinates.
 - Drawables are `{y, draw(g)}` objects; the baseline `y` is the entity's feet.

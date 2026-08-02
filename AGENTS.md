@@ -44,19 +44,25 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 
 ## Invariants & gotchas (learned the hard way)
 
-- **Internal resolution is fixed at 480×270**, scaled up with
-  `image-rendering: pixelated`. Draw in whole pixels; keep coordinates integer.
+- **The master canvas is 960×600 (16:10)**; everything renders there in
+  master coordinates. A 16:9 window shows the 960×540 crop (rows 36–576);
+  other aspects get a variable crop (visible height 540–600, width 936–960 —
+  the overscan strips are texture only, never content: no characters,
+  captions, furniture or interactive anchors may live there). The viewport
+  manager in main.js cover-fits the window: exact integer device-pixel scales
+  present pixelated, fractional scales via sharp-bilinear (integer nearest
+  upscale + smooth downscale). Draw in whole pixels; keep coordinates integer.
 - **Depth sorting is painter's-algorithm by baseline y** (an entity's feet).
   Furniture and characters go into one array sorted by `y`; ties resolve by
   insertion order (furniture is concatenated before entities — JS sort is
   stable). If a character appears in front of / behind something wrongly, the
   fix is a baseline, not a z-index.
-- **The barista stands at y=122** so she is visible above the counter slab
-  (slab spans y 112–126; front face 126–156, baseline 156). Move her lower and
+- **The barista stands at y=280** so she is visible above the counter slab
+  (slab spans y 260–288; front face 288–348, baseline 348). Move her lower and
   the counter swallows her entirely — this happened; don't repeat it.
 - **All positions come from `SCENE.L`**. Never hardcode a coordinate in sim.js
   that exists in `L`. If you add furniture patrons interact with, add it to `L`.
-- **Characters walk the lane** (`L.lane = 166`) between the wall furniture and
+- **Characters walk the lane** (`L.lane = 368`) between the wall furniture and
   the tables. Paths are L-shaped: vertical to lane → horizontal → vertical to
   target. Straying from this causes people to walk "through" tables.
 - **Every sound is gain-staged quietly** (one-shots mostly 0.02–0.08 peak) and

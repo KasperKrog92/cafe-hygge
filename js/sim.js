@@ -69,7 +69,7 @@
     world.tables.forEach(function (tb, ti) {
       [-1, 1].forEach(function (side) {
         world.seats.push({
-          x: tb.x + side * L.stoolDX, y: tb.y + L.stoolDY + 2,
+          x: tb.x + side * L.stoolDX, y: tb.y + L.stoolDY + 4,
           facing: -side, table: ti, side: side, armchair: false, taken: false
         });
       });
@@ -118,7 +118,7 @@
       murmurPitch: rnd(125, 235),
       x: L.doorSpot.x, y: L.doorSpot.y,
       facing: 1, pose: 'stand', animT: rnd(0, 5),
-      speed: rnd(23, 30),
+      speed: rnd(46, 60),
       path: null, state: 'idle', stateT: 0,
       holding: null, armUp: 0, reading: false,
       seat: null, stay: 0,
@@ -134,7 +134,7 @@
       colors: { skin: '#e8b48a', hair: '#4a2f1c', top: '#5a7a8a', pants: '#3d4a5c', apron: true, longHair: true, scarf: null },
       x: L.baristaHome.x, y: L.baristaHome.y,
       facing: -1, pose: 'stand', animT: 0,
-      speed: 30, path: null,
+      speed: 60, path: null,
       state: 'idle', stateT: 0, idleT: rnd(4, 9),
       holding: null, armUp: 0, reading: false,
       orders: [], steps: null, stepIdx: 0, busTarget: null
@@ -144,7 +144,7 @@
   function makeCat() {
     return {
       kind: 'cat', state: 'sleep', stateT: rnd(20, 50), animT: 0,
-      x: 196, y: 152, facing: -1, path: null, speed: 16,
+      x: 392, y: 340, facing: -1, path: null, speed: 32,
       bubble: null, purrT: rnd(6, 15), spotName: 'fire rug'
     };
   }
@@ -167,7 +167,7 @@
 
   function makePath(e, tx, ty) {
     const path = [];
-    if (Math.abs(e.y - L.lane) > 2 || Math.abs(ty - L.lane) > 2) {
+    if (Math.abs(e.y - L.lane) > 4 || Math.abs(ty - L.lane) > 4) {
       path.push({ x: e.x, y: L.lane });
       path.push({ x: tx, y: L.lane });
     }
@@ -180,7 +180,7 @@
     const tgt = e.path[0];
     const dx = tgt.x - e.x, dy = tgt.y - e.y;
     const dist = Math.hypot(dx, dy);
-    if (dist < 1.6) {
+    if (dist < 3.2) {
       e.x = tgt.x; e.y = tgt.y;
       e.path.shift();
       if (!e.path.length) { e.pose = 'stand'; return true; }
@@ -189,7 +189,7 @@
     const step = e.speed * dt;
     e.x += (dx / dist) * Math.min(step, dist);
     e.y += (dy / dist) * Math.min(step, dist);
-    if (Math.abs(dx) > 0.3) e.facing = dx > 0 ? 1 : -1;
+    if (Math.abs(dx) > 0.6) e.facing = dx > 0 ? 1 : -1;
     e.pose = 'walk';
     return false;
   }
@@ -206,7 +206,7 @@
     const d = world.door;
     let near = false;
     world.patrons.forEach(function (p) {
-      if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 22 &&
+      if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 44 &&
           (p.state === 'enter' || p.state === 'exit')) near = true;
     });
     d.target = near ? 1 : 0;
@@ -270,7 +270,7 @@
   }
 
   function queueSlot(i) {
-    return { x: L.orderSpot.x - i * 15, y: L.orderSpot.y + i * 13 };
+    return { x: L.orderSpot.x - i * 30, y: L.orderSpot.y + i * 26 };
   }
 
   /* ---------- patron behaviour ---------- */
@@ -326,7 +326,7 @@
           p.queueIdx = -1;
           p.state = 'waitDrink'; p.stateT = 0;
           const n = world.patrons.filter(function (q) { return q.state === 'waitDrink'; }).length;
-          makePath(p, 386 + n * 10, 178 + n * 9);
+          makePath(p, 772 + n * 20, 392 + n * 18);
         }
         break;
       }
@@ -396,7 +396,7 @@
       }
       case 'exit': {
         if (walker(p, dt)) p.gone = true;
-        if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 20 && !p.rangBell) {
+        if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 40 && !p.rangBell) {
           p.rangBell = true;
           ringDoor(world);
         }
@@ -483,7 +483,7 @@
           list.splice(list.indexOf(item), 1);
           p.holding = item.kind === 'plate' ? 'plate' : 'cup';
           p.state = 'return'; p.stateT = 0;
-          makePath(p, 392, L.pickupSpot.y);
+          makePath(p, 784, L.pickupSpot.y);
           p.seat = null;
           return;
         }
@@ -505,19 +505,19 @@
 
   const PREP_STEPS = {
     coffee_milk: [
-      { x: 330, act: 'grind', dur: 1.5 },
-      { x: 330, act: 'tamp', dur: 0.55 },
-      { x: 338, act: 'pull', dur: 2.4 },
-      { x: 352, act: 'steam', dur: 1.8 }
+      { x: 660, act: 'grind', dur: 1.5 },
+      { x: 660, act: 'tamp', dur: 0.55 },
+      { x: 676, act: 'pull', dur: 2.4 },
+      { x: 704, act: 'steam', dur: 1.8 }
     ],
     coffee: [
-      { x: 330, act: 'grind', dur: 1.5 },
-      { x: 330, act: 'tamp', dur: 0.55 },
-      { x: 338, act: 'pull', dur: 2.4 }
+      { x: 660, act: 'grind', dur: 1.5 },
+      { x: 660, act: 'tamp', dur: 0.55 },
+      { x: 676, act: 'pull', dur: 2.4 }
     ],
-    tea: [{ x: 350, act: 'kettle', dur: 2.0 }],
-    milk: [{ x: 352, act: 'steam', dur: 1.8 }],
-    food: [{ x: 428, act: 'fetch', dur: 1.4 }]
+    tea: [{ x: 700, act: 'kettle', dur: 2.0 }],
+    milk: [{ x: 704, act: 'steam', dur: 1.8 }],
+    food: [{ x: 856, act: 'fetch', dur: 1.4 }]
   };
 
   function startStep(world, b) {
@@ -566,7 +566,7 @@
             // walk to the pass and serve
             b.state = 'serveWalk';
             b.holding = b.orders[0].drink.kind === 'plate' ? 'plate' : 'cup';
-            b.path = [{ x: L.serveSpot.x - 4, y: L.baristaHome.y }];
+            b.path = [{ x: L.serveSpot.x - 8, y: L.baristaHome.y }];
           } else {
             b.state = 'prepping';
             startStep(world, b);
@@ -582,7 +582,7 @@
           world.steamAcc += dt;
           if (world.steamAcc > 0.12) {
             world.steamAcc = 0;
-            spawnSteam(world, L.machine.x + 12 + Math.random() * 14, L.machine.y + 12);
+            spawnSteam(world, L.machine.x + 24 + Math.random() * 28, L.machine.y + 24);
           }
         }
         if (b.stateT >= s.dur) {
@@ -591,7 +591,7 @@
           if (b.stepIdx >= b.steps.length) {
             b.state = 'serveWalk';
             b.holding = b.orders[0].drink.kind === 'plate' ? 'plate' : 'cup';
-            b.path = [{ x: L.serveSpot.x - 4, y: L.baristaHome.y }];
+            b.path = [{ x: L.serveSpot.x - 8, y: L.baristaHome.y }];
           } else {
             b.state = 'prepWalk';
             b.path = [{ x: b.steps[b.stepIdx].x, y: L.baristaHome.y }];
@@ -688,7 +688,7 @@
         const tb = world.tables[ti];
         b.path = [
           { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
-          { x: tb.x, y: L.lane }, { x: tb.x + 12, y: tb.y + 10 }
+          { x: tb.x, y: L.lane }, { x: tb.x + 24, y: tb.y + 20 }
         ];
         if (Math.random() < 0.5) caption(world, 'Nora slips out to clear a table.');
         return;
@@ -697,14 +697,14 @@
     const r = Math.random();
     if (r < 0.4) {
       b.state = 'wipe'; b.stateT = 0; b.swishes = 0;
-      b.path = [{ x: rnd(324, 384), y: L.baristaHome.y }];
+      b.path = [{ x: rnd(648, 768), y: L.baristaHome.y }];
       if (Math.random() < 0.2) caption(world, 'Nora wipes down the counter.');
     } else if (r < 0.65) {
       b.state = 'polish'; b.stateT = 0;
       if (Math.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
     } else if (r < 0.85) {
       b.state = 'restock'; b.stateT = 0;
-      b.path = [{ x: 428, y: L.baristaHome.y }];
+      b.path = [{ x: 856, y: L.baristaHome.y }];
       if (Math.random() < 0.25) caption(world, 'Nora tidies the pastry case.');
     }
     // otherwise just stand a while, watching the room
@@ -713,10 +713,10 @@
   /* ---------- cat ---------- */
 
   const CAT_SPOTS = [
-    { x: 196, y: 152, name: 'the fireplace rug' },
-    { x: 86, y: 172, name: 'the spot by the window' },
-    { x: 168, y: 226, name: 'the big rug' },
-    { x: 144, y: 190, name: 'the armchair\'s side' }
+    { x: 392, y: 340, name: 'the fireplace rug' },
+    { x: 172, y: 380, name: 'the spot by the window' },
+    { x: 336, y: 488, name: 'the big rug' },
+    { x: 288, y: 416, name: 'the armchair\'s side' }
   ];
 
   function updateCat(world, cat, dt) {
@@ -766,7 +766,7 @@
         cat.stateT = cat.state === 'sleep' ? rnd(35, 90) : rnd(4, 9);
         break;
       case 'stretch': {
-        const spot = pick(CAT_SPOTS.filter(function (s) { return Math.hypot(s.x - cat.x, s.y - cat.y) > 12; }));
+        const spot = pick(CAT_SPOTS.filter(function (s) { return Math.hypot(s.x - cat.x, s.y - cat.y) > 24; }));
         cat.state = 'walk';
         cat.target = spot;
         cat.path = [{ x: spot.x, y: spot.y }];
@@ -795,7 +795,7 @@
   function spawnSteam(world, x, y) {
     world.particles.push({
       type: 'steam', x: x, y: y,
-      vy: -(6 + Math.random() * 5), age: 0, life: rnd(0.9, 1.6), seed: Math.random() * 7
+      vy: -(12 + Math.random() * 10), age: 0, life: rnd(0.9, 1.6), seed: Math.random() * 7
     });
   }
 
@@ -804,16 +804,16 @@
     world.hotAcc = (world.hotAcc || 0) + dt;
     if (world.hotAcc > 0.4) {
       world.hotAcc = 0;
-      world.counterCups.forEach(function (c) { spawnSteam(world, c.x + 2, c.y - 2); });
+      world.counterCups.forEach(function (c) { spawnSteam(world, c.x + 4, c.y - 4); });
       world.tables.forEach(function (tb) {
         tb.items.forEach(function (it) {
           if (it.hot > 0 && !it.hidden && it.kind !== 'plate' && Math.random() < 0.8) {
-            spawnSteam(world, tb.x + it.side * 11, tb.y - 6);
+            spawnSteam(world, tb.x + it.side * 22, tb.y - 12);
           }
         });
       });
       world.patrons.forEach(function (p) {
-        if (p.armUp > 0.7) spawnSteam(world, p.x + p.facing * 3, p.y - 20);
+        if (p.armUp > 0.7) spawnSteam(world, p.x + p.facing * 6, p.y - 40);
       });
     }
     world.tables.forEach(function (tb) {
@@ -823,9 +823,9 @@
     if (Math.random() < dt * 2.2) {
       world.particles.push({
         type: 'spark',
-        x: L.fire.boxX + 4 + Math.random() * (L.fire.boxW - 8),
-        y: L.fire.boxBot - 12,
-        vy: -(12 + Math.random() * 10), age: 0, life: rnd(0.25, 0.6), seed: 0
+        x: L.fire.boxX + 8 + Math.random() * (L.fire.boxW - 16),
+        y: L.fire.boxBot - 24,
+        vy: -(24 + Math.random() * 20), age: 0, life: rnd(0.25, 0.6), seed: 0
       });
     }
     for (let i = world.particles.length - 1; i >= 0; i--) {
@@ -859,13 +859,13 @@
     const bubbles = [];
     world.patrons.forEach(function (p) {
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, p); } });
-      if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 3 : p.y, icon: p.bubble.icon });
+      if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;
     draws.push({ y: b.y, draw: function (g) { SCENE.drawPerson(g, b); } });
     const cat = world.cat;
     draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
-    if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 12, icon: cat.bubble.icon });
+    if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 24, icon: cat.bubble.icon });
     return { draws: draws, bubbles: bubbles };
   };
 })();
