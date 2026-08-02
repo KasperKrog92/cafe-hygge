@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Café Hygge — a cozy idle café</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="cafe" width="480" height="270"></canvas>
+
+  <div id="overlay">
+    <div class="overlay-card">
+      <h1>Café Hygge</h1>
+      <p class="sub">a tiny café that putters along while you read</p>
+      <button id="enter">☕&nbsp; step inside</button>
+      <p class="hint">sound on — rain, espresso &amp; a crackling fire await</p>
+    </div>
+  </div>
+
+  <div id="controls" class="hidden">
+    <button id="btn-mute"  title="mute (m)">🔊</button>
+    <input  id="vol" type="range" min="0" max="100" value="70" title="volume">
+    <button id="btn-rain"  title="rain on/off">🌧️</button>
+    <button id="btn-fire"  title="fire crackle on/off">🔥</button>
+    <button id="btn-music" title="music on/off">🎵</button>
+    <button id="btn-full"  title="fullscreen (f)">⛶</button>
+  </div>
+</div>
+
+<script src="js/audio.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

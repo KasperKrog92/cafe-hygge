@@ -1,0 +1,106 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: #14100e;
+  overflow: hidden;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+#stage {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas#cafe {
+  aspect-ratio: 16 / 9;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #14100e;
+}
+
+/* ---- start overlay ---- */
+#overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(30, 22, 16, 0.82), rgba(10, 7, 5, 0.94));
+  transition: opacity 1.2s ease;
+  z-index: 10;
+}
+#overlay.gone { opacity: 0; pointer-events: none; }
+
+.overlay-card { text-align: center; color: #e8d5b0; padding: 2rem; }
+.overlay-card h1 {
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 24px rgba(255, 170, 80, 0.35);
+}
+.overlay-card .sub {
+  margin-top: 0.5rem;
+  font-style: italic;
+  opacity: 0.75;
+  font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+}
+#enter {
+  margin-top: 1.8rem;
+  font-family: inherit;
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  padding: 0.7em 1.6em;
+  color: #2a1c10;
+  background: #e8b04a;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(232, 176, 74, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+#enter:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232, 176, 74, 0.5); }
+.overlay-card .hint { margin-top: 1.2rem; font-size: 0.8rem; opacity: 0.45; }
+
+/* ---- ambient controls ---- */
+#controls {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(20, 14, 10, 0.72);
+  border: 1px solid rgba(232, 213, 176, 0.16);
+  border-radius: 999px;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+  z-index: 5;
+}
+#controls.faded { opacity: 0; pointer-events: none; }
+#controls.hidden { display: none; }
+
+#controls button {
+  font-size: 15px;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  filter: grayscale(0.15);
+  transition: background 0.15s ease, filter 0.15s ease;
+}
+#controls button:hover { background: rgba(232, 213, 176, 0.14); }
+#controls button.off { filter: grayscale(1) opacity(0.4); }
+
+#vol {
+  width: 74px;
+  accent-color: #e8b04a;
+  cursor: pointer;
+}
