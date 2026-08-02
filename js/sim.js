@@ -144,7 +144,7 @@
   function makeCat() {
     return {
       kind: 'cat', state: 'sleep', stateT: rnd(20, 50), animT: 0,
-      x: 392, y: 340, facing: -1, path: null, speed: 32,
+      x: 390, y: 294, facing: -1, path: null, speed: 32,
       bubble: null, purrT: rnd(6, 15), spotName: 'fire rug'
     };
   }
@@ -270,7 +270,7 @@
   }
 
   function queueSlot(i) {
-    return { x: L.orderSpot.x - i * 30, y: L.orderSpot.y + i * 26 };
+    return { x: L.orderSpot.x - i * 34, y: L.orderSpot.y + i * 30 };
   }
 
   /* ---------- patron behaviour ---------- */
@@ -326,7 +326,7 @@
           p.queueIdx = -1;
           p.state = 'waitDrink'; p.stateT = 0;
           const n = world.patrons.filter(function (q) { return q.state === 'waitDrink'; }).length;
-          makePath(p, 772 + n * 20, 392 + n * 18);
+          makePath(p, 780 + n * 22, 350 + n * 16);
         }
         break;
       }
@@ -483,7 +483,7 @@
           list.splice(list.indexOf(item), 1);
           p.holding = item.kind === 'plate' ? 'plate' : 'cup';
           p.state = 'return'; p.stateT = 0;
-          makePath(p, 784, L.pickupSpot.y);
+          makePath(p, 792, L.pickupSpot.y);
           p.seat = null;
           return;
         }
@@ -505,19 +505,19 @@
 
   const PREP_STEPS = {
     coffee_milk: [
-      { x: 660, act: 'grind', dur: 1.5 },
-      { x: 660, act: 'tamp', dur: 0.55 },
-      { x: 676, act: 'pull', dur: 2.4 },
-      { x: 704, act: 'steam', dur: 1.8 }
+      { x: 664, act: 'grind', dur: 1.5 },
+      { x: 664, act: 'tamp', dur: 0.55 },
+      { x: 678, act: 'pull', dur: 2.4 },
+      { x: 706, act: 'steam', dur: 1.8 }
     ],
     coffee: [
-      { x: 660, act: 'grind', dur: 1.5 },
-      { x: 660, act: 'tamp', dur: 0.55 },
-      { x: 676, act: 'pull', dur: 2.4 }
+      { x: 664, act: 'grind', dur: 1.5 },
+      { x: 664, act: 'tamp', dur: 0.55 },
+      { x: 678, act: 'pull', dur: 2.4 }
     ],
     tea: [{ x: 700, act: 'kettle', dur: 2.0 }],
-    milk: [{ x: 704, act: 'steam', dur: 1.8 }],
-    food: [{ x: 856, act: 'fetch', dur: 1.4 }]
+    milk: [{ x: 706, act: 'steam', dur: 1.8 }],
+    food: [{ x: 858, act: 'fetch', dur: 1.4 }]
   };
 
   function startStep(world, b) {
@@ -582,7 +582,7 @@
           world.steamAcc += dt;
           if (world.steamAcc > 0.12) {
             world.steamAcc = 0;
-            spawnSteam(world, L.machine.x + 24 + Math.random() * 28, L.machine.y + 24);
+            spawnSteam(world, L.machine.x + 16 + Math.random() * 28, L.machine.y + 16);
           }
         }
         if (b.stateT >= s.dur) {
@@ -697,14 +697,14 @@
     const r = Math.random();
     if (r < 0.4) {
       b.state = 'wipe'; b.stateT = 0; b.swishes = 0;
-      b.path = [{ x: rnd(648, 768), y: L.baristaHome.y }];
+      b.path = [{ x: rnd(660, 780), y: L.baristaHome.y }];
       if (Math.random() < 0.2) caption(world, 'Nora wipes down the counter.');
     } else if (r < 0.65) {
       b.state = 'polish'; b.stateT = 0;
       if (Math.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
     } else if (r < 0.85) {
       b.state = 'restock'; b.stateT = 0;
-      b.path = [{ x: 856, y: L.baristaHome.y }];
+      b.path = [{ x: 858, y: L.baristaHome.y }];
       if (Math.random() < 0.25) caption(world, 'Nora tidies the pastry case.');
     }
     // otherwise just stand a while, watching the room
@@ -713,10 +713,10 @@
   /* ---------- cat ---------- */
 
   const CAT_SPOTS = [
-    { x: 392, y: 340, name: 'the fireplace rug' },
-    { x: 172, y: 380, name: 'the spot by the window' },
-    { x: 336, y: 488, name: 'the big rug' },
-    { x: 288, y: 416, name: 'the armchair\'s side' }
+    { x: 390, y: 294, name: 'the fireplace rug' },
+    { x: 168, y: 378, name: 'the spot by the window' },
+    { x: 340, y: 468, name: 'the big rug' },
+    { x: 282, y: 412, name: 'the armchair\'s side' }
   ];
 
   function updateCat(world, cat, dt) {
@@ -804,16 +804,16 @@
     world.hotAcc = (world.hotAcc || 0) + dt;
     if (world.hotAcc > 0.4) {
       world.hotAcc = 0;
-      world.counterCups.forEach(function (c) { spawnSteam(world, c.x + 4, c.y - 4); });
+      world.counterCups.forEach(function (c) { spawnSteam(world, c.x + 5, c.y - 4); });
       world.tables.forEach(function (tb) {
         tb.items.forEach(function (it) {
           if (it.hot > 0 && !it.hidden && it.kind !== 'plate' && Math.random() < 0.8) {
-            spawnSteam(world, tb.x + it.side * 22, tb.y - 12);
+            spawnSteam(world, tb.x + it.side * 24, tb.y - 16);
           }
         });
       });
       world.patrons.forEach(function (p) {
-        if (p.armUp > 0.7) spawnSteam(world, p.x + p.facing * 6, p.y - 40);
+        if (p.armUp > 0.7) spawnSteam(world, p.x + p.facing * 8, p.y - 52);
       });
     }
     world.tables.forEach(function (tb) {
@@ -824,7 +824,7 @@
       world.particles.push({
         type: 'spark',
         x: L.fire.boxX + 8 + Math.random() * (L.fire.boxW - 16),
-        y: L.fire.boxBot - 24,
+        y: L.fire.boxBot - 20,
         vy: -(24 + Math.random() * 20), age: 0, life: rnd(0.25, 0.6), seed: 0
       });
     }
@@ -865,7 +865,7 @@
     draws.push({ y: b.y, draw: function (g) { SCENE.drawPerson(g, b); } });
     const cat = world.cat;
     draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
-    if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 24, icon: cat.bubble.icon });
+    if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
     return { draws: draws, bubbles: bubbles };
   };
 })();

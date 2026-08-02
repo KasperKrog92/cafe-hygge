@@ -4,11 +4,11 @@
 fullscreen or large-window at **1920×1080 (16:9)** and **1920×1200 (16:10)** —
 instead of being a 480×270 buffer stretched ×4.
 
-**Status:** Phases 0, 1, 3 and 4 executed 2026-08-02. Phase 2 (the detail
-art pass) is deliberately **pending** until the
-[proportion pass](visual-proportion-pass.md) lands, per the sequencing
-contract below. See *Execution notes* at the bottom for what shipped and
-where it deviates from this plan.
+**Status:** Phases 0, 1, 3 and 4 executed 2026-08-02. The
+[proportion pass](visual-proportion-pass.md) has since **landed** (also
+2026-08-02), so Phase 2 (the detail art pass) is now unblocked — every sprite
+is at its final size and proportion. See *Execution notes* at the bottom for
+what shipped and where it deviates from this plan.
 **Pairs with:** [visual-proportion-pass.md](visual-proportion-pass.md) — read
 the *Sequencing the two plans* section at the bottom before starting either.
 

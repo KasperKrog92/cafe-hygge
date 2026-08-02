@@ -57,9 +57,14 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   insertion order (furniture is concatenated before entities — JS sort is
   stable). If a character appears in front of / behind something wrongly, the
   fix is a baseline, not a z-index.
-- **The barista stands at y=280** so she is visible above the counter slab
-  (slab spans y 260–288; front face 288–348, baseline 348). Move her lower and
+- **The barista stands at y=286** so she reads hip-up above the counter slab
+  (slab spans y 264–278; front face 278–306, baseline 306). Move her lower and
   the counter swallows her entirely — this happened; don't repeat it.
+- **One ruler: a standing character is 60 px (CH).** The proportion pass
+  (docs/plans/visual-proportion-pass.md, executed) sized everything relative
+  to it — wall line at y=232, door 102 tall, counter 42 tall. When adding art,
+  size it in CH against the ruler table in docs/art.md; the espresso machine
+  and pastry case are documented exceptions (slightly oversized hero props).
 - **All positions come from `SCENE.L`**. Never hardcode a coordinate in sim.js
   that exists in `L`. If you add furniture patrons interact with, add it to `L`.
 - **Characters walk the lane** (`L.lane = 368`) between the wall furniture and

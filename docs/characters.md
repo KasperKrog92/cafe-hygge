@@ -11,8 +11,8 @@ behavior is dt-driven state machines in `js/sim.js`; all drawing is
 The café's constant. She never leaves for the night (someone has to keep the
 fire company). Sea-blue top, cream apron, long brown hair.
 
-**Home position:** behind the counter at `L.baristaHome` (340, 122) — the y
-matters; see art.md. She exits the counter through the gap at x = 305 when she
+**Home position:** behind the counter at `L.baristaHome` (706, 286) — the y
+matters; see art.md. She exits the counter through the gap at x = 616 when she
 needs to be out on the floor.
 
 ### Order flow
@@ -22,13 +22,13 @@ station and works through timed steps (each with its own sound):
 
 | Drink prep | Steps (station x → action, duration) |
 | --- | --- |
-| `coffee_milk` (cappuccino, cinnamon latte, flat white) | 330 grind 1.5 s → tamp 0.55 s → 338 pull 2.4 s → 352 steam 1.8 s |
+| `coffee_milk` (cappuccino, cinnamon latte, flat white) | 664 grind 1.5 s → tamp 0.55 s → 678 pull 2.4 s → 706 steam 1.8 s |
 | `coffee` (espresso) | grind → tamp → pull |
-| `tea` (chamomile) | 350 kettle pour 2.0 s |
-| `milk` (hot chocolate) | 352 steam 1.8 s |
-| `food` (bun, croissant) | 428 fetch from pastry case 1.4 s |
+| `tea` (chamomile) | 700 kettle pour 2.0 s |
+| `milk` (hot chocolate) | 706 steam 1.8 s |
+| `food` (bun, croissant) | 858 fetch from pastry case 1.4 s |
 
-Then she carries the cup/plate to the pass (`L.serveSpot` = 366, 118), sets it
+Then she carries the cup/plate to the pass (`L.serveSpot` = 744, 266), sets it
 down (clink), and rings the counter bell (*ding*). While pulling/steaming, the
 machine light blinks and steam particles rise (`world.brew`).
 
@@ -55,7 +55,7 @@ Generated on spawn from pools, so every visitor is a little different.
 Sofie, Johan, Maja, Viggo, Ellen, Oskar, Alma, Karl.
 
 **Appearance rolls:** 5 skin tones, 8 hair colors, 9 top colors, 5 trouser
-colors; 40% wear a scarf; 40% have long hair. Walk speed 23–30 px/s.
+colors; 40% wear a scarf; 40% have long hair. Walk speed 46–60 px/s.
 
 **Personality rolls:**
 
@@ -75,7 +75,7 @@ enter → queueing → ordering → waitDrink → pickup → toSeat → seated �
 
 1. **enter** — appears at the door (bell jingle, door swings, thud ~1.1 s
    later), walks to the back of the queue. Queue slots fan out diagonally from
-   the till (`L.orderSpot` 348, 168).
+   the till (`L.orderSpot` 696, 316).
 2. **ordering** — when at slot 0 and Nora is free: 2 s with a speech bubble
    showing their order icon; caption fires ("Freja orders a cappuccino.").
 3. **waitDrink** — steps aside to a waiting spot until their cup appears at
@@ -106,15 +106,15 @@ empty on arrival.
 
 Orange tabby, no name (it has not told anyone yet). The café's true owner.
 
-**Favorite spots:** the fireplace rug (196, 152), by the window (86, 172), the
-big rug (168, 226), beside the armchair (144, 190).
+**Favorite spots:** the fireplace rug (390, 294), by the window (168, 378), the
+big rug (340, 468), beside the armchair (282, 412).
 
 **States:** `sleep` (35–100 s; purrs every 10–25 s; occasional "zzz" bubble)
 → `sit` (5–12 s) → sometimes `groom` (3–6 s) or `stretch` (1.6 s) → `walk` to
-a new spot (16 px/s, sometimes a meow, usually a caption) → `sleep`/`loaf`/`sit`.
-Sleeping shows a 1-px breathing animation; sitting sways the tail.
+a new spot (32 px/s, sometimes a meow, usually a caption) → `sleep`/`loaf`/`sit`.
+Sleeping shows a 2-px breathing animation; sitting sways the tail.
 
-**Petting:** clicking within ~16 px of the cat triggers `SIM.petCat` — heart
+**Petting:** clicking within ~36 px of the cat triggers `SIM.petCat` — heart
 bubble, meow or purr, caption "The cat purrs happily." If asleep, it sits up.
 This is the app's only direct interaction; keep it that way unless a new
 interaction is equally gentle.

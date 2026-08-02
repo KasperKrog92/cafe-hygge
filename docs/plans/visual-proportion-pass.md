@@ -7,10 +7,11 @@ scale — the owner's observation is correct, and it's measurable (§1). This
 plan unifies the scales, then fixes the composition issues that the rescale
 exposes.
 
-**Status:** planned, not started. The resolution plan's Phases 0/1/3/4 have
-landed: the live code is now on the 960×600 master, migrated as
+**Status:** **executed 2026-08-02** — see *Execution notes* at the bottom for
+the final tuned numbers and deviations. The resolution plan's Phases 0/1/3/4
+had landed first: the live code is on the 960×600 master, migrated as
 **x′ = 2x, y′ = 2y + 36** — so a value quoted below at 480-scale corresponds
-to `2·x` / `2·y + 36` in today's code, and new target sizes double.
+to `2·x` / `2·y + 36` in the pre-pass code, and new target sizes double.
 **Pairs with:** [native-resolution.md](native-resolution.md) — see its
 *Sequencing* note: geometry changes here happen after the mechanical ×2, before
 the sprite detail pass. All numbers below are quoted at the **current 480×270
@@ -159,3 +160,34 @@ detail pass):
 - AGENTS.md — new Nora baseline invariant, new wall-line/lane values.
 - characters.md — sprite size references.
 - This file — mark executed, note final tuned numbers vs. the proposals.
+
+## Execution notes (2026-08-02)
+
+All numbers below in **960-master coordinates** (double the plan's 480-scale
+proposals). Final `SCENE.L`: wall line **232**, door **28,130 52×102**, window
+**136,98 128×80**, fireplace breast **344–432, 112–232** (firebox 364–412 ×
+180–228), menu **470,104 108×68**, counter **640–940, slab 264–278, front
+278–306** (shortened to 300 wide), machine **656,224 56×40**, floor lamp 68
+tall at (286,376), coat stand ~70 at (112,332), tables Ø64 top-at-32 with
+sturdier pedestals + feet, seats at ±52, armchair unchanged footprint (~70
+tall). Characters **60 px** (`drawPerson` redrawn: legs 16 / torso 24 / head
+16+hair; seated ~52, deliberately hunched); cat ~28×21. Knock-ons re-derived:
+Nora baseline **286**, order/pickup spots at y **316** (heads clear the slab
+top), queue fan 34/30, serve spot (744,266), prep-station xs, cat spots,
+particle emitters, bubble anchors (44×34 bubble at y−100), caption font 19px,
+pet radius 36.
+
+Composition fixes from §3 all landed: wall zone is now ~33% of the frame; the
+big rug reaches to y≈376 to tuck under the lane and tables 1–2 staggered
+toward it; magazine basket (790,540) + firewood stack (845,534) fill the
+bottom-right corner; grounding shadows under all floor furniture; the door is
+a 2-frame hinged swing (closed leaf / ajar edge-on slab with lit edge); the
+hero-prop exception (§3.5) is documented in art.md. §4 rode along: chair
+backs on each table's left seat, pedestal feet, counter footrail line.
+
+Deviations: the `?greybox=1` overlay was skipped — iterated directly against
+rendered screenshots (day/night/brew/door-ajar) instead, same acceptance
+criteria. Owner addition during execution: **every table candle is lit** —
+flame drawn always, additive glow scaled by darkness with per-table flicker.
+Verified: clean console through a fast-forwarded full day (all barista states
+exercised), order cycle, busing, cat relocation, night lighting.

@@ -46,7 +46,9 @@ Applied after all sprites, in `SCENE.drawLighting`:
    day `rgb(255,250,242)`, lerped by `daylight`.
 2. **Additive glows** (`lighter` composite): the two hanging lamps, the floor
    lamp, mantel candles (all scaled by `lamp`); the fireplace (always on,
-   flickering via layered sines); a soft daylight pool below the window.
+   flickering via layered sines); a candle jar on every table (always lit,
+   stronger after dark, per-table flicker); a soft daylight pool below the
+   window.
 3. **Vignette**: radial darkening toward the edges, always.
 
 Speech bubbles and captions draw **after** this pass so they stay readable at

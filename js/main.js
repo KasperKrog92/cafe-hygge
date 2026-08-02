@@ -147,7 +147,7 @@
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
     const cat = world.cat;
-    if (Math.hypot(x - cat.x, y - (cat.y - 8)) < 32) SIM.petCat(world);
+    if (Math.hypot(x - cat.x, y - (cat.y - 10)) < 36) SIM.petCat(world);
   });
 
   /* ---------- render ---------- */
