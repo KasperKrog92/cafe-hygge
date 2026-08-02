@@ -93,6 +93,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
+| [docs/plans/](docs/plans/) | Concrete execution plans: [native high resolution](docs/plans/native-resolution.md), [proportion/composition pass](docs/plans/visual-proportion-pass.md) — read both before large visual work; they share a sequencing contract |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.
