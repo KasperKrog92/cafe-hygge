@@ -1,8 +1,8 @@
 # Agent workflow pass — make the next hundred changes cheap
 
-**Status: planned, not executed.** Written 2026-08-03, immediately after the
-reading-nook session, from notes on where that session's effort actually
-went. The owner expects many more changes of that shape ("add a cozy thing +
+**Status: phase 1 (dev harness) executed 2026-08-03; phases 2–3 planned.**
+Written 2026-08-03, immediately after the reading-nook session, from notes on
+where that session's effort actually went. The owner expects many more changes of that shape ("add a cozy thing +
 its behavior"); this pass optimizes the *cost of change*, not the app.
 
 ## Why (measured friction from a real session)

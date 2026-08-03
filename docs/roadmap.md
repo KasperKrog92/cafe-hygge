@@ -6,9 +6,9 @@ Nothing here is committed; the owner picks what sounds lovely next.
 
 > **Graduated & executed:** the native high resolution and the
 > proportion/composition passes were specced here, executed, and their plan
-> docs retired (git history has them). Currently planned in docs/plans:
-> the [agent workflow pass](plans/agent-workflow-pass.md) — dev harness,
-> file splits, doc slimming, so future changes cost less.
+> docs retired (git history has them). Currently in docs/plans:
+> the [agent workflow pass](plans/agent-workflow-pass.md) — dev harness
+> (phase 1, done), file splits, doc slimming, so future changes cost less.
 
 ## 🎧 Real sound clips (owner-requested — design ready)
 
@@ -77,7 +77,8 @@ machines, rain, café room tone…). Plan for when clips arrive:
   effort-to-value next step for "runs in the corner of my screen".
 - Electron/Tauri wrap only if the owner wants always-on-top.
 - OBS-friendly mode (no controls, no start overlay once audio unlocked).
-- `?seed=` and `?hour=` URL params for reproducible/instant moods.
+- `?seed=` URL param for reproducible moods (`?hour=` shipped with the dev
+  harness — `?dev&hour=20`, see architecture.md).
 - Accessibility: `prefers-reduced-motion` → calmer particles/flicker.
 - Optional ultra-low-power mode (10 fps render, full-rate audio).
 

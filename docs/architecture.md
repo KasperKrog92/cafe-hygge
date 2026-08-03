@@ -1,13 +1,14 @@
 # Architecture
 
-Zero-dependency vanilla JS. Four files, each an IIFE exposing one global,
+Zero-dependency vanilla JS. Five files, each an IIFE exposing one global,
 loaded in dependency order by `index.html`:
 
 ```
 js/audio.js   → window.SND     (sound engine; no DOM, no sim knowledge)
 js/scene.js   → window.SCENE   (rendering + layout constants; no sim knowledge)
 js/sim.js     → window.SIM     (behavior; reads SCENE.L, calls SND.*)
-js/main.js    → (none)         (boot, loop, UI; orchestrates the other three)
+js/dev.js     → window.__dev   (dev harness; inert unless ?dev/console — see below)
+js/main.js    → (none)         (boot, loop, UI; orchestrates the others)
 ```
 
 There are **no ES modules on purpose**: `file://` + `<script>` tags means the
@@ -120,3 +121,25 @@ the gap at `L.baristaExitX = 610`.
 One overlay (start gate for audio), one auto-fading control bar (volume, rain,
 fire, music, fullscreen), keyboard `m` (mute) and `f` (fullscreen), and a
 canvas click handler whose only job is petting the cat. Resist adding more UI.
+
+## Dev harness (js/dev.js)
+
+Agent/debug tooling behind `window.__dev` — **inert in normal use** and never
+user-visible. It activates only via URL params (`?dev` boots past the start
+overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
+`?overlay` turns the layout overlay on from frame one) or console calls:
+
+| Call | Does |
+| --- | --- |
+| `__dev.hour(h)` | jump the in-world clock (no arg: read it) |
+| `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
+| `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`) |
+| `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
+| `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes |
+| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, seat↔table wiring, barista y=286 / lane 368) |
+
+Two contracts support it: `SIM._` (sim internals exposed for dev.js only —
+nothing else may touch it) and `SCENE.L.occluders` (declared boxes that fully
+hide characters, shared by the overlay and the audit). The harness wraps
+`SIM.create` (to apply `?hour`) and `SCENE.drawCaption` (to draw the overlay
+after everything else); it never changes behavior when dormant.

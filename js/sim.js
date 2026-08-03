@@ -295,6 +295,12 @@
     return { x: L.orderSpot.x - i * 34, y: L.orderSpot.y + i * 30 };
   }
 
+  /* waiting cluster drifts down-LEFT: rightward it walks into the
+     bookshelf's occluder span around the 5th waiter (__dev.audit caught it) */
+  function waitSpot(n) {
+    return { x: 780 - n * 14, y: 350 + n * 16 };
+  }
+
   /* ---------- patron behaviour ---------- */
 
   function freeSeat(world, patron) {
@@ -350,7 +356,8 @@
           p.queueIdx = -1;
           p.state = 'waitDrink'; p.stateT = 0;
           const n = world.patrons.filter(function (q) { return q.state === 'waitDrink'; }).length;
-          makePath(p, 780 + n * 22, 350 + n * 16);
+          const ws = waitSpot(n);
+          makePath(p, ws.x, ws.y);
         }
         break;
       }
@@ -991,5 +998,16 @@
     draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
     if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
     return { draws: draws, bubbles: bubbles };
+  };
+
+  /* ---------- debug contract ----------
+     Internals exposed for js/dev.js (the ?dev harness) only. Not part of the
+     app: nothing in scene/main/audio may reach in here, and the harness must
+     keep working against exactly this bundle. */
+  SIM._ = {
+    makePath: makePath, freeSeat: freeSeat, caption: caption,
+    makePatron: makePatron, ringDoor: ringDoor,
+    queueSlot: queueSlot, waitSpot: waitSpot, DRINKS: DRINKS,
+    START_HOUR: START_HOUR, DAY_SECONDS: DAY_SECONDS
   };
 })();

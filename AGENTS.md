@@ -25,20 +25,31 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
 - Smoke test after changes: load the page, click *step inside*, watch one full
   order cycle (door bell → queue → order → grind/pull/steam → ding → pickup →
   seat), check the console is clean, and jump the clock to verify night
-  lighting: `__world.t = (20 - 8.4) / 24 * 1440` in the console.
+  lighting: `__dev.hour(20)`. Then open with `?dev`, run `__dev.audit()`, and
+  expect 0 problems.
 - `window.__world` is the live world object — inspect or poke it freely when
   debugging.
+- **Dev harness** (`js/dev.js`, inert for the reader-owner): `?dev` boots past
+  the start overlay (screenshot-ready, audio still off until a real click),
+  `?dev&hour=20` starts at 20:00, `?dev&overlay` boots with the layout
+  overlay on. Console: `__dev.hour(h)`, `__dev.ff(seconds)` (fast-forward,
+  muted), `__dev.spawn({wantsBook, ownBook, drink, chatty})` (a real patron
+  with chosen traits), `__dev.send(name, x, y)`, `__dev.overlay()`,
+  `__dev.audit()` (bounds/occlusion/seat/constant invariants — run it after
+  any layout change).
 
-## Architecture (4 files, deliberate order)
+## Architecture (5 files, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
 | `js/audio.js` | `SND` | Web Audio synthesis. Buses, ambience loops, one-shot sounds, music box. No samples (yet — see roadmap). |
 | `js/scene.js` | `SCENE` | All pixel-art drawing + the shared layout constant `SCENE.L`. Owns *where things are* and *what they look like*. |
 | `js/sim.js` | `SIM` | State machines: patrons, barista, cat, weather, clock, captions, particles. Owns *what happens*. |
+| `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock jumps, fast-forward, scenario forcing, layout overlay, invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, depth-sort render pass, UI controls. |
 
-Load order matters: audio → scene → sim → main (sim reads `SCENE.L`; main reads both).
+Load order matters: audio → scene → sim → dev → main (sim reads `SCENE.L`; dev
+consumes the `SIM._` debug contract and decorates the boot; main reads all).
 
 Full detail: [docs/architecture.md](docs/architecture.md).
 
@@ -104,7 +115,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
-| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [agent workflow pass](docs/plans/agent-workflow-pass.md) (planned — dev harness, file splits, doc slimming). Executed plans are deleted; find them in git history |
+| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [agent workflow pass](docs/plans/agent-workflow-pass.md) (phase 1, the dev harness, is done; file splits + doc slimming remain). Executed plans are deleted; find them in git history |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.

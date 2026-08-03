@@ -69,6 +69,27 @@
     stoolDX: 52, stoolDY: 8
   });
 
+  /* Occluders: tall furniture that fully hides a character whose baseline is
+     above (less than) `baseline` while their feet are inside [x0, x1].
+     One declaration shared by the art, the dev overlay, and __dev.audit() —
+     walk targets must never land in these boxes (the bookshelf lesson). */
+  L.occluders = [
+    {
+      name: 'bookshelf',
+      x0: L.library.shelf.x - L.library.shelf.w / 2,
+      x1: L.library.shelf.x + L.library.shelf.w / 2,
+      top: L.library.shelf.y - L.library.shelf.h,
+      baseline: L.library.shelf.y
+    },
+    {
+      name: 'counter',
+      x0: L.counter.x,
+      x1: L.counter.x + L.counter.w,
+      top: L.counter.slabY,
+      baseline: L.counter.baseY
+    }
+  ];
+
   /* ---------- helpers ---------- */
   function px(g, x, y, w, h, c) { g.fillStyle = c; g.fillRect(x | 0, y | 0, w, h); }
 
