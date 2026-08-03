@@ -8,7 +8,9 @@ Nothing here is committed; the owner picks what sounds lovely next.
 > proportion/composition passes were specced here, executed, and their plan
 > docs retired (git history has them). Currently in docs/plans:
 > the [agent workflow pass](plans/agent-workflow-pass.md) — dev harness
-> (phase 1, done), file splits, doc slimming, so future changes cost less.
+> (phase 1, done), file splits, doc slimming, so future changes cost less —
+> followed by the [harness sweep](plans/harness-sweep.md), which spends the
+> new tooling on a soak-test bug hunt and pathing-correctness audit rules.
 
 ## 🎧 Real sound clips (owner-requested — design ready)
 
