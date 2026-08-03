@@ -4,8 +4,12 @@
     {
       "name": "cafe",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8137"],
-      "port": 8137
+      "runtimeArgs": [
+        "-c",
+        "import http.server, os; http.server.test(HandlerClass=http.server.SimpleHTTPRequestHandler, port=int(os.environ.get('PORT', '8137')))"
+      ],
+      "port": 8137,
+      "autoPort": true
     }
   ]
 }

@@ -77,7 +77,8 @@ y=36 ─────────────────────────
 y=98..194  window (x 136–264): sky, town silhouette, rain, sill plants
 y=130..232 door (x 28–80), bell at (86,132) — 2-frame hinged swing
 y=112..232 fireplace breast (x 344–432): mantel y132 (clock, candles, plant),
-           firebox x364–412 y180–228, hearth, firewood basket at x440
+           firebox x364–412 y180–228, hearth, firewood basket at x440 with a
+           log pile leaning on it (446,254)
 y=104..172 menu chalkboard (x 470–578) "CAFÉ HYGGE" + chalk doodle
 y=104..162 two shelves (x 636–928): cups, jars, books, teapot, plates
 y=176..232 wainscot band
@@ -89,14 +90,18 @@ y=264..306 counter (x 640–940): slab 264–278, front 278–306, baseline 306
 y=286      Nora's walking line behind the counter (baristaHome 706,286)
 y=368 ───── the walking lane (all pathing routes through here)
 (696,316)  order spot; queue fans back-left; pickup at (744,316)
-(316,384)  armchair (faces the fire), floor lamp at (286,376)
+(298,296)+(478,296) armchair pair flanking the hearth rug, facing in toward
+           it (dir +1 / -1; the right chair is the mirrored art)
 (196,412)  table 1 "by the window"     (414,426) table 2 "near the fire"
 (260,520)  table 3                      (516,524) table 4
            each table: seats at ±52 x facing inward — chair (with back) on
            the left, stool on the right; a lit candle jar on every table
 rugs: fireplace rug (388,290), big rug (390,450) — reaches up under the lane
-plants: (592,384) and (924,404); coat stand near door at (112,332)
-(790,540)  magazine basket, (845,534) firewood stack (the bottom-right corner)
+plants: (612,262) at the counter's left end (against the wall) and (930,322)
+           tucked against its right front corner; coat stand just inside the
+           door at (96,298)
+(790,540)  magazine basket + floor lamp at (843,544) — the bottom-right
+           reading corner
 y=576 ───────────────────────────────────────────── 16:9 crop bottom
 y=600 ───────────────────────────────────────────── master bottom (overscan)
 ```
@@ -120,9 +125,9 @@ Rules that keep it looking right:
   anyone standing behind it. That is why **Nora's y must stay 286** — she
   reads hip-up above the slab (y 264–278), legs hidden. Lower and she
   vanishes; higher and she floats above it.
-- **The armchair is split**: back part (baseline 380) draws behind the sitter
-  (y 384), the seat-front/armrest (baseline 396) draws in front — the sitter
-  nestles *into* the chair.
+- **Each armchair is split**: back part (baseline y−4 = 292) draws behind the
+  sitter (y 296), the seat-front/armrest (baseline y+12 = 308) draws in front
+  — the sitter nestles *into* the chair.
 
 ## People (drawPerson)
 

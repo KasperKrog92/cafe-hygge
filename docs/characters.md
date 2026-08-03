@@ -83,9 +83,9 @@ enter → queueing → ordering → waitDrink → pickup → toSeat → seated �
    showing their order icon; caption fires ("Freja orders a cappuccino.").
 3. **waitDrink** — steps aside to a waiting spot until their cup appears at
    the pass with their id on it.
-4. **pickup** — takes the cup (clink) and picks a seat: readers take the
-   armchair if free; otherwise a random free stool. If the café is full they
-   take it to go.
+4. **pickup** — takes the cup (clink) and picks a seat: readers take a
+   fireside armchair if one is free; otherwise a random free stool. If the
+   café is full they take it to go.
 5. **seated** — the long, cozy middle (stay 100–260 s):
    - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — cup rises
      from the table (the table item hides, cup appears in hand), sip sound at
@@ -110,7 +110,7 @@ empty on arrival.
 Orange tabby, no name (it has not told anyone yet). The café's true owner.
 
 **Favorite spots:** the fireplace rug (390, 294), by the window (168, 378), the
-big rug (340, 468), beside the armchair (282, 412).
+big rug (340, 468), beside the left armchair (252, 312).
 
 **States:** `sleep` (35–100 s; purrs every 10–25 s; occasional "zzz" bubble)
 → `sit` (5–12 s) → sometimes `groom` (3–6 s, with a raised paw) or `stretch`

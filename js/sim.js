@@ -65,7 +65,7 @@
       steamAcc: 0
     };
 
-    // seats: two stools per table + the armchair
+    // seats: two stools per table + the fireside armchairs
     world.tables.forEach(function (tb, ti) {
       [-1, 1].forEach(function (side) {
         world.seats.push({
@@ -74,7 +74,9 @@
         });
       });
     });
-    world.seats.push({ x: L.armchair.seatX, y: L.armchair.seatY, facing: 1, table: -1, side: 0, armchair: true, taken: false });
+    L.armchairs.forEach(function (a) {
+      world.seats.push({ x: a.x + 6 * a.dir, y: a.y, facing: a.dir, table: -1, side: 0, armchair: true, taken: false });
+    });
 
     // a couple of regulars are already settled in
     seedPatron(world, 1);
@@ -718,7 +720,7 @@
     { x: 390, y: 294, name: 'the fireplace rug' },
     { x: 168, y: 378, name: 'the spot by the window' },
     { x: 340, y: 468, name: 'the big rug' },
-    { x: 282, y: 412, name: 'the armchair\'s side' }
+    { x: 252, y: 312, name: 'the armchair\'s side' }
   ];
 
   function updateCat(world, cat, dt) {

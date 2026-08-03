@@ -31,8 +31,15 @@
     lane: 368,                // main walking corridor
     lamp1: { x: 318, y: 84 },
     lamp2: { x: 614, y: 84 },
-    floorLamp: { x: 286, y: 376 },
-    armchair: { x: 316, y: 384, seatX: 322, seatY: 384 },
+    floorLamp: { x: 843, y: 544 },    // reading light over the magazine basket
+    // fireside pair flanking the hearth rug; dir = facing (+1 right, -1 left),
+    // seat sits at x + 6*dir. Backs top out at y-58 = 238, just under the wall line.
+    armchairs: [
+      { x: 298, y: 296, dir: 1 },
+      { x: 478, y: 296, dir: -1 }
+    ],
+    coatStand: { x: 96, y: 298 },
+    plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
     machine: { x: 656, y: 224, w: 56 },       // hero prop: kept a notch above scale
     serveSpot: { x: 744, y: 266 },   // where finished cups land on the counter
@@ -643,26 +650,29 @@
       } });
     });
 
-    // armchair (split so a sitter nestles into it)
-    const A = L.armchair;
-    out.push({ y: A.y - 4, draw: function (g) {
-      ell(g, A.x + 2, A.y + 8, 30, 8, SHADOW);
-      px(g, A.x - 21, A.y - 56, 15, 56, '#8a3d3d');
-      px(g, A.x - 19, A.y - 58, 11, 4, '#9c4848');
-      px(g, A.x - 16, A.y - 48, 2, 30, 'rgba(40,16,16,0.3)');   // wing seam
-      px(g, A.x - 19, A.y - 16, 44, 20, '#8a3d3d');
-      px(g, A.x - 17, A.y - 18, 40, 6, '#a05252');
-      px(g, A.x - 17, A.y - 11, 40, 2, 'rgba(40,16,16,0.25)');  // cushion piping
-    } });
-    out.push({ y: A.y + 12, draw: function (g) {
-      px(g, A.x + 19, A.y - 30, 13, 34, '#8a3d3d');
-      px(g, A.x + 21, A.y - 32, 9, 4, '#9c4848');
-      px(g, A.x + 21, A.y - 18, 2, 18, 'rgba(40,16,16,0.3)');   // arm seam
-      px(g, A.x - 21, A.y + 2, 53, 8, '#7a3535');
-      px(g, A.x - 19, A.y + 10, 7, 4, '#4a3222'); px(g, A.x + 23, A.y + 10, 7, 4, '#4a3222');
-    } });
+    // armchairs flanking the hearth rug (each split so a sitter nestles into
+    // it). Art is authored facing right; m() mirrors an x-offset for dir=-1.
+    L.armchairs.forEach(function (A) {
+      const m = function (off, w) { return A.x + (A.dir > 0 ? off : -off - w); };
+      out.push({ y: A.y - 4, draw: function (g) {
+        ell(g, A.x + 2 * A.dir, A.y + 8, 30, 8, SHADOW);
+        px(g, m(-21, 15), A.y - 56, 15, 56, '#8a3d3d');
+        px(g, m(-19, 11), A.y - 58, 11, 4, '#9c4848');
+        px(g, m(-16, 2), A.y - 48, 2, 30, 'rgba(40,16,16,0.3)');   // wing seam
+        px(g, m(-19, 44), A.y - 16, 44, 20, '#8a3d3d');
+        px(g, m(-17, 40), A.y - 18, 40, 6, '#a05252');
+        px(g, m(-17, 40), A.y - 11, 40, 2, 'rgba(40,16,16,0.25)'); // cushion piping
+      } });
+      out.push({ y: A.y + 12, draw: function (g) {
+        px(g, m(19, 13), A.y - 30, 13, 34, '#8a3d3d');
+        px(g, m(21, 9), A.y - 32, 9, 4, '#9c4848');
+        px(g, m(21, 2), A.y - 18, 2, 18, 'rgba(40,16,16,0.3)');    // arm seam
+        px(g, m(-21, 53), A.y + 2, 53, 8, '#7a3535');
+        px(g, m(-19, 7), A.y + 10, 7, 4, '#4a3222'); px(g, m(23, 7), A.y + 10, 7, 4, '#4a3222');
+      } });
+    });
 
-    // floor lamp next to the armchair
+    // floor lamp over the magazine basket — the bottom-right reading corner
     const F = L.floorLamp;
     out.push({ y: F.y, draw: function (g) {
       ell(g, F.x + 1, F.y - 2, 12, 4, SHADOW);
@@ -673,23 +683,26 @@
       px(g, F.x - 12, F.y - 50, 26, 4, '#b57c38');
     } });
 
-    // coat stand near the door
-    out.push({ y: 332, draw: function (g) {
-      ell(g, 112, 330, 12, 4, SHADOW);
-      px(g, 110, 270, 4, 58, '#5a3d28');
-      px(g, 102, 276, 20, 4, '#5a3d28');
-      px(g, 100, 260, 16, 10, '#6b5a3a');
-      px(g, 102, 258, 12, 4, '#7d6a45');
-      px(g, 116, 282, 7, 26, '#a94f3f');
-      px(g, 118, 308, 5, 8, '#8f4035');
-      px(g, 102, 328, 20, 4, '#4a3222');
+    // coat stand just inside the door
+    const CS = L.coatStand;
+    out.push({ y: CS.y, draw: function (g) {
+      ell(g, CS.x, CS.y - 2, 12, 4, SHADOW);
+      px(g, CS.x - 2, CS.y - 62, 4, 58, '#5a3d28');
+      px(g, CS.x - 10, CS.y - 56, 20, 4, '#5a3d28');
+      px(g, CS.x - 12, CS.y - 72, 16, 10, '#6b5a3a');
+      px(g, CS.x - 10, CS.y - 74, 12, 4, '#7d6a45');
+      px(g, CS.x + 4, CS.y - 50, 7, 26, '#a94f3f');
+      px(g, CS.x + 6, CS.y - 24, 5, 8, '#8f4035');
+      px(g, CS.x - 10, CS.y - 4, 20, 4, '#4a3222');
     } });
 
-    // potted plants
-    out.push({ y: 384, draw: function (g) { ell(g, 592, 382, 13, 4, SHADOW); drawBigPlant(g, 592, 384); } });
-    out.push({ y: 404, draw: function (g) { ell(g, 924, 402, 13, 4, SHADOW); drawBigPlant(g, 924, 404); } });
+    // potted plants anchoring the counter: one against the wall at its left
+    // end, one tucked against its right front corner
+    L.plants.forEach(function (P) {
+      out.push({ y: P.y, draw: function (g) { ell(g, P.x, P.y - 2, 13, 4, SHADOW); drawBigPlant(g, P.x, P.y); } });
+    });
 
-    // bottom-right corner: magazine basket + a little stack of firewood
+    // bottom-right reading corner: magazine basket (under the floor lamp)
     out.push({ y: 540, draw: function (g) {
       ell(g, 790, 538, 17, 5, SHADOW);
       px(g, 776, 516, 28, 22, '#a5763f');
@@ -699,11 +712,12 @@
       px(g, 789, 498, 7, 18, '#a94f3f');
       px(g, 791, 502, 3, 4, '#e8dfc9');
     } });
-    out.push({ y: 534, draw: function (g) {
-      ell(g, 845, 532, 18, 5, SHADOW);
-      px(g, 830, 526, 30, 6, '#6b4429'); ell(g, 830, 529, 3, 3, '#8a6142');
-      px(g, 832, 520, 26, 6, '#5a3520'); ell(g, 858, 523, 3, 3, '#8a6142');
-      px(g, 836, 514, 20, 6, '#6b4429'); ell(g, 836, 517, 3, 3, '#8a6142');
+    // log pile leaning on the firewood crate beside the hearth
+    out.push({ y: 254, draw: function (g) {
+      ell(g, 446, 252, 18, 5, SHADOW);
+      px(g, 431, 246, 30, 6, '#6b4429'); ell(g, 431, 249, 3, 3, '#8a6142');
+      px(g, 433, 240, 26, 6, '#5a3520'); ell(g, 459, 243, 3, 3, '#8a6142');
+      px(g, 437, 234, 20, 6, '#6b4429'); ell(g, 437, 237, 3, 3, '#8a6142');
     } });
 
     // the counter itself
