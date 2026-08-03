@@ -2,7 +2,7 @@
 
 The café's cast: one barista, a rotating pool of patrons, and a cat. All
 behavior is dt-driven state machines in `js/sim.js`; all drawing is
-`SCENE.drawPerson` / `SCENE.drawCat` in `js/scene.js`.
+`SCENE.drawPerson` / `SCENE.drawCat` in `js/scene-people.js`.
 
 ---
 

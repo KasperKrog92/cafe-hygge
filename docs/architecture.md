@@ -1,14 +1,18 @@
 # Architecture
 
-Zero-dependency vanilla JS. Five files, each an IIFE exposing one global,
-loaded in dependency order by `index.html`:
+Zero-dependency vanilla JS. Nine IIFE scripts expose three production globals
+plus the optional dev harness, loaded in dependency order by `index.html`:
 
 ```
-js/audio.js   → window.SND     (sound engine; no DOM, no sim knowledge)
-js/scene.js   → window.SCENE   (rendering + layout constants; no sim knowledge)
-js/sim.js     → window.SIM     (behavior; reads SCENE.L, calls SND.*)
-js/dev.js     → window.__dev   (dev harness; inert unless ?dev/console — see below)
-js/main.js    → (none)         (boot, loop, UI; orchestrates the others)
+js/audio.js             → window.SND     (sound engine; no DOM, no sim knowledge)
+js/scene-core.js        → window.SCENE   (layout, palette, shared renderer helpers)
+js/scene-bg.js          → extends SCENE  (background cache + dynamic wall layer)
+js/scene-furniture.js   → extends SCENE  (depth-sorted furniture)
+js/scene-people.js      → extends SCENE  (people, cat, bubbles, icons)
+js/scene-fx.js          → extends SCENE  (lighting, particles, captions)
+js/sim.js               → window.SIM     (behavior; reads SCENE.L, calls SND.*)
+js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
+js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
 
 There are **no ES modules on purpose**: `file://` + `<script>` tags means the
@@ -100,6 +104,10 @@ the gap at `L.baristaExitX = 610`.
   minimal letterbox on one axis. Canvas clicks map back through the view rect.
 - `SCENE.L` is the single source of truth for positions. Sim logic must
   reference it, never duplicate coordinates.
+- `scene-core.js` creates `SCENE` and its private `SCENE._` renderer contract;
+  each scene sibling reads that contract and adds public draw functions to the
+  same global. Keep shared primitives in core so scene siblings never depend on
+  one another. Load all five scene scripts in the documented order.
 - Drawables are `{y, draw(g)}` objects; the baseline `y` is the entity's feet.
   Tie-breaking relies on stable sort + push order (furniture before entities).
 - Anything that must stay readable at night (bubbles, captions) draws **after**

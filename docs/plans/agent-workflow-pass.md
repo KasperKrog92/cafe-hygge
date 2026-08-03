@@ -1,6 +1,6 @@
 # Agent workflow pass — make the next hundred changes cheap
 
-**Status: phase 1 (dev harness) executed 2026-08-03; phases 2–3 planned.**
+**Status: phases 1–2 executed 2026-08-03; phase 3 planned.**
 Written 2026-08-03, immediately after the reading-nook session, from notes on
 where that session's effort actually went. The owner expects many more changes of that shape ("add a cozy thing +
 its behavior"); this pass optimizes the *cost of change*, not the app.
@@ -68,31 +68,34 @@ invisible to the reader-owner, zero user-facing change.
    - seats reference existing tables; nook seats point at `small` tables
    - the hard-won constants hold: barista home y 286, lane 368
 6. **Declare occluders once:** `L.occluders = [shelf, counter]`-style list
-   in scene.js so the overlay and the audit share one truth with the art.
+   in `scene-core.js` so the overlay and the audit share one truth with the art.
 
 AGENTS.md's smoke test gains one line: open with `?dev`, run
 `__dev.audit()`, expect 0 problems.
 
 ## Phase 2 — split the big files at their seams
 
-Same globals, same IIFE style, more `<script>` tags — file:// and the
-zero-dependency promise untouched. Target: no file over ~500 lines, so any
-change reads one small contract file plus one sibling.
+**Executed 2026-08-03.** `drawTinyPlant` joined the core helper contract because
+both the background and furniture use it; otherwise this was a pure code move.
 
-`js/scene.js` (1,349) becomes, in load order:
+Same globals, same IIFE style, more `<script>` tags — file:// and the
+zero-dependency promise untouched. Target: no scene renderer file over ~500
+lines, so a visual change reads one small contract file plus one sibling.
+
+`js/scene.js` (1,444 at execution time) became, in load order:
 
 | File | Contents | ~lines |
 | --- | --- | --- |
-| `js/scene-core.js` | creates `window.SCENE`; `L`, palette/DAYKEYS, px/ell/shade/h2/lerp helpers, chalk font | 230 |
-| `js/scene-bg.js` | static background cache + the dynamic wall layer (window, door, fireplace, menu, shelves, machine, hanging lamps) | 430 |
-| `js/scene-furniture.js` | `furnitureDrawables` + furniture helpers (tables, chairs, bookshelf, lamps, counter, plants) | 330 |
-| `js/scene-people.js` | `drawPerson`, `drawCat`, bubbles, icons | 260 |
-| `js/scene-fx.js` | lighting, particles, caption rendering | 150 |
+| `js/scene-core.js` | creates `window.SCENE`; `L`, palette/DAYKEYS, px/ell/shade/h2/lerp helpers, shared tiny plant, chalk font | 221 |
+| `js/scene-bg.js` | static background cache + the dynamic wall layer (window, door, fireplace, menu, shelves, machine, hanging lamps) | 434 |
+| `js/scene-furniture.js` | `furnitureDrawables` + furniture helpers (tables, chairs, bookshelf, lamps, counter, plants) | 358 |
+| `js/scene-people.js` | `drawPerson`, `drawCat`, bubbles, icons | 335 |
+| `js/scene-fx.js` | lighting, particles, caption rendering | 143 |
 
-`sim.js` (929) stays whole for now; the split rule going forward is
-**~900 lines**: when a file crosses it, split at its section comments (for
-sim: world/patrons/barista+cat) in a dedicated commit, never mixed into a
-feature change.
+`sim.js` (1,013 at execution time) stays whole in this phase. It is now beyond
+the **~900-line** forward split rule, so its next structural pass should split
+at the section comments (world/patrons/barista+cat) in a dedicated change,
+never mixed into a feature change.
 
 Mechanics: pure move, no rewrites; verify with a before/after screenshot at
 the same `__dev.hour` + clean console + one full order cycle; update
@@ -138,6 +141,6 @@ pass is for the agent, not the café.
   the bookshelf.
 - `__dev.spawn({wantsBook: true, ownBook: false})` produces a browse →
   borrow → nook → return-book loop watchable in under 30 s via `__dev.ff`.
-- After the split: no file over ~500 lines, same-frame screenshots match,
+- After the split: no scene renderer file over ~500 lines, same-frame screenshots match,
   console clean, one order cycle plays through.
 - art.md contains no coordinate that isn't attached to a *why*.

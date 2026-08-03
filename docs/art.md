@@ -1,6 +1,6 @@
 # Art — pixel style guide & layout map
 
-All art is drawn programmatically in `js/scene.js` — no image assets. The
+All art is drawn programmatically in the `js/scene-*.js` renderer files — no image assets. The
 scene renders to a **960×600 (16:10) master canvas**; a 16:9 window shows the
 **960×540 crop starting at y=36**, and other aspects a variable crop (visible
 height 540–600, width 936–960). The overscan strips — top 36 px (upper wall,
@@ -22,7 +22,7 @@ architecture textures, retuned atmosphere and real typography.
   "HD remaster" drift. Two sanctioned exceptions: 1 px rain streaks (finer
   rain is the point) and typography (see *Typography* below).
 - **Derived shades, not new hexes.** Clothing folds, hair shine, creases use
-  `shade(hex, ±f)` in scene.js (memoized lighten/darken) so the palette stays
+  `shade(hex, ±f)` in `scene-core.js` (memoized lighten/darken) so the palette stays
   small while pool colors gain depth. Texture noise (floor grain, knots,
   brick tint) uses the deterministic `h2(x, y)` hash — the static background
   renders once, so its randomness must be stable.
@@ -61,7 +61,7 @@ architecture textures, retuned atmosphere and real typography.
 | Flames | back layer `#b5481c` → `#e06a1e` → `#f5a83c` → `#f8dc8a` |
 | Fireside armchairs | `#8a3d3d` (highlights `#9c4848` / `#a05252`) |
 | Nook wing chairs | `#4a7a5a` (highlights/fronts derived via `shade()`) |
-| Book spines | reuse clothing/accent hexes (`BOOKCOLS` in scene.js) |
+| Book spines | reuse clothing/accent hexes (`BOOKCOLS` in `scene-furniture.js`) |
 | Rugs | `#a34d3b` / `#8f5a3a` |
 | Crockery | `#e8e0d0`, saucers `#d9d2c0` |
 | Cat | `#d98d4a`, stripes `#b5702e`, chest `#f0e0c8` |
@@ -172,7 +172,7 @@ muzzle + pink nose, sleeping a closed-eye line.
 
 ## Typography
 
-- **Chalk: a 6×10 hand** (`SCENE.chalkText`, `CHALK` glyphs in scene.js) with
+- **Chalk: a 6×10 hand** (`SCENE.chalkText`, `CHALK` glyphs in `scene-core.js`) with
   2 px strokes and a ±1 px per-character jitter so boards look hand-written.
   Used on the menu board ("CAFÉ HYGGE", KAFFE / KAKAO / BOLLER + price
   dashes + a chalk heart). Glyph set is caps A–Y subset + É; extend the map

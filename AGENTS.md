@@ -38,18 +38,24 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   `__dev.audit()` (bounds/occlusion/seat/constant invariants — run it after
   any layout change).
 
-## Architecture (5 files, deliberate order)
+## Architecture (9 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
 | `js/audio.js` | `SND` | Web Audio synthesis. Buses, ambience loops, one-shot sounds, music box. No samples (yet — see roadmap). |
-| `js/scene.js` | `SCENE` | All pixel-art drawing + the shared layout constant `SCENE.L`. Owns *where things are* and *what they look like*. |
+| `js/scene-core.js` | `SCENE` | Creates the renderer global; owns `SCENE.L`, palette interpolation, and shared drawing helpers. |
+| `js/scene-bg.js` | `SCENE` | Static background cache and the dynamic wall layer: window, door, fireplace, shelves, lamps, and espresso machine. |
+| `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, and plants. |
+| `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
+| `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering. |
 | `js/sim.js` | `SIM` | State machines: patrons, barista, cat, weather, clock, captions, particles. Owns *what happens*. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock jumps, fast-forward, scenario forcing, layout overlay, invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, depth-sort render pass, UI controls. |
 
-Load order matters: audio → scene → sim → dev → main (sim reads `SCENE.L`; dev
-consumes the `SIM._` debug contract and decorates the boot; main reads all).
+Load order matters: audio → scene-core → scene-bg → scene-furniture →
+scene-people → scene-fx → sim → dev → main. Scene-core creates `SCENE`; the
+four renderer siblings extend it, sim reads `SCENE.L`, dev consumes the
+`SIM._` debug contract and decorates the boot, and main reads all.
 
 Full detail: [docs/architecture.md](docs/architecture.md).
 

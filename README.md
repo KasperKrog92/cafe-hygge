@@ -62,7 +62,7 @@ Settings are remembered between visits.
 - Keep the window visible (it can be unfocused) for the smoothest animation;
   if the tab is hidden the café keeps living at a gentler tick.
 - Built with plain HTML/CSS/JS: `js/audio.js` (sound synthesis),
-  `js/scene.js` (pixel-art renderer), `js/sim.js` (the little lives),
+  `js/scene-*.js` (pixel-art renderer), `js/sim.js` (the little lives),
   `js/main.js` (loop and controls).
 - Deeper documentation lives in [`docs/`](docs/) — design ethos, architecture,
   the full character/sound/art references, and the [roadmap](docs/roadmap.md).

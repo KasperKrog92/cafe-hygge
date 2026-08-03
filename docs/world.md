@@ -1,7 +1,7 @@
 # World systems — time, weather, light, events
 
 The systems that make the room feel alive independent of any character.
-All in `js/sim.js` (state) and `js/scene.js` (appearance).
+All in `js/sim.js` (state) and the `js/scene-*.js` renderer files (appearance).
 
 ## Time
 
@@ -10,7 +10,7 @@ All in `js/sim.js` (state) and `js/scene.js` (appearance).
 - `world.hour` (0–24 float) drives everything: the sky, the lighting, the
   mantel clock's hands, spawn rates, music sparseness.
 - The palette comes from `SCENE.dayPalette(hour)`, interpolating these
-  keyframes (`DAYKEYS` in scene.js):
+  keyframes (`DAYKEYS` in `scene-core.js`):
 
 | Hour | Sky | daylight | lamp |
 | --- | --- | --- | --- |
