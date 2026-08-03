@@ -5,7 +5,7 @@
   const SCENE = window.SCENE;
   const R = SCENE._;
   const W = R.W, H = R.H, L = R.L;
-  const px = R.px, ell = R.ell, h2 = R.h2;
+  const px = R.px, ell = R.ell, h2 = R.h2, shade = R.shade;
   const drawTinyPlant = R.drawTinyPlant;
 
   /* ================= BACKGROUND ================= */
@@ -185,8 +185,25 @@
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 2, '#8a6142');
     px(g, w.x - 14, w.y + w.h + 16, w.w + 28, 4, '#5a3d28');
     px(g, w.x - 12, w.y + w.h + 20, w.w + 24, 2, 'rgba(20,12,8,0.25)');
-    drawTinyPlant(g, w.x + 8, w.y + w.h + 8);
-    drawTinyPlant(g, w.x + w.w - 20, w.y + w.h + 8);
+    // window-seat back cushions against the side frames (perched sitters
+    // render in front of them); one plant between the perches
+    drawSillCushion(g, w.x + 2, w.y + w.h - 16, CUSHIONS[alt]);
+    drawSillCushion(g, w.x + w.w - 14, w.y + w.h - 16, CUSHIONS[alt]);
+    drawTinyPlant(g, w.x + w.w / 2 - 6, w.y + w.h + 8);
+  }
+
+  /* back cushions for the window perches — red pair in the door-side window,
+     green near the counter (the wing-chair swatches, so the room rhymes) */
+  const CUSHIONS = [
+    { body: '#8a3d3d', light: '#a05252', dark: shade('#8a3d3d', -0.16), seam: 'rgba(40,16,16,0.3)' },
+    { body: '#4a7a5a', light: shade('#4a7a5a', 0.22), dark: shade('#4a7a5a', -0.16), seam: 'rgba(16,32,22,0.3)' }
+  ];
+
+  function drawSillCushion(g, x, top, C) {
+    px(g, x + 1, top, 10, 2, C.light);          // rounded, lit crown
+    px(g, x, top + 2, 12, 20, C.body);
+    px(g, x + 1, top + 22, 10, 2, C.dark);      // rounded base on the sill
+    px(g, x + 2, top + 10, 8, 2, C.seam);       // tufting seam
   }
 
   /* ---------- door with jingling bell ----------

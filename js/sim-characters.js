@@ -196,7 +196,8 @@
   function busRoute(world, ti) {
     const tb = world.tables[ti];
     const busX = tb.x + (tb.small ? -28 : 24);
-    const busY = tb.y + 20;
+    // tall window tables live on the wall; Nora stands at their floor line
+    const busY = tb.tall ? tb.base + 2 : tb.y + 20;
     const dropX = tb.small ? tb.busVia : busX;
     const route = [
       { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },

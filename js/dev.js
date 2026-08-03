@@ -140,7 +140,7 @@
      spots are by-design occluded and excluded) */
   function walkTargets(w) {
     const t = [];
-    w.seats.forEach(function (s, i) { t.push({ x: s.x, y: s.y, name: 'seat[' + i + ']' }); });
+    w.seats.forEach(function (s, i) { t.push({ x: s.x, y: s.y, via: s.via, name: 'seat[' + i + ']' }); });
     for (let i = 0; i < 7; i++) {           // spawn cap is 7 — audit the worst case
       const q = SIM._.queueSlot(i);
       t.push({ x: q.x, y: q.y, name: 'queueSlot(' + i + ')' });
@@ -367,7 +367,10 @@
     walkTargets(w).forEach(function (t) {
       if (/^busSpot/.test(t.name)) return;
       const scratch = { x: L.doorSpot.x, y: L.lane, path: null, pose: 'stand', facing: 1, speed: 0 };
-      SIM._.makePath(scratch, t.x, t.y);
+      // window seats with a declared clear column descend there first,
+      // exactly as the sim's seatPath does
+      SIM._.makePath(scratch, t.via || t.x, t.y);
+      if (t.via) scratch.path.push({ x: t.x, y: t.y });
       const route = [{ x: scratch.x, y: scratch.y }].concat(scratch.path);
       routeProblems(route, t, t.name, null, /^seat\[/.test(t.name), problems);
     });
@@ -380,15 +383,27 @@
       routeProblems(route, end, 'busSpot(table ' + i + ')', ['counter'], true, problems);
     });
 
-    // seats reference existing tables; nook seats pair with small side tables
+    // seats reference existing tables; nook seats pair with small side
+    // tables, window seats with tall window tables
     w.seats.forEach(function (s, i) {
       if (s.table >= 0) {
         const tb = w.tables[s.table];
         if (!tb) problems.push('seat[' + i + '] references missing table ' + s.table);
         else if (s.nook && !tb.small) problems.push('seat[' + i + '] is a nook seat but table ' + s.table + ' is not a small side table');
         else if (!s.nook && tb.small) problems.push('seat[' + i + '] points at small side table ' + s.table + ' but is not a nook seat');
+        else if (s.window && !tb.tall) problems.push('seat[' + i + '] is a window seat but table ' + s.table + ' is not a tall window table');
+        else if (!s.window && tb.tall) problems.push('seat[' + i + '] points at tall window table ' + s.table + ' but is not a window seat');
       } else if (!s.armchair) {
         problems.push('seat[' + i + '] has no table and is not an armchair');
+      }
+    });
+    // window seats must perch on whole pixels inside content-safe bounds
+    w.seats.forEach(function (s, i) {
+      if (!s.window) return;
+      if (!Number.isInteger(s.perchX) || !Number.isInteger(s.perchY)) {
+        problems.push('seat[' + i + '] perch (' + s.perchX + ',' + s.perchY + ') is not on whole pixels');
+      } else if (s.perchX < SAFE.x0 || s.perchX > SAFE.x1 || s.perchY < SAFE.y0 || s.perchY > SAFE.y1) {
+        problems.push('seat[' + i + '] perch (' + s.perchX + ',' + s.perchY + ') outside content-safe bounds');
       }
     });
 

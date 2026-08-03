@@ -49,9 +49,10 @@ Applied after all sprites, in `SCENE.drawLighting`:
    machine + pass, pastry case — so the counter stays warm after dark), the
    two reading lamps in the nook, mantel candles (all scaled by `lamp`); the
    fireplace (always on,
-   flickering via layered sines); a candle jar on every table (always lit,
-   stronger after dark, per-table flicker); a soft daylight pool below each
-   of the two windows.
+   flickering via layered sines); a candle jar on every dining table (always
+   lit, stronger after dark, per-table flicker — the window poseur tables
+   carry no candle, cups only); a soft daylight pool below each of the two
+   windows.
 3. **Vignette**: radial darkening toward the edges, always.
 
 Speech bubbles and captions draw **after** this pass so they stay readable at
@@ -76,7 +77,9 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   (one "tak!" allowed). British-cozy rather than game-y.
 - Current triggers: arrivals (rain-aware), orders (`withArticle` for correct
   a/an), Nora serving/tidying/clearing, seat choices ("sinks into the armchair
-  by the fire", "curls up in the reading nook"), bookshelf moments (drifting
+  by the fire", "curls up in the reading nook", "perches on the window
+  seat"), window gazes (20% of them, weather/hour-aware: rain on the glass,
+  streetlamps, the street drifting by), bookshelf moments (drifting
   over, picking a book out, slipping it back), page turns (12% of them),
   murmuring tables (15%), cup returns, departures (rain/night-aware), cat
   movements and petting, weather changes, lamp threshold moments.

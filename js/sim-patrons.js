@@ -32,6 +32,33 @@
     return pick(free);
   }
 
+  /* Window seats live on the sill, not the floor: patrons walk to the seat's
+     floor spot (seat.x/y), then hop up to the perch — and where an armchair
+     blocks the straight drop from the lane, thread through the seat's
+     declared clear column (seat.via, the winSeats twin of busVia). */
+  function seatPath(p, seat) {
+    makePath(p, seat.via || seat.x, seat.y);
+    if (seat.via) p.path.push({ x: seat.x, y: seat.y });
+  }
+
+  function perchUp(p) {
+    if (p.seat.window) { p.x = p.seat.perchX; p.y = p.seat.perchY; }
+  }
+
+  function stepDown(p, seat) {
+    if (seat && seat.window) {
+      p.x = seat.x; p.y = seat.y;
+      p.gazeDur = 0; p.gazeFacing = 0;
+    }
+  }
+
+  function pathFrom(p, seat, tx, ty) {
+    makePath(p, tx, ty);
+    if (seat && seat.window && seat.via) {
+      p.path = [{ x: seat.via, y: seat.y }, { x: seat.via, y: L.lane }].concat(p.path.slice(1));
+    }
+  }
+
   function updatePatron(world, p, dt) {
     p.animT += dt;
     p.stateT += dt;
@@ -115,7 +142,7 @@
             seat.taken = true;
             p.seat = seat;
             p.state = 'toSeat'; p.stateT = 0;
-            makePath(p, seat.x, seat.y);
+            seatPath(p, seat);
           }
         }
         break;
@@ -137,7 +164,7 @@
             seat.taken = true;
             p.seat = seat;
             p.state = 'toSeat'; p.stateT = 0;
-            makePath(p, seat.x, seat.y);
+            seatPath(p, seat);
           }
         }
         break;
@@ -152,13 +179,14 @@
           SND.pageTurn();
           if (Math.random() < 0.5) caption(world, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
           p.state = 'backToSeat'; p.stateT = 0;
-          makePath(p, p.seat.x, p.seat.y);
+          seatPath(p, p.seat);
         }
         break;
       }
       case 'backToSeat': {
         if (walker(p, dt)) {
           p.pose = 'sit';
+          perchUp(p);
           p.facing = p.seat.facing;
           p.holding = null;
           p.reading = true;
@@ -186,6 +214,7 @@
       case 'toSeat': {
         if (walker(p, dt)) {
           p.pose = 'sit';
+          perchUp(p);
           p.facing = p.seat.facing;
           p.state = 'seated'; p.stateT = 0;
           p.stay = rnd(100, 260);
@@ -203,6 +232,8 @@
           } else if (p.wantsBook) {
             p.reading = true;
             if (Math.random() < 0.5) caption(world, p.name + ' settles in with a book.');
+          } else if (p.seat.window) {
+            if (Math.random() < 0.6) caption(world, p.name + pick([' perches on the window seat.', ' curls up on the window sill.']));
           } else if (world.tables[p.seat.table] && world.tables[p.seat.table].tag && Math.random() < 0.6) {
             caption(world, p.name + ' finds a seat ' + world.tables[p.seat.table].tag + '.');
           }
@@ -263,6 +294,27 @@
         if (item) { item.hidden = true; p.holding = 'cup'; }
         else if (p.seat.armchair) { p.holding = 'cup'; }
         if (p.reading) { p.reading = false; p.resumeReading = true; }   // book down for the sip
+        p.gazeDur = 0; p.gazeFacing = 0;                                // head back for the sip
+      }
+    }
+
+    // the window pulls a perched sitter's gaze now and then (head only —
+    // the body keeps leaning on its cushion)
+    if (p.seat.window) {
+      if (p.gazeDur > 0) {
+        p.gazeDur -= dt;
+        if (p.gazeDur <= 0) { p.gazeFacing = 0; p.gazeT = rnd(20, 50); }
+      } else {
+        p.gazeT -= dt;
+        if (p.gazeT <= 0 && p.sipPhase <= 0) {
+          p.gazeDur = rnd(3.5, 8);
+          p.gazeFacing = -p.seat.facing;
+          if (Math.random() < 0.2) {
+            caption(world, p.name + (world.rain > 0.4 ? ' watches the rain run down the glass.'
+              : world.daylight < 0.3 ? ' watches the streetlamps glow outside.'
+              : ' watches the street drift by for a while.'));
+          }
+        }
       }
     }
 
@@ -304,9 +356,10 @@
     if (!p.reading && !p.holding && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
         Math.random() < dt * 0.01) {
       p.pose = 'stand';
+      stepDown(p, p.seat);
       p.state = 'fetchBook'; p.stateT = 0;
       p.browseDur = rnd(2.5, 4.5);
-      makePath(p, LB.browseSpot.x, LB.browseSpot.y);
+      pathFrom(p, p.seat, LB.browseSpot.x, LB.browseSpot.y);
       if (Math.random() < 0.5) caption(world, p.name + ' wanders over to the bookshelf.');
       return;
     }
@@ -328,27 +381,29 @@
           item.owner = null;   // left behind for Nora to collect
         }
       }
+      const seat = p.seat;
       p.seat = null;
+      stepDown(p, seat);
       if (p.hasShelfBook) {
         // the borrowed book goes home first
         p.afterBook = bussing ? 'return' : 'exit';
         p.state = 'returnBook'; p.stateT = 0;
-        makePath(p, LB.browseSpot.x, LB.browseSpot.y);
+        pathFrom(p, seat, LB.browseSpot.x, LB.browseSpot.y);
         return;
       }
       if (bussing) {
         p.state = 'return'; p.stateT = 0;
-        makePath(p, L.returnSpot.x, L.returnSpot.y);
+        pathFrom(p, seat, L.returnSpot.x, L.returnSpot.y);
         return;
       }
-      leaveCafe(world, p);
+      leaveCafe(world, p, seat);
     }
   }
 
-  function leaveCafe(world, p) {
+  function leaveCafe(world, p, seat) {
     p.state = 'exit'; p.stateT = 0;
     p.rangBell = false;
-    makePath(p, L.doorSpot.x, L.doorSpot.y);
+    pathFrom(p, seat, L.doorSpot.x, L.doorSpot.y);
     if (Math.random() < 0.35) caption(world, p.name + ' heads back out into the ' + (world.rain > 0.4 ? 'rain' : (world.daylight < 0.3 ? 'night' : 'afternoon')) + '.');
   }
 

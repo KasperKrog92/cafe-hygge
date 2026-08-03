@@ -56,6 +56,11 @@
       tables: L.tables.map(function (tb) { return { x: tb.x, y: tb.y, tag: tb.tag, items: [] }; })
         .concat(LB.sideTables.map(function (st) {
           return { x: st.x, y: st.y, tag: 'in the reading nook', small: true, busVia: st.busVia, items: [] };
+        }))
+        .concat(L.winTables.map(function (wt) {
+          // y = tabletop (items/steam), base = floor line; reach keeps both
+          // sitters' cups on the slim top
+          return { x: wt.x, y: wt.y, base: wt.base, tag: 'in the window', tall: true, reach: 12, items: [] };
         })),
       seats: [],
       barista: makeBarista(),
@@ -70,9 +75,10 @@
     };
 
     // seats: two stools per table + the fireside armchairs + the nook chairs
-    // (each nook chair pairs with its own side table for the sitter's drink)
+    // (each nook chair pairs with its own side table for the sitter's drink);
+    // small side tables and tall window tables seat no one themselves
     world.tables.forEach(function (tb, ti) {
-      if (tb.small) return;
+      if (tb.small || tb.tall) return;
       [-1, 1].forEach(function (side) {
         world.seats.push({
           x: tb.x + side * L.stoolDX, y: tb.y + L.stoolDY + 4,
@@ -89,11 +95,22 @@
         table: L.tables.length + i, side: 0, armchair: false, nook: true, taken: false
       });
     });
+    // window perches: two per window, sharing that window's tall table
+    L.winSeats.forEach(function (s) {
+      world.seats.push({
+        x: s.x, y: s.y, facing: -s.side,
+        perchX: s.perchX, perchY: s.perchY, via: s.via,
+        table: L.tables.length + LB.sideTables.length + s.win,
+        side: s.side, armchair: false, window: true, taken: false
+      });
+    });
 
-    // a few regulars are already settled in (seat 10 = the first nook chair)
+    // a few regulars are already settled in
+    // (seat 10 = the first nook chair, 12 = the first window perch)
     seedPatron(world, 1);
     seedPatron(world, 4);
     seedPatron(world, 10);
+    seedPatron(world, 12);
 
     return world;
   };
@@ -104,6 +121,7 @@
     seat.taken = true;
     p.seat = seat;
     p.x = seat.x; p.y = seat.y;
+    if (seat.window) { p.x = seat.perchX; p.y = seat.perchY; }
     p.facing = seat.facing;
     p.pose = 'sit';
     p.state = 'seated';
@@ -146,6 +164,7 @@
       seat: null, stay: 0,
       sipT: rnd(4, 10), sipPhase: 0, sipPlayed: false,
       pageT: rnd(6, 16), chatT: rnd(8, 20), chatReply: 0,
+      gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
       bubble: null, queueIdx: -1, waitIdx: -1, doorCloseT: 0
     };
   }
@@ -321,7 +340,7 @@
       world.tables.forEach(function (tb) {
         tb.items.forEach(function (it) {
           if (it.hot > 0 && !it.hidden && it.kind !== 'plate' && Math.random() < 0.8) {
-            spawnSteam(world, tb.x + it.side * 24, tb.y - 16);
+            spawnSteam(world, tb.x + it.side * (tb.reach || 24), tb.y - 16);
           }
         });
       });

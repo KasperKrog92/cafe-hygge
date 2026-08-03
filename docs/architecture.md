@@ -36,8 +36,8 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `queue[]` | patrons currently in the order line (index 0 = at the till) |
 | `barista` | Nora's entity |
 | `cat` | the cat's entity |
-| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates on the table. The four dining tables come first, then the reading nook's two side tables (`small: true`, no stools) |
-| `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table |
+| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates on the table. The four dining tables come first, then the reading nook's two side tables (`small: true`, no stools), then the two tall window tables (`tall: true` — `y` is the tabletop up at the sill, `base` the floor line, `reach` keeps both sitters' cups on the slim top) |
+| `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table. Window seats add `window: true`, `perchX/perchY` (the sill position sat at; `x/y` stay the floor spot walked to) and optionally `via` (clear descent column) — both perches at a window share its tall table |
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
 | `particles[]` | steam wisps and fire sparks |
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
@@ -146,7 +146,7 @@ overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
 | `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`) |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
-| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — every L-shaped route and Nora's bus routes checked leg by leg, seat↔table wiring, barista y=286 / lane 368, plus live-world checks: seat↔patron consistency, queue contiguity, orphaned/stacked items, spawn cap) |
+| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — every L-shaped route (window seats descend through their `via` column first, as the sim does) and Nora's bus routes checked leg by leg, seat↔table wiring incl. nook↔side-table and window↔tall-table pairing, window perches on whole pixels in bounds, barista y=286 / lane 368, plus live-world checks: seat↔patron consistency, queue contiguity, orphaned/stacked items, spawn cap) |
 
 Three contracts support it: `SIM._` (the private seam shared by the sim
 siblings and consumed by dev.js; other app code must not touch it — includes

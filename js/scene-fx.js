@@ -44,7 +44,9 @@
     // candles on the mantel
     glow(g, 385, 118, 20, 255, 200, 110, 0.1 + 0.06 * Math.sin(t * 11));
     // candles on the tables — always lit, a touch stronger after dark
+    // (the window poseur tables carry no candle: cups only, cushions nearby)
     world.tables.forEach(function (tb, i) {
+      if (tb.tall) return;
       const a = 0.07 + 0.07 * (1 - d) + 0.025 * Math.sin(t * 9 + i * 2.1);
       glow(g, tb.x, tb.y - 14, 34, 255, 195, 105, a);
     });

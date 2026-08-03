@@ -81,7 +81,9 @@
         px(g, kx, y - 25, 4, 7, c.scarf);                       // tail
         px(g, kx, y - 19, 2, 2, shade(c.scarf, -0.15));         // fringe
       }
-      drawHead(g, x, y - 48 + breathe, facing, c);
+      // gazeFacing (window sitters looking out) turns the head only —
+      // the body keeps leaning on its cushion
+      drawHead(g, x, y - 48 + breathe, p.gazeFacing || facing, c);
       // arms + what they hold
       if (p.reading) {
         px(g, x + facing * 3 - 2, y - 24, 5, 8, c.top);

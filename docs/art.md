@@ -36,7 +36,9 @@ architecture textures, retuned atmosphere and real typography.
   (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×68,
   floor lamp 68, coat stand ~70, table top at ~32 above the floor (Ø 64),
   stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
-  side-table top ~26. **Deliberate exceptions:** the espresso
+  side-table top ~26, window-perch cushions 24, window poseur tables ~52 to
+  the top (tall on purpose: the top must meet the sill so a perched sitter
+  can reach their drink). **Deliberate exceptions:** the espresso
   machine (40 h) and pastry case stay a notch above strict scale so brewing
   stays legible — don't "fix" them; mugs stay oversized (charm).
 - **Grounding shadows.** Every floor-standing thing (tables, seats, armchair,
@@ -85,7 +87,11 @@ y=36  ── 16:9 crop top
           wall band: door + bell (L.door, L.bell), window (L.win), fireplace
           breast with mantel clock/candles + firewood basket (L.fire), second
           window (L.win2 — same glass, its own stretch of town; the moon hangs
-          in L.win only), then behind the counter: two short dish shelves with
+          in L.win only); both deep sills are window perches (L.winSeats):
+          a back cushion against each side frame (red pair by the door, green
+          near the counter — the wing-chair swatches) with one plant between,
+          and a slim poseur table under each window (L.winTables) whose top
+          meets the sill; then behind the counter: two short dish shelves with
           the menu chalkboard (L.menu) at their right — the third pendant
           (L.lamp3) hangs in the wall gap between them — wainscot, espresso
           machine (L.machine — drawn in the background layer)
@@ -152,6 +158,12 @@ Rules that keep it looking right:
   construction, `wingChairBack`/`wingChairFront` with a color swatch): back
   part (baseline y−4) draws behind the sitter (y), the seat-front/armrest
   (baseline y+12) draws in front — the sitter nestles *into* the chair.
+- **Window perches sit on the wall, not the floor**: a perched sitter's
+  baseline is up at the sill, so they sort before all floor furniture and
+  render straight onto the background window — cushions draw in the wall
+  layer behind them, the poseur table at its floor line in front. The sitter
+  hops between the floor spot and the perch in one frame (the same instant
+  pose flip every chair uses). Poseur-table footprints are `passable`.
 - **The bookshelf** is one drawable at its `L.occluders` baseline; anyone on
   the lane above it is correctly occluded by it. Keep walk targets (seats,
   bus spots) and walk routes out of its occluder x-span so nobody vanishes

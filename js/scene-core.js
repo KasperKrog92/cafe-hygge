@@ -58,6 +58,23 @@
       { x: 298, y: 296, dir: 1 },
       { x: 478, y: 296, dir: -1 }
     ],
+    // window perches: one sitter each side of both deep sills, back on a
+    // cushion against the frame. x/y = the floor spot walked to (the sitter
+    // hops up from there to perchX/perchY on the sill); via = the clear
+    // descent column where an armchair blocks the straight drop from the
+    // lane (the winSeats twin of the side tables' busVia).
+    winSeats: [
+      { win: 0, side: -1, x: 158, y: 250, perchX: 158, perchY: 198 },
+      { win: 0, side: 1, x: 242, y: 250, perchX: 242, perchY: 198 },
+      { win: 1, side: -1, x: 482, y: 250, perchX: 482, perchY: 198, via: 540 },
+      { win: 1, side: 1, x: 566, y: 250, perchX: 566, perchY: 198 }
+    ],
+    // slim poseur tables under the windows: y = tabletop (meets the sill so
+    // perched sitters can reach their drink), base = floor line for depth
+    winTables: [
+      { x: 200, y: 196, base: 248 },
+      { x: 524, y: 196, base: 248 }
+    ],
     coatStand: { x: 96, y: 298 },
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
@@ -133,6 +150,9 @@
   });
   L.plants.forEach(function (p, i) {
     L.footprints.push({ name: 'plant ' + i, x0: p.x - 13, x1: p.x + 13, y0: p.y - 23, y1: p.y + 1 });
+  });
+  L.winTables.forEach(function (t, i) {
+    L.footprints.push({ name: 'window table ' + i, x0: t.x - 16, x1: t.x + 16, y0: t.base - 8, y1: t.base + 4, passable: true });
   });
   L.footprints.push({ name: 'coat stand', x0: L.coatStand.x - 12, x1: L.coatStand.x + 10, y0: L.coatStand.y - 6, y1: L.coatStand.y + 2 });
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });

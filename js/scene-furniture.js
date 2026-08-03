@@ -23,6 +23,10 @@
         out.push({ y: cy + 12, draw: function (g) { drawSideTable(g, cx, cy, tb.items); } });
         return;
       }
+      if (tb.tall) {
+        out.push({ y: tb.base, draw: function (g) { drawTallTable(g, cx, cy, tb.base, tb.items); } });
+        return;
+      }
       [-1, 1].forEach(function (side) {
         const sx = cx + side * L.stoolDX, sy = cy + L.stoolDY;
         out.push({ y: sy + 4, draw: function (g) {
@@ -184,6 +188,21 @@
     items.forEach(function (it) { if (!it.hidden) drawTableItem(g, sx, sy - 2, it); });
   }
 
+  /* a slim poseur table under each window, tall enough that its top meets
+     the sill — both window perches set their drinks on it (reach 12) */
+  function drawTallTable(g, x, top, base, items) {
+    ell(g, x, base - 2, 13, 4, 'rgba(20,12,8,0.2)');
+    px(g, x - 3, top + 2, 6, base - top - 8, '#5a3d28');    // slender column
+    px(g, x - 3, top + 2, 2, base - top - 8, '#6e4c30');
+    px(g, x - 9, base - 8, 18, 4, '#4a3222');               // cross foot
+    px(g, x - 6, base - 4, 12, 4, '#4a3222');
+    ell(g, x, top + 1, 18, 6, '#6e4c30');
+    ell(g, x, top - 2, 18, 6, '#8a6142');
+    ell(g, x, top - 3, 14, 4, '#96704c');
+    px(g, x - 7, top - 5, 12, 2, 'rgba(90,58,34,0.3)');     // grain
+    items.forEach(function (it) { if (!it.hidden) drawTableItem(g, x, top - 2, it, 12); });
+  }
+
   /* ---------- the bookshelf ----------
      2 CH of warm wood and colorful spines, drawn deterministically via h2()
      so it never flickers. Three designated "loanable" spines vanish while
@@ -267,8 +286,8 @@
     px(g, x - 2, y - 54, 4, 8, '#6b9a5f');
   }
 
-  function drawTableItem(g, cx, cy, it) {
-    const ix = cx + it.side * 24 - 5;
+  function drawTableItem(g, cx, cy, it, reach) {
+    const ix = cx + it.side * (reach || 24) - 5;
     if (it.kind === 'plate') {
       ell(g, ix + 5, cy - 2, 12, 4, 'rgba(20,12,8,0.18)');   // contact shadow
       ell(g, ix + 5, cy - 4, 11, 4, '#e8e0d0');

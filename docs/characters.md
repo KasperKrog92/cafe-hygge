@@ -44,7 +44,9 @@ Every 6–15 s she picks a task:
   axis-aligned: big tables are approached by dropping from the lane at the
   bus spot; the nook side tables via their declared `busVia` columns, which
   thread between the wing chairs and reading lamps (a straight drop would
-  cut through them — the audit's journey check proves each route).
+  cut through them — the audit's journey check proves each route); the tall
+  window tables at a spot on their floor line (the tabletop itself is up at
+  the sill).
 - **Wipe the counter** (40%): cloth in hand, three slow swishes.
 - **Polish a cup** (25%): stands still, cup in hand.
 - **Tidy the pastry case** (20%): walks to the case, soft clink.
@@ -99,8 +101,13 @@ enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
    then pick a seat. Seat choice: spots where an abandoned drink still waits
    for Nora are avoided while cleaner seats exist (two cups would share one
    saucer spot); borrowers prefer the nook chairs; readers in general prefer
-   nook chairs / fireside armchairs; otherwise a random free seat. If the
-   café is full they take it to go.
+   nook chairs / fireside armchairs / window perches; otherwise a random free
+   seat. If the café is full they take it to go.
+   **Window perches** are reached by walking to the seat's floor spot and
+   hopping up onto the sill (win2's left perch first descends through its
+   declared clear column, `seat.via`, so the walk never cuts the fireside
+   armchair — and leaves the same way). Both perches at a window share the
+   tall table under the glass for their drinks.
 5. **seated** — the long, cozy middle (stay 100–260 s):
    - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — cup rises
      from the table (the table item hides, cup appears in hand), sip sound at
@@ -113,6 +120,13 @@ enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
      back with the book tucked under an arm (`holding: 'book'`), then reads.
    - **Chatting** (chatty, with a seated table-mate): every 16–34 s, a "…"
      bubble + murmur; the mate replies 1.2–2 s later with their own pitch.
+     Two window sitters share a table, so a window pair can murmur across
+     the glass.
+   - **Watching the window** (window sitters): every 20–50 s the street pulls
+     their gaze for 3.5–8 s — the head turns toward the glass while the body
+     keeps leaning on its cushion (`gazeFacing`); a sip turns the head back.
+     Occasional caption, weather- and hour-aware (rain on the glass /
+     streetlamps / the street drifting by).
 6. **leaving** — 40% carry their cup back to the counter ("returns the cup —
    tak!"); the rest leave it for Nora. Anyone with a borrowed book stops at
    the shelf first to slide it home (**returnBook**, ~1.1 s — the spine
@@ -121,8 +135,9 @@ enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
 
 **Spawning:** roughly every 26 s at full daylight stretching to ~80 s at
 night. Caps: 7 patrons in daytime, 4 in the evening, 2 between 23:00 and 06:00
-(the night owls). Three regulars are pre-seated at boot (one of them reading
-a borrowed book in the nook) so the café is never empty on arrival.
+(the night owls). Four regulars are pre-seated at boot (one reading a
+borrowed book in the nook, one perched on the first window sill) so the café
+is never empty on arrival.
 
 ---
 
