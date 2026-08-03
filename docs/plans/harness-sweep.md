@@ -1,8 +1,9 @@
 # Harness sweep — spend the new dev tooling on bug hunting
 
-**Status: planned.** Written 2026-08-03, right after the dev harness landed.
-Execute after the [agent workflow pass](agent-workflow-pass.md) finishes —
-phase 2's file split should land first so any fixes edit small files.
+**Status: planned, unblocked.** Written 2026-08-03, right after the dev
+harness landed. The agent workflow pass (harness + file splits + doc
+slimming; plan doc retired to git history) is fully executed, so any fixes
+here edit small files.
 
 ## Why
 

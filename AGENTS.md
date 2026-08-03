@@ -106,6 +106,60 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   `SIM.update`/`SND.update` (dt-driven), never in rAF-only code.
 - Settings persist in `localStorage` under `cafe-hygge-audio` via `SND.save()`.
 
+## Change playbooks
+
+The recurring change shapes, as recipes. Each names the exact files and
+functions so a session can start with two targeted reads instead of seven.
+Every playbook ends the same way: `__dev.audit()` → 0 problems, and the
+matching doc updated in the same change.
+
+### Add furniture
+
+1. Coordinates into `SCENE.L` (`js/scene-core.js`) — never inline.
+2. Draw it. Wall-mounted → the background layer in `js/scene-bg.js` (static
+   cache for what never changes, per-frame wall pass for what does).
+   Floor-standing → push a `{y, draw}` drawable with a correct baseline in
+   `SCENE.furnitureDrawables` (`js/scene-furniture.js`).
+3. Tall enough to fully hide a walker? Declare it in `L.occluders`
+   (`js/scene-core.js`) — the overlay, the audit, and the sim share that list.
+4. Does it glow? Add a `glow()` call in `SCENE.drawLighting`
+   (`js/scene-fx.js`) scaled by `pal.lamp` (candles instead scale with
+   darkness).
+5. Do characters use it? Add seats / walk targets in the sim reading from
+   `L` (seating lives in `js/sim-patrons.js`); keep targets out of occluder
+   spans and clear of the lane (`L.lane` ± 16).
+6. Verify: `?dev&overlay` screenshot for placement, the depth checks from
+   the art.md furniture checklist, `__dev.audit()`. Doc: art.md (and
+   world.md if it changed the lighting pass).
+
+### Add patron behavior
+
+1. Hook it in `js/sim-patrons.js`: a new state in the patron state machine,
+   or — for at-the-table flavor — a timer in `updateSeated`. New personality
+   traits go on the patron object at spawn in `js/sim-core.js`.
+2. Caption it (optional, probability-gated so it stays sparse):
+   `caption(world, text)` from `js/sim-core.js` — rate limiting is inside;
+   `withArticle()` for drink names; lowercase-cozy voice.
+3. Sound it (optional): pick an existing `SND` one-shot or add one (see the
+   sound playbook); trigger it from the state code, never from render.
+4. Watch it fast: `__dev.spawn({wantsBook, ownBook, drink, chatty})` +
+   `__dev.ff(seconds)`. Doc: characters.md (state machine tables), world.md
+   if it emits captions/events.
+
+### Add a sound / a caption
+
+- **Sound:** synth function in `js/audio.js`, routed to the right bus (sfx /
+  amb / fire / music; bell-like sounds take the delay send). Peak gain
+  0.02–0.08 — if it sounds satisfying at demo volume it's too loud. Trigger
+  from dt-driven sim code (`SIM.update` path — hidden tabs must still tick
+  it). Doc: a row in sounds.md's one-shot catalog (function, trigger,
+  recipe, gain).
+- **Caption:** `caption(world, text)` at the trigger site, probability-gated
+  (existing gates run 0.12–0.7; only once-per-visit milestones go ungated);
+  the shared limiter handles pacing. Voice: warm,
+  understated, lowercase-cozy, Danish flavor welcome. Doc: the caption/event
+  list in world.md.
+
 ## Conventions
 
 - Vanilla ES5-ish JS in IIFEs exposing one global per file. `'use strict'`.
@@ -129,7 +183,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
-| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [agent workflow pass](docs/plans/agent-workflow-pass.md) (phases 1–2 are done; doc slimming remains), then [harness sweep](docs/plans/harness-sweep.md) (soak-test bug hunt + pathing-correctness audit). Executed plans are deleted; find them in git history |
+| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [harness sweep](docs/plans/harness-sweep.md) (soak-test bug hunt + pathing-correctness audit). Executed plans are deleted; find them in git history |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.

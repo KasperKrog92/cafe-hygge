@@ -71,48 +71,49 @@ architecture textures, retuned atmosphere and real typography.
 
 Time-of-day sky colors live in the `DAYKEYS` table (see world.md).
 
-## Layout map (`SCENE.L` — the single source of truth)
+## Layout map (`SCENE.L` in `js/scene-core.js` — the single source of truth)
+
+Exact positions live in `SCENE.L` only; read them there (or screenshot with
+`?dev&overlay`, which labels every anchor). **House rule:** a coordinate
+appears in docs only when the sentence is about *why* it has that value —
+everything else says "see `SCENE.L.<key>`". The room's shape, top to bottom:
 
 ```
-y=0 ─────────────────────────────────────────────── master top (16:9 overscan)
-  picture rail at y≈28; hanging lamps at x=318 and x=614 (cords from y=0)
-y=36 ────────────────────────────────────────────── 16:9 crop top
-y=98..194  window (x 136–264): sky, town silhouette, rain, sill plants
-y=130..232 door (x 28–80), bell at (86,132) — 2-frame hinged swing
-y=112..232 fireplace breast (x 344–432): mantel y132 (clock, candles, plant),
-           firebox x364–412 y180–228, hearth, firewood basket at x440 with a
-           log pile leaning on it (446,254)
-y=104..172 menu chalkboard (x 470–578) "CAFÉ HYGGE" + chalk doodle
-y=104..162 two shelves (x 636–928): cups, jars, books, teapot, plates
-y=176..232 wainscot band
-y=224..264 espresso machine (x 656–712) — drawn in the background layer
-y=232 ───────────────────────────────────────────── wall meets floor
-y=264..306 counter (x 640–940): slab 264–278, front 278–306, baseline 306
-           register x748, tip jar x794, pastry case x820–896, flowers x914
-           serve spot (the pass) at (744,266); footrail line at baseY-10
-y=286      Nora's walking line behind the counter (baristaHome 706,286)
-y=368 ───── the walking lane (all pathing routes through here)
-(696,316)  order spot; queue fans back-left; pickup at (744,316)
-(298,296)+(478,296) armchair pair flanking the hearth rug, facing in toward
-           it (dir +1 / -1; the right chair is the mirrored art)
-(196,412)  table 1 "by the window"     (414,426) table 2 "near the fire"
-(260,520)  table 3                      (516,524) table 4
-           each table: seats at ±52 x facing inward — chair (with back) on
-           the left, stool on the right; a lit candle jar on every table
-rugs: fireplace rug (388,290), big rug (390,450) — reaches up under the lane,
-           reading-nook rug (762,528)
-plants: (612,262) at the counter's left end (against the wall) and (930,322)
-           tucked against its right front corner; coat stand just inside the
-           door at (96,298)
-reading nook (bottom right, `L.library`): bookshelf x856–944 y338–458
-           (2 CH + crown; browse spot (834,480), loanable spines vanish while
-           borrowed); green wing chairs at (712,514)→ and (812,538)←, each
-           with a small side table ((664,520), (864,542)) for the sitter's
-           drink and a floor reading lamp ((642,504), (848,528)); magazine
-           basket at the shelf's foot (924,474)
-y=576 ───────────────────────────────────────────── 16:9 crop bottom
-y=600 ───────────────────────────────────────────── master bottom (overscan)
+y=0   ── master top: 36 px overscan strip (texture only — croppable)
+          picture rail, hanging-lamp cords (L.lamp1/lamp2)
+y=36  ── 16:9 crop top
+          wall band: door + bell (L.door, L.bell), window (L.win), fireplace
+          breast with mantel clock/candles + firewood basket (L.fire), menu
+          chalkboard, two dish shelves, wainscot, espresso machine
+          (L.machine — drawn in the background layer)
+y=232 ── wall meets floor (L.wallY — kept high so the floor, the life layer,
+          dominates the frame)
+          counter along the right (L.counter: slab → front face → baseline;
+          register, tip jar, pastry case, flowers on top; serve spot at the
+          pass = L.serveSpot); Nora's walking line behind it at y=286
+          (L.baristaHome — see depth model for why); order and pickup spots
+          in front (L.orderSpot, L.pickupSpot; the queue fans back-left)
+          fireside armchair pair flanking the hearth rug, facing in toward
+          it (L.armchairs; dir ±1, the right chair is the mirrored art)
+y=368 ── the walking lane (L.lane — all pathing routes through this corridor
+          between the wall furniture and the tables)
+          four round tables (L.tables, tagged "by the window" / "near the
+          fire"); each seats two at ±L.stoolDX facing inward — chair (with
+          back) on the left, stool on the right; a lit candle jar on every
+          table; coat stand by the door (L.coatStand), plants at the
+          counter's ends (L.plants), rugs
+          reading nook, bottom right (L.library): bookshelf (2 CH + crown;
+          browse spot in front, loanable spines vanish while borrowed), two
+          green wing chairs each with a side table for the sitter's drink
+          and a floor reading lamp, magazine basket at the shelf's foot
+y=576 ── 16:9 crop bottom
+y=600 ── master bottom: 24 px overscan strip (plus 12 px per side)
 ```
+
+Tall furniture that can fully hide a walker is declared once in
+`L.occluders` (bookshelf, counter) — the layout overlay, `__dev.audit()`,
+and the sim all read that one list. Walk targets must never land inside an
+occluder's box (see the depth model below for the bookshelf lesson).
 
 ## Depth model (painter's algorithm)
 
@@ -137,10 +138,11 @@ Rules that keep it looking right:
   construction, `wingChairBack`/`wingChairFront` with a color swatch): back
   part (baseline y−4) draws behind the sitter (y), the seat-front/armrest
   (baseline y+12) draws in front — the sitter nestles *into* the chair.
-- **The bookshelf** is one drawable at baseline 458; anyone on the lane above
-  it is correctly occluded by it. Keep walk targets (seats, bus spots) out of
-  its x-span (856–944) so nobody appears to vanish behind it — the nook side
-  tables are bussed from the left (`busX = tb.x − 28`) for this reason.
+- **The bookshelf** is one drawable at its `L.occluders` baseline; anyone on
+  the lane above it is correctly occluded by it. Keep walk targets (seats,
+  bus spots) out of its occluder x-span so nobody appears to vanish behind
+  it — the nook side tables are bussed from the left for this reason, and
+  `__dev.audit()` flags any violation.
 
 ## People (drawPerson)
 
@@ -200,5 +202,5 @@ Speech bubbles/captions draw after lighting on purpose.
    from `L`, and keep clear of the walking lane (y 368 ± 16).
 4. Keep it out of the overscan strips (y < 36, y > 576, x < 12, x > 948) —
    they may be cropped on 16:9 displays.
-5. Check occlusion at dawn/day/dusk/night (`__world.t` jumps) and with a
-   patron seated nearby.
+5. Check occlusion at dawn/day/dusk/night (`__dev.hour(h)` jumps) and with a
+   patron seated nearby; finish with `__dev.audit()` → 0 problems.
