@@ -9,7 +9,7 @@ Nothing here is committed; the owner picks what sounds lovely next.
 > file splits, doc slimming — future changes cost less), and the harness
 > sweep (a multi-day soak-test bug hunt plus the journey/footprint rules now
 > in `__dev.audit()`) were specced here, executed, and their plan docs
-> retired (git history has them). docs/plans is currently empty.
+> retired (git history has them).
 
 ## 🎧 Real sound clips (owner-requested — design ready)
 
@@ -48,7 +48,10 @@ machines, rain, café room tone…). Plan for when clips arrive:
 ## 🐈 More life
 
 - Cat: counter-hopping (Nora shoos it, one caption), lap-sitting on armchair
-  readers, window-watching in rain, chasing a dust mote, kneading the rug.
+  readers, window-watching in rain, chasing a dust mote, kneading the rug —
+  **plan drafted**: [plans/cat-life.md](plans/cat-life.md), which adds the
+  owner-requested cat corner (cushion + bowls Nora refills) and high perches
+  (bookshelf top, back-bar shelf, mid-window sill).
 - Nora: watering the plants, chalking the menu (board doodle changes),
   lighting the candles at dusk (tie candle glow to an actual action),
   a quiet stretch when the café is empty.

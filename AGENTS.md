@@ -188,7 +188,7 @@ matching doc updated in the same change.
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
-| [docs/plans/](docs/plans/) | Concrete execution plans. Currently empty. Executed plans are deleted; find them in git history |
+| [docs/plans/](docs/plans/) | Concrete execution plans (currently: cat-life.md). Executed plans are deleted; find them in git history |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.
