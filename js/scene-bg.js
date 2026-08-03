@@ -33,6 +33,7 @@
     drawWallFrame(g, 100, 120); // sits beside the window frame edge → paints after it
     drawHangingLamp(g, L.lamp1.x, world);
     drawHangingLamp(g, L.lamp2.x, world);
+    drawHangingLamp(g, L.lamp3.x, world);
     drawFireDynamic(g, world);
     drawMachine(g, world);
   };

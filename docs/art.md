@@ -80,13 +80,14 @@ everything else says "see `SCENE.L.<key>`". The room's shape, top to bottom:
 
 ```
 y=0   ── master top: 36 px overscan strip (texture only — croppable)
-          picture rail, hanging-lamp cords (L.lamp1/lamp2)
+          picture rail, hanging-lamp cords (L.lamp1/lamp2/lamp3)
 y=36  ── 16:9 crop top
           wall band: door + bell (L.door, L.bell), window (L.win), fireplace
           breast with mantel clock/candles + firewood basket (L.fire), second
           window (L.win2 — same glass, its own stretch of town; the moon hangs
           in L.win only), then behind the counter: two short dish shelves with
-          the menu chalkboard (L.menu) at their right, wainscot, espresso
+          the menu chalkboard (L.menu) at their right — the third pendant
+          (L.lamp3) hangs in the wall gap between them — wainscot, espresso
           machine (L.machine — drawn in the background layer)
 y=232 ── wall meets floor (L.wallY — kept high so the floor, the life layer,
           dominates the frame)

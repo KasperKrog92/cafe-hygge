@@ -32,6 +32,7 @@
     lane: 368,                // main walking corridor
     lamp1: { x: 318, y: 84 },
     lamp2: { x: 614, y: 84 },
+    lamp3: { x: 810, y: 84 },  // over the counter, threading the wall gap between shelves and menu
     // the reading nook (bottom right): a 2 CH bookshelf patrons borrow from,
     // green wing chairs each with a side table + reading lamp, on their own rug
     library: {

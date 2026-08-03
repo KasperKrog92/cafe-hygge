@@ -44,8 +44,10 @@ Applied after all sprites, in `SCENE.drawLighting`:
 
 1. **Multiply tint** over the full canvas: night `rgb(112,120,172)` →
    day `rgb(255,250,242)`, lerped by `daylight`.
-2. **Additive glows** (`lighter` composite): the two hanging lamps, the two
-   reading lamps in the nook, mantel candles (all scaled by `lamp`); the
+2. **Additive glows** (`lighter` composite): the three hanging lamps (the
+   third hangs over the counter, with two spill pools across the back bar —
+   machine + pass, pastry case — so the counter stays warm after dark), the
+   two reading lamps in the nook, mantel candles (all scaled by `lamp`); the
    fireplace (always on,
    flickering via layered sines); a candle jar on every table (always lit,
    stronger after dark, per-table flicker); a soft daylight pool below each
