@@ -35,7 +35,7 @@ session with zero wrong turns on conventions. This pass is about cost.
 
 ## Phase 1 — dev harness (`js/dev.js` + `?dev`)
 
-A new plain script, loaded between sim.js and main.js, exposing
+A new plain script, loaded after the sim siblings and before main.js, exposing
 `window.__dev`. Inert unless the URL has `?dev` or the console calls it —
 invisible to the reader-owner, zero user-facing change.
 
@@ -50,7 +50,7 @@ invisible to the reader-owner, zero user-facing change.
    call.
 3. **Scenario forcing:** `__dev.spawn({wantsBook, ownBook, drink, chatty})`
    returns a real patron with chosen traits; `__dev.send(name, x, y)` paths
-   any entity through the real `makePath`. Requires sim.js to expose a tiny
+   any entity through the real `makePath`. Requires the simulation to expose a tiny
    internals bundle (`SIM._ = { makePath, freeSeat, caption }`) — three
    references, debug-contract only.
 4. **Layout overlay:** `__dev.overlay()` draws, after captions: the 16:9
@@ -79,8 +79,8 @@ AGENTS.md's smoke test gains one line: open with `?dev`, run
 both the background and furniture use it; otherwise this was a pure code move.
 
 Same globals, same IIFE style, more `<script>` tags — file:// and the
-zero-dependency promise untouched. Target: no scene renderer file over ~500
-lines, so a visual change reads one small contract file plus one sibling.
+zero-dependency promise untouched. Target: no implementation JS file over
+~500 lines, so a change reads one small contract file plus one sibling.
 
 `js/scene.js` (1,444 at execution time) became, in load order:
 
@@ -92,10 +92,18 @@ lines, so a visual change reads one small contract file plus one sibling.
 | `js/scene-people.js` | `drawPerson`, `drawCat`, bubbles, icons | 335 |
 | `js/scene-fx.js` | lighting, particles, caption rendering | 143 |
 
-`sim.js` (1,013 at execution time) stays whole in this phase. It is now beyond
-the **~900-line** forward split rule, so its next structural pass should split
-at the section comments (world/patrons/barista+cat) in a dedicated change,
-never mixed into a feature change.
+At the owner's request, `sim.js` (1,013 lines) was split in the same structural
+pass after the renderer split:
+
+| File | Contents | Lines |
+| --- | --- | --- |
+| `js/sim-core.js` | creates `window.SIM`; world construction, shared helpers, movement, captions, door/weather/clock/spawning, particles, private contract | 363 |
+| `js/sim-patrons.js` | patron seating, ordering, reading, chatting, and departure state machine | 342 |
+| `js/sim-characters.js` | Nora + cat state machines, `SIM.update`, and `entityDrawables` | 342 |
+
+The three files extend the same `SIM` global. `SIM._`, already consumed by the
+dev harness, is also the private seam between them; production code outside
+the sim siblings must continue to use only the public `SIM` methods.
 
 Mechanics: pure move, no rewrites; verify with a before/after screenshot at
 the same `__dev.hour` + clean console + one full order cycle; update
@@ -141,6 +149,6 @@ pass is for the agent, not the café.
   the bookshelf.
 - `__dev.spawn({wantsBook: true, ownBook: false})` produces a browse →
   borrow → nook → return-book loop watchable in under 30 s via `__dev.ff`.
-- After the split: no scene renderer file over ~500 lines, same-frame screenshots match,
+- After the split: no implementation JS file over ~500 lines, same-frame screenshots match,
   console clean, one order cycle plays through.
 - art.md contains no coordinate that isn't attached to a *why*.

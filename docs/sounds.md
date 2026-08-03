@@ -78,4 +78,4 @@ All one-shots are wrapped in `guard()`: they silently no-op before
 2. Route: sfx for events, or its own bus if the user should be able to toggle it.
 3. Start at half the gain you think it needs; listen with the volume at 50%
    next to an open book.
-4. Wrap in `guard()`, document it here, and wire the trigger in sim.js.
+4. Wrap in `guard()`, document it here, and wire the trigger in the relevant `sim-*.js` file.

@@ -1,7 +1,7 @@
 /* Café Hygge — dev harness. Agent/debug tooling behind `window.__dev`.
    Inert in normal use: nothing here runs unless the URL carries ?dev
    (or ?hour= / ?overlay) or the console calls __dev.* — zero user-facing
-   change. Loads between sim.js (whose SIM._ debug contract it consumes)
+   change. Loads after the sim siblings (whose SIM._ debug contract it consumes)
    and main.js (whose boot it decorates).
 
    URL params:

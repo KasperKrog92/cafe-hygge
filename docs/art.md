@@ -196,7 +196,7 @@ Speech bubbles/captions draw after lighting on purpose.
 1. Coordinates into `SCENE.L` (never inline).
 2. Wall-mounted → draw in `drawScene`. Floor-standing → push a drawable with a
    correct baseline in `furnitureDrawables`.
-3. If characters use it, add seat entries / path targets in sim.js reading
+3. If characters use it, add seat entries / path targets in the relevant sim file reading
    from `L`, and keep clear of the walking lane (y 368 ± 16).
 4. Keep it out of the overscan strips (y < 36, y > 576, x < 12, x > 948) —
    they may be cropped on 16:9 displays.

@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Nine IIFE scripts expose three production globals
+Zero-dependency vanilla JS. Eleven IIFE scripts expose three production globals
 plus the optional dev harness, loaded in dependency order by `index.html`:
 
 ```
@@ -10,7 +10,9 @@ js/scene-bg.js          → extends SCENE  (background cache + dynamic wall laye
 js/scene-furniture.js   → extends SCENE  (depth-sorted furniture)
 js/scene-people.js      → extends SCENE  (people, cat, bubbles, icons)
 js/scene-fx.js          → extends SCENE  (lighting, particles, captions)
-js/sim.js               → window.SIM     (behavior; reads SCENE.L, calls SND.*)
+js/sim-core.js          → window.SIM     (world + shared simulation systems)
+js/sim-patrons.js       → extends SIM    (patron state machine)
+js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -146,8 +148,9 @@ overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes |
 | `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, seat↔table wiring, barista y=286 / lane 368) |
 
-Two contracts support it: `SIM._` (sim internals exposed for dev.js only —
-nothing else may touch it) and `SCENE.L.occluders` (declared boxes that fully
-hide characters, shared by the overlay and the audit). The harness wraps
+Two contracts support it: `SIM._` (the private seam shared by the sim siblings
+and consumed by dev.js; other app code must not touch it) and
+`SCENE.L.occluders` (declared boxes that fully hide
+characters, shared by the overlay and the audit). The harness wraps
 `SIM.create` (to apply `?hour`) and `SCENE.drawCaption` (to draw the overlay
 after everything else); it never changes behavior when dormant.

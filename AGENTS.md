@@ -38,7 +38,7 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   `__dev.audit()` (bounds/occlusion/seat/constant invariants — run it after
   any layout change).
 
-## Architecture (9 scripts, deliberate order)
+## Architecture (11 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -48,14 +48,17 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
 | `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, and plants. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
 | `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering. |
-| `js/sim.js` | `SIM` | State machines: patrons, barista, cat, weather, clock, captions, particles. Owns *what happens*. |
+| `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
+| `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
+| `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock jumps, fast-forward, scenario forcing, layout overlay, invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, depth-sort render pass, UI controls. |
 
 Load order matters: audio → scene-core → scene-bg → scene-furniture →
-scene-people → scene-fx → sim → dev → main. Scene-core creates `SCENE`; the
-four renderer siblings extend it, sim reads `SCENE.L`, dev consumes the
-`SIM._` debug contract and decorates the boot, and main reads all.
+scene-people → scene-fx → sim-core → sim-patrons → sim-characters → dev →
+main. Scene-core creates `SCENE`; the four renderer siblings extend it. The
+three sim scripts then build `SIM`; dev consumes its `SIM._` debug contract
+and decorates the boot, and main reads all.
 
 Full detail: [docs/architecture.md](docs/architecture.md).
 
@@ -82,7 +85,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   to it — wall line at y=232, door 102 tall, counter 42 tall. When adding art,
   size it in CH against the ruler table in docs/art.md; the espresso machine
   and pastry case are documented exceptions (slightly oversized hero props).
-- **All positions come from `SCENE.L`**. Never hardcode a coordinate in sim.js
+- **All positions come from `SCENE.L`**. Never hardcode a coordinate in the sim files
   that exists in `L`. If you add furniture patrons interact with, add it to `L`.
 - **Characters walk the lane** (`L.lane = 368`) between the wall furniture and
   the tables. Paths are L-shaped: vertical to lane → horizontal → vertical to
@@ -108,7 +111,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 - Randomness through the local `rnd(a, b)` / `pick(arr)` helpers.
 - Captions are written in a warm, understated narrator voice — lowercase-cozy,
   never jokey-loud. Danish flavor is welcome ("tak!").
-- Character names are Danish. New patrons draw from the `NAMES` pool in sim.js.
+- Character names are Danish. New patrons draw from the `NAMES` pool in `sim-core.js`.
 
 ## Docs index
 
@@ -121,7 +124,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
-| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [agent workflow pass](docs/plans/agent-workflow-pass.md) (phase 1, the dev harness, is done; file splits + doc slimming remain), then [harness sweep](docs/plans/harness-sweep.md) (soak-test bug hunt + pathing-correctness audit). Executed plans are deleted; find them in git history |
+| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [agent workflow pass](docs/plans/agent-workflow-pass.md) (phases 1–2 are done; doc slimming remains), then [harness sweep](docs/plans/harness-sweep.md) (soak-test bug hunt + pathing-correctness audit). Executed plans are deleted; find them in git history |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.

@@ -1,7 +1,7 @@
 # World systems — time, weather, light, events
 
 The systems that make the room feel alive independent of any character.
-All in `js/sim.js` (state) and the `js/scene-*.js` renderer files (appearance).
+All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (appearance).
 
 ## Time
 
