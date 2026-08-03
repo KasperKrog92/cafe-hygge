@@ -76,8 +76,63 @@
       { x: 524, y: 196, base: 248 }
     ],
     coatStand: { x: 96, y: 298 },
+    catCorner: {
+      cushion: { x: 126, y: 262 },
+      food: { x: 116, y: 278 },
+      water: { x: 138, y: 278 },
+      eatSpot: { x: 116, y: 286 },
+      noraSpot: { x: 127, y: 298 }
+    },
+    // The cat's floor destinations and aerial routes live here with the rest
+    // of the room geometry. Aerial anchors are intentionally inside/on their
+    // furniture; the dev audit applies surface rules instead of floor rules.
+    catSpots: [
+      { id: 'fire', x: 390, y: 294, name: 'the fireplace rug', kind: 'floor' },
+      { id: 'windowFloor', x: 168, y: 378, name: 'the spot by the window', kind: 'floor' },
+      { id: 'bigRug', x: 340, y: 468, name: 'the big rug', kind: 'floor' },
+      { id: 'armchair', x: 252, y: 312, name: 'the armchair\'s side', kind: 'floor' },
+      { id: 'nookRug', x: 768, y: 550, name: 'the reading nook rug', kind: 'floor' },
+      { id: 'cushion', x: 126, y: 262, name: 'its own cushion', kind: 'floor', catCorner: true }
+    ],
+    catPerches: {
+      windows: [
+        { id: 'window1', stand: { x: 224, y: 252 }, anchor: { x: 200, y: 190 }, surface: 'sill' },
+        { id: 'window2', stand: { x: 548, y: 252 }, anchor: { x: 524, y: 190 }, surface: 'sill' }
+      ],
+      bookshelf: {
+        id: 'bookshelf', stand: { x: 770, y: 500 },
+        chairBack: { x: 818, y: 486 }, escape: { x: 848, y: 472 },
+        anchor: { x: 896, y: 342 }, surface: 'shelfTop'
+      },
+      counter: {
+        id: 'counter', stand: { x: 860, y: 314 }, anchor: { x: 860, y: 266 },
+        padX0: 750, padX1: 820, surface: 'counter'
+      },
+      topShelf: {
+        id: 'topShelf', stand: { x: 700, y: 314 }, counter: { x: 700, y: 266 },
+        machine: { x: 684, y: 228 }, anchor: { x: 782, y: 104 }, surface: 'backShelf'
+      }
+    },
+    // Clear approach nodes used only by cat-route pairs whose old straight
+    // line would clip furniture. Values end on the shared walking lane.
+    catRoutes: {
+      fire: [{ x: 390, y: 340 }, { x: 390, y: 368 }],
+      windowFloor: [{ x: 168, y: 368 }],
+      bigRug: [{ x: 320, y: 468 }, { x: 320, y: 368 }],
+      armchair: [{ x: 236, y: 330 }, { x: 236, y: 368 }],
+      nookRug: [{ x: 760, y: 368 }],
+      cushion: [{ x: 160, y: 300 }, { x: 160, y: 368 }],
+      window1Stand: [{ x: 224, y: 368 }],
+      window2Stand: [{ x: 548, y: 368 }],
+      bookshelfStand: [{ x: 770, y: 368 }],
+      bookshelfEscape: [{ x: 848, y: 368 }],
+      counterStand: [{ x: 840, y: 314 }, { x: 840, y: 368 }],
+      topShelfStand: [{ x: 700, y: 368 }],
+      eat: [{ x: 160, y: 300 }, { x: 160, y: 368 }]
+    },
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
+    counterPlant: { x: 900, y: 264 },
     menu: { x: 820, y: 104, w: 108, h: 68 },  // chalkboard on the wall behind the counter
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
     machine: { x: 656, y: 224, w: 56 },       // hero prop: kept a notch above scale
@@ -155,6 +210,7 @@
     L.footprints.push({ name: 'window table ' + i, x0: t.x - 16, x1: t.x + 16, y0: t.base - 8, y1: t.base + 4, passable: true });
   });
   L.footprints.push({ name: 'coat stand', x0: L.coatStand.x - 12, x1: L.coatStand.x + 10, y0: L.coatStand.y - 6, y1: L.coatStand.y + 2 });
+  L.footprints.push({ name: 'cat corner', x0: 102, x1: 152, y0: 248, y1: 284, catOnly: true });
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
 

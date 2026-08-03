@@ -32,9 +32,12 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
 - **Dev harness** (`js/dev.js`, inert for the reader-owner): `?dev` boots past
   the start overlay (screenshot-ready, audio still off until a real click),
   `?dev&hour=20` starts at 20:00, `?dev&overlay` boots with the layout
-  overlay on. Console: `__dev.hour(h)`, `__dev.ff(seconds)` (fast-forward,
+  overlay, `?dev&audit` runs the invariant sweep after load. Console:
+  `__dev.hour(h)`, `__dev.ff(seconds)` (fast-forward,
   muted), `__dev.spawn({wantsBook, ownBook, drink, chatty})` (a real patron
-  with chosen traits), `__dev.send(name, x, y)`, `__dev.overlay()`,
+  with chosen traits), `__dev.send(name, x, y)`,
+  `__dev.catDo('eat'|'window'|'bookshelf'|'counter'|'topShelf'|'lap'|'mote'|'knead')`,
+  `__dev.bowls(food, water)`, `__dev.overlay()`,
   `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus
   live-world consistency checks — run it after any layout or sim change).
 
@@ -95,6 +98,10 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 - **Characters walk the lane** (`L.lane = 368`) between the wall furniture and
   the tables. Paths are L-shaped: vertical to lane → horizontal → vertical to
   target. Straying from this causes people to walk "through" tables.
+- **Cat aerial anchors are exempt from floor footprint rules**: sill,
+  bookshelf, counter, machine, back-shelf, and lap anchors are checked against
+  their declared surface instead. Cat floor stops and declared routes still
+  pass the normal footprint/occlusion audit.
 - **Every sound is gain-staged quietly** (one-shots mostly 0.02–0.08 peak) and
   routed through a compressor. When adding sounds, err on the side of too
   quiet — this app plays next to someone reading.
@@ -188,7 +195,7 @@ matching doc updated in the same change.
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
-| [docs/plans/](docs/plans/) | Concrete execution plans (currently: cat-life.md). Executed plans are deleted; find them in git history |
+| [docs/plans/](docs/plans/) | Concrete execution plans. Executed plans are deleted; find them in git history |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.

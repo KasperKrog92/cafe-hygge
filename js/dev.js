@@ -9,12 +9,16 @@
                    stays uninitialized until the first real click)
      ?hour=20      start the clock at 20:00 (works with or without ?dev)
      ?overlay      layout overlay on from the first frame
+     ?audit        run the invariant sweep after boot and expose its count on
+                   documentElement.dataset.auditProblems
 
    Console API:
      __dev.hour(h)     jump the in-world clock (no arg: read it)
      __dev.ff(sec)     fast-forward the sim in 0.25 s ticks, muted
      __dev.spawn(o)    real patron with chosen traits, via the front door
      __dev.send(n,x,y) path an entity through the real makePath
+     __dev.catDo(name) force a cat ritual on the next simulation tick
+     __dev.bowls(f,w)  set the cat's food and water bowl levels
      __dev.overlay(b)  toggle the layout overlay
      __dev.audit()     invariant sweep; returns (and warns) violations */
 (function () {
@@ -111,6 +115,30 @@
     if (!e) { console.warn('[dev] no entity named "' + name + '"'); return null; }
     SIM._.makePath(e, x, y);
     return e;
+  };
+
+  D.catDo = function (action) {
+    const allowed = ['eat', 'window', 'bookshelf', 'counter', 'topShelf', 'lap', 'mote', 'knead'];
+    if (allowed.indexOf(action) < 0) {
+      console.warn('[dev] unknown cat behavior "' + action + '"');
+      return null;
+    }
+    const w = world(), cat = w.cat, reset = L.catSpots[2];
+    if (cat.lapPatron) cat.lapPatron.lapCat = false;
+    cat.x = reset.x; cat.y = reset.y; cat.target = reset;
+    cat.surface = 'floor'; cat.state = 'sit'; cat.stateT = 0; cat.path = null;
+    cat.hopQueue = null; cat.hopAfter = null; cat.lapPatron = null;
+    cat.waitingBowl = ''; cat.forced = action;
+    return cat;
+  };
+
+  D.bowls = function (food, water) {
+    const w = world();
+    if (water == null) water = food;
+    w.catBowls.food = Math.max(0, Math.min(1, Number(food)));
+    w.catBowls.water = Math.max(0, Math.min(1, Number(water)));
+    w.barista.idleT = 0;
+    return { food: w.catBowls.food, water: w.catBowls.water };
   };
 
   /* ---------- layout overlay ---------- */
@@ -271,8 +299,9 @@
 
   /* does the walk segment a→b (feet coordinates) cut through the box?
      Axis-aligned segments get exact tests; anything diagonal is sampled. */
-  function segHitsBox(a, b, box) {
-    const bx0 = box.x0 - PAD, bx1 = box.x1 + PAD;
+  function segHitsBox(a, b, box, pad) {
+    pad = pad == null ? PAD : pad;
+    const bx0 = box.x0 - pad, bx1 = box.x1 + pad;
     if (a.y === b.y) {
       if (a.y <= box.y0 || a.y >= box.y1) return false;
       return Math.max(a.x, b.x) >= bx0 && Math.min(a.x, b.x) <= bx1;
@@ -293,10 +322,11 @@
      the destination are that stop's own furniture (a seat inside its chair,
      a bus spot beside its table) and are skipped, as are explicitly
      exempted boxes (Nora's routes legitimately start inside the counter). */
-  function routeProblems(route, dest, label, exemptNames, allowInside, problems) {
+  function routeProblems(route, dest, label, exemptNames, allowInside, problems, pad) {
+    pad = pad == null ? PAD : pad;
     noGoBoxes().forEach(function (box) {
       if (exemptNames && exemptNames.indexOf(box.name) >= 0) return;
-      const ownBox = dest.x >= box.x0 - PAD && dest.x <= box.x1 + PAD &&
+      const ownBox = dest.x >= box.x0 - pad && dest.x <= box.x1 + pad &&
                      dest.y >= box.y0 && dest.y <= box.y1;
       if (ownBox) {
         if (!allowInside) {
@@ -307,7 +337,7 @@
       }
       if (box.passable) return; // torso-height table: depth sort renders passes fine
       for (let i = 1; i < route.length; i++) {
-        if (segHitsBox(route[i - 1], route[i], box)) {
+        if (segHitsBox(route[i - 1], route[i], box, pad)) {
           problems.push('route to ' + label + ' cuts through the ' + box.name +
             ' (leg ' + route[i - 1].x + ',' + route[i - 1].y + ' → ' + route[i].x + ',' + route[i].y + ')');
           return;
@@ -383,6 +413,62 @@
       routeProblems(route, end, 'busSpot(table ' + i + ')', ['counter'], true, problems);
     });
 
+    // Nora's bowl-refill route shares the same declared geometry as bussing.
+    const refill = SIM._.refillRoute();
+    const refillEnd = refill[refill.length - 1];
+    routeProblems(refill, refillEnd, 'cat bowl refill', ['counter', 'cat corner'], true, problems);
+
+    // Cat floor stops obey floor collision rules; aerial anchors are checked
+    // against their declared surface instead. The cushion is deliberately
+    // inside the cat-only corner footprint and is the sole floor exemption.
+    const catStops = L.catSpots.concat([
+      { id: 'window1Stand', x: L.catPerches.windows[0].stand.x, y: L.catPerches.windows[0].stand.y },
+      { id: 'window2Stand', x: L.catPerches.windows[1].stand.x, y: L.catPerches.windows[1].stand.y },
+      { id: 'bookshelfStand', x: L.catPerches.bookshelf.stand.x, y: L.catPerches.bookshelf.stand.y },
+      { id: 'bookshelfEscape', x: L.catPerches.bookshelf.escape.x, y: L.catPerches.bookshelf.escape.y },
+      { id: 'counterStand', x: L.catPerches.counter.stand.x, y: L.catPerches.counter.stand.y },
+      { id: 'topShelfStand', x: L.catPerches.topShelf.stand.x, y: L.catPerches.topShelf.stand.y },
+      { id: 'eat', x: L.catCorner.eatSpot.x, y: L.catCorner.eatSpot.y, catCorner: true }
+    ]);
+    w.seats.filter(function (s) { return s.armchair || s.nook; }).forEach(function (seat, i) {
+      const lap = { id: 'lapStand' + i, x: seat.x + seat.facing * 38, y: seat.y + 16 };
+      lap.approach = [{ x: lap.x, y: L.lane }];
+      catStops.push(lap);
+    });
+    catStops.forEach(function (stop) {
+      routeProblems([{ x: stop.x, y: stop.y }], stop, 'cat stop ' + stop.id,
+        stop.catCorner ? ['cat corner'] : null, !!stop.catCorner, problems, 6);
+    });
+    catStops.forEach(function (from) {
+      catStops.forEach(function (to) {
+        if (from === to) return;
+        const route = [{ x: from.x, y: from.y }].concat(SIM._.catRoute(from, to));
+        const exempt = (from.catCorner || to.catCorner || from.id === 'cushion' || to.id === 'cushion')
+          ? ['cat corner'] : null;
+        routeProblems(route, to, 'cat ' + from.id + ' → ' + to.id, exempt, false, problems, 6);
+      });
+    });
+
+    L.catPerches.windows.forEach(function (p, i) {
+      const win = i ? L.win2 : L.win;
+      if (p.anchor.y !== 190 || p.anchor.x < win.x || p.anchor.x > win.x + win.w) {
+        problems.push('cat window perch ' + i + ' is not anchored on its sill');
+      }
+    });
+    if (L.catPerches.bookshelf.anchor.y !== L.library.shelf.y - L.library.shelf.h + 4) {
+      problems.push('cat bookshelf perch is not anchored on the shelf top');
+    }
+    if (L.catPerches.counter.anchor.y !== L.counter.slabY + 2 ||
+        L.catPerches.topShelf.counter.y !== L.counter.slabY + 2) {
+      problems.push('cat counter perch is not anchored on the counter slab');
+    }
+    if (L.catPerches.topShelf.machine.y !== L.machine.y + 4) {
+      problems.push('cat machine transit anchor is not on the espresso machine top');
+    }
+    if (L.catPerches.topShelf.anchor.y !== 104) {
+      problems.push('cat back-shelf perch is not anchored on shelf 1');
+    }
+
     // seats reference existing tables; nook seats pair with small side
     // tables, window seats with tall window tables
     w.seats.forEach(function (s, i) {
@@ -436,6 +522,16 @@
       if (!live[c.owner]) problems.push('counter cup owned by departed patron ' + c.owner);
     });
     if (w.patrons.length > 7) problems.push(w.patrons.length + ' patrons exceed the spawn cap (7)');
+    if (w.cat.surface === 'lap' && (!w.cat.lapPatron || !w.cat.lapPatron.lapCat)) {
+      problems.push('cat is on a lap without a matching patron link');
+    } else if (w.cat.surface === 'lap') {
+      const seat = w.cat.lapPatron.seat;
+      const lapX = seat.x + seat.facing * 6, lapY = seat.y + 2;
+      if (w.cat.x !== lapX || w.cat.y !== lapY) problems.push('lap cat is not on its derived seat anchor');
+    }
+    if (w.catBowls.food < 0 || w.catBowls.food > 1 || w.catBowls.water < 0 || w.catBowls.water > 1) {
+      problems.push('cat bowl levels must stay between 0 and 1');
+    }
 
     if (problems.length) {
       console.warn('[dev] audit: ' + problems.length + ' problem(s)');
@@ -466,6 +562,14 @@
     document.getElementById('overlay').classList.add('gone');
     document.addEventListener('click', function () {
       document.getElementById('enter').click();
+    }, { once: true });
+  }
+
+  if (params.has('audit')) {
+    window.addEventListener('load', function () {
+      const problems = D.audit();
+      document.documentElement.dataset.auditProblems = String(problems.length);
+      document.documentElement.dataset.auditDetails = JSON.stringify(problems);
     }, { once: true });
   }
 })();

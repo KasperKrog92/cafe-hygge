@@ -85,6 +85,11 @@
       out.push({ y: F.y, draw: function (g) { drawFloorLamp(g, F.x, F.y); } });
     });
 
+    // The cat's corner is split by baseline: cushion behind the cat, bowls
+    // in front when it lowers its head to eat or drink.
+    out.push({ y: L.catCorner.cushion.y, draw: function (g) { drawCatCushion(g); } });
+    out.push({ y: L.catCorner.food.y, draw: function (g) { drawCatBowls(g, world.catBowls); } });
+
     // the bookshelf — spines thin out while borrowed books are on loan
     out.push({ y: L.library.shelf.y, draw: function (g) { drawBookshelf(g, world); } });
 
@@ -302,6 +307,36 @@
     }
   }
 
+  function drawCatCushion(g) {
+    const C = L.catCorner.cushion;
+    ell(g, C.x, C.y, 22, 6, 'rgba(20,12,8,0.2)');
+    ell(g, C.x, C.y - 3, 22, 8, '#8f4035');
+    ell(g, C.x, C.y - 5, 19, 6, '#a94f3f');
+    px(g, C.x - 13, C.y - 6, 6, 2, '#7a3535');
+    px(g, C.x + 8, C.y - 4, 5, 2, '#7a3535');
+    px(g, C.x - 2, C.y - 3, 4, 2, 'rgba(90,35,30,0.35)');
+  }
+
+  function drawCatBowls(g, bowls) {
+    const F = L.catCorner.food, W = L.catCorner.water;
+    const foodQ = Math.ceil(Math.max(0, Math.min(1, bowls.food)) * 3);
+    const waterQ = Math.ceil(Math.max(0, Math.min(1, bowls.water)) * 4);
+    ell(g, F.x, F.y + 1, 10, 3, 'rgba(20,12,8,0.18)');
+    ell(g, F.x, F.y - 1, 10, 4, '#8f4a35');
+    px(g, F.x - 8, F.y - 4, 16, 4, '#b5654a');
+    ell(g, F.x, F.y - 4, 8, 3, '#6e3d2c');
+    if (foodQ) {
+      ell(g, F.x, F.y - 4 - foodQ, 6 + foodQ, 2 + foodQ, '#9b6a35');
+      px(g, F.x - 3, F.y - 5 - foodQ, 2, 2, '#c08a48');
+      px(g, F.x + 2, F.y - 3 - foodQ, 2, 2, '#6b4429');
+    }
+    ell(g, W.x, W.y + 1, 10, 3, 'rgba(20,12,8,0.18)');
+    ell(g, W.x, W.y - 1, 10, 4, '#65758a');
+    px(g, W.x - 8, W.y - 4, 16, 4, '#7a89a5');
+    ell(g, W.x, W.y - 4, 8, 3, waterQ ? '#8fb2bf' : '#4d5968');
+    if (waterQ) px(g, W.x - 5, W.y - 5, 2 + waterQ * 2, 1, 'rgba(232,244,240,0.8)');
+  }
+
   function drawCounter(g, world) {
     const C = L.counter;
     // ground shadow
@@ -356,10 +391,9 @@
     // glass shine
     px(g, 856, 227, 2, 14, 'rgba(255,255,255,0.12)');
     px(g, 860, 227, 2, 10, 'rgba(255,255,255,0.10)');
-    // flowers in a vase
-    px(g, 914, 246, 10, 18, '#7a89a5');
-    px(g, 916, 234, 2, 12, '#4a7a4a'); px(g, 920, 236, 2, 10, '#4a7a4a');
-    px(g, 914, 230, 6, 6, '#d9738a'); px(g, 918, 226, 6, 6, '#e8b04a');
+    // the tiny shelf plant migrated beside the pastry case when the cat
+    // claimed the right end of the top shelf.
+    drawTinyPlant(g, L.counterPlant.x, L.counterPlant.y);
     // orders waiting at the pass
     world.counterCups.forEach(function (c) {
       if (c.kind === 'plate') {

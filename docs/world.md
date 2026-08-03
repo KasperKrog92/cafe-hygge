@@ -65,7 +65,17 @@ midnight.
   mid-sip, and the espresso machine during pull/steam/kettle stages. Plates
   (pastries) never steam, on the table or at the pass.
 - **Sparks** (`type: 'spark'`): rare 1-px embers rising inside the firebox.
+- **Dust mote** (`type: 'mote'`): a single 2-px cream fleck with slow drift,
+  spawned for the cat's daylight pounce ritual and removed with that beat.
 - Spawned in `updateParticles` (sim), drawn in `SCENE.drawParticles`.
+
+## Cat corner state
+
+`world.catBowls = { food, water }` stores both visible levels from 0–1. Food
+is consumed in 0.34 steps (roughly three meals), water in 0.2 steps (roughly
+five drinks); the renderer quantizes those floats into glanceable kibble-pile
+and water-highlight art. The values are ambience state, never UI or failure
+meters. Nora restores a low bowl to 1 through her normal dt-driven idle loop.
 
 ## Captions (the narrator)
 
@@ -82,7 +92,11 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   streetlamps, the street drifting by), bookshelf moments (drifting
   over, picking a book out, slipping it back), page turns (12% of them),
   murmuring tables (15%), cup returns, departures (rain/night-aware), cat
-  movements and petting, weather changes, lamp threshold moments.
+  movements and petting, weather changes, lamp threshold moments. Cat-life
+  lines cover the patient empty-bowl wait, Nora's refill/supervision, rain and
+  streetlamp window watches, bookshelf survey, counter shoo, aborted ascent,
+  Nora ignoring the top shelf, kneading, dust-mote battle, and gentle lap
+  dislodging; every repeatable line remains probability-gated.
 - When adding events, prefer **occasional** captions (probability-gated) —
   the narrator should feel like she only speaks when something is worth
   mentioning.

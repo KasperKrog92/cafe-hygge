@@ -52,6 +52,7 @@
       patrons: [],
       queue: [],
       counterCups: [],
+      catBowls: { food: 1, water: 1 },
       particles: [],
       tables: L.tables.map(function (tb) { return { x: tb.x, y: tb.y, tag: tb.tag, items: [] }; })
         .concat(LB.sideTables.map(function (st) {
@@ -165,6 +166,7 @@
       sipT: rnd(4, 10), sipPhase: 0, sipPlayed: false,
       pageT: rnd(6, 16), chatT: rnd(8, 20), chatReply: 0,
       gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
+      lapCat: false, catLeaveT: 0,
       bubble: null, queueIdx: -1, waitIdx: -1, doorCloseT: 0
     };
   }
@@ -186,6 +188,13 @@
     return {
       kind: 'cat', state: 'sleep', stateT: rnd(20, 50), animT: 0,
       x: 390, y: 294, facing: -1, path: null, speed: 32,
+      surface: 'floor', target: L.catSpots[0], intent: '',
+      hopFrom: null, hopTo: null, hopT: 0, hopDur: 0, hopQueue: null,
+      hungerT: rnd(420, 720), thirstT: rnd(500, 800), retryNeedT: 0,
+      counterT: rnd(1200, 2400), ascentT: rnd(900, 1600), moteT: rnd(180, 420),
+      gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
+      lapPatron: null, sniffedPass: false, foodComaT: 0,
+      doorGlanceT: 0, doorFacing: 0, forced: '',
       bubble: null, purrT: rnd(6, 15), spotName: 'fire rug'
     };
   }
@@ -241,6 +250,12 @@
     world.door.target = 1;
     world.door.jiggle = 1;
     SND.doorBell();
+    const cat = world.cat;
+    if (cat && cat.surface === 'floor' && cat.state !== 'sleep' && cat.state !== 'hop') {
+      cat.doorGlanceT = 2;
+      cat.doorFacing = cat.facing;
+      cat.facing = L.doorSpot.x < cat.x ? -1 : 1;
+    }
   }
 
   function updateDoor(world, dt) {
@@ -363,6 +378,7 @@
     for (let i = world.particles.length - 1; i >= 0; i--) {
       const p = world.particles[i];
       p.age += dt;
+      if (p.vx) p.x += p.vx * dt;
       p.y += p.vy * dt;
       if (p.age >= p.life) world.particles.splice(i, 1);
     }

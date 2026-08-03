@@ -47,6 +47,10 @@ Every 6–15 s she picks a task:
   cut through them — the audit's journey check proves each route); the tall
   window tables at a spot on their floor line (the tabletop itself is up at
   the sill).
+- **Refill the cat bowls** (priority immediately below bussing): when food is
+  below 0.34 or water below 0.2, follows the declared `refillRoute` to the
+  cat corner, crouches for 1.6 s, pours quietly, and restores the low bowls
+  to 1. The cat may supervise. The route is shared with `__dev.audit()`.
 - **Wipe the counter** (40%): cloth in hand, three slow swishes.
 - **Polish a cup** (25%): stands still, cup in hand.
 - **Tidy the pastry case** (20%): walks to the case, soft clink.
@@ -131,7 +135,9 @@ enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
    tak!"); the rest leave it for Nora. Anyone with a borrowed book stops at
    the shelf first to slide it home (**returnBook**, ~1.1 s — the spine
    reappears). Exit via the door (bell again). Armchair readers wander out
-   cup-in-hand — the café allows it.
+   cup-in-hand — the café allows it. A reader with the cat asleep on their
+   lap waits while `SIM.dislodgeCat` hops the cat gently to the floor; one
+   second later the patron stands and continues the normal departure.
 
 **Spawning:** roughly every 26 s at full daylight stretching to ~80 s at
 night. Caps: 7 patrons in daytime, 4 in the evening, 2 between 23:00 and 06:00
@@ -145,20 +151,56 @@ is never empty on arrival.
 
 Orange tabby, no name (it has not told anyone yet). The café's true owner.
 
-**Favorite spots:** the fireplace rug (390, 294), by the window (168, 378), the
-big rug (340, 468), beside the left armchair (252, 312), the reading nook rug
-(768, 550).
+**Places and weights:** floor choices are the fireplace rug, the window-side
+spot, the big rug, the armchair side, the reading-nook rug, and its own cushion
+in `L.catCorner`. The cushion is strongly preferred after a meal; the fire
+rug gains weight in the evening; the nook and shorter rests gain weight from
+23:00–06:00. A weighted choice can instead lead to the middle of either
+window sill (×2.5 in rain, ×2 at night) or the bookshelf top while the second
+nook chair is free. Safe pairs keep the old straight-line walk; the pairs that
+clip furniture use the declared `catRoute` waypoints checked by the audit.
 
-**States:** `sleep` (35–100 s; purrs every 10–25 s; occasional "zzz" bubble)
-→ `sit` (5–12 s) → sometimes `groom` (3–6 s, with a raised paw) or `stretch`
-(1.6 s) → `walk` to a new spot (32 px/s, sometimes a meow, usually a caption)
-→ `sleep`/`loaf`/`sit`. Sleeping shows a 2-px breathing animation (stripes
-ride the breath) with the tail curled around the front; sitting wraps the
-tail around the paws with the pale tip swaying; an ear flicks occasionally in
-every pose. See art.md for the sprite details.
+**Needs, without consequences:** `hungerT` rolls 420–720 s and `thirstT`
+500–800 s. The cat walks to `L.catCorner.eatSpot`, eats for 6–10 s (0.34 food),
+or drinks for 3–5 s (0.2 water); 80% of meals are followed by a drink. Food
+and water are visible, quantized bowl art in `world.catBowls`. If a bowl is
+empty, the cat sits beside it facing Nora, occasionally meows, and retries
+after 60–120 s. Nothing harmful happens; Nora eventually performs her refill
+task.
+
+**Core states:** `sleep` (purrs, occasional "zzz"), `sit`, `groom`, `stretch`,
+`walk`, and `loaf` remain the quiet loop. New states are `hop` (0.35–0.55 s
+parabolic tween; silent up, `softThump` on the final floor landing), `eat`,
+`drink`, `perch` (back view at the window), `knead`, `pounce`, and `lap`.
+`cat.surface` (`floor`, `sill`, `shelfTop`, `counter`, `machine`, `backShelf`,
+or `lap`) prevents floor habits from firing in mid-caper.
+
+**High places:** window visits hop from the declared stand spot to the middle
+of the sill, where the cat watches the rain/streetlamp or curls to sleep.
+Bookshelf visits use the nook chair back as a step, then settle for 60–180 s;
+if that chair becomes occupied, the cat takes the declared direct escape hop.
+On any high perch, its head occasionally tracks the nearest walking patron
+for 2–4 s. `gazeFacing` changes the head/attention without changing the pose.
+
+**Counter caper:** only in a quiet café with no queue, order, or active brew,
+the cat rarely hops onto the counter's right end, pads along the slab, and
+loafs (sniffing waiting cups for one second, never touching). Nora notices in
+3–8 s when free, walks behind the counter, swishes, and shoos it down. The
+rarer grand ascent goes counter → espresso-machine top → cleared back-bar
+shelf gap; a 30% half-way catch aborts it. On the top shelf the cat loafs or
+sits 60–180 s with its tail draped below the board.
+
+**Small rituals:** on a rug or cushion, 30% of pre-sleep arrivals knead for
+2.5–4 s and purr. In strong daylight a rare dust mote near the first window
+starts a three-hop `pounce`, followed by a dignity-restoring groom. A reading
+patron in a fireside or nook wing chair can attract a lap visit; the cat hops
+to a derived lap anchor, curls, and purrs while sipping and page turns continue.
+The door bell turns an awake floor cat's head toward the door for about 2 s.
 
 **Petting:** clicking within ~36 px of the cat triggers `SIM.petCat` — heart
-bubble, meow or purr, caption "The cat purrs happily." If asleep, it sits up.
+bubble, meow or purr, caption "The cat purrs happily." If asleep on a normal
+surface, it sits up; lap cats stay settled. Walking, hopping, and pouncing are
+not interrupted.
 This is the app's only direct interaction; keep it that way unless a new
 interaction is equally gentle.
 

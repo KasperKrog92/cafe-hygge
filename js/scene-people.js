@@ -190,7 +190,9 @@
   SCENE.drawCat = function (g, cat) {
     const x = Math.round(cat.x), y = Math.round(cat.y);
     const t = cat.animT;
-    const f = cat.facing >= 0 ? 1 : -1;
+    const pose = cat.state === 'hop' ? 'stretch' : cat.state;
+    const look = cat.gazeFacing || cat.facing;
+    const f = look >= 0 ? 1 : -1;
     const body = '#d98d4a', dark = '#b5702e', cream = '#f0e0c8', pink = '#d9738a';
     const twitch = Math.sin(t * 0.9) > 0.97;    // an occasional ear flick
     ell(g, x, y + 2, 14, 4, 'rgba(20,12,8,0.2)');
@@ -205,7 +207,7 @@
       px(g, (f > 0 ? e2 : e1) + 1, hy - 1, 2, 2, pink);
     }
 
-    if (cat.state === 'sleep') {
+    if (pose === 'sleep' || pose === 'lap') {
       const breathe = Math.sin(t * 1.7) > 0 ? 2 : 0;
       px(g, x - 12, y - 9 - breathe, 24, 9 + breathe, body);
       px(g, x - 12, y - 4, 24, 4, dark);
@@ -217,15 +219,36 @@
       px(g, x - 15, y - 8, 4, 8, dark);
       px(g, x - 12, y - 3, 9, 3, dark);
       px(g, x - 4, y - 4, 3, 3, cream);
-    } else if (cat.state === 'sit' || cat.state === 'groom') {
+    } else if (pose === 'perch') {
+      // Back view for the middle window sill: ears and shoulders against the
+      // glass, with the pale tail tip making the smallest movement.
+      const headShift = cat.gazeFacing ? f * 2 : 0;
+      px(g, x - 8, y - 18, 16, 18, body);
+      px(g, x - 6 + headShift, y - 24, 12, 9, body);
+      px(g, x - 6 + headShift, y - 27, 4, 4, dark); px(g, x + 2 + headShift, y - 27, 4, 4, dark);
+      px(g, x - 4, y - 16, 2, 8, dark); px(g, x + 2, y - 15, 2, 7, dark);
+      const backSway = Math.round(Math.sin(t * 1.8) * 2);
+      px(g, x - 14, y - 5, 11, 3, dark);
+      px(g, x - 16 + backSway, y - 8, 4, 5, dark);
+      px(g, x - 16 + backSway, y - 10, 4, 2, cream);
+    } else if (pose === 'eat' || pose === 'drink') {
+      px(g, x - 12, y - 11, 22, 9, body);
+      px(g, x - 8, y - 4, 4, 4, dark); px(g, x + 5, y - 4, 4, 4, body);
+      const dip = Math.round(Math.sin(t * (pose === 'drink' ? 12 : 7)) > 0 ? 1 : 0);
+      px(g, x - 16, y - 9 + dip, 11, 8, body);
+      ears(x - 16, 11, y - 9 + dip);
+      if (pose === 'drink') px(g, x - 17, y - 1, 4, 1, pink);
+      px(g, x + 10, y - 15, 4, 8, dark); px(g, x + 12, y - 19, 3, 5, dark);
+      px(g, x + 12, y - 21, 3, 2, cream);
+    } else if (pose === 'sit' || pose === 'groom') {
       px(g, x - 7, y - 17, 14, 17, body);
       px(g, x - 5, y - 5, 10, 5, cream);
       px(g, x - 7, y - 14, 2, 3, dark); px(g, x + 4, y - 15, 2, 3, dark);   // stripes
-      const hy = cat.state === 'groom' ? y - 19 : y - 26;
-      const hx = cat.state === 'groom' ? x + f * 2 : x;
+      const hy = pose === 'groom' ? y - 19 : y - 26;
+      const hx = pose === 'groom' ? x + f * 2 : x;
       px(g, hx - 5, hy, 14, 9, body);
       ears(hx - 5, 14, hy);
-      if (cat.state === 'sit') {
+      if (pose === 'sit') {
         px(g, hx + (f > 0 ? 4 : -5), hy + 3, 2, 2, '#3a5a2a');              // eye
         px(g, hx + (f > 0 ? 6 : -8), hy + 5, 3, 3, cream);                  // muzzle
         px(g, hx + (f > 0 ? 7 : -7), hy + 5, 2, 2, pink);                   // nose
@@ -238,7 +261,14 @@
       px(g, f > 0 ? x - 8 : x - 4, y - 3, 12, 3, dark);
       px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 6, 3, 4, dark);
       px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 7, 3, 2, cream);
-    } else if (cat.state === 'stretch') {
+    } else if (pose === 'knead') {
+      const paw = Math.floor(t * 6) % 2;
+      px(g, x - 12, y - 12, 24, 10, body);
+      px(g, x + 5, y - 19, 10, 9, body); ears(x + 5, 10, y - 19);
+      px(g, x - 8 - paw * 2, y - 3, 7, 4, cream);
+      px(g, x + 1 + paw * 2, y - 3, 7, 4, cream);
+      px(g, x - 15, y - 8, 5, 6, dark); px(g, x - 16, y - 10, 4, 3, cream);
+    } else if (pose === 'stretch') {
       px(g, x - 12, y - 7, 12, 7, body);
       px(g, x, y - 12, 12, 12, body);
       px(g, x + 8, y - 19, 10, 9, body);
@@ -247,12 +277,13 @@
       px(g, x - 15, y - 14, 4, 6, dark);
       px(g, x - 17, y - 19, 3, 5, dark);
       px(g, x - 17, y - 21, 3, 2, cream);
-    } else { // walk / loaf
-      const step = cat.state === 'walk' ? (Math.floor(t * 8) % 2) : 0;
+    } else { // walk / loaf / pounce
+      const moving = pose === 'walk' || pose === 'pounce';
+      const step = moving ? (Math.floor(t * (pose === 'pounce' ? 12 : 8)) % 2) : 0;
       px(g, x - 12, y - 12, 24, 9, body);
       px(g, x - 8, y - 12, 2, 4, dark); px(g, x - 2, y - 12, 2, 5, dark); px(g, x + 4, y - 12, 2, 4, dark);
       px(g, x - 10, y - 5, 7, 2, dark); px(g, x + 5, y - 5, 7, 2, dark);
-      if (cat.state === 'walk') {
+      if (moving) {
         px(g, x - 10 + step * 2, y - 3, 3, 4, body); px(g, x + 7 - step * 2, y - 3, 3, 4, body);
         px(g, x - 3 - step * 2, y - 3, 3, 4, dark); px(g, x + 2 + step * 2, y - 3, 3, 4, dark);
       }
@@ -260,11 +291,22 @@
       px(g, hx, y - 19, 10, 9, body);
       ears(hx, 10, y - 19);
       px(g, hx + (f > 0 ? 6 : 1), y - 16, 2, 2, '#3a5a2a');                 // eye
+      if (pose === 'pounce') {
+        px(g, x + f * 10 - (f > 0 ? 0 : 6), y - 9, 7, 3, body);             // batting paw
+        px(g, x + f * 15 - (f > 0 ? 0 : 3), y - 9, 3, 3, cream);
+      }
       // curved tail: base rises from the rump, tip sways the most
       const ts = Math.round(Math.sin(t * 5) * 2);
       px(g, f > 0 ? x - 15 : x + 11, y - 16, 4, 7, dark);
       px(g, f > 0 ? x - 17 : x + 14, y - 20 + ts, 3, 5, dark);
       px(g, f > 0 ? x - 17 : x + 14, y - 22 + ts, 3, 2, cream);
+    }
+
+    if (cat.surface === 'backShelf' && pose !== 'stretch') {
+      const drape = Math.round(Math.sin(t * 1.6) * 2);
+      px(g, x + 9, y - 3, 4, 17, dark);
+      px(g, x + 9 + drape, y + 12, 4, 7, dark);
+      px(g, x + 9 + drape, y + 18, 4, 3, cream);
     }
   };
 

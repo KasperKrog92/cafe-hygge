@@ -98,6 +98,11 @@
         g.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
         g.fillStyle = 'rgba(255,120,40,' + (a * 0.35).toFixed(3) + ')';
         g.fillRect(Math.round(p.x), Math.round(p.y) + 3, 2, 2);
+      } else if (p.type === 'mote') {
+        const mx = Math.round(p.x + Math.sin(p.age * 4 + p.seed) * 5);
+        const my = Math.round(p.y + Math.cos(p.age * 3 + p.seed) * 3);
+        g.fillStyle = 'rgba(250,232,182,' + (a * 0.9).toFixed(3) + ')';
+        g.fillRect(mx, my, 2, 2);
       }
     });
   };

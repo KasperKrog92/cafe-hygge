@@ -35,11 +35,12 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `patrons[]` | live patron entities (see characters.md for the state machine) |
 | `queue[]` | patrons currently in the order line (index 0 = at the till) |
 | `barista` | Nora's entity |
-| `cat` | the cat's entity |
+| `cat` | the cat entity: core pose/path plus `surface`, `hopFrom/hopTo/hopT`, `hungerT`/`thirstT`, `gazeT/gazeFacing`, `lapPatron`, `sniffedPass`, and rare-event `counterT`/`ascentT`/`moteT` fields |
+| `catBowls` | `{food, water}` levels (0–1); visible world state consumed by cat needs and restored by Nora |
 | `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates on the table. The four dining tables come first, then the reading nook's two side tables (`small: true`, no stools), then the two tall window tables (`tall: true` — `y` is the tabletop up at the sill, `base` the floor line, `reach` keeps both sitters' cups on the slim top) |
 | `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table. Window seats add `window: true`, `perchX/perchY` (the sill position sat at; `x/y` stay the floor spot walked to) and optionally `via` (clear descent column) — both perches at a window share its tall table |
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
-| `particles[]` | steam wisps and fire sparks |
+| `particles[]` | steam wisps, fire sparks, and one-off dust motes |
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
 | `captionQueue[]` / `activeCaption` | narration pipeline |
 
@@ -84,8 +85,11 @@ hidden; rAF resumes seamlessly on return.
 waypoints), sets `pose` (`walk`/`stand`) and `facing`, returns `true` on
 arrival. `makePath(e, tx, ty)` builds L-shaped routes via the walking lane
 (`L.lane = 368`): vertical to lane → horizontal → vertical to target. The
-barista has hand-built paths behind the counter (y = 280) and exits through
-the gap at `L.baristaExitX = 610`.
+barista has hand-built paths behind the counter (y = 286) and exits through
+the gap at `L.baristaExitX = 616`. Cat walks use `catRoute`: safe pairs keep a
+straight line, while only the declared colliding pairs thread through clear
+approach waypoints. `hop` interpolates a parabolic arc between declared
+surface anchors instead of using `walker`.
 
 ## Rendering contracts
 
@@ -137,7 +141,9 @@ canvas click handler whose only job is petting the cat. Resist adding more UI.
 Agent/debug tooling behind `window.__dev` — **inert in normal use** and never
 user-visible. It activates only via URL params (`?dev` boots past the start
 overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
-`?overlay` turns the layout overlay on from frame one) or console calls:
+`?overlay` turns the layout overlay on from frame one; `?audit` runs the sweep
+after load and exposes its count/details as document-element data attributes)
+or console calls:
 
 | Call | Does |
 | --- | --- |
@@ -145,12 +151,15 @@ overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
 | `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
 | `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`) |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
+| `__dev.catDo(action)` | reset the cat to a safe floor spot and force `eat`, `window`, `bookshelf`, `counter`, `topShelf`, `lap`, `mote`, or `knead` on the next tick |
+| `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Nora's idle picker |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
-| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — every L-shaped route (window seats descend through their `via` column first, as the sim does) and Nora's bus routes checked leg by leg, seat↔table wiring incl. nook↔side-table and window↔tall-table pairing, window perches on whole pixels in bounds, barista y=286 / lane 368, plus live-world checks: seat↔patron consistency, queue contiguity, orphaned/stacked items, spawn cap) |
+| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — patrons, Nora's bus/refill routes, and every cat floor-stop pair checked leg by leg — seat↔table wiring, patron and cat perch anchors, barista y=286 / lane 368, plus live-world checks: seat↔patron and lap↔cat consistency, queue contiguity, orphaned/stacked items, bowl range, spawn cap) |
 
 Three contracts support it: `SIM._` (the private seam shared by the sim
 siblings and consumed by dev.js; other app code must not touch it — includes
-`busRoute`, the bus-path builder the audit re-checks), `SCENE.L.occluders`
+`busRoute`, `refillRoute`, and `catRoute`, the path builders the audit
+re-checks), `SCENE.L.occluders`
 (declared boxes that fully hide characters) and `SCENE.L.footprints`
 (furniture floor boxes; `passable: true` marks torso-height tables walkers
 may pass behind/in front of but never stand in) — both box lists are shared

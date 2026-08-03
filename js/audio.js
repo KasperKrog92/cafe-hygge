@@ -367,6 +367,40 @@
     o.start(t); o.stop(t + dur + 0.05);
   });
 
+  SND.crunch = guard(function () {
+    const ticks = 3 + ((Math.random() * 3) | 0);
+    for (let i = 0; i < ticks; i++) {
+      setTimeout(function () {
+        if (!ctx || S.muted) return;
+        hiss({ dur: 0.03, gain: 0.014 + Math.random() * 0.006,
+          bp: 1050 + Math.random() * 350, q: 1.7, attack: 0.002, release: 0.018 });
+      }, i * (35 + Math.random() * 22));
+    }
+  });
+
+  SND.lapWater = guard(function () {
+    tone(330 + Math.random() * 80, { gain: 0.009, dur: 0.045, sweepTo: 250 });
+    hiss({ dur: 0.04, gain: 0.006, bp: 1500, q: 0.8, attack: 0.004, release: 0.025 });
+  });
+
+  SND.kibblePour = guard(function (dur) {
+    dur = dur || 0.9;
+    const grains = 10;
+    for (let i = 0; i < grains; i++) {
+      setTimeout(function () {
+        if (!ctx || S.muted) return;
+        const fade = 1 - i / grains;
+        hiss({ dur: 0.035 + Math.random() * 0.035, gain: 0.012 + 0.023 * fade,
+          bp: 900 + Math.random() * 1900, q: 0.9, lp: 3000, attack: 0.003, release: 0.025 });
+      }, (i / grains) * dur * 1000 + Math.random() * 35);
+    }
+  });
+
+  SND.softThump = guard(function () {
+    tone(90, { gain: 0.03, dur: 0.12, sweepTo: 58, sweepDur: 0.1 });
+    hiss({ dur: 0.045, gain: 0.012, lp: 480, attack: 0.002, release: 0.035 });
+  });
+
   /* ---------- music box ---------- */
 
   const SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66]; // C major pentatonic-ish, two octaves reach

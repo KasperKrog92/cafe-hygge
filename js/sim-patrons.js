@@ -366,6 +366,15 @@
 
     // time to go
     if (p.stay <= 0 && p.sipPhase <= 0) {
+      if (p.catLeaveT > 0) {
+        p.catLeaveT -= dt;
+        return;
+      }
+      if (world.cat.lapPatron === p) {
+        SIM.dislodgeCat(p);
+        p.catLeaveT = 1;
+        return;
+      }
       p.pose = 'stand';
       p.reading = false;
       p.armUp = 0;

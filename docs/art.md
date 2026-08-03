@@ -92,18 +92,22 @@ y=36  ── 16:9 crop top
           near the counter — the wing-chair swatches) with one plant between,
           and a slim poseur table under each window (L.winTables) whose top
           meets the sill; then behind the counter: two short dish shelves with
-          the menu chalkboard (L.menu) at their right — the third pendant
+          the menu chalkboard (L.menu) at their right; shelf 1 keeps a clear
+          32+ px right-end cat gap, with its displaced books on shelf 2 and
+          tiny plant beside the pastry case — the third pendant
           (L.lamp3) hangs in the wall gap between them — wainscot, espresso
           machine (L.machine — drawn in the background layer)
 y=232 ── wall meets floor (L.wallY — kept high so the floor, the life layer,
           dominates the frame)
           counter along the right (L.counter: slab → front face → baseline;
-          register, tip jar, pastry case, flowers on top; serve spot at the
+          register, tip jar, pastry case, tiny plant on top; serve spot at the
           pass = L.serveSpot); Nora's walking line behind it at y=286
           (L.baristaHome — see depth model for why); order and pickup spots
           in front (L.orderSpot, L.pickupSpot; the queue fans back-left)
           fireside armchair pair flanking the hearth rug, facing in toward
-          it (L.armchairs; dir ±1, the right chair is the mirrored art)
+          it (L.armchairs; dir ±1, the right chair is the mirrored art);
+          under window 1, `L.catCorner` holds a worn red cushion plus
+          terracotta food and blue-grey water bowls (quantized visible levels)
 y=368 ── the walking lane (L.lane — all pathing routes through this corridor
           between the wall furniture and the tables)
           four round tables (L.tables, tagged "by the window" / "near the
@@ -164,6 +168,13 @@ Rules that keep it looking right:
   layer behind them, the poseur table at its floor line in front. The sitter
   hops between the floor spot and the perch in one frame (the same instant
   pose flip every chair uses). Poseur-table footprints are `passable`.
+- **Cat aerial perches use their surface baseline** rather than the floor:
+  mid-window anchors sort at y=190 so the poseur tabletop overlaps the paw
+  line; the bookshelf anchor sits 4 px above its crown; the counter anchor is
+  2 px below the slab top so the slab hides the paws; the back-bar anchor
+  sits on shelf 1. These anchors are deliberately exempt from floor
+  footprint rules and instead checked against their declared surface by
+  `__dev.audit()`.
 - **The bookshelf** is one drawable at its `L.occluders` baseline; anyone on
   the lane above it is correctly occluded by it. Keep walk targets (seats,
   bus spots) and walk routes out of its occluder x-span so nobody vanishes
@@ -197,7 +208,11 @@ facing side, and one ear flicks now and then (sine-gated on `animT`). Tails
 are segmented curves — wrapped around the paws when sitting (tip swaying),
 raised and arcing in walk (tip sways most), curled along the body in sleep —
 with a pale tip; walking/loafing bodies carry back stripes, sitting adds a
-muzzle + pink nose, sleeping a closed-eye line.
+muzzle + pink nose, sleeping/lap curl a closed-eye line. New variants are a
+back-view window perch (haunches, shoulder taper, rear ears, sill-curled tail),
+head-down eat/drink with a tiny lapping tongue, kneading loaf with alternating
+2 px front paws, quicker-legged pounce, the stretched mid-hop pose, and a
+back-shelf tail that hangs and sways below the board.
 
 ## Typography
 

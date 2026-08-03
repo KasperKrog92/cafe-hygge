@@ -384,22 +384,20 @@
     px(g, 636, 148, 164, 8, '#7d5334');
     px(g, 644, 112, 4, 6, '#5f402c'); px(g, 788, 112, 4, 6, '#5f402c');
     px(g, 644, 156, 4, 6, '#5f402c'); px(g, 788, 156, 4, 6, '#5f402c');
-    // shelf 1: cups, jar, books, plant
+    // shelf 1: cups only; the clear right end is the cat's long-established
+    // high perch (at least 32 px of uninterrupted board).
     const cupCols = ['#d9d2c0', '#a94f3f', '#4a7a5a', '#d9a05a', '#7a89a5'];
     for (let i = 0; i < 5; i++) {
       px(g, 648 + i * 18, 92, 10, 12, cupCols[i]);
       px(g, 658 + i * 18, 96, 2, 4, cupCols[i]);
     }
-    px(g, 752, 84, 14, 20, '#d9973f'); px(g, 754, 80, 10, 4, '#8a611e');
-    px(g, 770, 84, 6, 20, '#8a4a3a'); px(g, 778, 88, 6, 16, '#4a5a7a');
-    drawTinyPlant(g, 786, 104);
-    // shelf 2: teapot, plates, jars, mugs
+    // shelf 2: teapot, plates, jars, the displaced books, and one mug
     px(g, 648, 134, 22, 14, '#e8e0d0'); px(g, 670, 138, 6, 4, '#e8e0d0'); px(g, 656, 130, 6, 4, '#e8e0d0');
     px(g, 692, 140, 18, 8, '#c9c2b0'); px(g, 694, 136, 14, 2, '#b5aa92'); px(g, 694, 144, 14, 2, '#b5aa92');
     px(g, 724, 132, 12, 16, '#d9973f'); px(g, 726, 128, 8, 4, '#8a611e');
     px(g, 744, 136, 12, 12, '#a5763f'); px(g, 746, 132, 8, 4, '#6e4a26');
-    const mugs2 = ['#a94f3f', '#4a7a5a'];
-    for (let i = 0; i < 2; i++) px(g, 764 + i * 16, 136, 10, 12, mugs2[i]);
+    px(g, 760, 128, 6, 20, '#8a4a3a'); px(g, 768, 132, 6, 16, '#4a5a7a');
+    px(g, 780, 136, 10, 12, '#4a7a5a');
   }
 
   function drawHangingLamp(g, x, world) {
