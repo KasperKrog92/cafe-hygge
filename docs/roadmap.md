@@ -5,11 +5,11 @@ matters: *does it make the café cozier or more glanceable?* (overview.md).
 Nothing here is committed; the owner picks what sounds lovely next.
 
 > **Graduated & executed:** the native high resolution, the
-> proportion/composition passes, and the agent workflow pass (dev harness,
-> file splits, doc slimming — future changes cost less) were specced here,
-> executed, and their plan docs retired (git history has them). Currently in
-> docs/plans: the [harness sweep](plans/harness-sweep.md), which spends the
-> new tooling on a soak-test bug hunt and pathing-correctness audit rules.
+> proportion/composition passes, the agent workflow pass (dev harness,
+> file splits, doc slimming — future changes cost less), and the harness
+> sweep (a multi-day soak-test bug hunt plus the journey/footprint rules now
+> in `__dev.audit()`) were specced here, executed, and their plan docs
+> retired (git history has them). docs/plans is currently empty.
 
 ## 🎧 Real sound clips (owner-requested — design ready)
 

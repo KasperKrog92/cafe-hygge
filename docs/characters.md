@@ -40,6 +40,11 @@ Every 6–15 s she picks a task:
 
 - **Bus a table** (priority if any table has an abandoned cup — `item.owner
   === null`): walks out, collects it (clink + wipe swish), carries it home.
+  Routes come from `SIM._.busRoute` (shared with `__dev.audit()`), every leg
+  axis-aligned: big tables are approached by dropping from the lane at the
+  bus spot; the nook side tables via their declared `busVia` columns, which
+  thread between the wing chairs and reading lamps (a straight drop would
+  cut through them — the audit's journey check proves each route).
 - **Wipe the counter** (40%): cloth in hand, three slow swishes.
 - **Polish a cup** (25%): stands still, cup in hand.
 - **Tidy the pastry case** (20%): walks to the case, soft clink.
@@ -85,14 +90,17 @@ enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
    the till (`L.orderSpot` 696, 316).
 2. **ordering** — when at slot 0 and Nora is free: 2 s with a speech bubble
    showing their order icon; caption fires ("Freja orders a cappuccino.").
-3. **waitDrink** — steps aside to a waiting spot until their cup appears at
-   the pass with their id on it.
+3. **waitDrink** — steps aside to the lowest free waiting spot (the cluster
+   drifts down-left from the pass; spots free up on pickup) until their cup
+   appears at the pass with their id on it.
 4. **pickup** — takes the cup (clink). Book-borrowers (`wantsBook` without
    `ownBook`) first **browse** the bookshelf (2.5–5.5 s at the browse spot,
    page-turn sound, `hasShelfBook = true` — a spine visibly leaves the shelf),
-   then pick a seat. Seat choice: borrowers prefer the nook chairs; readers
-   in general prefer nook chairs / fireside armchairs; otherwise a random
-   free seat. If the café is full they take it to go.
+   then pick a seat. Seat choice: spots where an abandoned drink still waits
+   for Nora are avoided while cleaner seats exist (two cups would share one
+   saucer spot); borrowers prefer the nook chairs; readers in general prefer
+   nook chairs / fireside armchairs; otherwise a random free seat. If the
+   café is full they take it to go.
 5. **seated** — the long, cozy middle (stay 100–260 s):
    - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — cup rises
      from the table (the table item hides, cup appears in hand), sip sound at

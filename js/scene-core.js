@@ -40,7 +40,12 @@
         { x: 712, y: 514, dir: 1 },
         { x: 812, y: 538, dir: -1 }
       ],
-      sideTables: [{ x: 664, y: 520 }, { x: 864, y: 542 }],
+      // busVia: the clear column Nora descends through when bussing a side
+      // table — a straight drop at the bus spot would cut through the wing
+      // chairs / reading lamps (the audit's journey check proves each one).
+      // 666 threads between reading lamp 1 and the first wing chair; 762
+      // threads between the two wing chairs.
+      sideTables: [{ x: 664, y: 520, busVia: 666 }, { x: 864, y: 542, busVia: 762 }],
       lamps: [{ x: 642, y: 504 }, { x: 848, y: 528 }],
       basket: { x: 924, y: 474 },
       rug: { x: 762, y: 528, rx: 96, ry: 28 }
@@ -52,19 +57,23 @@
       { x: 478, y: 296, dir: -1 }
     ],
     coatStand: { x: 96, y: 298 },
+    logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
     machine: { x: 656, y: 224, w: 56 },       // hero prop: kept a notch above scale
     serveSpot: { x: 744, y: 266 },   // where finished cups land on the counter
     orderSpot: { x: 696, y: 316 },
     pickupSpot: { x: 744, y: 316 },
+    returnSpot: { x: 792, y: 316 },  // where bussing patrons set their cup back
     baristaHome: { x: 706, y: 286 },
     baristaExitX: 616,               // where the barista slips out from behind the counter
     tables: [
       { x: 196, y: 412, tag: 'by the window' },
       { x: 414, y: 426, tag: 'near the fire' },
       { x: 260, y: 520, tag: '' },
-      { x: 516, y: 524, tag: '' }
+      // x ≥ 548 keeps this table's left seat's lane descent clear of the
+      // fire table's right stool (the audit's journey check proves it)
+      { x: 548, y: 524, tag: '' }
     ],
     stoolDX: 52, stoolDY: 8
   });
@@ -89,6 +98,42 @@
       baseline: L.counter.baseY
     }
   ];
+
+  /* Footprints: the floor boxes furniture actually occupies ({x0,x1,y0,y1},
+     in baseline space). Walk targets must never stand inside one, and no walk
+     segment may cut through one — except boxes marked `passable`: torso-height
+     tables whose behind/in-front passes the baseline depth sort renders
+     correctly (only standing in them is wrong). Seats are never passable: a
+     walker crossing one crosses whoever sits there. Derived here from the same
+     L entries the art uses, drawn by the dev overlay, checked by
+     __dev.audit()'s journey sweep. The counter and bookshelf are already
+     occluders and stay out of this list. */
+  L.footprints = [];
+  L.tables.forEach(function (t, i) {
+    L.footprints.push({ name: 'table ' + i, x0: t.x - 34, x1: t.x + 34, y0: t.y - 8, y1: t.y + 34, passable: true });
+    [-1, 1].forEach(function (side) {
+      const sx = t.x + side * L.stoolDX;   // the left seat is a chair with a back
+      L.footprints.push({
+        name: (side < 0 ? 'chair' : 'stool') + ' (table ' + i + ')',
+        x0: sx - (side < 0 ? 17 : 13), x1: sx + 13, y0: t.y + 4, y1: t.y + 26
+      });
+    });
+  });
+  L.armchairs.concat(L.library.chairs).forEach(function (A, i) {
+    L.footprints.push({ name: 'wing chair ' + i, x0: A.x - 32, x1: A.x + 32, y0: A.y - 16, y1: A.y + 14 });
+  });
+  L.library.sideTables.forEach(function (s, i) {
+    L.footprints.push({ name: 'side table ' + i, x0: s.x - 16, x1: s.x + 16, y0: s.y - 4, y1: s.y + 12, passable: true });
+  });
+  L.library.lamps.forEach(function (p, i) {
+    L.footprints.push({ name: 'reading lamp ' + i, x0: p.x - 9, x1: p.x + 11, y0: p.y - 7, y1: p.y + 1 });
+  });
+  L.plants.forEach(function (p, i) {
+    L.footprints.push({ name: 'plant ' + i, x0: p.x - 13, x1: p.x + 13, y0: p.y - 23, y1: p.y + 1 });
+  });
+  L.footprints.push({ name: 'coat stand', x0: L.coatStand.x - 12, x1: L.coatStand.x + 10, y0: L.coatStand.y - 6, y1: L.coatStand.y + 2 });
+  L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
+  L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
 
   /* ---------- helpers ---------- */
   function px(g, x, y, w, h, c) { g.fillStyle = c; g.fillRect(x | 0, y | 0, w, h); }

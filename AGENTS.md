@@ -35,8 +35,8 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   overlay on. Console: `__dev.hour(h)`, `__dev.ff(seconds)` (fast-forward,
   muted), `__dev.spawn({wantsBook, ownBook, drink, chatty})` (a real patron
   with chosen traits), `__dev.send(name, x, y)`, `__dev.overlay()`,
-  `__dev.audit()` (bounds/occlusion/seat/constant invariants — run it after
-  any layout change).
+  `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus
+  live-world consistency checks — run it after any layout or sim change).
 
 ## Git workflow
 
@@ -122,6 +122,11 @@ matching doc updated in the same change.
    `SCENE.furnitureDrawables` (`js/scene-furniture.js`).
 3. Tall enough to fully hide a walker? Declare it in `L.occluders`
    (`js/scene-core.js`) — the overlay, the audit, and the sim share that list.
+   Floor-standing pieces also need a footprint box: additions to an existing
+   `L` list (tables, chairs, lamps…) get one derived automatically in
+   scene-core.js; a new *kind* of furniture needs its own `L.footprints`
+   entry there (mark torso-height tables `passable: true`; seats never are —
+   see art.md).
 4. Does it glow? Add a `glow()` call in `SCENE.drawLighting`
    (`js/scene-fx.js`) scaled by `pal.lamp` (candles instead scale with
    darkness).
@@ -183,7 +188,7 @@ matching doc updated in the same change.
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
-| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [harness sweep](docs/plans/harness-sweep.md) (soak-test bug hunt + pathing-correctness audit). Executed plans are deleted; find them in git history |
+| [docs/plans/](docs/plans/) | Concrete execution plans. Currently empty. Executed plans are deleted; find them in git history |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.

@@ -115,6 +115,16 @@ Tall furniture that can fully hide a walker is declared once in
 and the sim all read that one list. Walk targets must never land inside an
 occluder's box (see the depth model below for the bookshelf lesson).
 
+Every floor-standing piece also gets a **footprint** box in `L.footprints`
+(derived in scene-core.js from the same `L` entries the art uses; drawn in
+blue by the overlay). The audit's journey check walks every L-shaped route
+against these: no target may *stand* inside one, and no walk leg may *cross*
+one — except boxes marked `passable` (the torso-height tables), whose
+behind/in-front passes the baseline sort renders correctly. Seats are never
+passable: a walker crossing a stool crosses whoever sits on it. New furniture
+added to an existing `L` list gets its footprint automatically; a new *kind*
+of furniture needs a footprint entry alongside its art.
+
 ## Depth model (painter's algorithm)
 
 Every furniture piece and character is a `{y, draw}` drawable; the list is
@@ -140,9 +150,10 @@ Rules that keep it looking right:
   (baseline y+12) draws in front — the sitter nestles *into* the chair.
 - **The bookshelf** is one drawable at its `L.occluders` baseline; anyone on
   the lane above it is correctly occluded by it. Keep walk targets (seats,
-  bus spots) out of its occluder x-span so nobody appears to vanish behind
-  it — the nook side tables are bussed from the left for this reason, and
-  `__dev.audit()` flags any violation.
+  bus spots) and walk routes out of its occluder x-span so nobody vanishes
+  behind it — Nora busses the nook side tables through the declared clear
+  columns (`busVia` on `L.library.sideTables`), and `__dev.audit()`'s
+  journey check flags any violation.
 
 ## People (drawPerson)
 

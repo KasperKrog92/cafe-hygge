@@ -164,11 +164,9 @@
           SND.clink(0.6, 0.04);
           SND.swish();
           b.state = 'busHome';
-          // back behind the counter
-          b.path = [
-            { x: b.x, y: L.lane }, { x: L.baristaExitX, y: L.lane },
-            { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaHome.x, y: L.baristaHome.y }
-          ];
+          // back behind the counter: the outbound route reversed, then home
+          b.path = busRoute(world, b.busTarget.table).slice(0, -1).reverse();
+          b.path.push({ x: L.baristaHome.x, y: L.baristaHome.y });
         }
         break;
       }
@@ -189,6 +187,25 @@
     }
   }
 
+  /* Nora's route from behind the counter to a table's bus spot, every leg
+     axis-aligned. Big tables: drop from the lane at the bus spot itself.
+     Side tables: drop through the table's declared clear column (L busVia —
+     between the wing chairs and reading lamps), then step across in front.
+     Shared with __dev.audit(), which walks these segments against the
+     occluder and footprint boxes. */
+  function busRoute(world, ti) {
+    const tb = world.tables[ti];
+    const busX = tb.x + (tb.small ? -28 : 24);
+    const busY = tb.y + 20;
+    const dropX = tb.small ? tb.busVia : busX;
+    const route = [
+      { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
+      { x: dropX, y: L.lane }, { x: dropX, y: busY }
+    ];
+    if (dropX !== busX) route.push({ x: busX, y: busY });
+    return route;
+  }
+
   function startIdleTask(world, b) {
     // any abandoned cups to collect?
     for (let ti = 0; ti < world.tables.length; ti++) {
@@ -196,13 +213,7 @@
       if (it) {
         b.busTarget = { table: ti, item: it };
         b.state = 'busOut'; b.stateT = 0;
-        const tb = world.tables[ti];
-        // side tables are approached from the left, clear of the bookshelf
-        const busX = tb.x + (tb.small ? -28 : 24);
-        b.path = [
-          { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
-          { x: tb.x, y: L.lane }, { x: busX, y: tb.y + 20 }
-        ];
+        b.path = busRoute(world, ti);
         if (Math.random() < 0.5) caption(world, 'Nora slips out to clear a table.');
         return;
       }
@@ -339,4 +350,5 @@
 
   R.updateBarista = updateBarista;
   R.updateCat = updateCat;
+  R.busRoute = busRoute;
 })();

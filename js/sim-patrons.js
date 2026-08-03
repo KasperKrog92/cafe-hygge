@@ -12,8 +12,16 @@
   /* ---------- patron behaviour ---------- */
 
   function freeSeat(world, patron) {
-    const free = world.seats.filter(function (s) { return !s.taken; });
+    let free = world.seats.filter(function (s) { return !s.taken; });
     if (!free.length) return null;
+    // skip spots where an abandoned drink still waits for Nora — a newcomer's
+    // cup would land on the very same saucer spot (soak-test find)
+    const clean = free.filter(function (s) {
+      return s.table < 0 || !world.tables[s.table].items.some(function (it) {
+        return it.owner === null && it.side === s.side;
+      });
+    });
+    if (clean.length) free = clean;
     if (patron.wantsBook || patron.hasShelfBook) {
       const nook = free.filter(function (s) { return s.nook; });
       if (patron.hasShelfBook && nook.length) return pick(nook);   // settle near the shelf
@@ -63,7 +71,14 @@
           });
           p.queueIdx = -1;
           p.state = 'waitDrink'; p.stateT = 0;
-          const n = world.patrons.filter(function (q) { return q.state === 'waitDrink'; }).length;
+          // lowest wait spot no other waiter holds (spots free up on pickup)
+          const used = {};
+          world.patrons.forEach(function (q) {
+            if (q !== p && q.state === 'waitDrink') used[q.waitIdx] = true;
+          });
+          let n = 0;
+          while (used[n]) n++;
+          p.waitIdx = n;
           const ws = waitSpot(n);
           makePath(p, ws.x, ws.y);
         }
@@ -161,7 +176,7 @@
           if (Math.random() < 0.4) caption(world, p.name + ' slips the book back onto the shelf.');
           if (p.afterBook === 'return') {
             p.state = 'return'; p.stateT = 0;
-            makePath(p, 792, L.pickupSpot.y);
+            makePath(p, L.returnSpot.x, L.returnSpot.y);
           } else {
             leaveCafe(world, p);
           }
@@ -323,7 +338,7 @@
       }
       if (bussing) {
         p.state = 'return'; p.stateT = 0;
-        makePath(p, 792, L.pickupSpot.y);
+        makePath(p, L.returnSpot.x, L.returnSpot.y);
         return;
       }
       leaveCafe(world, p);

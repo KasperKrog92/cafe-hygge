@@ -125,7 +125,7 @@
     (function walk(o, path) {
       if (typeof o.x === 'number' && typeof o.y === 'number') fn(path, o);
       Object.keys(o).forEach(function (k) {
-        if (k === 'occluders') return;
+        if (k === 'occluders' || k === 'footprints') return;
         const v = o[k];
         if (Array.isArray(v)) {
           v.forEach(function (it, i) {
@@ -148,12 +148,15 @@
       t.push({ x: ws.x, y: ws.y, name: 'waitSpot(' + i + ')' });
     }
     w.tables.forEach(function (tb, i) {
-      t.push({ x: tb.x + (tb.small ? -28 : 24), y: tb.y + 20, name: 'busSpot(table ' + i + ')' });
+      const route = SIM._.busRoute(w, i);
+      const end = route[route.length - 1];
+      t.push({ x: end.x, y: end.y, name: 'busSpot(table ' + i + ')' });
     });
     t.push({ x: L.library.browseSpot.x, y: L.library.browseSpot.y, name: 'browseSpot' });
     t.push({ x: L.doorSpot.x, y: L.doorSpot.y, name: 'doorSpot' });
     t.push({ x: L.orderSpot.x, y: L.orderSpot.y, name: 'orderSpot' });
     t.push({ x: L.pickupSpot.x, y: L.pickupSpot.y, name: 'pickupSpot' });
+    t.push({ x: L.returnSpot.x, y: L.returnSpot.y, name: 'returnSpot' });
     return t;
   }
 
@@ -200,6 +203,12 @@
     label(g, 2, L.lane - 12, 'lane ' + L.lane, 'rgba(255,200,60,0.95)');
     g.setLineDash([]);
 
+    // furniture footprints (the journey check's no-go floor boxes)
+    L.footprints.forEach(function (f) {
+      g.strokeStyle = 'rgba(120,170,255,0.5)';
+      g.strokeRect(f.x0 + 0.5, f.y0 + 0.5, f.x1 - f.x0 - 1, f.y1 - f.y0 - 1);
+    });
+
     // occluder boxes with their baselines
     L.occluders.forEach(function (o) {
       g.fillStyle = 'rgba(255,70,70,0.14)';
@@ -232,10 +241,11 @@
       dot(g, ws.x, ws.y, 2, 'rgba(255,160,40,0.95)');
       label(g, ws.x, ws.y, 'w' + i, 'rgba(255,180,80,0.9)');
     }
-    w.tables.forEach(function (tb) {
-      const bx = tb.x + (tb.small ? -28 : 24);
-      dot(g, bx, tb.y + 20, 2, 'rgba(255,160,40,0.95)');
-      label(g, bx, tb.y + 20, 'bus', 'rgba(255,180,80,0.9)');
+    w.tables.forEach(function (tb, i) {
+      const route = SIM._.busRoute(w, i);
+      const end = route[route.length - 1];
+      dot(g, end.x, end.y, 2, 'rgba(255,160,40,0.95)');
+      label(g, end.x, end.y, 'bus', 'rgba(255,180,80,0.9)');
     });
 
     g.restore();
@@ -250,7 +260,61 @@
 
   /* ---------- invariant audit ---------- */
 
-  const PAD = 9; // half a character's body width, for the occlusion check
+  const PAD = 9; // half a character's body width, for occlusion/journey checks
+
+  /* occluders and footprints, normalized to {name, x0, x1, y0, y1} */
+  function noGoBoxes() {
+    return L.occluders.map(function (o) {
+      return { name: o.name, x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
+    }).concat(L.footprints);
+  }
+
+  /* does the walk segment a→b (feet coordinates) cut through the box?
+     Axis-aligned segments get exact tests; anything diagonal is sampled. */
+  function segHitsBox(a, b, box) {
+    const bx0 = box.x0 - PAD, bx1 = box.x1 + PAD;
+    if (a.y === b.y) {
+      if (a.y <= box.y0 || a.y >= box.y1) return false;
+      return Math.max(a.x, b.x) >= bx0 && Math.min(a.x, b.x) <= bx1;
+    }
+    if (a.x === b.x) {
+      if (a.x < bx0 || a.x > bx1) return false;
+      return Math.max(a.y, b.y) > box.y0 && Math.min(a.y, b.y) < box.y1;
+    }
+    const steps = Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 4);
+    for (let i = 0; i <= steps; i++) {
+      const x = a.x + (b.x - a.x) * i / steps, y = a.y + (b.y - a.y) * i / steps;
+      if (x >= bx0 && x <= bx1 && y > box.y0 && y < box.y1) return true;
+    }
+    return false;
+  }
+
+  /* check every leg of a route against the no-go boxes; boxes that contain
+     the destination are that stop's own furniture (a seat inside its chair,
+     a bus spot beside its table) and are skipped, as are explicitly
+     exempted boxes (Nora's routes legitimately start inside the counter). */
+  function routeProblems(route, dest, label, exemptNames, allowInside, problems) {
+    noGoBoxes().forEach(function (box) {
+      if (exemptNames && exemptNames.indexOf(box.name) >= 0) return;
+      const ownBox = dest.x >= box.x0 - PAD && dest.x <= box.x1 + PAD &&
+                     dest.y >= box.y0 && dest.y <= box.y1;
+      if (ownBox) {
+        if (!allowInside) {
+          problems.push(label + ' (' + dest.x + ',' + dest.y + ') stands inside the ' + box.name +
+            ' footprint (x ' + box.x0 + '–' + box.x1 + ', y ' + box.y0 + '–' + box.y1 + ')');
+        }
+        return; // own furniture: the final approach may cross it
+      }
+      if (box.passable) return; // torso-height table: depth sort renders passes fine
+      for (let i = 1; i < route.length; i++) {
+        if (segHitsBox(route[i - 1], route[i], box)) {
+          problems.push('route to ' + label + ' cuts through the ' + box.name +
+            ' (leg ' + route[i - 1].x + ',' + route[i - 1].y + ' → ' + route[i].x + ',' + route[i].y + ')');
+          return;
+        }
+      }
+    });
+  }
 
   D.audit = function () {
     const w = world();
@@ -295,6 +359,27 @@
       });
     });
 
+    // journeys: the L-shaped walk to every target (lane-first, via the real
+    // makePath) must not cut through an occluder or furniture footprint.
+    // Seats and bus spots may end inside their own furniture's box; nothing
+    // else may. Bus spots are excluded here — Nora reaches them by her own
+    // routes, checked next.
+    walkTargets(w).forEach(function (t) {
+      if (/^busSpot/.test(t.name)) return;
+      const scratch = { x: L.doorSpot.x, y: L.lane, path: null, pose: 'stand', facing: 1, speed: 0 };
+      SIM._.makePath(scratch, t.x, t.y);
+      const route = [{ x: scratch.x, y: scratch.y }].concat(scratch.path);
+      routeProblems(route, t, t.name, null, /^seat\[/.test(t.name), problems);
+    });
+
+    // Nora's bus routes (shared with the sim via SIM._.busRoute): she starts
+    // behind the counter by design, so the counter box is exempt
+    w.tables.forEach(function (tb, i) {
+      const route = SIM._.busRoute(w, i);
+      const end = route[route.length - 1];
+      routeProblems(route, end, 'busSpot(table ' + i + ')', ['counter'], true, problems);
+    });
+
     // seats reference existing tables; nook seats pair with small side tables
     w.seats.forEach(function (s, i) {
       if (s.table >= 0) {
@@ -311,6 +396,31 @@
     if (L.baristaHome.y !== 286) problems.push('L.baristaHome.y = ' + L.baristaHome.y + ' (must be 286 — the counter swallows her below that; see AGENTS.md)');
     if (L.lane !== 368) problems.push('L.lane = ' + L.lane + ' (the walking lane is 368; see AGENTS.md)');
     if (!Array.isArray(L.occluders) || L.occluders.length < 2) problems.push('L.occluders missing or incomplete (expect at least bookshelf + counter)');
+    if (!Array.isArray(L.footprints) || !L.footprints.length) problems.push('L.footprints missing (the journey check needs the furniture floor boxes)');
+
+    // live-world invariants (the soak-test set — cheap enough to keep forever)
+    const live = {};
+    w.patrons.forEach(function (p) { live[p.id] = true; });
+    w.seats.forEach(function (s, i) {
+      const holders = w.patrons.filter(function (p) { return p.seat === s; }).length;
+      if (s.taken && holders !== 1) problems.push('seat[' + i + '] taken but ' + holders + ' patron(s) hold it');
+      if (!s.taken && holders) problems.push('seat[' + i + '] free but ' + holders + ' patron(s) hold it');
+    });
+    w.queue.forEach(function (q, i) {
+      if (q.queueIdx !== i) problems.push('queue[' + i + '] (' + q.name + ') carries queueIdx ' + q.queueIdx);
+    });
+    w.tables.forEach(function (tb, ti) {
+      const bySide = {};
+      tb.items.forEach(function (it) {
+        if (it.owner !== null && !live[it.owner]) problems.push('table ' + ti + ' item owned by departed patron ' + it.owner);
+        bySide[it.side] = (bySide[it.side] || 0) + 1;
+        if (bySide[it.side] === 2) problems.push('table ' + ti + ' has items stacked at side ' + it.side);
+      });
+    });
+    w.counterCups.forEach(function (c) {
+      if (!live[c.owner]) problems.push('counter cup owned by departed patron ' + c.owner);
+    });
+    if (w.patrons.length > 7) problems.push(w.patrons.length + ' patrons exceed the spawn cap (7)');
 
     if (problems.length) {
       console.warn('[dev] audit: ' + problems.length + ' problem(s)');

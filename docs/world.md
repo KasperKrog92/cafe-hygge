@@ -59,7 +59,8 @@ midnight.
 
 - **Steam** (`type: 'steam'`): 1–2 px wisps with sinusoidal drift, rising from
   hot table cups (first ~45 s after serving), cups at the pass, raised cups
-  mid-sip, and the espresso machine during pull/steam/kettle stages.
+  mid-sip, and the espresso machine during pull/steam/kettle stages. Plates
+  (pastries) never steam, on the table or at the pass.
 - **Sparks** (`type: 'spark'`): rare 1-px embers rising inside the firebox.
 - Spawned in `updateParticles` (sim), drawn in `SCENE.drawParticles`.
 

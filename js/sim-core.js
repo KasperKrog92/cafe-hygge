@@ -55,7 +55,7 @@
       particles: [],
       tables: L.tables.map(function (tb) { return { x: tb.x, y: tb.y, tag: tb.tag, items: [] }; })
         .concat(LB.sideTables.map(function (st) {
-          return { x: st.x, y: st.y, tag: 'in the reading nook', small: true, items: [] };
+          return { x: st.x, y: st.y, tag: 'in the reading nook', small: true, busVia: st.busVia, items: [] };
         })),
       seats: [],
       barista: makeBarista(),
@@ -146,7 +146,7 @@
       seat: null, stay: 0,
       sipT: rnd(4, 10), sipPhase: 0, sipPlayed: false,
       pageT: rnd(6, 16), chatT: rnd(8, 20), chatReply: 0,
-      bubble: null, queueIdx: -1, doorCloseT: 0
+      bubble: null, queueIdx: -1, waitIdx: -1, doorCloseT: 0
     };
   }
 
@@ -315,7 +315,9 @@
     world.hotAcc = (world.hotAcc || 0) + dt;
     if (world.hotAcc > 0.4) {
       world.hotAcc = 0;
-      world.counterCups.forEach(function (c) { spawnSteam(world, c.x + 5, c.y - 4); });
+      world.counterCups.forEach(function (c) {
+        if (c.kind !== 'plate') spawnSteam(world, c.x + 5, c.y - 4);   // pastries don't steam
+      });
       world.tables.forEach(function (tb) {
         tb.items.forEach(function (it) {
           if (it.hot > 0 && !it.hidden && it.kind !== 'plate' && Math.random() < 0.8) {

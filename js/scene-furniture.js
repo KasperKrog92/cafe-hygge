@@ -115,11 +115,12 @@
       px(g, BK.x + 1, BK.y - 38, 3, 4, '#e8dfc9');
     } });
     // log pile leaning on the firewood crate beside the hearth
-    out.push({ y: 254, draw: function (g) {
-      ell(g, 446, 252, 18, 5, SHADOW);
-      px(g, 431, 246, 30, 6, '#6b4429'); ell(g, 431, 249, 3, 3, '#8a6142');
-      px(g, 433, 240, 26, 6, '#5a3520'); ell(g, 459, 243, 3, 3, '#8a6142');
-      px(g, 437, 234, 20, 6, '#6b4429'); ell(g, 437, 237, 3, 3, '#8a6142');
+    const LP = L.logPile;
+    out.push({ y: LP.y + 2, draw: function (g) {
+      ell(g, LP.x, LP.y, 18, 5, SHADOW);
+      px(g, LP.x - 15, LP.y - 6, 30, 6, '#6b4429'); ell(g, LP.x - 15, LP.y - 3, 3, 3, '#8a6142');
+      px(g, LP.x - 13, LP.y - 12, 26, 6, '#5a3520'); ell(g, LP.x + 13, LP.y - 9, 3, 3, '#8a6142');
+      px(g, LP.x - 9, LP.y - 18, 20, 6, '#6b4429'); ell(g, LP.x - 9, LP.y - 15, 3, 3, '#8a6142');
     } });
 
     // the counter itself

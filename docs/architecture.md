@@ -145,12 +145,15 @@ overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
 | `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
 | `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`) |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
-| `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes |
-| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, seat↔table wiring, barista y=286 / lane 368) |
+| `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
+| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — every L-shaped route and Nora's bus routes checked leg by leg, seat↔table wiring, barista y=286 / lane 368, plus live-world checks: seat↔patron consistency, queue contiguity, orphaned/stacked items, spawn cap) |
 
-Two contracts support it: `SIM._` (the private seam shared by the sim siblings
-and consumed by dev.js; other app code must not touch it) and
-`SCENE.L.occluders` (declared boxes that fully hide
-characters, shared by the overlay and the audit). The harness wraps
+Three contracts support it: `SIM._` (the private seam shared by the sim
+siblings and consumed by dev.js; other app code must not touch it — includes
+`busRoute`, the bus-path builder the audit re-checks), `SCENE.L.occluders`
+(declared boxes that fully hide characters) and `SCENE.L.footprints`
+(furniture floor boxes; `passable: true` marks torso-height tables walkers
+may pass behind/in front of but never stand in) — both box lists are shared
+by the overlay and the audit. The harness wraps
 `SIM.create` (to apply `?hour`) and `SCENE.drawCaption` (to draw the overlay
 after everything else); it never changes behavior when dormant.
