@@ -10,7 +10,7 @@ cover-fits the window: integer device-pixel scales present pixelated
 (1920×1080 and 1920×1200 fullscreen are both an exact ×2), fractional scales
 via sharp-bilinear. The scene was migrated from the original 480×270 buffer
 by the mechanical transform **x′ = 2x, y′ = 2y + 36**, and the Phase 2
-**detail pass** (docs/plans/native-resolution.md, executed) redrew every
+**detail pass** (executed; plan doc retired to git history) redrew every
 region at native resolution: character faces/hands/hair, hero props,
 architecture textures, retuned atmosphere and real typography.
 
@@ -28,7 +28,7 @@ architecture textures, retuned atmosphere and real typography.
   renders once, so its randomness must be stable.
 - **One ruler: CH = 60 px** (a standing character, head ~20 of it — chibi
   kept). Everything is sized relative to CH (see the table below); the
-  proportion pass (docs/plans/visual-proportion-pass.md) unified the scales.
+  proportion pass (executed; plan doc in git history) unified the scales.
   People are ~24 px wide × 60 tall; seated ~52 (drawn a touch hunched — cozy).
   The cat is ~28×21.
 - **The café ruler** (tuned values; ratios between neighbors matter more than

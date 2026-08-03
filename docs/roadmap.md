@@ -4,10 +4,11 @@ Unordered ideas, roughly grouped, each judged against the one bar that
 matters: *does it make the café cozier or more glanceable?* (overview.md).
 Nothing here is committed; the owner picks what sounds lovely next.
 
-> **Planned & specced:** two visual plans have graduated from this list into
-> full execution plans — [native high resolution](plans/native-resolution.md)
-> and the [proportion/composition pass](plans/visual-proportion-pass.md).
-> They interlock; see the sequencing note in either file.
+> **Graduated & executed:** the native high resolution and the
+> proportion/composition passes were specced here, executed, and their plan
+> docs retired (git history has them). Currently planned in docs/plans:
+> the [agent workflow pass](plans/agent-workflow-pass.md) — dev harness,
+> file splits, doc slimming, so future changes cost less.
 
 ## 🎧 Real sound clips (owner-requested — design ready)
 

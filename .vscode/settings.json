@@ -1,0 +1,8 @@
+{
+  // Open .md files in the rendered preview by default.
+  // Diff views (Source Control) are unaffected — they always use the
+  // plain text editor regardless of this association.
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  }
+}

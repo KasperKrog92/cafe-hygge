@@ -61,7 +61,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   (slab spans y 264–278; front face 278–306, baseline 306). Move her lower and
   the counter swallows her entirely — this happened; don't repeat it.
 - **One ruler: a standing character is 60 px (CH).** The proportion pass
-  (docs/plans/visual-proportion-pass.md, executed) sized everything relative
+  (executed; its plan doc is retired to git history) sized everything relative
   to it — wall line at y=232, door 102 tall, counter 42 tall. When adding art,
   size it in CH against the ruler table in docs/art.md; the espresso machine
   and pastry case are documented exceptions (slightly oversized hero props).
@@ -104,7 +104,7 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
-| [docs/plans/](docs/plans/) | Concrete execution plans: [native high resolution](docs/plans/native-resolution.md), [proportion/composition pass](docs/plans/visual-proportion-pass.md) — read both before large visual work; they share a sequencing contract |
+| [docs/plans/](docs/plans/) | Concrete execution plans. Current: [agent workflow pass](docs/plans/agent-workflow-pass.md) (planned — dev harness, file splits, doc slimming). Executed plans are deleted; find them in git history |
 
 Keep these docs true: when you change behavior, sounds, layout, or characters,
 update the matching doc in the same change.
