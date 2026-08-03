@@ -36,7 +36,8 @@ machine light blinks and steam particles rise (`world.brew`).
 
 ### Idle life (only when nobody is queueing)
 
-Every 6–15 s she picks a task:
+Every 6–15 s she picks a task. The priority ladder is service first, then
+daily care, then small counter-life:
 
 - **Bus a table** (priority if any table has an abandoned cup — `item.owner
   === null`): walks out, collects it (clink + wipe swish), carries it home.
@@ -51,9 +52,23 @@ Every 6–15 s she picks a task:
   below 0.34 or water below 0.2, follows the declared `refillRoute` to the
   cat corner, crouches for 1.6 s, pours quietly, and restores the low bowls
   to 1. The cat may supervise. The route is shared with `__dev.audit()`.
-- **Wipe the counter** (40%): cloth in hand, three slow swishes.
-- **Polish a cup** (25%): stands still, cup in hand.
-- **Tidy the pastry case** (20%): walks to the case, soft clink.
+- **Light the candles** (next priority): when daylight falls below 0.5,
+  carries one lit taper around every dining and nook table, then the mantel.
+  Each flame blooms over about 2 s. A queue arrival lets her finish the
+  current candle, park the round, serve, and resume at the next unlit stop.
+  The chained `candleRoute` is shared with `__dev.audit()`.
+- **Water the plants** (after candle and bowl care): once per café day between
+  09:00 and 16:00, carries a copper can to the counter plant and both floor
+  plants. A queue arrival parks the round after the current plant. The three
+  cumulative `waterRoute` paths are shared with `__dev.audit()`.
+- **Chalk the menu** (due every 600–1200 s): reaches up behind the counter for
+  3 s; the cached board then remembers a different heart, curled cat,
+  steaming cup, sprig, or umbrella. Rain weights the umbrella heavily.
+- **Stretch** (30% candidate after 20 quiet seconds with a truly empty café):
+  both arms overhead for 2.2 s, then back to watching the room.
+- **Wipe the counter** (35% of the ordinary pool): cloth in hand, three slow swishes.
+- **Polish a cup** (22%): stands still, cup in hand.
+- **Tidy the pastry case** (18%): walks to the case, soft clink.
 - Otherwise just stands, watching the room.
 
 If anyone is waiting in the queue she stays at the till and faces them.

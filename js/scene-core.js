@@ -142,6 +142,16 @@
     returnSpot: { x: 792, y: 316 },  // where bussing patrons set their cup back
     baristaHome: { x: 706, y: 286 },
     baristaExitX: 616,               // where the barista slips out from behind the counter
+    noraCare: {
+      chalk: { x: 862, y: 286 },
+      water: [
+        { x: 880, y: 286, facing: 1 },
+        { x: 612, y: 286, facing: -1 },
+        { x: 908, y: 330, facing: 1 }
+      ],
+      plantVia: { x: 840, y: 330 },
+      mantel: { x: 388, y: 300 }
+    },
     tables: [
       { x: 196, y: 412, tag: 'by the window' },
       { x: 414, y: 426, tag: 'near the fire' },

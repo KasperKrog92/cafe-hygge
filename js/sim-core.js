@@ -54,14 +54,18 @@
       counterCups: [],
       catBowls: { food: 1, water: 1 },
       particles: [],
-      tables: L.tables.map(function (tb) { return { x: tb.x, y: tb.y, tag: tb.tag, items: [] }; })
+      tables: L.tables.map(function (tb) {
+        return { x: tb.x, y: tb.y, tag: tb.tag, items: [], candle: 0, candleTarget: 0 };
+      })
         .concat(LB.sideTables.map(function (st) {
-          return { x: st.x, y: st.y, tag: 'in the reading nook', small: true, busVia: st.busVia, items: [] };
+          return { x: st.x, y: st.y, tag: 'in the reading nook', small: true,
+            busVia: st.busVia, items: [], candle: 0, candleTarget: 0 };
         }))
         .concat(L.winTables.map(function (wt) {
           // y = tabletop (items/steam), base = floor line; reach keeps both
           // sitters' cups on the slim top
-          return { x: wt.x, y: wt.y, base: wt.base, tag: 'in the window', tall: true, reach: 12, items: [] };
+          return { x: wt.x, y: wt.y, base: wt.base, tag: 'in the window',
+            tall: true, reach: 12, items: [], candle: 0, candleTarget: 0 };
         })),
       seats: [],
       barista: makeBarista(),
@@ -72,7 +76,9 @@
       lastCapT: -10,
       spawnT: rnd(4, 9),
       wasLampOn: false,
-      steamAcc: 0
+      steamAcc: 0,
+      wateredDay: -1,
+      candles: { mantel: 0, mantelTarget: 0, wasDark: false, forceRound: false }
     };
 
     // seats: two stools per table + the fireside armchairs + the nook chairs
@@ -178,9 +184,11 @@
       x: L.baristaHome.x, y: L.baristaHome.y,
       facing: -1, pose: 'stand', animT: 0,
       speed: 60, path: null,
-      state: 'idle', stateT: 0, idleT: rnd(4, 9),
+      state: 'idle', stateT: 0, idleT: rnd(4, 9), emptyT: 0,
       holding: null, armUp: 0, reading: false,
-      orders: [], steps: null, stepIdx: 0, busTarget: null
+      orders: [], steps: null, stepIdx: 0, busTarget: null,
+      chalkT: rnd(600, 1200), chalkPlayed: 0,
+      wateringPending: false, candlePending: false, forcedTask: ''
     };
   }
 
@@ -297,6 +305,63 @@
     world.wasLampOn = lampOn;
   }
 
+  function dayIndex(world) {
+    return Math.floor((START_HOUR + world.t / DAY_SECONDS * 24) / 24);
+  }
+
+  function candleTables(world) {
+    return world.tables.filter(function (tb) { return !tb.tall; });
+  }
+
+  function snapCandles(world) {
+    const dark = world.daylight < 0.5;
+    const value = dark ? 1 : 0;
+    candleTables(world).forEach(function (tb) {
+      tb.candle = value;
+      tb.candleTarget = value;
+    });
+    world.candles.mantel = value;
+    world.candles.mantelTarget = value;
+    world.candles.wasDark = dark;
+    world.candles.forceRound = false;
+    world.barista.candlePending = false;
+  }
+
+  function updateCandles(world, dt) {
+    const c = world.candles;
+    const dark = world.daylight < 0.5;
+    const tables = candleTables(world);
+
+    if (dark && !c.wasDark) {
+      world.barista.candlePending = tables.some(function (tb) { return tb.candle < 0.95; }) || c.mantel < 0.95;
+    } else if (!dark && c.wasDark) {
+      world.barista.candlePending = false;
+      c.forceRound = false;
+      if (Math.random() < 0.35) caption(world, 'Morning light; the candles get to rest.');
+    }
+
+    if (!dark && !c.forceRound) {
+      tables.forEach(function (tb) { tb.candleTarget = 0; });
+      c.mantelTarget = 0;
+    }
+
+    const rise = dt / 2;
+    const fall = dt / 60;
+    tables.forEach(function (tb) {
+      const step = tb.candleTarget > tb.candle ? rise : fall;
+      if (tb.candle < tb.candleTarget) tb.candle = Math.min(tb.candleTarget, tb.candle + step);
+      else if (tb.candle > tb.candleTarget) tb.candle = Math.max(tb.candleTarget, tb.candle - step);
+    });
+    const mantelStep = c.mantelTarget > c.mantel ? rise : fall;
+    if (c.mantel < c.mantelTarget) c.mantel = Math.min(c.mantelTarget, c.mantel + mantelStep);
+    else if (c.mantel > c.mantelTarget) c.mantel = Math.max(c.mantelTarget, c.mantel - mantelStep);
+
+    if (dark && (tables.some(function (tb) { return tb.candleTarget < 1; }) || c.mantelTarget < 1)) {
+      world.barista.candlePending = true;
+    }
+    c.wasDark = dark;
+  }
+
   /* ---------- spawning ---------- */
 
   function spawnCap(world) {
@@ -394,6 +459,8 @@
     makePath: makePath, walker: walker,
     ringDoor: ringDoor, updateDoor: updateDoor,
     updateWeather: updateWeather, updateClock: updateClock,
+    dayIndex: dayIndex, candleTables: candleTables,
+    snapCandles: snapCandles, updateCandles: updateCandles,
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };

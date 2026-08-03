@@ -19,8 +19,8 @@ architecture textures, retuned atmosphere and real typography.
 - **Whole pixels only.** Integer coordinates, `fillRect`-first drawing. The
   few ellipses (table tops, shadows, rug) read as soft shapes at this scale.
 - **Minimum feature size 2 px** (at 960) for art — keeps the cozy chunk; no
-  "HD remaster" drift. Two sanctioned exceptions: 1 px rain streaks (finer
-  rain is the point) and typography (see *Typography* below).
+  "HD remaster" drift. Sanctioned exceptions: 1 px rain streaks (finer rain
+  is the point), watering droplets, and typography (see *Typography* below).
 - **Derived shades, not new hexes.** Clothing folds, hair shine, creases use
   `shade(hex, ±f)` in `scene-core.js` (memoized lighten/darken) so the palette stays
   small while pool colors gain depth. Texture noise (floor grain, knots,
@@ -112,12 +112,12 @@ y=368 ── the walking lane (L.lane — all pathing routes through this corrid
           between the wall furniture and the tables)
           four round tables (L.tables, tagged "by the window" / "near the
           fire"); each seats two at ±L.stoolDX facing inward — chair (with
-          back) on the left, stool on the right; a lit candle jar on every
+          back) on the left, stool on the right; a candle jar on every
           table; coat stand by the door (L.coatStand), plants at the
           counter's ends (L.plants), rugs
           reading nook, bottom right (L.library): bookshelf (2 CH + crown;
           browse spot in front, loanable spines vanish while borrowed), two
-          green wing chairs each with a side table for the sitter's drink
+          green wing chairs each with a candle side table for the sitter's drink
           and a floor reading lamp, magazine basket at the shelf's foot
 y=576 ── 16:9 crop bottom
 y=600 ── master bottom: 24 px overscan strip (plus 12 px per side)
@@ -203,6 +203,11 @@ pocket and a tie bow at the back. Options per character: scarf, long hair,
 book replaces held items while seated). Facing is ±1 (side profile both
 ways); the face details and hair-back column flip with it.
 
+Nora adds two quiet standing poses: `stretch` (both arms overhead with a
+2 px sway) and `reach` (one arm raised for board/candle care). Her held props
+also include a copper watering can (level while walking, tipped while
+pouring) and a cream taper with a two-tone flame once struck.
+
 The cat: ears are drawn as base + tip triangles with a pink inner ear on the
 facing side, and one ear flicks now and then (sine-gated on `animT`). Tails
 are segmented curves — wrapped around the paws when sitting (tip swaying),
@@ -219,7 +224,9 @@ back-shelf tail that hangs and sways below the board.
 - **Chalk: a 6×10 hand** (`SCENE.chalkText`, `CHALK` glyphs in `scene-core.js`) with
   2 px strokes and a ±1 px per-character jitter so boards look hand-written.
   Used on the menu board ("CAFÉ HYGGE", KAFFE / KAKAO / BOLLER + price
-  dashes + a chalk heart). Glyph set is caps A–Y subset + É; extend the map
+  dashes + one small changing doodle: heart, sleeping cat, steaming cup,
+  sprig, or umbrella). The doodle id invalidates the static background cache
+  only when Nora finishes chalking. Glyph set is caps A–Y subset + É; extend the map
   when a new word needs a missing letter.
 - **Captions render as bitmap text**: each caption is drawn once at 10 px
   into an offscreen canvas, thresholded to crisp 1-bit glyphs in the caption
@@ -231,8 +238,9 @@ back-shelf tail that hangs and sways below the board.
 
 See world.md for the lighting pass. When adding art, remember: warm glows are
 *additive* and cheap — a new lamp needs a `glow()` call in `drawLighting`
-scaled by `pal.lamp`. The table candles are the exception: always lit, their
-glow scales with darkness (`1 - daylight`) plus a slow per-table flicker.
+scaled by `pal.lamp`. Table and mantel candles are the exception: their visible
+flame and additive glow share the same 0–1 live state, blooming when Nora
+lights them and fading after dawn; each keeps its slow phase-offset flicker.
 Speech bubbles/captions draw after lighting on purpose.
 
 ## Adding furniture — checklist

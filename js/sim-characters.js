@@ -8,6 +8,7 @@
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick;
   const caption = R.caption, walker = R.walker, spawnSteam = R.spawnSteam;
   const updateClock = R.updateClock, updateWeather = R.updateWeather;
+  const updateCandles = R.updateCandles, dayIndex = R.dayIndex;
   const updateDoor = R.updateDoor, updateSpawning = R.updateSpawning;
   const updatePatron = R.updatePatron, updateParticles = R.updateParticles;
   const updateCaptions = R.updateCaptions;
@@ -47,6 +48,12 @@
   function updateBarista(world, b, dt) {
     b.animT += dt;
     b.stateT += dt;
+    b.chalkT -= dt;
+    if (!world.patrons.length && !world.queue.length && !b.orders.length) b.emptyT += dt;
+    else b.emptyT = 0;
+    if (world.hour >= 9 && world.hour < 16 && world.wateredDay !== dayIndex(world)) {
+      b.wateringPending = true;
+    }
     world.brew.active = false;
 
     switch (b.state) {
@@ -146,6 +153,136 @@
         if (b.stateT > 1.5) {
           SND.clink(0.5, 0.035);
           b.state = 'idle';
+        }
+        break;
+      }
+      case 'stretch': {
+        b.pose = 'stretch';
+        b.holding = null;
+        if (b.stateT >= 2.2) {
+          b.pose = 'stand';
+          b.state = 'idle';
+          b.emptyT = 0;
+          b.idleT = rnd(8, 16);
+        }
+        break;
+      }
+      case 'chalkWalk': {
+        if (walker(b, dt)) {
+          b.state = 'chalk'; b.stateT = 0; b.chalkPlayed = 0;
+          b.pose = 'reach'; b.facing = 1;
+        }
+        break;
+      }
+      case 'chalk': {
+        b.pose = 'reach';
+        const ticks = [0.35, 1.2, 2.15];
+        if (b.chalkPlayed < ticks.length && b.stateT >= ticks[b.chalkPlayed]) {
+          b.chalkPlayed++;
+          if (b.chalkPlayed < 3 || Math.random() < 0.65) SND.chalkTick();
+        }
+        if (b.stateT >= 3) {
+          const doodle = nextMenuDoodle(world);
+          SCENE.setMenuDoodle(doodle);
+          b.chalkT = rnd(600, 1200);
+          b.pose = 'stand'; b.state = 'idle'; b.idleT = rnd(7, 14);
+          if (Math.random() < 0.3) caption(world, chalkCaption(doodle));
+        }
+        break;
+      }
+      case 'waterOut': {
+        b.holding = 'can';
+        if (walker(b, dt)) {
+          b.state = 'water'; b.stateT = 0; b.waterPlayed = false; b.waterDrops = 0;
+          b.facing = WATER_STOPS[b.waterStop].facing;
+        }
+        break;
+      }
+      case 'water': {
+        b.holding = 'can'; b.pouring = true;
+        if (!b.waterPlayed && b.stateT >= 0.2) {
+          b.waterPlayed = true; SND.waterPour(1.2);
+        }
+        if (b.waterDrops < 4 && b.stateT >= 0.35 + b.waterDrops * 0.28) {
+          b.waterDrops++;
+          world.particles.push({ type: 'drop', x: b.x + b.facing * 21, y: b.y - 38,
+            vx: b.facing * rnd(3, 7), vy: rnd(14, 22), age: 0, life: rnd(0.45, 0.7), seed: 0 });
+        }
+        if (b.stateT >= 1.6) {
+          b.pouring = false;
+          if (b.waterStop < WATER_STOPS.length - 1) {
+            const nextStop = b.waterStop + 1;
+            if (b.orders.length || world.queue.length) {
+              b.waterNext = nextStop;
+              b.state = 'waterHome'; b.stateT = 0;
+              b.path = waterHomeRoute(b.waterStop);
+            } else {
+              const prev = waterRoute(b.waterStop);
+              b.waterStop = nextStop;
+              b.state = 'waterOut'; b.stateT = 0;
+              b.path = waterRoute(b.waterStop).slice(prev.length);
+            }
+          } else {
+            world.wateredDay = dayIndex(world);
+            b.wateringPending = false;
+            b.waterNext = 0;
+            b.state = 'waterHome'; b.stateT = 0;
+            b.path = waterHomeRoute(b.waterStop);
+          }
+        }
+        break;
+      }
+      case 'waterHome': {
+        b.holding = 'can'; b.pouring = false;
+        if (walker(b, dt)) {
+          b.holding = null; b.state = 'idle'; b.idleT = rnd(7, 14);
+        }
+        break;
+      }
+      case 'candleOut': {
+        b.holding = 'taper';
+        if (walker(b, dt)) {
+          b.state = 'candleLight'; b.stateT = 0; b.candlePlayed = false;
+          b.pose = 'reach';
+        }
+        break;
+      }
+      case 'candleLight': {
+        b.holding = 'taper'; b.pose = 'reach';
+        if (!b.matchStruck && b.stateT >= 0.15) {
+          b.matchStruck = true; b.taperLit = true; SND.matchStrike();
+        }
+        if (!b.candlePlayed && b.stateT >= 0.65) {
+          b.candlePlayed = true;
+          lightCandleStop(world, b.candleStop);
+          SND.candlePop();
+        }
+        if (b.stateT >= 1.1) {
+          const next = nextCandleStop(world);
+          const busy = b.orders.length || world.queue.length;
+          if (busy || !next) {
+            if (!next) {
+              b.candlePending = false;
+              world.candles.forceRound = false;
+            }
+            b.state = 'candleHome'; b.stateT = 0; b.pose = 'stand';
+            b.candleParking = !!(busy && next);
+            b.path = candleHomeRoute(world, b.candleStop);
+          } else {
+            const from = b.candleStop;
+            b.candleStop = next;
+            b.state = 'candleOut'; b.stateT = 0; b.pose = 'stand';
+            b.path = candleLeg(world, from, next);
+          }
+        }
+        break;
+      }
+      case 'candleHome': {
+        b.holding = 'taper'; b.pose = 'stand';
+        if (walker(b, dt)) {
+          b.holding = null; b.taperLit = false; b.state = 'idle'; b.idleT = b.candleParking ? 0 : rnd(7, 14);
+          if (!b.candleParking) { b.matchStruck = false; b.candleCaptioned = false; }
+          b.candleParking = false;
         }
         break;
       }
@@ -257,7 +394,181 @@
     ];
   }
 
+  const WATER_STOPS = L.noraCare.water;
+
+  function waterRoute(stop) {
+    const all = [
+      { x: L.baristaHome.x, y: L.baristaHome.y },
+      { x: WATER_STOPS[0].x, y: WATER_STOPS[0].y },
+      { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: WATER_STOPS[1].x, y: WATER_STOPS[1].y },
+      { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: L.baristaExitX, y: L.lane },
+      { x: L.noraCare.plantVia.x, y: L.lane },
+      { x: L.noraCare.plantVia.x, y: L.noraCare.plantVia.y },
+      { x: WATER_STOPS[2].x, y: WATER_STOPS[2].y }
+    ];
+    return all.slice(0, [2, 4, 9][Math.max(0, Math.min(2, stop | 0))]);
+  }
+
+  function waterFromHome(stop) {
+    if (stop === 0) return [{ x: WATER_STOPS[0].x, y: WATER_STOPS[0].y }];
+    if (stop === 1) return [
+      { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: WATER_STOPS[1].x, y: WATER_STOPS[1].y }
+    ];
+    return [
+      { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: L.baristaExitX, y: L.lane },
+      { x: L.noraCare.plantVia.x, y: L.lane },
+      { x: L.noraCare.plantVia.x, y: L.noraCare.plantVia.y },
+      { x: WATER_STOPS[2].x, y: WATER_STOPS[2].y }
+    ];
+  }
+
+  function waterHomeRoute(stop) {
+    if (stop === 0) return [{ x: L.baristaHome.x, y: L.baristaHome.y }];
+    if (stop === 1) return [
+      { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: L.baristaHome.x, y: L.baristaHome.y }
+    ];
+    return [
+      { x: L.noraCare.plantVia.x, y: L.noraCare.plantVia.y },
+      { x: L.noraCare.plantVia.x, y: L.lane },
+      { x: L.baristaExitX, y: L.lane },
+      { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: L.baristaHome.x, y: L.baristaHome.y }
+    ];
+  }
+
+  function candleTableIndices(world) {
+    return world.tables.map(function (tb, i) { return { tb: tb, i: i }; })
+      .filter(function (v) { return !v.tb.tall; })
+      .sort(function (a, b) { return a.tb.x - b.tb.x; })
+      .map(function (v) { return v.i; });
+  }
+
+  function nextCandleStop(world) {
+    const indices = candleTableIndices(world);
+    for (let i = 0; i < indices.length; i++) {
+      if (world.tables[indices[i]].candleTarget < 1) return { table: indices[i] };
+    }
+    return world.candles.mantelTarget < 1 ? { mantel: true } : null;
+  }
+
+  function candleApproach(world, stop, fromHome) {
+    if (stop.mantel) {
+      const route = [
+        { x: L.noraCare.mantel.x, y: L.lane },
+        { x: L.noraCare.mantel.x, y: L.noraCare.mantel.y }
+      ];
+      return fromHome ? [
+        { x: L.baristaExitX, y: L.baristaHome.y },
+        { x: L.baristaExitX, y: L.lane }
+      ].concat(route) : route;
+    }
+    const route = busRoute(world, stop.table);
+    return fromHome ? route : route.slice(2);
+  }
+
+  function candleBackToLane(world, stop) {
+    if (stop.mantel) return [{ x: L.noraCare.mantel.x, y: L.lane }];
+    return busRoute(world, stop.table).slice(2).reverse().slice(1);
+  }
+
+  function candleLeg(world, from, to) {
+    if (!from) return candleApproach(world, to, true);
+    return candleBackToLane(world, from).concat(candleApproach(world, to, false));
+  }
+
+  function candleHomeRoute(world, from) {
+    return candleBackToLane(world, from).concat([
+      { x: L.baristaExitX, y: L.lane },
+      { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: L.baristaHome.x, y: L.baristaHome.y }
+    ]);
+  }
+
+  function candleRoute(world) {
+    const stops = candleTableIndices(world).map(function (i) { return { table: i }; });
+    stops.push({ mantel: true });
+    const route = [{ x: L.baristaHome.x, y: L.baristaHome.y }];
+    let from = null;
+    stops.forEach(function (stop) {
+      Array.prototype.push.apply(route, candleLeg(world, from, stop));
+      from = stop;
+    });
+    Array.prototype.push.apply(route, candleHomeRoute(world, from));
+    return route;
+  }
+
+  function lightCandleStop(world, stop) {
+    if (stop.mantel) world.candles.mantelTarget = 1;
+    else world.tables[stop.table].candleTarget = 1;
+  }
+
+  function nextMenuDoodle(world) {
+    const current = SCENE.getMenuDoodle();
+    const choices = world.rain > 0.3 ? [0, 1, 2, 3, 4, 4, 4] : [0, 1, 2, 3, 4];
+    let next = current;
+    while (next === current) next = pick(choices);
+    return next;
+  }
+
+  function chalkCaption(doodle) {
+    if (doodle === 1) return 'Nora chalks a little cat beside the prices.';
+    if (doodle === 2) return 'Today the board gets a steaming cup.';
+    if (doodle === 3) return 'A small chalk sprig curls beside the prices.';
+    if (doodle === 4) return 'Rain on the glass; an umbrella on the board.';
+    return 'Nora touches up the chalk heart.';
+  }
+
+  function startStretch(world, b) {
+    b.state = 'stretch'; b.stateT = 0; b.pose = 'stretch';
+    if (Math.random() < 0.3) caption(world, pick([
+      'The café is empty; Nora stretches, unhurried.',
+      'Nora stretches — the cat pretends it wasn\'t watching.'
+    ]));
+  }
+
+  function startChalk(b) {
+    b.state = 'chalkWalk'; b.stateT = 0;
+    b.path = [{ x: L.noraCare.chalk.x, y: L.noraCare.chalk.y }];
+  }
+
+  function startWater(world, b) {
+    b.state = 'waterOut'; b.stateT = 0; b.waterStop = b.waterNext || 0; b.holding = 'can';
+    b.path = waterFromHome(b.waterStop);
+    if (!b.waterNext && Math.random() < 0.4) caption(world, pick([
+      'Nora makes the rounds with the watering can.',
+      'The plants get their morning drink.'
+    ]));
+  }
+
+  function startCandleRound(world, b) {
+    const stop = nextCandleStop(world);
+    if (!stop) { b.candlePending = false; world.candles.forceRound = false; return; }
+    b.candleStop = stop; b.state = 'candleOut'; b.stateT = 0;
+    b.holding = 'taper'; b.taperLit = !!b.matchStruck;
+    b.path = candleLeg(world, null, stop);
+    if (!b.candleCaptioned) {
+      b.candleCaptioned = true;
+      if (Math.random() < 0.6) caption(world, pick([
+        'Nora goes round with a lit taper; the tables glow one by one.',
+        'Dusk. Nora lights the candles.'
+      ]));
+    }
+  }
+
   function startIdleTask(world, b) {
+    if (b.forcedTask) {
+      const forced = b.forcedTask; b.forcedTask = '';
+      if (forced === 'stretch') startStretch(world, b);
+      else if (forced === 'chalk') startChalk(b);
+      else if (forced === 'water') startWater(world, b);
+      else if (forced === 'candles') startCandleRound(world, b);
+      return;
+    }
     // any abandoned cups to collect?
     for (let ti = 0; ti < world.tables.length; ti++) {
       const it = world.tables[ti].items.find(function (i) { return i.owner === null; });
@@ -280,15 +591,19 @@
       b.path = refillRoute();
       return;
     }
+    if (b.candlePending) { startCandleRound(world, b); return; }
+    if (b.wateringPending) { startWater(world, b); return; }
+    if (b.emptyT > 20 && Math.random() < 0.3) { startStretch(world, b); return; }
+    if (b.chalkT <= 0 && Math.random() < 0.35) { startChalk(b); return; }
     const r = Math.random();
-    if (r < 0.4) {
+    if (r < 0.35) {
       b.state = 'wipe'; b.stateT = 0; b.swishes = 0;
       b.path = [{ x: rnd(660, 780), y: L.baristaHome.y }];
       if (Math.random() < 0.2) caption(world, 'Nora wipes down the counter.');
-    } else if (r < 0.65) {
+    } else if (r < 0.57) {
       b.state = 'polish'; b.stateT = 0;
       if (Math.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
-    } else if (r < 0.85) {
+    } else if (r < 0.75) {
       b.state = 'restock'; b.stateT = 0;
       b.path = [{ x: 858, y: L.baristaHome.y }];
       if (Math.random() < 0.25) caption(world, 'Nora tidies the pastry case.');
@@ -818,6 +1133,7 @@
   SIM.update = function (world, dt) {
     world.t += dt;
     updateClock(world, dt);
+    updateCandles(world, dt);
     updateWeather(world, dt);
     updateDoor(world, dt);
     updateSpawning(world, dt);
@@ -850,6 +1166,8 @@
   R.updateCat = updateCat;
   R.busRoute = busRoute;
   R.refillRoute = refillRoute;
+  R.waterRoute = waterRoute;
+  R.candleRoute = candleRoute;
   R.catRoute = catRoute;
   R.catSpots = CAT_SPOTS;
   R.catPerches = WINDOW_SPOTS.concat([BOOK_SPOT]);

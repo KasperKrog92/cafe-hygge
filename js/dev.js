@@ -17,6 +17,7 @@
      __dev.ff(sec)     fast-forward the sim in 0.25 s ticks, muted
      __dev.spawn(o)    real patron with chosen traits, via the front door
      __dev.send(n,x,y) path an entity through the real makePath
+     __dev.noraDo(name) force a Nora ritual on her next idle task
      __dev.catDo(name) force a cat ritual on the next simulation tick
      __dev.bowls(f,w)  set the cat's food and water bowl levels
      __dev.overlay(b)  toggle the layout overlay
@@ -46,6 +47,7 @@
     w.lastCapT = w.t - 10;                 // keep the caption gate sane across jumps
     if (w.activeCaption) w.activeCaption.born = w.t;
     SIM.update(w, 0);                      // recompute hour/palette immediately
+    SIM._.snapCandles(w);                  // jumps show the destination, not a missed ritual
   }
 
   D.hour = function (h) {
@@ -130,6 +132,26 @@
     cat.hopQueue = null; cat.hopAfter = null; cat.lapPatron = null;
     cat.waitingBowl = ''; cat.forced = action;
     return cat;
+  };
+
+  D.noraDo = function (action) {
+    const allowed = ['stretch', 'chalk', 'water', 'candles'];
+    if (allowed.indexOf(action) < 0) {
+      console.warn('[dev] unknown Nora behavior "' + action + '"');
+      return null;
+    }
+    const w = world(), b = w.barista;
+    b.forcedTask = action;
+    b.idleT = 0;
+    if (action === 'chalk') b.chalkT = 0;
+    else if (action === 'water') b.wateringPending = true;
+    else if (action === 'candles') {
+      SIM._.candleTables(w).forEach(function (tb) { tb.candle = 0; tb.candleTarget = 0; });
+      w.candles.mantel = 0; w.candles.mantelTarget = 0;
+      w.candles.forceRound = true;
+      b.candlePending = true; b.matchStruck = false; b.candleCaptioned = false;
+    }
+    return b;
   };
 
   D.bowls = function (food, water) {
@@ -418,6 +440,17 @@
     const refillEnd = refill[refill.length - 1];
     routeProblems(refill, refillEnd, 'cat bowl refill', ['counter', 'cat corner'], true, problems);
 
+    // Nora's three-stop watering round and full candle circuit are declared
+    // by the sim, so this checks the geometry she actually walks.
+    for (let i = 0; i < 3; i++) {
+      const water = SIM._.waterRoute(i);
+      const waterEnd = water[water.length - 1];
+      routeProblems(water, waterEnd, 'watering stop ' + i, ['counter'], i === 0, problems);
+    }
+    const candles = SIM._.candleRoute(w);
+    const candleEnd = candles[candles.length - 1];
+    routeProblems(candles, candleEnd, 'candle round', ['counter'], true, problems);
+
     // Cat floor stops obey floor collision rules; aerial anchors are checked
     // against their declared surface instead. The cushion is deliberately
     // inside the cat-only corner footprint and is the sole floor exemption.
@@ -531,6 +564,15 @@
     }
     if (w.catBowls.food < 0 || w.catBowls.food > 1 || w.catBowls.water < 0 || w.catBowls.water > 1) {
       problems.push('cat bowl levels must stay between 0 and 1');
+    }
+    w.tables.forEach(function (tb, i) {
+      if (tb.candle < 0 || tb.candle > 1 || tb.candleTarget < 0 || tb.candleTarget > 1) {
+        problems.push('table ' + i + ' candle state must stay between 0 and 1');
+      }
+    });
+    if (w.candles.mantel < 0 || w.candles.mantel > 1 ||
+        w.candles.mantelTarget < 0 || w.candles.mantelTarget > 1) {
+      problems.push('mantel candle state must stay between 0 and 1');
     }
 
     if (problems.length) {

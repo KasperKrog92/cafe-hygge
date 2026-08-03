@@ -22,8 +22,9 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 | 22–24 | deep night | 0.00 | 1.00 |
 
 - `daylight` scales the multiply-tint over the whole scene and patron spawn
-  rates; `lamp` scales every warm glow (hanging lamps, the two nook reading
-  lamps, candles, town windows) and the star/moon alpha.
+  rates; `lamp` scales the electric warm glows (hanging lamps and the two
+  nook reading lamps) and the star/moon alpha. Candle light has its own
+  per-flame state, tended by Nora.
 - Threshold captions: lamps crossing on → "The streetlamps flicker on, one by
   one."; off → "Morning light spills across the floorboards."
 
@@ -47,16 +48,24 @@ Applied after all sprites, in `SCENE.drawLighting`:
 2. **Additive glows** (`lighter` composite): the three hanging lamps (the
    third hangs over the counter, with two spill pools across the back bar —
    machine + pass, pastry case — so the counter stays warm after dark), the
-   two reading lamps in the nook, mantel candles (all scaled by `lamp`); the
-   fireplace (always on,
-   flickering via layered sines); a candle jar on every dining table (always
-   lit, stronger after dark, per-table flicker — the window poseur tables
-   carry no candle, cups only); a soft daylight pool below each of the two
+   two reading lamps in the nook; the fireplace (always on,
+   flickering via layered sines); a candle jar on every dining and nook side
+   table plus the mantel pair (each glow scaled by its live 0–1 flame state;
+   window poseur tables carry no candle, cups only); a soft daylight pool below each of the two
    windows.
 3. **Vignette**: radial darkening toward the edges, always.
 
 Speech bubbles and captions draw **after** this pass so they stay readable at
 midnight.
+
+### Candle day cycle
+
+When `daylight` falls below 0.5, unlit candles make Nora's dusk round pending;
+the tables and mantel bloom one stop at a time as she reaches them. The round
+waits behind orders, bussing, and bowl care, and can park at a stop for a new
+queue. At dawn the targets drop to zero and the flames fade over about 60 s.
+Clock jumps (`?hour=` / `__dev.hour`) snap all flames to the destination band,
+so a jump to night does not replay a dusk that never elapsed.
 
 ## Particles
 
@@ -67,6 +76,8 @@ midnight.
 - **Sparks** (`type: 'spark'`): rare 1-px embers rising inside the firebox.
 - **Dust mote** (`type: 'mote'`): a single 2-px cream fleck with slow drift,
   spawned for the cat's daylight pounce ritual and removed with that beat.
+- **Water drop** (`type: 'drop'`): three or four tiny blue-grey pixels arc
+  from Nora's watering-can spout during each plant stop.
 - Spawned in `updateParticles` (sim), drawn in `SCENE.drawParticles`.
 
 ## Cat corner state
@@ -92,7 +103,8 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   streetlamps, the street drifting by), bookshelf moments (drifting
   over, picking a book out, slipping it back), page turns (12% of them),
   murmuring tables (15%), cup returns, departures (rain/night-aware), cat
-  movements and petting, weather changes, lamp threshold moments. Cat-life
+  movements and petting, Nora stretching/chalking/watering and the dusk/dawn
+  candle ritual, weather changes, lamp threshold moments. Cat-life
   lines cover the patient empty-bowl wait, Nora's refill/supervision, rain and
   streetlamp window watches, bookshelf survey, counter shoo, aborted ascent,
   Nora ignoring the top shelf, kneading, dust-mote battle, and gentle lap

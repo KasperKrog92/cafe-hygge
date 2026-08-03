@@ -9,7 +9,8 @@ Nothing here is committed; the owner picks what sounds lovely next.
 > file splits, doc slimming — future changes cost less), and the harness
 > sweep (a multi-day soak-test bug hunt plus the journey/footprint rules now
 > in `__dev.audit()`), and cat life (corner + bowl care, high perches,
-> counter/shelf capers, laps, kneading, and dust motes) were specced here,
+> counter/shelf capers, laps, kneading, and dust motes), and Nora's care
+> rituals (watering, chalkboard doodles, dusk candles, quiet stretches) were specced here,
 > executed, and their plan docs
 > retired (git history has them).
 
@@ -49,9 +50,6 @@ machines, rain, café room tone…). Plan for when clips arrive:
 
 ## 🐈 More life
 
-- Nora: watering the plants, chalking the menu (board doodle changes),
-  lighting the candles at dusk (tie candle glow to an actual action),
-  a quiet stretch when the café is empty.
 - Patrons: umbrellas on rainy days (shaken at the door), laptops (soft rare
   keystrokes), a regular who always takes the same seat, couples sharing a
   table, someone who falls asleep over their book at night.

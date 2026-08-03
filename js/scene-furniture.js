@@ -20,7 +20,7 @@
     world.tables.forEach(function (tb, i) {
       const cx = tb.x, cy = tb.y;
       if (tb.small) {
-        out.push({ y: cy + 12, draw: function (g) { drawSideTable(g, cx, cy, tb.items); } });
+        out.push({ y: cy + 12, draw: function (g) { drawSideTable(g, cx, cy, tb, world); } });
         return;
       }
       if (tb.tall) {
@@ -59,13 +59,15 @@
         px(g, cx + 10, cy - 9, 2, 2, '#6e4c30');                  // a knot
         // items left on the table
         tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, cx, cy, it); });
-        // a lit candle jar on each table (its glow lives in drawLighting)
+        // candle jar stays visible while its flame follows the ritual state
         px(g, cx - 4, cy - 14, 8, 8, '#c9b28a');
         px(g, cx - 3, cy - 12, 6, 3, '#f0e0c8');
-        g.globalAlpha = 0.6 + 0.4 * Math.sin(world.t * 9 + i * 2.1);
-        px(g, cx - 1, cy - 17, 2, 4, '#f5b942');
-        px(g, cx - 1, cy - 19, 2, 2, '#f8dc8a');
-        g.globalAlpha = 1;
+        if (tb.candle > 0.3) {
+          g.globalAlpha = tb.candle * (0.6 + 0.4 * Math.sin(world.t * 9 + i * 2.1));
+          px(g, cx - 1, cy - 17, 2, 4, '#f5b942');
+          px(g, cx - 1, cy - 19, 2, 2, '#f8dc8a');
+          g.globalAlpha = 1;
+        }
       } });
     });
 
@@ -181,7 +183,7 @@
   }
 
   /* a low round table beside each nook chair — just big enough for a cup */
-  function drawSideTable(g, sx, sy, items) {
+  function drawSideTable(g, sx, sy, tb, world) {
     ell(g, sx, sy + 10, 15, 4, 'rgba(20,12,8,0.2)');
     px(g, sx - 3, sy, 6, 10, '#5a3d28');             // pedestal
     px(g, sx - 3, sy, 2, 10, '#6e4c30');
@@ -190,7 +192,16 @@
     ell(g, sx, sy - 2, 16, 6, '#8a6142');
     ell(g, sx, sy - 3, 12, 4, '#96704c');
     px(g, sx - 6, sy - 5, 10, 2, 'rgba(90,58,34,0.3)');   // grain
-    items.forEach(function (it) { if (!it.hidden) drawTableItem(g, sx, sy - 2, it); });
+    tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, sx, sy - 2, it); });
+    const cx = sx + 7;
+    px(g, cx - 3, sy - 12, 6, 6, '#c9b28a');
+    px(g, cx - 2, sy - 10, 4, 2, '#f0e0c8');
+    if (tb.candle > 0.3) {
+      g.globalAlpha = tb.candle * (0.6 + 0.4 * Math.sin(world.t * 9 + sx * 0.01));
+      px(g, cx - 1, sy - 15, 2, 3, '#f5b942');
+      px(g, cx - 1, sy - 17, 2, 2, '#f8dc8a');
+      g.globalAlpha = 1;
+    }
   }
 
   /* a slim poseur table under each window, tall enough that its top meets

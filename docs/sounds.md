@@ -62,6 +62,10 @@ octave sine, 1.7 s exponential decay, heavy delay send. Peak 0.035.
 | `espresso(dur)` | shot pulling | noise bandpass sweeping 1600→850 Hz, slow attack + 52 Hz pump hum; 2.4 s |
 | `steamWand(dur)` | milk steaming | highpass-1900 noise with a randomized sputter envelope; 1.8 s |
 | `kettlePour(dur)` | tea | noise bandpass sweeping up 700→2100 Hz (cup filling) + 3–4 bubble blips |
+| `chalkTick()` | Nora chalking the menu | one 45–70 ms high, narrow filtered-noise scrape; called 2–3 times across the gesture, peak ~0.025 |
+| `waterPour(dur)` | Nora watering a plant | dark bandpassed/lowpassed noise sweeping 520→980 Hz, 1.2 s, peak 0.03 |
+| `matchStrike()` | first stop of Nora's candle round | 100 ms scratch around 1.8 kHz followed by a 200 ms high fizz, combined peak ~0.03 |
+| `candlePop()` | each candle stop | soft 90 ms airy filtered-noise fwip, peak 0.018 |
 | `pageTurn()` | readers | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
 | `sip()` | sip animation peak | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |

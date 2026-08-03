@@ -36,6 +36,7 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   `__dev.hour(h)`, `__dev.ff(seconds)` (fast-forward,
   muted), `__dev.spawn({wantsBook, ownBook, drink, chatty})` (a real patron
   with chosen traits), `__dev.send(name, x, y)`,
+  `__dev.noraDo('stretch'|'chalk'|'water'|'candles')`,
   `__dev.catDo('eat'|'window'|'bookshelf'|'counter'|'topShelf'|'lap'|'mote'|'knead')`,
   `__dev.bowls(food, water)`, `__dev.overlay()`,
   `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus

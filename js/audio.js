@@ -301,6 +301,30 @@
     }
   });
 
+  SND.chalkTick = guard(function () {
+    hiss({ dur: 0.045 + Math.random() * 0.025, gain: 0.02 + Math.random() * 0.005,
+      bp: 2200 + Math.random() * 900, q: 2.4, hp: 1200, attack: 0.003, release: 0.035 });
+  });
+
+  SND.waterPour = guard(function (dur) {
+    dur = dur || 1.2;
+    hiss({ dur: dur, gain: 0.03, bp: 620, q: 0.8, lp: 1500,
+      sweep: [520, 980], attack: 0.12, release: 0.25 });
+  });
+
+  SND.matchStrike = guard(function () {
+    hiss({ dur: 0.1, gain: 0.028, bp: 1800, q: 1.4, hp: 700, attack: 0.004, release: 0.07 });
+    setTimeout(function () {
+      if (!ctx || S.muted) return;
+      hiss({ dur: 0.2, gain: 0.012, hp: 2400, attack: 0.015, release: 0.16 });
+    }, 55);
+  });
+
+  SND.candlePop = guard(function () {
+    hiss({ dur: 0.09, gain: 0.018, bp: 1250, q: 0.7, lp: 2200,
+      attack: 0.015, release: 0.06 });
+  });
+
   SND.pageTurn = guard(function () {
     hiss({ dur: 0.16, gain: 0.028, bp: 1500, q: 0.7, sweep: [1100, 2400], attack: 0.03, release: 0.06 });
   });

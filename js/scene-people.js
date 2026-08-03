@@ -57,7 +57,8 @@
     const cycle = walk ? (Math.floor(p.animT * 8) % 4) : 0;
     const pass = cycle === 1 || cycle === 3;               // passing frames bob up
     const y = p.y - (walk && pass ? 2 : 0);
-    const x = Math.round(p.x);
+    const stretchLean = p.pose === 'stretch' ? Math.round(Math.sin(p.animT * 1.4) * 2) : 0;
+    const x = Math.round(p.x) + stretchLean;
     const c = p.colors;
     const breathe = !walk && Math.sin(p.animT * 1.6) > 0.3 ? 1 : 0;
     const topD = shade(c.top, -0.18);
@@ -157,7 +158,17 @@
     // arm + held item, with actual hands
     const held = p.holding;
     const swing = walk && !pass ? (cycle === 0 ? 2 : -2) * facing : 0;
-    if (held === 'cup' || held === 'plate' || held === 'cloth') {
+    if (p.pose === 'stretch') {
+      // a long, unhurried reach: both shoulders lift and the hands nearly meet
+      px(g, x - 11, y - 50, 5, 14, c.top); px(g, x + 6, y - 50, 5, 14, c.top);
+      px(g, x - 8, y - 59, 4, 11, c.skin); px(g, x + 4, y - 59, 4, 11, c.skin);
+      px(g, x - 8, y - 62, 4, 4, c.skin); px(g, x + 4, y - 62, 4, 4, c.skin);
+    } else if (p.pose === 'reach' && !held) {
+      const ax = x + facing * 7 - (facing < 0 ? 4 : 0);
+      px(g, ax, y - 48, 5, 13, c.top);
+      px(g, ax + facing * 2, y - 58, 4, 12, c.skin);
+      px(g, ax + facing * 2, y - 61, 4, 4, c.skin);
+    } else if (held === 'cup' || held === 'plate' || held === 'cloth') {
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 10, c.top);
       const hx = x + facing * 13 - (facing > 0 ? 0 : 8);
       if (held === 'cup') {
@@ -171,6 +182,29 @@
       } else {
         px(g, hx, y - 26, 10, 7, '#7a89a5');
         px(g, hx + 2, y - 29, 4, 3, c.skin);               // hand on the cloth
+      }
+    } else if (held === 'can') {
+      const hx = x + facing * 9;
+      px(g, x + facing * 7 - (facing > 0 ? 0 : 3), y - 36, 5, 12, c.top);
+      if (p.pouring) {
+        px(g, hx - 7, y - 43, 12, 9, '#b5654a');
+        px(g, hx - 5, y - 46, 8, 3, '#c98f4a');
+        px(g, hx + facing * 4 - (facing < 0 ? 8 : 0), y - 39, 10, 3, '#b5654a');
+        px(g, hx + facing * 11 - (facing < 0 ? 3 : 0), y - 38, 3, 5, '#c98f4a');
+      } else {
+        px(g, hx - 6, y - 31, 12, 10, '#b5654a');
+        px(g, hx - 4, y - 35, 8, 4, '#c98f4a');
+        px(g, hx + facing * 5 - (facing < 0 ? 9 : 0), y - 28, 10, 3, '#b5654a');
+      }
+      px(g, hx - 2, p.pouring ? y - 36 : y - 24, 4, 4, c.skin);
+    } else if (held === 'taper') {
+      const tx = x + facing * 13;
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 36, 5, 12, c.top);
+      px(g, tx - 1, y - 42, 2, 18, '#e8dfc9');
+      px(g, tx - 2, y - 27, 4, 4, c.skin);
+      if (p.taperLit) {
+        px(g, tx - 1, y - 46, 2, 4, '#f5b942');
+        px(g, tx - 1, y - 48, 2, 2, '#f8dc8a');
       }
     } else if (held === 'book') {
       // borrowed book tucked under the arm
@@ -191,6 +225,10 @@
     const x = Math.round(cat.x), y = Math.round(cat.y);
     const t = cat.animT;
     const pose = cat.state === 'hop' ? 'stretch' : cat.state;
+    // on the back-bar shelf the tail drapes off the board edge instead of the
+    // pose's own tail (sleep keeps its tucked curl and skips the drape)
+    const drapeTail = cat.surface === 'backShelf' &&
+      (pose === 'loaf' || pose === 'sit' || pose === 'groom');
     const look = cat.gazeFacing || cat.facing;
     const f = look >= 0 ? 1 : -1;
     const body = '#d98d4a', dark = '#b5702e', cream = '#f0e0c8', pink = '#d9738a';
@@ -256,11 +294,13 @@
         px(g, hx + f * 4 - (f > 0 ? 0 : 3), hy + 7, 3, 4, body);            // raised grooming paw
       }
       // tail wrapped around the paws, tip curling and swaying
-      const sway = Math.round(Math.sin(t * 2.2) * 2);
-      px(g, x - f * 9 - 2, y - 7, 4, 7, dark);
-      px(g, f > 0 ? x - 8 : x - 4, y - 3, 12, 3, dark);
-      px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 6, 3, 4, dark);
-      px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 7, 3, 2, cream);
+      if (!drapeTail) {
+        const sway = Math.round(Math.sin(t * 2.2) * 2);
+        px(g, x - f * 9 - 2, y - 7, 4, 7, dark);
+        px(g, f > 0 ? x - 8 : x - 4, y - 3, 12, 3, dark);
+        px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 6, 3, 4, dark);
+        px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 7, 3, 2, cream);
+      }
     } else if (pose === 'knead') {
       const paw = Math.floor(t * 6) % 2;
       px(g, x - 12, y - 12, 24, 10, body);
@@ -296,17 +336,20 @@
         px(g, x + f * 15 - (f > 0 ? 0 : 3), y - 9, 3, 3, cream);
       }
       // curved tail: base rises from the rump, tip sways the most
-      const ts = Math.round(Math.sin(t * 5) * 2);
-      px(g, f > 0 ? x - 15 : x + 11, y - 16, 4, 7, dark);
-      px(g, f > 0 ? x - 17 : x + 14, y - 20 + ts, 3, 5, dark);
-      px(g, f > 0 ? x - 17 : x + 14, y - 22 + ts, 3, 2, cream);
+      if (!drapeTail) {
+        const ts = Math.round(Math.sin(t * 5) * 2);
+        px(g, f > 0 ? x - 15 : x + 11, y - 16, 4, 7, dark);
+        px(g, f > 0 ? x - 17 : x + 14, y - 20 + ts, 3, 5, dark);
+        px(g, f > 0 ? x - 17 : x + 14, y - 22 + ts, 3, 2, cream);
+      }
     }
 
-    if (cat.surface === 'backShelf' && pose !== 'stretch') {
+    if (drapeTail) {
+      const tx = pose === 'loaf' ? x + 9 : x + 3;   // rooted at the haunch
       const drape = Math.round(Math.sin(t * 1.6) * 2);
-      px(g, x + 9, y - 3, 4, 17, dark);
-      px(g, x + 9 + drape, y + 12, 4, 7, dark);
-      px(g, x + 9 + drape, y + 18, 4, 3, cream);
+      px(g, tx, y - 3, 4, 17, dark);
+      px(g, tx + drape, y + 12, 4, 7, dark);
+      px(g, tx + drape, y + 18, 4, 3, cream);
     }
   };
 

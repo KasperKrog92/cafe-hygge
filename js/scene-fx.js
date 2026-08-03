@@ -41,14 +41,14 @@
     const flick = 0.2 + 0.06 * Math.sin(t * 8.7) + 0.04 * Math.sin(t * 23.3);
     glow(g, 388, 204, 92, 255, 140, 50, flick);
     glow(g, 388, 212, 40, 255, 190, 90, flick * 0.8);
-    // candles on the mantel
-    glow(g, 385, 118, 20, 255, 200, 110, 0.1 + 0.06 * Math.sin(t * 11));
-    // candles on the tables — always lit, a touch stronger after dark
-    // (the window poseur tables carry no candle: cups only, cushions nearby)
+    // candle pools bloom only after Nora has lit their visible flames
+    const mantel = world.candles ? world.candles.mantel : 0;
+    glow(g, 385, 118, 20, 255, 200, 110, mantel * (0.1 + 0.06 * Math.sin(t * 11)));
+    // window poseur tables carry no candle: cups only, cushions nearby
     world.tables.forEach(function (tb, i) {
       if (tb.tall) return;
-      const a = 0.07 + 0.07 * (1 - d) + 0.025 * Math.sin(t * 9 + i * 2.1);
-      glow(g, tb.x, tb.y - 14, 34, 255, 195, 105, a);
+      const a = tb.candle * (0.07 + 0.07 * (1 - d) + 0.025 * Math.sin(t * 9 + i * 2.1));
+      glow(g, tb.x + (tb.small ? 7 : 0), tb.y - 14, 34, 255, 195, 105, a);
     });
     // daylight spilling in the windows (centred under L.win / L.win2)
     if (d > 0.1) {
@@ -103,6 +103,9 @@
         const my = Math.round(p.y + Math.cos(p.age * 3 + p.seed) * 3);
         g.fillStyle = 'rgba(250,232,182,' + (a * 0.9).toFixed(3) + ')';
         g.fillRect(mx, my, 2, 2);
+      } else if (p.type === 'drop') {
+        g.fillStyle = 'rgba(126,174,188,' + (a * 0.75).toFixed(3) + ')';
+        g.fillRect(Math.round(p.x), Math.round(p.y), 1, 2);
       }
     });
   };

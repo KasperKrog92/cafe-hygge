@@ -16,8 +16,16 @@
      machine) are painted on top each frame — in the same relative order the
      one-pass renderer used, so nothing overlaps wrongly. */
   let bgCache = null;
+  let menuDoodle = 0;
 
   SCENE.invalidateBG = function () { bgCache = null; };
+  SCENE.setMenuDoodle = function (i) {
+    i = Math.max(0, Math.min(4, i | 0));
+    if (i === menuDoodle) return;
+    menuDoodle = i;
+    SCENE.invalidateBG();
+  };
+  SCENE.getMenuDoodle = function () { return menuDoodle; };
 
   SCENE.drawScene = function (g, world) {
     if (!bgCache) {
@@ -338,10 +346,13 @@
   }
 
   function drawCandleFlame(g, x, y, world, seed) {
-    const a = 0.65 + 0.35 * Math.sin(world.t * 11 + seed * 2.6);
+    const lit = world.candles ? world.candles.mantel : 0;
+    if (lit <= 0.03) return;
+    const h = Math.max(2, Math.round(6 * lit));
+    const a = (0.65 + 0.35 * Math.sin(world.t * 11 + seed * 2.6)) * lit;
     g.globalAlpha = a;
-    px(g, x + 2, y - 18, 2, 6, '#f5b942');
-    px(g, x + 2, y - 20, 2, 2, '#f8dc8a');
+    px(g, x + 2, y - 12 - h, 2, h, '#f5b942');
+    if (lit > 0.3) px(g, x + 2, y - 14 - h, 2, 2, '#f8dc8a');
     g.globalAlpha = 1;
   }
 
@@ -370,12 +381,34 @@
     g.fillRect(m.x + 82, m.y + 32, 10, 2);
     g.fillRect(m.x + 82, m.y + 44, 10, 2);
     g.fillRect(m.x + 82, m.y + 56, 10, 2);
-    // a little chalk heart
-    px(g, m.x + 96, m.y + 54, 2, 2, 'rgba(220,214,196,0.7)');
-    px(g, m.x + 100, m.y + 54, 2, 2, 'rgba(220,214,196,0.7)');
-    px(g, m.x + 96, m.y + 56, 6, 2, 'rgba(220,214,196,0.7)');
-    px(g, m.x + 97, m.y + 58, 4, 2, 'rgba(220,214,196,0.7)');
-    px(g, m.x + 98, m.y + 60, 2, 2, 'rgba(220,214,196,0.7)');
+    drawMenuDoodle(g, m.x + 94, m.y + 50, menuDoodle);
+  }
+
+  function drawMenuDoodle(g, x, y, id) {
+    const c = 'rgba(220,214,196,0.7)';
+    if (id === 1) { // curled sleeping cat
+      px(g, x + 2, y + 6, 10, 5, c); px(g, x + 7, y + 3, 5, 5, c);
+      px(g, x + 8, y + 1, 2, 3, c); px(g, x + 11, y + 1, 2, 3, c);
+      px(g, x, y + 8, 4, 2, c); px(g, x, y + 6, 2, 3, c);
+      px(g, x + 8, y + 5, 3, 2, '#2c3038');
+    } else if (id === 2) { // steaming cup
+      px(g, x + 1, y + 6, 10, 6, c); px(g, x + 11, y + 7, 3, 3, c);
+      px(g, x + 3, y + 3, 2, 2, c); px(g, x + 6, y + 1, 2, 3, c);
+      px(g, x + 10, y + 2, 2, 3, c);
+    } else if (id === 3) { // sprig
+      px(g, x + 6, y + 1, 2, 12, c);
+      px(g, x + 2, y + 3, 4, 2, c); px(g, x + 1, y + 1, 3, 2, c);
+      px(g, x + 8, y + 5, 4, 2, c); px(g, x + 11, y + 3, 2, 2, c);
+      px(g, x + 2, y + 8, 4, 2, c); px(g, x + 1, y + 10, 3, 2, c);
+    } else if (id === 4) { // umbrella
+      px(g, x + 2, y + 4, 12, 2, c); px(g, x + 4, y + 2, 8, 2, c);
+      px(g, x + 7, y, 2, 10, c); px(g, x + 7, y + 9, 5, 2, c);
+      px(g, x + 10, y + 8, 2, 2, c);
+    } else { // heart
+      px(g, x + 2, y + 4, 2, 2, c); px(g, x + 6, y + 4, 2, 2, c);
+      px(g, x + 2, y + 6, 6, 2, c); px(g, x + 3, y + 8, 4, 2, c);
+      px(g, x + 4, y + 10, 2, 2, c);
+    }
   }
 
   function drawShelves(g) {
