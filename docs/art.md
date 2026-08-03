@@ -9,14 +9,23 @@ side — are **texture only, never content**. The viewport manager in main.js
 cover-fits the window: integer device-pixel scales present pixelated
 (1920×1080 and 1920×1200 fullscreen are both an exact ×2), fractional scales
 via sharp-bilinear. The scene was migrated from the original 480×270 buffer
-by the mechanical transform **x′ = 2x, y′ = 2y + 36** (see
-docs/plans/native-resolution.md); art detail is still at the 480-era level
-until the Phase 2 detail pass.
+by the mechanical transform **x′ = 2x, y′ = 2y + 36**, and the Phase 2
+**detail pass** (docs/plans/native-resolution.md, executed) redrew every
+region at native resolution: character faces/hands/hair, hero props,
+architecture textures, retuned atmosphere and real typography.
 
 ## Style rules
 
 - **Whole pixels only.** Integer coordinates, `fillRect`-first drawing. The
   few ellipses (table tops, shadows, rug) read as soft shapes at this scale.
+- **Minimum feature size 2 px** (at 960) for art — keeps the cozy chunk; no
+  "HD remaster" drift. Two sanctioned exceptions: 1 px rain streaks (finer
+  rain is the point) and typography (see *Typography* below).
+- **Derived shades, not new hexes.** Clothing folds, hair shine, creases use
+  `shade(hex, ±f)` in scene.js (memoized lighten/darken) so the palette stays
+  small while pool colors gain depth. Texture noise (floor grain, knots,
+  brick tint) uses the deterministic `h2(x, y)` hash — the static background
+  renders once, so its randomness must be stable.
 - **One ruler: CH = 60 px** (a standing character, head ~20 of it — chibi
   kept). Everything is sized relative to CH (see the table below); the
   proportion pass (docs/plans/visual-proportion-pass.md) unified the scales.
@@ -47,13 +56,14 @@ until the Phase 2 detail pass.
 | Floor planks | `#9c6b43` (seams `#7d5334`) |
 | Counter front / dark wood | `#6b4529`, `#5a3d28`, `#4a3222` |
 | Counter slab / light wood | `#a8764a` (edge `#c08a58`) |
-| Brick (fireplace) | `#7d4437` (mortar `#5f3229`) |
-| Flames | `#e06a1e` → `#f5a83c` → `#f8dc8a` |
+| Brick (fireplace) | `#7d4437` + variants `#86493c` `#744033` `#8a4d3d` (mortar `#5f3229`) |
+| Flames | back layer `#b5481c` → `#e06a1e` → `#f5a83c` → `#f8dc8a` |
 | Armchair | `#8a3d3d` (highlights `#a05252`) |
 | Rugs | `#a34d3b` / `#8f5a3a` |
 | Crockery | `#e8e0d0`, saucers `#d9d2c0` |
 | Cat | `#d98d4a`, stripes `#b5702e`, chest `#f0e0c8` |
-| Metal / machine | `#b8bfc7`, dark `#3c414d` |
+| Metal / machine | `#b8bfc7`, dark `#3c414d`, highlight `#d3d9de` |
+| Pastry glaze pink | `#d9738a` (light `#e8b4c4`) |
 | Chalk / caption text | `#e8dfc9` / `rgba(240,225,195,·)` |
 
 Time-of-day sky colors live in the `DAYKEYS` table (see world.md).
@@ -117,12 +127,43 @@ Rules that keep it looking right:
 ## People (drawPerson)
 
 A standing character is 60 px (legs 16, torso 24, head 16 + hair); seated
-~52, slightly hunched. Poses: `stand`, `walk` (2-frame leg swap + 2 px bob,
-6 fps), `sit` (bent legs, lowered head). Options per character: scarf row,
-long hair, apron (Nora), `holding` (`cup`/`plate`/`cloth`), `armUp` 0–1 (sip
-animation lifts the cup toward the face), `reading` (open book replaces held
-items while seated). Facing is ±1 (side profile both ways); the eye pixel and
-hair-back column flip with it.
+~52, slightly hunched. Poses: `stand`, `walk` (**4-frame** cycle at 8 fps —
+stride / passing / stride / passing, 2 px bob and a subtle arm swing on the
+passing frames), `sit` (bent legs, lowered head). Standing and seated
+characters get a slow 1 px idle breathe (head bob).
+
+Faces: hair-colored brow + 3×4 eye, mouth, soft blush (or a beard, 15% of
+patrons). Hands are drawn wherever an arm ends or an item is held (cup grip,
+palm under plate, hands on book covers). Hair comes in **four styles** —
+0 classic cap, 1 side-part fringe, 2 curly, 3 bun — plus the long-hair back
+fall (suppressed by the bun); cap gets a `shade()` shine streak. Clothing:
+shoulder light + centre fold + hem on tops, creases on trousers, scarf knot
+with hanging tail and fringe, and Nora's apron has neck straps, waistband,
+pocket and a tie bow at the back. Options per character: scarf, long hair,
+`hairStyle`, `beard`, apron (Nora), `holding` (`cup`/`plate`/`cloth`),
+`armUp` 0–1 (sip animation lifts the cup toward the face), `reading` (open
+book replaces held items while seated). Facing is ±1 (side profile both
+ways); the face details and hair-back column flip with it.
+
+The cat: ears are drawn as base + tip triangles with a pink inner ear on the
+facing side, and one ear flicks now and then (sine-gated on `animT`). Tails
+are segmented curves — wrapped around the paws when sitting (tip swaying),
+raised and arcing in walk (tip sways most), curled along the body in sleep —
+with a pale tip; walking/loafing bodies carry back stripes, sitting adds a
+muzzle + pink nose, sleeping a closed-eye line.
+
+## Typography
+
+- **Chalk: a 6×10 hand** (`SCENE.chalkText`, `CHALK` glyphs in scene.js) with
+  2 px strokes and a ±1 px per-character jitter so boards look hand-written.
+  Used on the menu board ("CAFÉ HYGGE", KAFFE / KAKAO / BOLLER + price
+  dashes + a chalk heart). Glyph set is caps A–Y subset + É; extend the map
+  when a new word needs a missing letter.
+- **Captions render as bitmap text**: each caption is drawn once at 10 px
+  into an offscreen canvas, thresholded to crisp 1-bit glyphs in the caption
+  cream (+ dark shadow copy), then blitted ×2 nearest-neighbour — a 20 px
+  pixel-look line with zero font assets. Cached per caption text; fades via
+  `globalAlpha`.
 
 ## Lighting & effects
 

@@ -110,7 +110,9 @@
       colors: {
         skin: pick(SKINS), hair: pick(HAIRS), top: pick(TOPS), pants: pick(PANTS),
         scarf: Math.random() < 0.4 ? pick(TOPS) : null,
-        longHair: Math.random() < 0.4
+        longHair: Math.random() < 0.4,
+        hairStyle: (Math.random() * 4) | 0,   // 0 classic, 1 side-part, 2 curly, 3 bun
+        beard: Math.random() < 0.15
       },
       drink: drink,
       wantsBook: Math.random() < 0.35,
@@ -131,7 +133,7 @@
   function makeBarista() {
     return {
       kind: 'barista', name: 'Nora',
-      colors: { skin: '#e8b48a', hair: '#4a2f1c', top: '#5a7a8a', pants: '#3d4a5c', apron: true, longHair: true, scarf: null },
+      colors: { skin: '#e8b48a', hair: '#4a2f1c', top: '#5a7a8a', pants: '#3d4a5c', apron: true, longHair: true, scarf: null, hairStyle: 1 },
       x: L.baristaHome.x, y: L.baristaHome.y,
       facing: -1, pose: 'stand', animT: 0,
       speed: 60, path: null,

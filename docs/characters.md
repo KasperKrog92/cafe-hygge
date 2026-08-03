@@ -9,7 +9,8 @@ behavior is dt-driven state machines in `js/sim.js`; all drawing is
 ## Nora — the barista
 
 The café's constant. She never leaves for the night (someone has to keep the
-fire company). Sea-blue top, cream apron, long brown hair.
+fire company). Sea-blue top, cream apron (neck straps, pocket, tie bow at the
+back), long brown hair with a side-part fringe (`hairStyle: 1`).
 
 **Home position:** behind the counter at `L.baristaHome` (706, 286) — the y
 matters; see art.md. She exits the counter through the gap at x = 616 when she
@@ -55,7 +56,9 @@ Generated on spawn from pools, so every visitor is a little different.
 Sofie, Johan, Maja, Viggo, Ellen, Oskar, Alma, Karl.
 
 **Appearance rolls:** 5 skin tones, 8 hair colors, 9 top colors, 5 trouser
-colors; 40% wear a scarf; 40% have long hair. Walk speed 46–60 px/s.
+colors; 40% wear a scarf (knotted, with a hanging tail); 40% have long hair;
+4 hair styles (classic / side-part / curly / bun, uniform roll); 15% wear a
+beard. Walk speed 46–60 px/s, animated as a 4-frame cycle.
 
 **Personality rolls:**
 
@@ -110,9 +113,12 @@ Orange tabby, no name (it has not told anyone yet). The café's true owner.
 big rug (340, 468), beside the armchair (282, 412).
 
 **States:** `sleep` (35–100 s; purrs every 10–25 s; occasional "zzz" bubble)
-→ `sit` (5–12 s) → sometimes `groom` (3–6 s) or `stretch` (1.6 s) → `walk` to
-a new spot (32 px/s, sometimes a meow, usually a caption) → `sleep`/`loaf`/`sit`.
-Sleeping shows a 2-px breathing animation; sitting sways the tail.
+→ `sit` (5–12 s) → sometimes `groom` (3–6 s, with a raised paw) or `stretch`
+(1.6 s) → `walk` to a new spot (32 px/s, sometimes a meow, usually a caption)
+→ `sleep`/`loaf`/`sit`. Sleeping shows a 2-px breathing animation (stripes
+ride the breath) with the tail curled around the front; sitting wraps the
+tail around the paws with the pale tip swaying; an ear flicks occasionally in
+every pose. See art.md for the sprite details.
 
 **Petting:** clicking within ~36 px of the cat triggers `SIM.petCat` — heart
 bubble, meow or purr, caption "The cat purrs happily." If asleep, it sits up.

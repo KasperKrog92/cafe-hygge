@@ -4,10 +4,9 @@
 fullscreen or large-window at **1920×1080 (16:9)** and **1920×1200 (16:10)** —
 instead of being a 480×270 buffer stretched ×4.
 
-**Status:** Phases 0, 1, 3 and 4 executed 2026-08-02. The
-[proportion pass](visual-proportion-pass.md) has since **landed** (also
-2026-08-02), so Phase 2 (the detail art pass) is now unblocked — every sprite
-is at its final size and proportion. See *Execution notes* at the bottom for
+**Status:** **fully executed.** Phases 0, 1, 3 and 4 landed 2026-08-02, the
+[proportion pass](visual-proportion-pass.md) the same day, and Phase 2 (the
+detail art pass) landed 2026-08-03. See *Execution notes* at the bottom for
 what shipped and where it deviates from this plan.
 **Pairs with:** [visual-proportion-pass.md](visual-proportion-pass.md) — read
 the *Sequencing the two plans* section at the bottom before starting either.
@@ -179,3 +178,45 @@ final size and proportion.
   floorboards extend through the bottom strip (loops run to `H`).
 - Phase 4: night/day jump, order cycle, cat relocation, click mapping, DPR
   matrix and perf all verified in-browser; console clean.
+
+## Execution notes — Phase 2 detail pass (2026-08-03)
+
+Executed in the plan's region order, on the post-proportion-pass geometry:
+
+1. **Characters** — brows + 3×4 eyes, mouths, blush, optional beards (15%),
+   actual hands on arms/cups/plates/books/cloths, four hair styles (classic /
+   side-part / curly / bun) with a `shade()` shine, clothing folds + hems +
+   trouser creases, scarf knots with hanging tails, apron straps/pocket/bow
+   (Nora, side-part), **4-frame walk** (stride/pass at 8 fps with arm swing)
+   and a 1 px idle breathe. Cat: twitching two-part ears with pink inner,
+   segmented curved tails per pose (pale tip), stripes, muzzle, groom paw.
+2. **Hero props** — machine: gauge + needle (rises when brewing), portafilter
+   handles, drip-tray grill, warming tray with spare cups, edge shading,
+   crema on the pull stream; pastry case: croissant/cinnamon-swirl/danish +
+   tart/glazed-bun/layer-slice on doilies, glass shine; fireplace: true
+   staggered brick coursing with hash-varied tints on mortar, mantel corbels,
+   log bark + end-grain rings, hearth joints, and **3-layer flames**
+   (broad `#b5481c` back layer, mid tongues, bright core) over a bed of
+   pulsing coals; tables/chairs: tabletop grain + knot, pedestal highlight,
+   chair-back slats, stool cross-braces, seat grain, cup/plate contact
+   shadows, armchair seams + piping.
+3. **Architecture** — floorboard grain streaks + knots and wainscot panel
+   bevels (deterministic `h2` hash; static cache renders once), plaster
+   mottling, window recess shadow + frame bevels + deep sill with front
+   face, counter slab/plank grain.
+4. **Atmosphere** — steam particles grow into 2–3 px curls (head + trailing
+   comma + wisp), sparks gained a fading trail, rain thinned to 1 px streaks
+   with mixed lengths/speeds and occasional kinks, vignette re-tuned (softer
+   mid-stop, deepens ~0.12 after dark).
+5. **Typography** — the 3×5 chalk font replaced by a **6×10 chalk hand**
+   (2 px strokes, per-glyph jitter; menu now reads KAFFE / KAKAO / BOLLER
+   under the title); captions render as cached 1-bit bitmap text (10 px
+   thresholded, blitted ×2) instead of raw 19 px `fillText` — same size,
+   pixel-look. Deviation from the plan's "14–16 px": the ×2-of-10px form
+   factor keeps the proportion pass's 19–20 px caption size.
+
+Verified in-browser: clean console through boot, a fast-forwarded full day,
+an injected brew cycle (grind→tamp→pull→steam), day/dusk/night lighting,
+walk cycles and cat states at 8× magnification. Docs updated in the same
+change: art.md (style rules, palette, People, Typography), characters.md,
+architecture.md.

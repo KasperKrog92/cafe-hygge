@@ -68,6 +68,28 @@
     return 'rgb(' + Math.round(lerp(a[0], b[0], t)) + ',' + Math.round(lerp(a[1], b[1], t)) + ',' + Math.round(lerp(a[2], b[2], t)) + ')';
   }
 
+  /* shade(hex, f): f < 0 darkens toward black, f > 0 lightens toward white.
+     Memoized — called per frame on pool colors (clothing folds, hair shine). */
+  const shadeCache = {};
+  function shade(hex, f) {
+    const key = hex + '|' + f;
+    let v = shadeCache[key];
+    if (!v) {
+      const c = hexRGB(hex);
+      const to = f < 0 ? 0 : 255, k = Math.abs(f);
+      v = 'rgb(' + Math.round(lerp(c[0], to, k)) + ',' + Math.round(lerp(c[1], to, k)) + ',' + Math.round(lerp(c[2], to, k)) + ')';
+      shadeCache[key] = v;
+    }
+    return v;
+  }
+
+  /* deterministic 2D hash for texture (grain, knots, brick tint) — the static
+     background renders once, so the noise must be stable across renders */
+  function h2(x, y) {
+    const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+    return n - Math.floor(n);
+  }
+
   /* ---------- time of day palette ---------- */
   // keyframes: [hour, skyTop, skyBottom, daylight, lampOn]
   const DAYKEYS = [
@@ -96,26 +118,48 @@
     };
   };
 
-  /* ---------- tiny 3x5 chalk font (each font pixel = 2×2 master px) ---------- */
-  const FONT = {
-    A: '010101111101101', B: '110101110101110', C: '011100100100011', D: '110101101101110',
-    E: '111100110100111', F: '111100110100100', G: '011100101101011', H: '101101111101101',
-    I: '111010010010111', K: '101110100110101', L: '100100100100100', M: '101111101101101',
-    N: '110101101101101', O: '010101101101010', R: '110101110110101', S: '011100010001110',
-    T: '111010010010010', U: '101101101101011', Y: '101101010010010', É: '111100110100111',
-    ' ': '000000000000000'
+  /* ---------- 6×10 chalk hand (native-res successor to the old 3×5 font) ----------
+     One font pixel = 1 master px; 2 px strokes keep the chalk-marker weight.
+     Each glyph gets a tiny deterministic vertical jitter so lines of text sit
+     slightly uneven — hand-written, never typeset. */
+  const CHALK = {
+    A: '.####.|##..##|##..##|##..##|######|######|##..##|##..##|##..##|##..##',
+    B: '#####.|##..##|##..##|##..##|#####.|#####.|##..##|##..##|##..##|#####.',
+    C: '.####.|##..##|##....|##....|##....|##....|##....|##....|##..##|.####.',
+    D: '#####.|##..##|##..##|##..##|##..##|##..##|##..##|##..##|##..##|#####.',
+    E: '######|######|##....|##....|#####.|#####.|##....|##....|######|######',
+    F: '######|######|##....|##....|#####.|#####.|##....|##....|##....|##....',
+    G: '.####.|##..##|##....|##....|##....|##.###|##.###|##..##|##..##|.####.',
+    H: '##..##|##..##|##..##|##..##|######|######|##..##|##..##|##..##|##..##',
+    I: '.####.|.####.|..##..|..##..|..##..|..##..|..##..|..##..|.####.|.####.',
+    K: '##..##|##..##|##.##.|##.##.|####..|####..|##.##.|##.##.|##..##|##..##',
+    L: '##....|##....|##....|##....|##....|##....|##....|##....|######|######',
+    M: '##..##|######|######|##..##|##..##|##..##|##..##|##..##|##..##|##..##',
+    N: '##..##|##..##|###.##|###.##|##.###|##.###|##..##|##..##|##..##|##..##',
+    O: '.####.|##..##|##..##|##..##|##..##|##..##|##..##|##..##|##..##|.####.',
+    R: '#####.|##..##|##..##|##..##|#####.|#####.|##.##.|##.##.|##..##|##..##',
+    S: '.#####|######|##....|##....|#####.|.#####|....##|....##|######|#####.',
+    T: '######|######|..##..|..##..|..##..|..##..|..##..|..##..|..##..|..##..',
+    U: '##..##|##..##|##..##|##..##|##..##|##..##|##..##|##..##|##..##|.####.',
+    Y: '##..##|##..##|##..##|.####.|..##..|..##..|..##..|..##..|..##..|..##..',
+    'É': '######|######|##....|##....|#####.|#####.|##....|##....|######|######',
+    ' ': '......|......|......|......|......|......|......|......|......|......'
   };
-  SCENE.tinyText = function (g, x, y, str, c) {
-    let cx = x;
+  SCENE.chalkText = function (g, x, y, str, c) {
+    let cx = x, ci = 0;
     for (const ch of str.toUpperCase()) {
-      const bits = FONT[ch] || FONT[' '];
-      if (ch === 'É') px(g, cx + 2, y - 4, 2, 2, c);
-      for (let i = 0; i < 15; i++) {
-        if (bits[i] === '1') px(g, cx + (i % 3) * 2, y + ((i / 3) | 0) * 2, 2, 2, c);
+      const rows = (CHALK[ch] || CHALK[' ']).split('|');
+      const jy = ((ci * 7919) % 3) - 1;   // hand-chalked wobble
+      if (ch === 'É') { px(g, cx + 3, y + jy - 4, 2, 2, c); px(g, cx + 2, y + jy - 2, 2, 2, c); }
+      for (let r = 0; r < 10; r++) {
+        for (let col = 0; col < 6; col++) {
+          if (rows[r][col] === '#') px(g, cx + col, y + jy + r, 1, 1, c);
+        }
       }
       cx += 8;
+      ci++;
     }
-    return cx - x;
+    return cx - x - 2;
   };
 
   /* ================= BACKGROUND ================= */
@@ -149,16 +193,43 @@
   function drawStaticBG(g) {
     // wall + wainscot + floor (wall runs to y=0: the top 36 px are overscan)
     px(g, 0, 0, W, 176, '#e3cfa7');
+    // faint plaster mottling so the big wall field isn't dead flat
+    for (let i = 0; i < 90; i++) {
+      const mx = (h2(i, 3) * W) | 0, my = 34 + ((h2(i, 7) * 138) | 0);
+      px(g, mx, my, 6 + ((h2(i, 11) * 10) | 0), 2, 'rgba(201,178,138,0.18)');
+    }
     // picture rail in the overscan strip
     px(g, 0, 26, W, 4, '#c9b28a');
     px(g, 0, 30, W, 2, 'rgba(90,61,40,0.25)');
+    // wainscot: raised top rail, bevelled panels every 48 px, shadowed base
     px(g, 0, 176, W, 56, '#6e4a33');
-    for (let i = 0; i < W; i += 48) px(g, i, 180, 2, 48, '#5f402c');
+    px(g, 0, 176, W, 4, '#7d5334');
+    px(g, 0, 180, W, 2, 'rgba(30,18,10,0.3)');
+    for (let x0 = 0; x0 < W; x0 += 48) {
+      px(g, x0 + 8, 188, 32, 2, '#5f402c');       // recessed panel: dark top/left
+      px(g, x0 + 8, 188, 2, 32, '#5f402c');
+      px(g, x0 + 38, 190, 2, 30, '#7d5334');      // lit bottom/right
+      px(g, x0 + 10, 218, 30, 2, '#7d5334');
+    }
+    px(g, 0, 224, W, 2, 'rgba(30,18,10,0.25)');
     px(g, 0, 228, W, 4, '#4a3222');
+    // floorboards: seams, staggered joints, then grain streaks and the odd knot
     px(g, 0, L.wallY, W, H - L.wallY, '#9c6b43');
     for (let y = L.wallY + 28; y < H; y += 32) px(g, 0, y, W, 2, '#7d5334');
     for (let y = L.wallY + 28, r = 0; y < H; y += 32, r++) {
       for (let x = (r % 2) * 40; x < W; x += 112) px(g, x, y - 16, 2, 14, 'rgba(125,83,52,0.55)');
+    }
+    for (let by = L.wallY + 2; by < H; by += 32) {
+      for (let x = 0; x < W; x += 16) {
+        const n = h2(x, by);
+        if (n < 0.18) {
+          px(g, x + ((n * 50) | 0) % 8, by + 6 + ((n * 90) | 0) % 16, 10 + ((n * 160) | 0) % 14, 2, 'rgba(125,83,52,0.35)');
+        } else if (n > 0.985) {
+          const ky = by + 10 + ((n * 700) | 0) % 8;
+          px(g, x, ky, 6, 4, '#7d5334');          // knot
+          px(g, x + 2, ky + 1, 2, 2, '#5f402c');
+        }
+      }
     }
 
     // rugs (the big rug reaches up under the walking lane to break the bare stripe)
@@ -208,28 +279,41 @@
       });
       g.globalAlpha = 1;
     }
-    // rain streaks
+    // rain streaks — 1 px at native res, mixed lengths and speeds
     if (world.rain > 0.02) {
-      g.globalAlpha = 0.28 * Math.min(1, world.rain * 1.6);
+      g.globalAlpha = 0.3 * Math.min(1, world.rain * 1.6);
       g.fillStyle = '#cfe0ec';
-      const n = Math.floor(5 + world.rain * 16);
+      const n = Math.floor(8 + world.rain * 26);
       for (let i = 0; i < n; i++) {
+        const sp = 150 + (i % 5) * 26;
         const rx = w.x + ((i * 37 + 13) % w.w);
-        const ry = w.y + ((t * 170 + i * 61) % w.h);
-        g.fillRect(rx, ry, 2, 8);
+        const ry = w.y + ((t * sp + i * 61) % w.h);
+        const ln = 8 + (i % 3) * 3;
+        g.fillRect(rx, ry, 1, ln);
+        if (i % 4 === 0) g.fillRect(rx - 1, ry + ln, 1, 2);   // the odd streak kinks
       }
       g.globalAlpha = 1;
     }
-    // frame + mullions
+    // glass sits recessed: soft shadow under the top/left of the frame
+    px(g, w.x, w.y, w.w, 3, 'rgba(15,10,6,0.3)');
+    px(g, w.x, w.y, 3, w.h, 'rgba(15,10,6,0.22)');
+    // frame + mullions with a lit top bevel for depth
     g.fillStyle = '#5a3d28';
     g.fillRect(w.x - 8, w.y - 8, w.w + 16, 8);
     g.fillRect(w.x - 8, w.y + w.h, w.w + 16, 8);
     g.fillRect(w.x - 8, w.y, 8, w.h);
     g.fillRect(w.x + w.w, w.y, 8, w.h);
+    px(g, w.x - 8, w.y - 8, w.w + 16, 2, '#6e4a33');
+    px(g, w.x - 8, w.y - 2, w.w + 16, 2, '#4a3020');
     px(g, w.x + w.w / 2 - 2, w.y, 4, w.h, '#5a3d28');
+    px(g, w.x + w.w / 2 - 2, w.y, 2, w.h, '#6e4a33');
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 4, '#5a3d28');
-    // sill + plants
+    px(g, w.x, w.y + w.h / 2 - 2, w.w, 2, '#6e4a33');
+    // deep sill: lit top, front face, shadow underneath
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 8, '#6e4a33');
+    px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 2, '#8a6142');
+    px(g, w.x - 14, w.y + w.h + 16, w.w + 28, 4, '#5a3d28');
+    px(g, w.x - 12, w.y + w.h + 20, w.w + 24, 2, 'rgba(20,12,8,0.25)');
     drawTinyPlant(g, w.x + 8, w.y + w.h + 8);
     drawTinyPlant(g, w.x + w.w - 20, w.y + w.h + 8);
   }
@@ -281,29 +365,47 @@
   /* ---------- fireplace ---------- */
   function drawFireplaceStatic(g) {
     const f = L.fire;
-    // chimney breast
-    px(g, f.x, 112, f.w, 120, '#7d4437');
-    for (let row = 0, y = 120; y < 228; row++, y = 120 + row * 16) {
-      for (let x = f.x + (row % 2 ? 0 : 12); x < f.x + f.w; x += 24) {
-        px(g, x, y, 2, 2, '#5f3229');
+    // chimney breast: real coursing — 22×14 bricks on mortar, staggered, tint-varied
+    px(g, f.x, 112, f.w, 120, '#5f3229');
+    const BRICKS = ['#7d4437', '#86493c', '#744033', '#8a4d3d'];
+    for (let row = 0, y = 112; y < 232; row++, y = 112 + row * 16) {
+      const off = (row % 2) * 12;
+      for (let x = f.x - 12 + off; x < f.x + f.w; x += 24) {
+        const bx = Math.max(f.x, x);
+        const bw = Math.min(f.x + f.w, x + 22) - bx;
+        const bh = Math.min(232, y + 14) - y;
+        if (bw > 0 && bh > 0) px(g, bx, y, bw, bh, BRICKS[(h2(x, y) * BRICKS.length) | 0]);
       }
-      px(g, f.x, y, f.w, 2, 'rgba(95,50,41,0.5)');
     }
-    // mantel
+    // mantel on little corbels, shadow beneath
     px(g, f.x - 10, 132, f.w + 20, 10, '#5a3d28');
     px(g, f.x - 10, 132, f.w + 20, 4, '#7a5238');
+    px(g, f.x - 10, 142, f.w + 20, 2, 'rgba(20,10,6,0.35)');
+    px(g, f.x - 4, 144, 8, 8, '#5a3d28');
+    px(g, f.x + f.w - 4, 144, 8, 8, '#5a3d28');
     // firebox
     px(g, f.boxX, f.boxTop, f.boxW, f.boxBot - f.boxTop, '#17100d');
     px(g, f.boxX - 4, f.boxTop - 4, f.boxW + 8, 4, '#4a2a22');
     px(g, f.boxX - 4, f.boxTop, 4, f.boxBot - f.boxTop, '#4a2a22');
     px(g, f.boxX + f.boxW, f.boxTop, 4, f.boxBot - f.boxTop, '#4a2a22');
-    // logs
+    // logs: bark ticks + end-grain rings
     px(g, f.boxX + 6, f.boxBot - 12, 36, 7, '#5a3520');
+    px(g, f.boxX + 12, f.boxBot - 12, 2, 7, '#4a2c1a');
+    px(g, f.boxX + 24, f.boxBot - 12, 2, 7, '#4a2c1a');
+    px(g, f.boxX + 34, f.boxBot - 12, 2, 7, '#4a2c1a');
     px(g, f.boxX + 10, f.boxBot - 17, 28, 5, '#6b4429');
-    px(g, f.boxX + 4, f.boxBot - 10, 4, 5, '#8a6142');
-    // hearth stone
+    px(g, f.boxX + 16, f.boxBot - 17, 2, 5, '#57371f');
+    px(g, f.boxX + 28, f.boxBot - 17, 2, 5, '#57371f');
+    ell(g, f.boxX + 6, f.boxBot - 9, 3, 3, '#8a6142');
+    px(g, f.boxX + 5, f.boxBot - 10, 2, 2, '#5a3520');
+    ell(g, f.boxX + 38, f.boxBot - 15, 3, 2, '#8a6142');
+    px(g, f.boxX + 37, f.boxBot - 16, 2, 2, '#57371f');
+    // hearth stone with joints
     px(g, f.boxX - 8, f.boxBot, f.boxW + 16, 6, '#8a8378');
     px(g, f.boxX - 8, f.boxBot, f.boxW + 16, 2, '#a39c8f');
+    px(g, f.boxX + 8, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
+    px(g, f.boxX + 24, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
+    px(g, f.boxX + 40, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
     // mantel clock (body + face; the hands are dynamic)
     px(g, 346, 110, 22, 22, '#6b4a30');
     px(g, 348, 106, 18, 4, '#5a3d26');
@@ -317,14 +419,26 @@
 
   function drawFireDynamic(g, world) {
     const f = L.fire, t = world.t;
-    // flames
-    for (let i = 0; i < 5; i++) {
+    // flames in three layers over a bed of glowing coals
+    for (let i = 0; i < 3; i++) {                       // back layer: broad, slow, deep
+      const fx = f.boxX + 5 + i * 14;
+      const h = 20 + 8 * Math.sin(t * 3.3 + i * 2.2);
+      const hh = Math.max(8, Math.round(h));
+      px(g, fx, f.boxBot - 13 - hh, 12, hh, '#b5481c');
+    }
+    for (let i = 0; i < 5; i++) {                       // mid tongues + bright core
       const fx = f.boxX + 4 + i * 8.2;
       const h = 15 + 8 * Math.sin(t * 6.2 + i * 1.9) + 4 * Math.sin(t * 13 + i * 5.1);
       const hh = Math.max(5, Math.round(h));
       px(g, fx, f.boxBot - 15 - hh, 8, hh, '#e06a1e');
       px(g, fx + 2, f.boxBot - 15 - Math.round(hh * 0.62), 5, Math.round(hh * 0.62), '#f5a83c');
       px(g, fx + 3, f.boxBot - 15 - Math.round(hh * 0.3), 3, Math.round(hh * 0.3), '#f8dc8a');
+    }
+    for (let i = 0; i < 8; i++) {                       // coals under the logs
+      const gl = 0.4 + 0.4 * Math.sin(t * 3.1 + i * 2.7);
+      g.globalAlpha = Math.max(0.15, gl);
+      px(g, f.boxX + 4 + i * 5, f.boxBot - 4, 4, 3, i % 2 ? '#e06a1e' : '#f5a83c');
+      g.globalAlpha = 1;
     }
     // clock hands
     drawClockHands(g, 357, 121, world.hour);
@@ -362,20 +476,26 @@
   /* ---------- menu board, shelves, lamps ---------- */
   function drawMenuBoard(g) {
     px(g, 470, 104, 108, 68, '#5a3d28');
+    px(g, 470, 104, 108, 2, '#6e4a33');
     px(g, 474, 108, 100, 60, '#2c3038');
-    SCENE.tinyText(g, 484, 116, 'CAFÉ HYGGE', '#e8dfc9');
-    // chalk menu lines
-    g.fillStyle = 'rgba(220,214,196,0.75)';
-    g.fillRect(482, 132, 34, 2); g.fillRect(554, 132, 10, 2);
-    g.fillRect(482, 141, 40, 2); g.fillRect(554, 141, 10, 2);
-    g.fillRect(482, 150, 28, 2); g.fillRect(554, 150, 10, 2);
-    // chalk coffee cup doodle
-    g.strokeStyle = 'rgba(220,214,196,0.8)';
-    g.lineWidth = 2;
-    g.strokeRect(485, 159, 11, 8);
-    g.beginPath(); g.arc(499, 163, 3, -Math.PI / 2, Math.PI / 2); g.stroke();
-    px(g, 487, 154, 2, 2, 'rgba(220,214,196,0.6)');
-    px(g, 491, 152, 2, 2, 'rgba(220,214,196,0.6)');
+    px(g, 474, 108, 100, 2, 'rgba(0,0,0,0.4)');
+    // chalk handwriting in the 6×10 hand
+    SCENE.chalkText(g, 486, 113, 'CAFÉ HYGGE', '#e8dfc9');
+    px(g, 486, 125, 76, 2, 'rgba(232,223,201,0.45)');
+    SCENE.chalkText(g, 482, 131, 'KAFFE', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, 482, 143, 'KAKAO', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, 482, 155, 'BOLLER', 'rgba(220,214,196,0.75)');
+    // chalk price dashes
+    g.fillStyle = 'rgba(220,214,196,0.6)';
+    g.fillRect(552, 136, 10, 2);
+    g.fillRect(552, 148, 10, 2);
+    g.fillRect(552, 160, 10, 2);
+    // a little chalk heart
+    px(g, 566, 158, 2, 2, 'rgba(220,214,196,0.7)');
+    px(g, 570, 158, 2, 2, 'rgba(220,214,196,0.7)');
+    px(g, 566, 160, 6, 2, 'rgba(220,214,196,0.7)');
+    px(g, 567, 162, 4, 2, 'rgba(220,214,196,0.7)');
+    px(g, 568, 164, 2, 2, 'rgba(220,214,196,0.7)');
   }
 
   function drawShelves(g) {
@@ -429,28 +549,45 @@
   /* ---------- espresso machine (behind the counter) ---------- */
   function drawMachine(g, world) {
     const m = L.machine;
+    // body with edge light/shade
     px(g, m.x, m.y, m.w, 40, '#b8bfc7');
+    px(g, m.x, m.y + 10, 2, 30, '#d3d9de');
+    px(g, m.x + m.w - 2, m.y + 10, 2, 30, '#8a919c');
+    // warming tray on top, spare cups upside-down
     px(g, m.x, m.y, m.w, 10, '#3c414d');
     px(g, m.x + 4, m.y + 3, m.w - 8, 2, '#5a616e');
-    // group heads + portafilters
+    px(g, m.x + 8, m.y - 5, 10, 5, '#e8e0d0');
+    px(g, m.x + 22, m.y - 5, 10, 5, '#d9d2c0');
+    px(g, m.x + 36, m.y - 5, 10, 5, '#e8e0d0');
+    // group heads with portafilters + handles
     px(g, m.x + 10, m.y + 26, 12, 8, '#3c414d');
     px(g, m.x + 34, m.y + 26, 12, 8, '#3c414d');
+    px(g, m.x + 11, m.y + 26, 10, 2, '#5a616e');
+    px(g, m.x + 35, m.y + 26, 10, 2, '#5a616e');
     px(g, m.x + 13, m.y + 34, 6, 3, '#2a2e38'); px(g, m.x + 37, m.y + 34, 6, 3, '#2a2e38');
-    // gauge + lights
+    px(g, m.x + 19, m.y + 34, 7, 2, '#4a3020'); px(g, m.x + 43, m.y + 34, 7, 2, '#4a3020');
+    // pressure gauge (needle drawn with the brew state below)
+    ell(g, m.x + 28, m.y + 16, 5, 5, '#3c414d');
     ell(g, m.x + 28, m.y + 16, 4, 4, '#e8e0d0');
-    px(g, m.x + 28, m.y + 14, 2, 4, '#a94f3f');
+    // drip tray grill along the base
+    px(g, m.x + 4, m.y + 37, m.w - 8, 3, '#3c414d');
+    for (let dx = m.x + 8; dx < m.x + m.w - 8; dx += 6) px(g, dx, m.y + 37, 2, 3, '#2a2e38');
     // steam wand
     px(g, m.x + m.w - 5, m.y + 22, 3, 3, '#8a919c');
     px(g, m.x + m.w - 2, m.y + 25, 3, 10, '#8a919c');
+    px(g, m.x + m.w - 2, m.y + 35, 3, 2, '#5a616e');
     const brew = world.brew;
     if (brew && brew.active) {
       px(g, m.x + 5, m.y + 4, 4, 4, (world.t * 3 | 0) % 2 ? '#f5b942' : '#8a611e');
+      px(g, m.x + 29, m.y + 13, 2, 2, '#a94f3f');            // needle swings up under pressure
       if (brew.stage === 'pull') {
         px(g, m.x + 11, m.y + 31, 10, 9, '#e8e0d0');         // cup under the spout
         px(g, m.x + 15, m.y + 26, 2, 6, '#6b4429');          // coffee stream
+        px(g, m.x + 15, m.y + 30, 2, 2, '#c98f4a');          // crema where it lands
       }
     } else {
       px(g, m.x + 5, m.y + 4, 4, 4, '#4a5160');
+      px(g, m.x + 26, m.y + 17, 2, 2, '#a94f3f');            // needle at rest
     }
   }
 
@@ -468,21 +605,32 @@
         const sx = cx + side * L.stoolDX, sy = cy + L.stoolDY;
         out.push({ y: sy + 4, draw: function (g) {
           ell(g, sx, sy + 14, 13, 4, SHADOW);
-          if (side < 0) px(g, sx - 16, sy - 36, 6, 38, '#5a3d28');   // chair back
-          if (side < 0) px(g, sx - 17, sy - 38, 8, 4, '#6e4c30');
+          if (side < 0) {
+            px(g, sx - 16, sy - 36, 6, 38, '#5a3d28');   // chair back
+            px(g, sx - 14, sy - 30, 2, 24, '#4a3222');   // slat groove
+            px(g, sx - 17, sy - 38, 8, 4, '#6e4c30');    // top rail
+            px(g, sx - 17, sy - 38, 8, 2, '#7d5334');
+          }
           px(g, sx - 9, sy, 5, 14, '#4a3222'); px(g, sx + 4, sy, 5, 14, '#4a3222');
+          px(g, sx - 4, sy + 8, 8, 2, '#5a3d28');        // cross-brace
           ell(g, sx, sy, 13, 6, '#7d5334');
           ell(g, sx, sy - 3, 13, 6, '#94684a');
+          px(g, sx - 6, sy - 4, 12, 2, 'rgba(90,58,34,0.3)');  // seat grain
         } });
       });
       out.push({ y: cy + 32, draw: function (g) {
         ell(g, cx, cy + 30, 30, 7, SHADOW);
         px(g, cx - 5, cy - 2, 10, 28, '#5a3d28');                 // sturdier pedestal
+        px(g, cx - 5, cy - 2, 2, 28, '#6e4c30');
         px(g, cx - 14, cy + 24, 28, 6, '#4a3222');
         px(g, cx - 16, cy + 28, 8, 4, '#4a3222'); px(g, cx + 8, cy + 28, 8, 4, '#4a3222'); // feet
         ell(g, cx, cy + 2, 32, 12, '#6e4c30');
         ell(g, cx, cy - 2, 32, 12, '#8a6142');
         ell(g, cx, cy - 4, 26, 9, '#96704c');
+        px(g, cx - 18, cy - 8, 15, 2, 'rgba(90,58,34,0.3)');      // wood grain
+        px(g, cx + 4, cy - 6, 16, 2, 'rgba(90,58,34,0.3)');
+        px(g, cx - 8, cy - 2, 13, 2, 'rgba(90,58,34,0.22)');
+        px(g, cx + 10, cy - 9, 2, 2, '#6e4c30');                  // a knot
         // items left on the table
         tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, cx, cy, it); });
         // a lit candle jar on each table (its glow lives in drawLighting)
@@ -501,12 +649,15 @@
       ell(g, A.x + 2, A.y + 8, 30, 8, SHADOW);
       px(g, A.x - 21, A.y - 56, 15, 56, '#8a3d3d');
       px(g, A.x - 19, A.y - 58, 11, 4, '#9c4848');
+      px(g, A.x - 16, A.y - 48, 2, 30, 'rgba(40,16,16,0.3)');   // wing seam
       px(g, A.x - 19, A.y - 16, 44, 20, '#8a3d3d');
       px(g, A.x - 17, A.y - 18, 40, 6, '#a05252');
+      px(g, A.x - 17, A.y - 11, 40, 2, 'rgba(40,16,16,0.25)');  // cushion piping
     } });
     out.push({ y: A.y + 12, draw: function (g) {
       px(g, A.x + 19, A.y - 30, 13, 34, '#8a3d3d');
       px(g, A.x + 21, A.y - 32, 9, 4, '#9c4848');
+      px(g, A.x + 21, A.y - 18, 2, 18, 'rgba(40,16,16,0.3)');   // arm seam
       px(g, A.x - 21, A.y + 2, 53, 8, '#7a3535');
       px(g, A.x - 19, A.y + 10, 7, 4, '#4a3222'); px(g, A.x + 23, A.y + 10, 7, 4, '#4a3222');
     } });
@@ -575,10 +726,12 @@
   function drawTableItem(g, cx, cy, it) {
     const ix = cx + it.side * 24 - 5;
     if (it.kind === 'plate') {
+      ell(g, ix + 5, cy - 2, 12, 4, 'rgba(20,12,8,0.18)');   // contact shadow
       ell(g, ix + 5, cy - 4, 11, 4, '#e8e0d0');
       px(g, ix + 1, cy - 12, 10, 7, '#c98f4a');
       px(g, ix + 3, cy - 14, 6, 2, '#b57c38');
     } else {
+      ell(g, ix + 5, cy, 10, 3, 'rgba(20,12,8,0.18)');       // contact shadow
       ell(g, ix + 5, cy - 2, 9, 3, '#e8e0d0');   // saucer
       px(g, ix, cy - 14, 10, 12, it.kind === 'teacup' ? '#d9d2c0' : '#e8e0d0');
       px(g, ix + 10, cy - 11, 3, 5, '#e8e0d0');   // handle
@@ -590,15 +743,22 @@
     const C = L.counter;
     // ground shadow
     px(g, C.x - 4, C.baseY, C.w + 8, 3, 'rgba(20,12,8,0.22)');
-    // front planks
+    // front planks with grain dashes
     px(g, C.x, C.frontY, C.w, C.baseY - C.frontY, '#6b4529');
     for (let x = C.x + 20; x < C.x + C.w; x += 28) px(g, x, C.frontY + 4, 2, C.baseY - C.frontY - 8, '#57371f');
+    for (let x = C.x + 6; x < C.x + C.w - 6; x += 14) {
+      const n = h2(x, 5);
+      if (n < 0.4) px(g, x + ((n * 20) | 0) % 6, C.frontY + 8 + ((n * 90) | 0) % 12, 2, 5 + ((n * 40) | 0) % 5, 'rgba(0,0,0,0.12)');
+    }
     px(g, C.x, C.baseY - 4, C.w, 4, '#4a2f1c');
     // footrail shadow line — anchors the counter at its new height
     px(g, C.x + 6, C.baseY - 10, C.w - 12, 3, 'rgba(30,18,10,0.35)');
-    // top slab
+    // top slab with long grain
     px(g, C.x - 8, C.slabY, C.w + 8, C.frontY - C.slabY, '#a8764a');
     px(g, C.x - 8, C.slabY, C.w + 8, 4, '#c08a58');
+    px(g, C.x + 20, C.slabY + 6, 90, 2, 'rgba(125,83,52,0.4)');
+    px(g, C.x + 150, C.slabY + 8, 70, 2, 'rgba(125,83,52,0.3)');
+    px(g, C.x + 60, C.slabY + 10, 50, 2, 'rgba(125,83,52,0.25)');
     px(g, C.x - 8, C.frontY - 3, C.w + 8, 3, '#7d5334');
     // register
     px(g, 748, 242, 30, 22, '#3c414d');
@@ -613,11 +773,26 @@
     g.strokeStyle = '#8a919c'; g.lineWidth = 2;
     g.strokeRect(821, 225, 74, 38);
     px(g, 820, 244, 76, 2, '#8a919c');
-    // pastries inside
-    px(g, 828, 234, 13, 7, '#d9a05a'); px(g, 830, 232, 9, 2, '#c08a48');
-    px(g, 848, 234, 11, 7, '#c98f4a'); px(g, 864, 236, 13, 5, '#e0b06a');
-    px(g, 828, 254, 13, 8, '#b5654a'); px(g, 846, 256, 11, 6, '#d9738a');
-    px(g, 862, 254, 13, 8, '#c98f4a'); px(g, 864, 252, 9, 2, '#8a5a2a');
+    // top shelf: croissant, cinnamon swirl, danish — each on doily paper
+    px(g, 826, 241, 16, 2, 'rgba(232,224,208,0.5)');
+    px(g, 826, 236, 4, 5, '#d9a05a'); px(g, 830, 233, 8, 8, '#e0b06a'); px(g, 838, 236, 4, 5, '#d9a05a');
+    px(g, 832, 235, 2, 6, '#c08a48'); px(g, 836, 235, 2, 6, '#c08a48');
+    px(g, 848, 241, 15, 2, 'rgba(232,224,208,0.5)');
+    px(g, 848, 233, 14, 8, '#c98f4a');
+    px(g, 850, 235, 8, 2, '#8a5a2a'); px(g, 854, 238, 6, 2, '#8a5a2a'); px(g, 850, 238, 2, 2, '#8a5a2a');
+    px(g, 851, 231, 8, 2, '#e0b06a');
+    px(g, 868, 241, 14, 2, 'rgba(232,224,208,0.5)');
+    px(g, 868, 234, 13, 7, '#e0b06a'); px(g, 872, 236, 5, 3, '#b5654a'); px(g, 869, 234, 3, 2, '#e8dfc9');
+    // bottom shelf: berry tart, pink-glazed bun, layer slice
+    px(g, 828, 254, 13, 8, '#c98f4a');
+    px(g, 830, 254, 3, 3, '#5a4a68'); px(g, 835, 255, 3, 3, '#a94f3f'); px(g, 832, 258, 3, 2, '#5a4a68');
+    px(g, 846, 254, 11, 8, '#d9738a');
+    px(g, 848, 252, 7, 2, '#e8b4c4'); px(g, 850, 254, 2, 3, '#e8b4c4');
+    px(g, 862, 254, 13, 8, '#e8dfc9');
+    px(g, 862, 257, 13, 2, '#c98f4a'); px(g, 862, 260, 13, 2, '#c98f4a');
+    // glass shine
+    px(g, 856, 227, 2, 14, 'rgba(255,255,255,0.12)');
+    px(g, 860, 227, 2, 10, 'rgba(255,255,255,0.10)');
     // flowers in a vase
     px(g, 914, 246, 10, 18, '#7a89a5');
     px(g, 916, 234, 2, 12, '#4a7a4a'); px(g, 920, 236, 2, 10, '#4a7a4a');
@@ -640,31 +815,79 @@
   /* ================= PEOPLE ================= */
 
   /* A standing character is 60 px tall (the café ruler CH): legs 16,
-     torso 24, head 16 + hair. Seated reads slightly hunched at ~52. */
+     torso 24, head 16 + hair. Seated reads slightly hunched at ~52.
+     Detail pass: brows + 3×4 eyes, actual hands, four hair styles
+     (0 classic / 1 side-part / 2 curly / 3 bun), clothing folds, scarf
+     knots, apron strings, a 4-frame walk and a subtle idle breathe. */
+  function drawHead(g, x, hy, facing, c) {
+    const hairL = shade(c.hair, 0.18);
+    const st = c.hairStyle || 0;
+    const bx = facing > 0 ? x - 8 : x + 6;                 // back of the head
+    // face
+    px(g, x - 8, hy, 18, 16, c.skin);
+    // hair cap + shine
+    px(g, x - 8, hy - 4, 18, 6, c.hair);
+    px(g, x + (facing > 0 ? -5 : -1), hy - 3, 7, 2, hairL);
+    px(g, bx, hy, 5, 8, c.hair);
+    if (st === 1) {                                        // swept side-part fringe
+      px(g, facing > 0 ? x - 2 : x - 6, hy + 2, 8, 2, c.hair);
+      px(g, facing > 0 ? x + 4 : x - 6, hy + 4, 2, 2, c.hair);
+    } else if (st === 2) {                                 // curly: bumps over the cap
+      px(g, x - 7, hy - 6, 5, 2, c.hair);
+      px(g, x - 1, hy - 7, 6, 3, c.hair);
+      px(g, x + 5, hy - 6, 5, 2, c.hair);
+      px(g, bx + (facing > 0 ? -1 : 2), hy + 7, 3, 4, c.hair);
+    } else if (st === 3) {                                 // hair tied up in a bun
+      px(g, bx + (facing > 0 ? -4 : 3), hy - 7, 7, 7, c.hair);
+      px(g, bx + (facing > 0 ? -3 : 4), hy - 6, 3, 2, hairL);
+    }
+    if (c.longHair && st !== 3) {
+      px(g, facing > 0 ? x - 11 : x + 8, hy + 2, 5, 18, c.hair);
+    }
+    // brow + eye
+    const ex = facing > 0 ? x + 5 : x - 8;
+    px(g, ex, hy + 3, 4, 2, c.hair);
+    px(g, ex, hy + 6, 3, 4, '#2a1a12');
+    if (c.beard) {
+      px(g, facing > 0 ? x - 1 : x - 8, hy + 12, 9, 4, c.hair);
+      px(g, facing > 0 ? x + 3 : x - 4, hy + 13, 3, 2, shade(c.hair, -0.25));
+    } else {
+      px(g, facing > 0 ? x + 5 : x - 6, hy + 12, 3, 2, shade(c.skin, -0.22));   // mouth
+      px(g, facing > 0 ? x - 1 : x - 2, hy + 10, 4, 2, 'rgba(214,106,90,0.3)'); // blush
+    }
+  }
+
   SCENE.drawPerson = function (g, p) {
     const facing = p.facing >= 0 ? 1 : -1;
     const walk = p.pose === 'walk';
-    const cycle = walk ? (Math.floor(p.animT * 6) % 2) : 0;
-    const y = p.y - (walk && cycle ? 2 : 0);
+    const cycle = walk ? (Math.floor(p.animT * 8) % 4) : 0;
+    const pass = cycle === 1 || cycle === 3;               // passing frames bob up
+    const y = p.y - (walk && pass ? 2 : 0);
     const x = Math.round(p.x);
     const c = p.colors;
+    const breathe = !walk && Math.sin(p.animT * 1.6) > 0.3 ? 1 : 0;
+    const topD = shade(c.top, -0.18);
 
     ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
 
     if (p.pose === 'sit') {
-      // bent legs
+      // bent legs with a knee crease
       px(g, x - 8, y - 10, 16, 10, c.pants);
       px(g, x + facing * 5 - (facing > 0 ? 0 : 5), y - 10, 7, 10, c.pants);
+      px(g, x + facing * 3 - (facing > 0 ? 0 : 4), y - 10, 2, 6, shade(c.pants, -0.2));
       px(g, x - 8, y - 3, 18, 3, '#3a2a1c');
-      // torso
+      // torso, slightly hunched
       px(g, x - 10, y - 32, 20, 22, c.top);
-      if (c.scarf) px(g, x - 10, y - 32, 20, 5, c.scarf);
-      // head
-      px(g, x - 8, y - 48, 18, 16, c.skin);
-      px(g, x - 8, y - 52, 18, 6, c.hair);
-      px(g, x + (facing > 0 ? -8 : 6), y - 48, 5, 8, c.hair);
-      if (c.longHair) px(g, x + (facing > 0 ? -11 : 8), y - 46, 5, 16, c.hair);
-      px(g, x + (facing > 0 ? 5 : -8), y - 43, 3, 3, '#2a1a12');
+      px(g, x - 1, y - 28, 2, 12, topD);                        // fold
+      px(g, x - 10, y - 12, 20, 2, topD);                       // hem
+      if (c.scarf) {
+        px(g, x - 10, y - 32, 20, 5, c.scarf);
+        const kx = facing > 0 ? x + 5 : x - 9;
+        px(g, kx, y - 29, 4, 4, shade(c.scarf, -0.15));         // knot
+        px(g, kx, y - 25, 4, 7, c.scarf);                       // tail
+        px(g, kx, y - 19, 2, 2, shade(c.scarf, -0.15));         // fringe
+      }
+      drawHead(g, x, y - 48 + breathe, facing, c);
       // arms + what they hold
       if (p.reading) {
         px(g, x + facing * 3 - 2, y - 24, 5, 8, c.top);
@@ -672,6 +895,8 @@
         px(g, bx, y - 29, 18, 10, '#f5efdf');
         px(g, bx + 8, y - 29, 2, 10, '#b5a888');
         px(g, bx, y - 31, 18, 2, '#c9b28a');
+        px(g, bx - 2, y - 26, 3, 4, c.skin);                    // hands on the covers
+        px(g, bx + 17, y - 26, 3, 4, c.skin);
       } else if (p.holding === 'cup') {
         const up = p.armUp || 0;
         const hy = y - 26 - up * 17;
@@ -679,53 +904,81 @@
         px(g, x + facing * 5, y - 30, 5, Math.round(10 - up * 3), c.top);
         px(g, hx - 3, hy, 10, 10, '#e8e0d0');
         px(g, hx + (facing > 0 ? 7 : -6), hy + 3, 3, 4, '#e8e0d0');
+        px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
       } else {
         px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
+        px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
       }
       return;
     }
 
-    // standing / walking legs
+    // standing / walking legs (4-frame walk: stride, pass, stride, pass)
     if (walk) {
-      const s = cycle ? 1 : -1;
-      px(g, x - 10 + s * 3, y - 16, 8, 16, c.pants);
-      px(g, x + 2 - s * 3, y - 16, 8, 16, c.pants);
-      px(g, x - 10 + s * 3, y - 3, 8, 3, '#3a2a1c');
-      px(g, x + 2 - s * 3, y - 3, 8, 3, '#3a2a1c');
+      if (pass) {
+        px(g, x - 8, y - 16, 8, 16, c.pants);
+        px(g, x + 1, y - 16, 7, 16, c.pants);
+        px(g, x - 8, y - 3, 8, 3, '#3a2a1c');
+        px(g, x + 1, y - 3, 7, 3, '#3a2a1c');
+      } else {
+        const s = cycle === 0 ? 1 : -1;
+        px(g, x - 10 + s * 3, y - 16, 8, 16, c.pants);
+        px(g, x + 2 - s * 3, y - 16, 8, 16, c.pants);
+        px(g, x - 10 + s * 3, y - 3, 8, 3, '#3a2a1c');
+        px(g, x + 2 - s * 3, y - 3, 8, 3, '#3a2a1c');
+      }
     } else {
       px(g, x - 10, y - 16, 8, 16, c.pants);
       px(g, x + 2, y - 16, 8, 16, c.pants);
+      px(g, x - 8, y - 12, 2, 8, shade(c.pants, -0.2));    // creases
+      px(g, x + 4, y - 12, 2, 8, shade(c.pants, -0.2));
       px(g, x - 10, y - 3, 18, 3, '#3a2a1c');
     }
-    // torso
+    // torso with shoulder light, centre fold and hem
     px(g, x - 10, y - 40, 20, 24, c.top);
-    if (c.scarf) px(g, x - 10, y - 40, 20, 5, c.scarf);
+    px(g, x - 10, y - 40, 20, 2, shade(c.top, 0.12));
+    px(g, x - 1, y - 34, 2, 14, topD);
+    px(g, x - 10, y - 18, 20, 2, topD);
+    if (c.scarf) {
+      px(g, x - 10, y - 40, 20, 5, c.scarf);
+      const kx = facing > 0 ? x + 5 : x - 9;
+      px(g, kx, y - 37, 4, 4, shade(c.scarf, -0.15));      // knot
+      px(g, kx, y - 33, 4, 8, c.scarf);                    // hanging tail
+      px(g, kx, y - 26, 2, 2, shade(c.scarf, -0.15));      // fringe
+    }
     if (c.apron) {
       px(g, x - 8, y - 32, 16, 16, '#e8dfc9');
       px(g, x - 3, y - 37, 6, 5, '#e8dfc9');
+      px(g, x - 5, y - 39, 2, 3, '#c9b28a');               // neck straps
+      px(g, x + 3, y - 39, 2, 3, '#c9b28a');
+      px(g, x - 8, y - 32, 16, 2, '#c9b28a');              // waistband
+      px(g, x - 5, y - 26, 10, 7, '#d9d2c0');              // pocket
+      px(g, x - 5, y - 26, 10, 2, '#c9b28a');
+      const abx = facing > 0 ? x - 13 : x + 10;            // tie bow at the back
+      px(g, abx, y - 31, 4, 3, '#e8dfc9');
+      px(g, abx + 1, y - 28, 2, 6, '#e8dfc9');
     }
-    // head
-    px(g, x - 8, y - 56, 18, 16, c.skin);
-    px(g, x - 8, y - 60, 18, 6, c.hair);
-    px(g, x + (facing > 0 ? -8 : 6), y - 56, 5, 8, c.hair);
-    if (c.longHair) px(g, x + (facing > 0 ? -11 : 8), y - 54, 5, 18, c.hair);
-    px(g, x + (facing > 0 ? 5 : -8), y - 51, 3, 3, '#2a1a12');
-    // arm + held item
+    drawHead(g, x, y - 56 + breathe, facing, c);
+    // arm + held item, with actual hands
     const held = p.holding;
+    const swing = walk && !pass ? (cycle === 0 ? 2 : -2) * facing : 0;
     if (held === 'cup' || held === 'plate' || held === 'cloth') {
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 10, c.top);
       const hx = x + facing * 13 - (facing > 0 ? 0 : 8);
       if (held === 'cup') {
         px(g, hx, y - 32, 10, 10, '#e8e0d0');
         px(g, hx + (facing > 0 ? 10 : -3), y - 29, 3, 5, '#e8e0d0');
+        px(g, hx + (facing > 0 ? -3 : 9), y - 28, 4, 4, c.skin);
       } else if (held === 'plate') {
         px(g, hx - 3, y - 26, 15, 5, '#e8e0d0');
         px(g, hx, y - 31, 10, 5, '#c98f4a');
+        px(g, hx + 3, y - 21, 5, 3, c.skin);               // palm under the plate
       } else {
         px(g, hx, y - 26, 10, 7, '#7a89a5');
+        px(g, hx + 2, y - 29, 4, 3, c.skin);               // hand on the cloth
       }
     } else {
-      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 16, c.top);
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3) + swing, y - 34, 5, 16, c.top);
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 2) + swing, y - 20, 4, 4, c.skin);
     }
   };
 
@@ -734,51 +987,80 @@
     const x = Math.round(cat.x), y = Math.round(cat.y);
     const t = cat.animT;
     const f = cat.facing >= 0 ? 1 : -1;
-    const body = '#d98d4a', dark = '#b5702e', cream = '#f0e0c8';
+    const body = '#d98d4a', dark = '#b5702e', cream = '#f0e0c8', pink = '#d9738a';
+    const twitch = Math.sin(t * 0.9) > 0.97;    // an occasional ear flick
     ell(g, x, y + 2, 14, 4, 'rgba(20,12,8,0.2)');
+
+    // ears that move: base + tip triangles, pink inner on the facing side
+    function ears(hx, hw, hy) {
+      const e1 = hx + 1, e2 = hx + hw - 5;
+      px(g, e1, hy - 2, 4, 3, body);
+      px(g, e1 + 1, hy - (twitch ? 3 : 4), 2, 2, dark);
+      px(g, e2, hy - 2, 4, 3, body);
+      px(g, e2 + 1, hy - 4, 2, 2, dark);
+      px(g, (f > 0 ? e2 : e1) + 1, hy - 1, 2, 2, pink);
+    }
 
     if (cat.state === 'sleep') {
       const breathe = Math.sin(t * 1.7) > 0 ? 2 : 0;
       px(g, x - 12, y - 9 - breathe, 24, 9 + breathe, body);
       px(g, x - 12, y - 4, 24, 4, dark);
+      px(g, x - 7, y - 9 - breathe, 2, 5, dark); px(g, x, y - 9 - breathe, 2, 5, dark);
       px(g, x + 3, y - 14, 10, 7, body);
-      px(g, x + 3, y - 16, 3, 2, dark); px(g, x + 10, y - 16, 3, 2, dark);
-      px(g, x - 15, y - 7, 4, 7, dark); // tail tucked round
-      px(g, x - 7, y - 9, 2, 5, dark); px(g, x, y - 9, 2, 5, dark);
+      ears(x + 3, 10, y - 14);
+      px(g, x + 5, y - 11, 5, 2, '#8a6142');            // closed eye
+      // tail curled right around the front, pale tip
+      px(g, x - 15, y - 8, 4, 8, dark);
+      px(g, x - 12, y - 3, 9, 3, dark);
+      px(g, x - 4, y - 4, 3, 3, cream);
     } else if (cat.state === 'sit' || cat.state === 'groom') {
       px(g, x - 7, y - 17, 14, 17, body);
       px(g, x - 5, y - 5, 10, 5, cream);
+      px(g, x - 7, y - 14, 2, 3, dark); px(g, x + 4, y - 15, 2, 3, dark);   // stripes
       const hy = cat.state === 'groom' ? y - 19 : y - 26;
       const hx = cat.state === 'groom' ? x + f * 2 : x;
       px(g, hx - 5, hy, 14, 9, body);
-      px(g, hx - 5, hy - 2, 4, 2, dark); px(g, hx + 5, hy - 2, 4, 2, dark);
+      ears(hx - 5, 14, hy);
       if (cat.state === 'sit') {
-        px(g, hx + (f > 0 ? 5 : -5), hy + 3, 2, 2, '#3a5a2a');
+        px(g, hx + (f > 0 ? 4 : -5), hy + 3, 2, 2, '#3a5a2a');              // eye
+        px(g, hx + (f > 0 ? 6 : -8), hy + 5, 3, 3, cream);                  // muzzle
+        px(g, hx + (f > 0 ? 7 : -7), hy + 5, 2, 2, pink);                   // nose
+      } else {
+        px(g, hx + f * 4 - (f > 0 ? 0 : 3), hy + 7, 3, 4, body);            // raised grooming paw
       }
-      const sway = Math.round(Math.sin(t * 2.2) * 3);
-      px(g, x - f * 12 + sway, y - 7, 4, 2, dark);
-      px(g, x - f * 10 + sway, y - 5, 4, 5, dark);
-      px(g, x - 7, y - 12, 2, 2, dark); px(g, x + 3, y - 14, 2, 2, dark);
+      // tail wrapped around the paws, tip curling and swaying
+      const sway = Math.round(Math.sin(t * 2.2) * 2);
+      px(g, x - f * 9 - 2, y - 7, 4, 7, dark);
+      px(g, f > 0 ? x - 8 : x - 4, y - 3, 12, 3, dark);
+      px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 6, 3, 4, dark);
+      px(g, (f > 0 ? x + 2 : x - 8) + sway, y - 7, 3, 2, cream);
     } else if (cat.state === 'stretch') {
       px(g, x - 12, y - 7, 12, 7, body);
       px(g, x, y - 12, 12, 12, body);
       px(g, x + 8, y - 19, 10, 9, body);
-      px(g, x + 8, y - 21, 3, 2, dark); px(g, x + 15, y - 21, 3, 2, dark);
-      px(g, x - 15, y - 14, 4, 9, dark);
+      ears(x + 8, 10, y - 19);
+      // tail curved up in two segments
+      px(g, x - 15, y - 14, 4, 6, dark);
+      px(g, x - 17, y - 19, 3, 5, dark);
+      px(g, x - 17, y - 21, 3, 2, cream);
     } else { // walk / loaf
       const step = cat.state === 'walk' ? (Math.floor(t * 8) % 2) : 0;
       px(g, x - 12, y - 12, 24, 9, body);
+      px(g, x - 8, y - 12, 2, 4, dark); px(g, x - 2, y - 12, 2, 5, dark); px(g, x + 4, y - 12, 2, 4, dark);
       px(g, x - 10, y - 5, 7, 2, dark); px(g, x + 5, y - 5, 7, 2, dark);
       if (cat.state === 'walk') {
         px(g, x - 10 + step * 2, y - 3, 3, 4, body); px(g, x + 7 - step * 2, y - 3, 3, 4, body);
         px(g, x - 3 - step * 2, y - 3, 3, 4, dark); px(g, x + 2 + step * 2, y - 3, 3, 4, dark);
       }
-      px(g, x + f * 10 - (f > 0 ? 0 : 8), y - 19, 10, 9, body);
-      px(g, x + f * 10 - (f > 0 ? 0 : 8), y - 21, 3, 2, dark);
-      px(g, x + f * 10 + (f > 0 ? 7 : -5), y - 21, 3, 2, dark);
-      const ts = Math.round(Math.sin(t * 5) * 3);
-      px(g, x - f * 14, y - 19 + ts, 4, 9, dark);
-      px(g, x - 5, y - 10, 2, 5, dark); px(g, x + 3, y - 12, 2, 5, dark);
+      const hx = x + f * 10 - (f > 0 ? 0 : 8);
+      px(g, hx, y - 19, 10, 9, body);
+      ears(hx, 10, y - 19);
+      px(g, hx + (f > 0 ? 6 : 1), y - 16, 2, 2, '#3a5a2a');                 // eye
+      // curved tail: base rises from the rump, tip sways the most
+      const ts = Math.round(Math.sin(t * 5) * 2);
+      px(g, f > 0 ? x - 15 : x + 11, y - 16, 4, 7, dark);
+      px(g, f > 0 ? x - 17 : x + 14, y - 20 + ts, 3, 5, dark);
+      px(g, f > 0 ? x - 17 : x + 14, y - 22 + ts, 3, 2, cream);
     }
   };
 
@@ -885,11 +1167,13 @@
     // daylight spilling in the window
     if (d > 0.1) glow(g, 200, 236, 130, 255, 245, 215, 0.06 * d);
 
-    // vignette (centred on the 16:9 crop so the framing matches both views)
+    // vignette (centred on the 16:9 crop; deepens a touch after dark)
     g.globalCompositeOperation = 'source-over';
-    const v = g.createRadialGradient(W / 2, 286, 220, W / 2, 306, 600);
+    const vA = 0.34 + 0.12 * (1 - d);
+    const v = g.createRadialGradient(W / 2, 286, 240, W / 2, 306, 620);
     v.addColorStop(0, 'rgba(16,10,6,0)');
-    v.addColorStop(1, 'rgba(16,10,6,0.42)');
+    v.addColorStop(0.6, 'rgba(16,10,6,' + (vA * 0.35).toFixed(3) + ')');
+    v.addColorStop(1, 'rgba(16,10,6,' + vA.toFixed(3) + ')');
     g.fillStyle = v;
     g.fillRect(0, 0, W, H);
   };
@@ -908,30 +1192,73 @@
     world.particles.forEach(function (p) {
       const a = Math.max(0, 1 - p.age / p.life);
       if (p.type === 'steam') {
-        g.fillStyle = 'rgba(250,248,240,' + (a * 0.4).toFixed(3) + ')';
-        const s = p.age / p.life > 0.5 ? 4 : 2;
-        g.fillRect(Math.round(p.x + Math.sin(p.age * 3 + p.seed) * 3), Math.round(p.y), s, s);
+        const ph = p.age * 3 + p.seed;
+        const sx = Math.round(p.x + Math.sin(ph) * 4), sy = Math.round(p.y);
+        const grow = p.age / p.life;
+        g.fillStyle = 'rgba(250,248,240,' + (a * 0.38).toFixed(3) + ')';
+        if (grow < 0.3) {
+          g.fillRect(sx, sy, 2, 2);
+        } else {
+          // little curl: head + trailing comma against the drift
+          g.fillRect(sx, sy, 3, 3);
+          g.fillRect(sx + (Math.cos(ph) > 0 ? -2 : 3), sy + 3, 2, 2);
+          if (grow > 0.7) g.fillRect(sx + 1, sy - 2, 2, 2);
+        }
       } else if (p.type === 'spark') {
         g.fillStyle = 'rgba(255,180,70,' + (a * 0.8).toFixed(3) + ')';
         g.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
+        g.fillStyle = 'rgba(255,120,40,' + (a * 0.35).toFixed(3) + ')';
+        g.fillRect(Math.round(p.x), Math.round(p.y) + 3, 2, 2);
       }
     });
   };
 
-  /* ---------- captions ---------- */
+  /* ---------- captions ----------
+     Pixel-look without assets: the caption renders once (per text) at 10 px
+     into a small offscreen canvas, gets thresholded to crisp 1-bit glyphs in
+     the caption cream + shadow colors, and is blitted ×2 nearest-neighbour —
+     a 20 px bitmap-style line that matches the art. */
+  let capCache = { text: null, fill: null, back: null, w: 0, h: 0 };
+
+  function buildCaption(text) {
+    const fs = 10, baseline = 10, ch = 14, pad = 2;
+    const meas = document.createElement('canvas');
+    let mg = meas.getContext('2d');
+    mg.font = fs + 'px monospace';
+    const cw = Math.ceil(mg.measureText(text).width) + pad * 2;
+    meas.width = cw; meas.height = ch;             // resizing resets the ctx state
+    mg = meas.getContext('2d');
+    mg.font = fs + 'px monospace';
+    mg.fillStyle = '#fff';
+    mg.fillText(text, pad, baseline);
+    const src = mg.getImageData(0, 0, cw, ch).data;
+    const fill = document.createElement('canvas'); fill.width = cw; fill.height = ch;
+    const back = document.createElement('canvas'); back.width = cw; back.height = ch;
+    const fg = fill.getContext('2d'), bg = back.getContext('2d');
+    const fi = fg.createImageData(cw, ch), bi = bg.createImageData(cw, ch);
+    for (let i = 0; i < cw * ch; i++) {
+      if (src[i * 4 + 3] > 100) {
+        fi.data[i * 4] = 240; fi.data[i * 4 + 1] = 225; fi.data[i * 4 + 2] = 195; fi.data[i * 4 + 3] = 255;
+        bi.data[i * 4] = 10; bi.data[i * 4 + 1] = 6; bi.data[i * 4 + 2] = 4; bi.data[i * 4 + 3] = 255;
+      }
+    }
+    fg.putImageData(fi, 0, 0); bg.putImageData(bi, 0, 0);
+    capCache = { text: text, fill: fill, back: back, w: cw, h: ch };
+  }
+
   SCENE.drawCaption = function (g, world) {
     const c = world.activeCaption;
     if (!c) return;
+    if (capCache.text !== c.text) buildCaption(c.text);
     const age = world.t - c.born;
     const dur = 4.4;
     let a = 1;
     if (age < 0.4) a = age / 0.4;
     else if (age > dur - 0.8) a = Math.max(0, (dur - age) / 0.8);
-    g.font = '19px monospace';
-    g.textBaseline = 'alphabetic';
-    g.fillStyle = 'rgba(10,6,4,' + (a * 0.75).toFixed(3) + ')';
-    g.fillText(c.text, 18, 562);
-    g.fillStyle = 'rgba(240,225,195,' + (a * 0.9).toFixed(3) + ')';
-    g.fillText(c.text, 16, 560);
+    g.globalAlpha = a * 0.75;
+    g.drawImage(capCache.back, 18, 542, capCache.w * 2, capCache.h * 2);
+    g.globalAlpha = a * 0.95;
+    g.drawImage(capCache.fill, 16, 540, capCache.w * 2, capCache.h * 2);
+    g.globalAlpha = 1;
   };
 })();

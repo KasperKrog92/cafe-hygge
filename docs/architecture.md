@@ -54,6 +54,8 @@ requestAnimationFrame:
     SCENE.drawParticles(g, world)
     SCENE.drawLighting(g, world)       // multiply tint + additive glows + vignette
     bubbles, caption                   // drawn after lighting so they stay legible
+                                       // (captions are thresholded to a bitmap
+                                       // once per text and blitted ×2 — see art.md)
     blit view rect of master → visible canvas   // see Rendering contracts
 ```
 
