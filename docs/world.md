@@ -48,8 +48,8 @@ Applied after all sprites, in `SCENE.drawLighting`:
    reading lamps in the nook, mantel candles (all scaled by `lamp`); the
    fireplace (always on,
    flickering via layered sines); a candle jar on every table (always lit,
-   stronger after dark, per-table flicker); a soft daylight pool below the
-   window.
+   stronger after dark, per-table flicker); a soft daylight pool below each
+   of the two windows.
 3. **Vignette**: radial darkening toward the edges, always.
 
 Speech bubbles and captions draw **after** this pass so they stay readable at

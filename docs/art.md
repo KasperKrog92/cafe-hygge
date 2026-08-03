@@ -83,9 +83,11 @@ y=0   ── master top: 36 px overscan strip (texture only — croppable)
           picture rail, hanging-lamp cords (L.lamp1/lamp2)
 y=36  ── 16:9 crop top
           wall band: door + bell (L.door, L.bell), window (L.win), fireplace
-          breast with mantel clock/candles + firewood basket (L.fire), menu
-          chalkboard, two dish shelves, wainscot, espresso machine
-          (L.machine — drawn in the background layer)
+          breast with mantel clock/candles + firewood basket (L.fire), second
+          window (L.win2 — same glass, its own stretch of town; the moon hangs
+          in L.win only), then behind the counter: two short dish shelves with
+          the menu chalkboard (L.menu) at their right, wainscot, espresso
+          machine (L.machine — drawn in the background layer)
 y=232 ── wall meets floor (L.wallY — kept high so the floor, the life layer,
           dominates the frame)
           counter along the right (L.counter: slab → front face → baseline;
@@ -132,11 +134,12 @@ sorted by baseline `y` (feet / front edge) each frame and drawn in order.
 Rules that keep it looking right:
 
 - **Background layer** (drawScene) = anything wall-mounted or behind
-  everything: wall, window, door, fireplace, menu, shelves, machine, rugs.
-  Static parts render once into an offscreen cache; the window, door, wall
-  frame, hanging lamps, flames, clock hands, candle flames and machine are
-  painted over it every frame (in that order — it preserves the old one-pass
-  overlap behavior; the wall frame must paint after the window frame edge).
+  everything: wall, windows, door, fireplace, menu, shelves, machine, rugs.
+  Static parts render once into an offscreen cache; the two windows, door,
+  wall frame, hanging lamps, flames, clock hands, candle flames and machine
+  are painted over it every frame (in that order — it preserves the old
+  one-pass overlap behavior; the wall frame must paint after the window
+  frame edge).
 - **Stools** get baseline just *under* their sitter (stable sort + furniture-
   first push order breaks the tie), so sitters overlap the stool.
 - **Tables** get baseline `cy+32` so tabletops overlap a sitter's knees.

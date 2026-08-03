@@ -43,8 +43,11 @@
       const a = 0.07 + 0.07 * (1 - d) + 0.025 * Math.sin(t * 9 + i * 2.1);
       glow(g, tb.x, tb.y - 14, 34, 255, 195, 105, a);
     });
-    // daylight spilling in the window
-    if (d > 0.1) glow(g, 200, 236, 130, 255, 245, 215, 0.06 * d);
+    // daylight spilling in the windows (centred under L.win / L.win2)
+    if (d > 0.1) {
+      glow(g, 200, 236, 130, 255, 245, 215, 0.06 * d);
+      glow(g, 524, 236, 130, 255, 245, 215, 0.06 * d);
+    }
 
     // vignette (centred on the 16:9 crop; deepens a touch after dark)
     g.globalCompositeOperation = 'source-over';

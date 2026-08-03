@@ -27,7 +27,8 @@
     }
     g.drawImage(bgCache, 0, 0);
 
-    drawWindow(g, world);
+    drawWindow(g, world, L.win, 0);
+    drawWindow(g, world, L.win2, 1);
     drawDoor(g, world);
     drawWallFrame(g, 100, 120); // sits beside the window frame edge → paints after it
     drawHangingLamp(g, L.lamp1.x, world);
@@ -94,36 +95,56 @@
     drawFirewood(g);
   }
 
-  /* ---------- window with the world outside ---------- */
-  function drawWindow(g, world) {
-    const w = L.win, pal = world.pal, t = world.t;
+  /* ---------- window with the world outside ----------
+     Shared by both windows; `alt` picks the stretch of town seen through the
+     glass (and keeps the moon in one sky only). */
+  function drawWindow(g, world, w, alt) {
+    const pal = world.pal, t = world.t;
     // outside: sky
     px(g, w.x, w.y, w.w, Math.round(w.h * 0.55), pal.skyTop);
     px(g, w.x, w.y + Math.round(w.h * 0.55), w.w, Math.round(w.h * 0.45), pal.skyBot);
     // stars & moon at night
     const nightA = Math.max(0, 1 - pal.daylight * 3);
     if (nightA > 0.05) {
-      const stars = [[10, 8], [30, 4], [52, 12], [78, 6], [102, 14], [20, 24], [90, 26], [62, 18]];
+      const stars = alt
+        ? [[14, 6], [36, 12], [58, 4], [74, 16], [98, 8], [116, 18], [28, 22], [88, 26]]
+        : [[10, 8], [30, 4], [52, 12], [78, 6], [102, 14], [20, 24], [90, 26], [62, 18]];
       for (let i = 0; i < stars.length; i++) {
-        g.globalAlpha = nightA * (0.4 + 0.6 * Math.abs(Math.sin(t * 0.7 + i * 1.8)));
+        g.globalAlpha = nightA * (0.4 + 0.6 * Math.abs(Math.sin(t * 0.7 + i * 1.8 + alt * 2.3)));
         px(g, w.x + stars[i][0], w.y + stars[i][1], 2, 2, '#e8ecf5');
       }
-      g.globalAlpha = nightA;
-      ell(g, w.x + w.w - 20, w.y + 14, 7, 7, '#e8e4d0');
-      ell(g, w.x + w.w - 23, w.y + 12, 6, 6, pal.skyTop);
+      if (!alt) {   // one moon in the sky — it hangs in the first window only
+        g.globalAlpha = nightA;
+        ell(g, w.x + w.w - 20, w.y + 14, 7, 7, '#e8e4d0');
+        ell(g, w.x + w.w - 23, w.y + 12, 6, 6, pal.skyTop);
+      }
       g.globalAlpha = 1;
     }
-    // town silhouette with lit windows
+    // town silhouette with lit windows — each window sees its own stretch
     g.fillStyle = '#2b3242';
-    g.fillRect(w.x, w.y + 56, 28, 24);
-    g.fillRect(w.x + 32, w.y + 48, 22, 32);
-    g.fillRect(w.x + 60, w.y + 60, 30, 20);
-    g.fillRect(w.x + 96, w.y + 52, 26, 28);
-    px(g, w.x + 36, w.y + 42, 4, 6, '#2b3242'); // chimney
+    if (alt) {
+      g.fillRect(w.x, w.y + 52, 24, 28);
+      g.fillRect(w.x + 28, w.y + 60, 26, 20);
+      // church tower up the street — kept clear of the central mullion
+      g.fillRect(w.x + 70, w.y + 40, 14, 40);
+      g.fillRect(w.x + 74, w.y + 34, 6, 6);           // its little spire
+      g.fillRect(w.x + 90, w.y + 56, 26, 24);
+      g.fillRect(w.x + 120, w.y + 62, 8, 18);
+      px(g, w.x + 34, w.y + 54, 4, 6, '#2b3242');     // chimney
+    } else {
+      g.fillRect(w.x, w.y + 56, 28, 24);
+      g.fillRect(w.x + 32, w.y + 48, 22, 32);
+      g.fillRect(w.x + 60, w.y + 60, 30, 20);
+      g.fillRect(w.x + 96, w.y + 52, 26, 28);
+      px(g, w.x + 36, w.y + 42, 4, 6, '#2b3242');     // chimney
+    }
     const lit = pal.lamp;
     if (lit > 0.05) {
       g.globalAlpha = lit;
-      [[6, 62], [16, 68], [38, 54], [46, 62], [68, 66], [102, 58], [112, 66]].forEach(function (p) {
+      const townLit = alt
+        ? [[6, 58], [14, 66], [36, 66], [74, 50], [96, 62], [104, 68], [122, 68]]
+        : [[6, 62], [16, 68], [38, 54], [46, 62], [68, 66], [102, 58], [112, 66]];
+      townLit.forEach(function (p) {
         px(g, w.x + p[0], w.y + p[1], 4, 4, '#f5c66a');
       });
       g.globalAlpha = 1;
@@ -135,8 +156,8 @@
       const n = Math.floor(8 + world.rain * 26);
       for (let i = 0; i < n; i++) {
         const sp = 150 + (i % 5) * 26;
-        const rx = w.x + ((i * 37 + 13) % w.w);
-        const ry = w.y + ((t * sp + i * 61) % w.h);
+        const rx = w.x + ((i * 37 + 13 + alt * 53) % w.w);
+        const ry = w.y + ((t * sp + i * 61 + alt * 29) % w.h);
         const ln = 8 + (i % 3) * 3;
         g.fillRect(rx, ry, 1, ln);
         if (i % 4 === 0) g.fillRect(rx - 1, ry + ln, 1, 2);   // the odd streak kinks
@@ -315,35 +336,36 @@
 
   /* ---------- menu board, shelves, lamps ---------- */
   function drawMenuBoard(g) {
-    px(g, 470, 104, 108, 68, '#5a3d28');
-    px(g, 470, 104, 108, 2, '#6e4a33');
-    px(g, 474, 108, 100, 60, '#2c3038');
-    px(g, 474, 108, 100, 2, 'rgba(0,0,0,0.4)');
+    const m = L.menu;
+    px(g, m.x, m.y, m.w, m.h, '#5a3d28');
+    px(g, m.x, m.y, m.w, 2, '#6e4a33');
+    px(g, m.x + 4, m.y + 4, m.w - 8, m.h - 8, '#2c3038');
+    px(g, m.x + 4, m.y + 4, m.w - 8, 2, 'rgba(0,0,0,0.4)');
     // chalk handwriting in the 6×10 hand
-    SCENE.chalkText(g, 486, 113, 'CAFÉ HYGGE', '#e8dfc9');
-    px(g, 486, 125, 76, 2, 'rgba(232,223,201,0.45)');
-    SCENE.chalkText(g, 482, 131, 'KAFFE', 'rgba(220,214,196,0.75)');
-    SCENE.chalkText(g, 482, 143, 'KAKAO', 'rgba(220,214,196,0.75)');
-    SCENE.chalkText(g, 482, 155, 'BOLLER', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, m.x + 16, m.y + 9, 'CAFÉ HYGGE', '#e8dfc9');
+    px(g, m.x + 16, m.y + 21, 76, 2, 'rgba(232,223,201,0.45)');
+    SCENE.chalkText(g, m.x + 12, m.y + 27, 'KAFFE', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, m.x + 12, m.y + 39, 'KAKAO', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, m.x + 12, m.y + 51, 'BOLLER', 'rgba(220,214,196,0.75)');
     // chalk price dashes
     g.fillStyle = 'rgba(220,214,196,0.6)';
-    g.fillRect(552, 136, 10, 2);
-    g.fillRect(552, 148, 10, 2);
-    g.fillRect(552, 160, 10, 2);
+    g.fillRect(m.x + 82, m.y + 32, 10, 2);
+    g.fillRect(m.x + 82, m.y + 44, 10, 2);
+    g.fillRect(m.x + 82, m.y + 56, 10, 2);
     // a little chalk heart
-    px(g, 566, 158, 2, 2, 'rgba(220,214,196,0.7)');
-    px(g, 570, 158, 2, 2, 'rgba(220,214,196,0.7)');
-    px(g, 566, 160, 6, 2, 'rgba(220,214,196,0.7)');
-    px(g, 567, 162, 4, 2, 'rgba(220,214,196,0.7)');
-    px(g, 568, 164, 2, 2, 'rgba(220,214,196,0.7)');
+    px(g, m.x + 96, m.y + 54, 2, 2, 'rgba(220,214,196,0.7)');
+    px(g, m.x + 100, m.y + 54, 2, 2, 'rgba(220,214,196,0.7)');
+    px(g, m.x + 96, m.y + 56, 6, 2, 'rgba(220,214,196,0.7)');
+    px(g, m.x + 97, m.y + 58, 4, 2, 'rgba(220,214,196,0.7)');
+    px(g, m.x + 98, m.y + 60, 2, 2, 'rgba(220,214,196,0.7)');
   }
 
   function drawShelves(g) {
-    // shelf boards
-    px(g, 636, 104, 292, 8, '#7d5334');
-    px(g, 636, 148, 292, 8, '#7d5334');
-    px(g, 644, 112, 4, 6, '#5f402c'); px(g, 916, 112, 4, 6, '#5f402c');
-    px(g, 644, 156, 4, 6, '#5f402c'); px(g, 916, 156, 4, 6, '#5f402c');
+    // shelf boards — shortened to make wall room for the menu chalkboard
+    px(g, 636, 104, 164, 8, '#7d5334');
+    px(g, 636, 148, 164, 8, '#7d5334');
+    px(g, 644, 112, 4, 6, '#5f402c'); px(g, 788, 112, 4, 6, '#5f402c');
+    px(g, 644, 156, 4, 6, '#5f402c'); px(g, 788, 156, 4, 6, '#5f402c');
     // shelf 1: cups, jar, books, plant
     const cupCols = ['#d9d2c0', '#a94f3f', '#4a7a5a', '#d9a05a', '#7a89a5'];
     for (let i = 0; i < 5; i++) {
@@ -351,17 +373,15 @@
       px(g, 658 + i * 18, 96, 2, 4, cupCols[i]);
     }
     px(g, 752, 84, 14, 20, '#d9973f'); px(g, 754, 80, 10, 4, '#8a611e');
-    px(g, 784, 84, 6, 20, '#8a4a3a'); px(g, 792, 88, 6, 16, '#4a5a7a'); px(g, 800, 86, 6, 18, '#c9a04a');
-    px(g, 808, 88, 8, 16, '#6b7a55');
-    drawTinyPlant(g, 888, 104);
+    px(g, 770, 84, 6, 20, '#8a4a3a'); px(g, 778, 88, 6, 16, '#4a5a7a');
+    drawTinyPlant(g, 786, 104);
     // shelf 2: teapot, plates, jars, mugs
     px(g, 648, 134, 22, 14, '#e8e0d0'); px(g, 670, 138, 6, 4, '#e8e0d0'); px(g, 656, 130, 6, 4, '#e8e0d0');
     px(g, 692, 140, 18, 8, '#c9c2b0'); px(g, 694, 136, 14, 2, '#b5aa92'); px(g, 694, 144, 14, 2, '#b5aa92');
     px(g, 724, 132, 12, 16, '#d9973f'); px(g, 726, 128, 8, 4, '#8a611e');
     px(g, 744, 136, 12, 12, '#a5763f'); px(g, 746, 132, 8, 4, '#6e4a26');
-    const mugs2 = ['#a94f3f', '#d9d2c0', '#4a7a5a'];
-    for (let i = 0; i < 3; i++) px(g, 776 + i * 16, 136, 10, 12, mugs2[i]);
-    px(g, 832, 130, 20, 18, '#5a4a68'); px(g, 836, 134, 12, 10, '#d9cfc0');
+    const mugs2 = ['#a94f3f', '#4a7a5a'];
+    for (let i = 0; i < 2; i++) px(g, 764 + i * 16, 136, 10, 12, mugs2[i]);
   }
 
   function drawHangingLamp(g, x, world) {

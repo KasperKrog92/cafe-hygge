@@ -27,6 +27,7 @@
     doorSpot: { x: 54, y: 252 },     // where people appear
     bell: { x: 86, y: 132 },
     win: { x: 136, y: 98, w: 128, h: 80 },    // 1.35 CH tall
+    win2: { x: 460, y: 98, w: 128, h: 80 },   // second window, hearth ↔ counter
     fire: { x: 344, w: 88, boxX: 364, boxW: 48, boxTop: 180, boxBot: 228 },
     lane: 368,                // main walking corridor
     lamp1: { x: 318, y: 84 },
@@ -59,6 +60,7 @@
     coatStand: { x: 96, y: 298 },
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
+    menu: { x: 820, y: 104, w: 108, h: 68 },  // chalkboard on the wall behind the counter
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
     machine: { x: 656, y: 224, w: 56 },       // hero prop: kept a notch above scale
     serveSpot: { x: 744, y: 266 },   // where finished cups land on the counter
