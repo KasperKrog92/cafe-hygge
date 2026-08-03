@@ -4,6 +4,7 @@
 
   const SIM = (window.SIM = {});
   const L = SCENE.L;
+  const LB = L.library;
 
   const DAY_SECONDS = 1440;          // one full day passes in 24 real minutes
   const START_HOUR = 8.4;
@@ -52,7 +53,10 @@
       queue: [],
       counterCups: [],
       particles: [],
-      tables: L.tables.map(function (tb) { return { x: tb.x, y: tb.y, tag: tb.tag, items: [] }; }),
+      tables: L.tables.map(function (tb) { return { x: tb.x, y: tb.y, tag: tb.tag, items: [] }; })
+        .concat(LB.sideTables.map(function (st) {
+          return { x: st.x, y: st.y, tag: 'in the reading nook', small: true, items: [] };
+        })),
       seats: [],
       barista: makeBarista(),
       cat: makeCat(),
@@ -65,8 +69,10 @@
       steamAcc: 0
     };
 
-    // seats: two stools per table + the fireside armchairs
+    // seats: two stools per table + the fireside armchairs + the nook chairs
+    // (each nook chair pairs with its own side table for the sitter's drink)
     world.tables.forEach(function (tb, ti) {
+      if (tb.small) return;
       [-1, 1].forEach(function (side) {
         world.seats.push({
           x: tb.x + side * L.stoolDX, y: tb.y + L.stoolDY + 4,
@@ -77,10 +83,17 @@
     L.armchairs.forEach(function (a) {
       world.seats.push({ x: a.x + 6 * a.dir, y: a.y, facing: a.dir, table: -1, side: 0, armchair: true, taken: false });
     });
+    LB.chairs.forEach(function (c, i) {
+      world.seats.push({
+        x: c.x + 6 * c.dir, y: c.y, facing: c.dir,
+        table: L.tables.length + i, side: 0, armchair: false, nook: true, taken: false
+      });
+    });
 
-    // a couple of regulars are already settled in
+    // a few regulars are already settled in (seat 10 = the first nook chair)
     seedPatron(world, 1);
     seedPatron(world, 4);
+    seedPatron(world, 10);
 
     return world;
   };
@@ -97,8 +110,10 @@
     p.stay = rnd(60, 160);
     if (seat.table >= 0) {
       world.tables[seat.table].items.push({ side: seat.side, kind: p.drink.kind, owner: p.id, hot: 30, hidden: false });
-    } else {
+    }
+    if (seat.armchair || seat.nook) {
       p.reading = true;
+      p.hasShelfBook = !!seat.nook;   // the nook regular borrowed theirs
     }
     world.patrons.push(p);
   }
@@ -118,6 +133,9 @@
       },
       drink: drink,
       wantsBook: Math.random() < 0.35,
+      ownBook: Math.random() < 0.45,     // readers: brought one vs. borrowing
+      hasShelfBook: false,
+      browseDur: 0, afterBook: '', resumeReading: false,
       chatty: Math.random() < 0.55,
       murmurPitch: rnd(125, 235),
       x: L.doorSpot.x, y: L.doorSpot.y,
@@ -282,9 +300,11 @@
   function freeSeat(world, patron) {
     const free = world.seats.filter(function (s) { return !s.taken; });
     if (!free.length) return null;
-    if (patron.wantsBook) {
-      const arm = free.find(function (s) { return s.armchair; });
-      if (arm) return arm;
+    if (patron.wantsBook || patron.hasShelfBook) {
+      const nook = free.filter(function (s) { return s.nook; });
+      if (patron.hasShelfBook && nook.length) return pick(nook);   // settle near the shelf
+      const reading = free.filter(function (s) { return s.nook || s.armchair; });
+      if (reading.length) return pick(reading);
     }
     // prefer sitting opposite someone chatty, sometimes
     return pick(free);
@@ -349,6 +369,14 @@
           if (idx >= 0) world.counterCups.splice(idx, 1);
           p.holding = p.drink.kind === 'plate' ? 'plate' : 'cup';
           SND.clink(0.9, 0.05);
+          if (p.wantsBook && !p.ownBook) {
+            // a borrower: browse the shelf before settling anywhere
+            p.state = 'browse'; p.stateT = 0;
+            p.browseDur = rnd(2.5, 5.5);
+            makePath(p, LB.browseSpot.x, LB.browseSpot.y);
+            if (Math.random() < 0.5) caption(world, p.name + ' drifts over to the bookshelf.');
+            break;
+          }
           const seat = freeSeat(world, p);
           if (!seat) {
             caption(world, p.name + ' takes it to go.');
@@ -358,6 +386,69 @@
             p.seat = seat;
             p.state = 'toSeat'; p.stateT = 0;
             makePath(p, seat.x, seat.y);
+          }
+        }
+        break;
+      }
+      case 'browse': {
+        // standing at the shelf, scanning spines (stateT only runs on arrival)
+        if (!walker(p, dt)) { p.stateT = 0; break; }
+        p.facing = 1;
+        if (p.stateT > p.browseDur) {
+          p.hasShelfBook = true;
+          SND.pageTurn();
+          if (Math.random() < 0.6) caption(world, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
+          const seat = freeSeat(world, p);
+          if (!seat) {
+            p.hasShelfBook = false;
+            caption(world, p.name + ' takes it to go.');
+            leaveCafe(world, p);
+          } else {
+            seat.taken = true;
+            p.seat = seat;
+            p.state = 'toSeat'; p.stateT = 0;
+            makePath(p, seat.x, seat.y);
+          }
+        }
+        break;
+      }
+      case 'fetchBook': {
+        // slipped away from their seat (still theirs) to borrow a book
+        if (!walker(p, dt)) { p.stateT = 0; break; }
+        p.facing = 1;
+        if (p.stateT > p.browseDur) {
+          p.hasShelfBook = true;
+          p.holding = 'book';
+          SND.pageTurn();
+          if (Math.random() < 0.5) caption(world, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
+          p.state = 'backToSeat'; p.stateT = 0;
+          makePath(p, p.seat.x, p.seat.y);
+        }
+        break;
+      }
+      case 'backToSeat': {
+        if (walker(p, dt)) {
+          p.pose = 'sit';
+          p.facing = p.seat.facing;
+          p.holding = null;
+          p.reading = true;
+          p.state = 'seated'; p.stateT = 0;
+        }
+        break;
+      }
+      case 'returnBook': {
+        // a moment at the shelf to slide the book home, then on their way
+        if (!walker(p, dt)) { p.stateT = 0; break; }
+        p.facing = 1;
+        if (p.stateT > 1.1) {
+          p.hasShelfBook = false;
+          SND.pageTurn();
+          if (Math.random() < 0.4) caption(world, p.name + ' slips the book back onto the shelf.');
+          if (p.afterBook === 'return') {
+            p.state = 'return'; p.stateT = 0;
+            makePath(p, 792, L.pickupSpot.y);
+          } else {
+            leaveCafe(world, p);
           }
         }
         break;
@@ -376,6 +467,9 @@
           if (p.seat.armchair) {
             p.reading = true;
             caption(world, p.name + ' sinks into the armchair by the fire.');
+          } else if (p.seat.nook) {
+            if (p.wantsBook || p.hasShelfBook) p.reading = true;
+            if (Math.random() < 0.7) caption(world, p.name + (p.reading ? ' curls up in the reading nook.' : ' settles into the reading nook.'));
           } else if (p.wantsBook) {
             p.reading = true;
             if (Math.random() < 0.5) caption(world, p.name + ' settles in with a book.');
@@ -427,7 +521,8 @@
       if (p.sipPhase <= 0) {
         p.armUp = 0;
         if (item) { item.hidden = false; p.holding = null; SND.cupDown(); }
-        else if (p.seat.armchair) { p.reading = true; p.holding = null; }
+        else if (p.seat.armchair) { p.holding = null; }
+        if (p.resumeReading) { p.reading = true; p.resumeReading = false; }
       }
     } else {
       p.sipT -= dt;
@@ -436,7 +531,8 @@
         p.sipPhase = 1.3;
         p.sipPlayed = false;
         if (item) { item.hidden = true; p.holding = 'cup'; }
-        else if (p.seat.armchair) { p.reading = false; p.holding = 'cup'; }
+        else if (p.seat.armchair) { p.holding = 'cup'; }
+        if (p.reading) { p.reading = false; p.resumeReading = true; }   // book down for the sip
       }
     }
 
@@ -474,26 +570,47 @@
       }
     }
 
+    // now and then the bookshelf calls (drink stays on the table, seat stays theirs)
+    if (!p.reading && !p.holding && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
+        Math.random() < dt * 0.01) {
+      p.pose = 'stand';
+      p.state = 'fetchBook'; p.stateT = 0;
+      p.browseDur = rnd(2.5, 4.5);
+      makePath(p, LB.browseSpot.x, LB.browseSpot.y);
+      if (Math.random() < 0.5) caption(world, p.name + ' wanders over to the bookshelf.');
+      return;
+    }
+
     // time to go
     if (p.stay <= 0 && p.sipPhase <= 0) {
       p.pose = 'stand';
       p.reading = false;
       p.armUp = 0;
       p.seat.taken = false;
+      let bussing = false;
       if (item) {
-        const bussing = Math.random() < 0.4;
+        bussing = Math.random() < 0.4;
         if (bussing) {
           const list = world.tables[p.seat.table].items;
           list.splice(list.indexOf(item), 1);
           p.holding = item.kind === 'plate' ? 'plate' : 'cup';
-          p.state = 'return'; p.stateT = 0;
-          makePath(p, 792, L.pickupSpot.y);
-          p.seat = null;
-          return;
+        } else {
+          item.owner = null;   // left behind for Nora to collect
         }
-        item.owner = null;   // left behind for Nora to collect
       }
       p.seat = null;
+      if (p.hasShelfBook) {
+        // the borrowed book goes home first
+        p.afterBook = bussing ? 'return' : 'exit';
+        p.state = 'returnBook'; p.stateT = 0;
+        makePath(p, LB.browseSpot.x, LB.browseSpot.y);
+        return;
+      }
+      if (bussing) {
+        p.state = 'return'; p.stateT = 0;
+        makePath(p, 792, L.pickupSpot.y);
+        return;
+      }
       leaveCafe(world, p);
     }
   }
@@ -690,9 +807,11 @@
         b.busTarget = { table: ti, item: it };
         b.state = 'busOut'; b.stateT = 0;
         const tb = world.tables[ti];
+        // side tables are approached from the left, clear of the bookshelf
+        const busX = tb.x + (tb.small ? -28 : 24);
         b.path = [
           { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
-          { x: tb.x, y: L.lane }, { x: tb.x + 24, y: tb.y + 20 }
+          { x: tb.x, y: L.lane }, { x: busX, y: tb.y + 20 }
         ];
         if (Math.random() < 0.5) caption(world, 'Nora slips out to clear a table.');
         return;
@@ -720,7 +839,8 @@
     { x: 390, y: 294, name: 'the fireplace rug' },
     { x: 168, y: 378, name: 'the spot by the window' },
     { x: 340, y: 468, name: 'the big rug' },
-    { x: 252, y: 312, name: 'the armchair\'s side' }
+    { x: 252, y: 312, name: 'the armchair\'s side' },
+    { x: 768, y: 550, name: 'the reading nook rug' }
   ];
 
   function updateCat(world, cat, dt) {

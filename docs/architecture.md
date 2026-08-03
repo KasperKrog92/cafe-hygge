@@ -29,8 +29,8 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `queue[]` | patrons currently in the order line (index 0 = at the till) |
 | `barista` | Nora's entity |
 | `cat` | the cat's entity |
-| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates on the table |
-| `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, taken}` |
+| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates on the table. The four dining tables come first, then the reading nook's two side tables (`small: true`, no stools) |
+| `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table |
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
 | `particles[]` | steam wisps and fire sparks |
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
@@ -48,8 +48,9 @@ requestAnimationFrame:
     SCENE.drawScene(g, world)          // blit static-background cache, then the
                                        // dynamic layer: window/door/wall frame/
                                        // lamps/flames/clock hands/candles/machine
-    drawables = SCENE.furnitureDrawables(world)  // tables, stools, armchair,
-                 ++ SIM.entityDrawables(world)   // counter, plants + people, cat
+    drawables = SCENE.furnitureDrawables(world)  // tables, stools, wing chairs,
+                 ++ SIM.entityDrawables(world)   // bookshelf, lamps, counter,
+                                                 // plants + people, cat
     sort by baseline y, draw           // painter's algorithm (see art.md)
     SCENE.drawParticles(g, world)
     SCENE.drawLighting(g, world)       // multiply tint + additive glows + vignette

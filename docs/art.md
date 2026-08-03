@@ -35,7 +35,8 @@ architecture textures, retuned atmosphere and real typography.
   absolutes): door 102 h (1.7 CH), window 80 h, fireplace breast 120 h
   (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×68,
   floor lamp 68, coat stand ~70, table top at ~32 above the floor (Ø 64),
-  stool seat at ~18, armchair ~70. **Deliberate exceptions:** the espresso
+  stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
+  side-table top ~26. **Deliberate exceptions:** the espresso
   machine (40 h) and pastry case stay a notch above strict scale so brewing
   stays legible — don't "fix" them; mugs stay oversized (charm).
 - **Grounding shadows.** Every floor-standing thing (tables, seats, armchair,
@@ -58,7 +59,9 @@ architecture textures, retuned atmosphere and real typography.
 | Counter slab / light wood | `#a8764a` (edge `#c08a58`) |
 | Brick (fireplace) | `#7d4437` + variants `#86493c` `#744033` `#8a4d3d` (mortar `#5f3229`) |
 | Flames | back layer `#b5481c` → `#e06a1e` → `#f5a83c` → `#f8dc8a` |
-| Armchair | `#8a3d3d` (highlights `#a05252`) |
+| Fireside armchairs | `#8a3d3d` (highlights `#9c4848` / `#a05252`) |
+| Nook wing chairs | `#4a7a5a` (highlights/fronts derived via `shade()`) |
+| Book spines | reuse clothing/accent hexes (`BOOKCOLS` in scene.js) |
 | Rugs | `#a34d3b` / `#8f5a3a` |
 | Crockery | `#e8e0d0`, saucers `#d9d2c0` |
 | Cat | `#d98d4a`, stripes `#b5702e`, chest `#f0e0c8` |
@@ -96,12 +99,17 @@ y=368 ───── the walking lane (all pathing routes through here)
 (260,520)  table 3                      (516,524) table 4
            each table: seats at ±52 x facing inward — chair (with back) on
            the left, stool on the right; a lit candle jar on every table
-rugs: fireplace rug (388,290), big rug (390,450) — reaches up under the lane
+rugs: fireplace rug (388,290), big rug (390,450) — reaches up under the lane,
+           reading-nook rug (762,528)
 plants: (612,262) at the counter's left end (against the wall) and (930,322)
            tucked against its right front corner; coat stand just inside the
            door at (96,298)
-(790,540)  magazine basket + floor lamp at (843,544) — the bottom-right
-           reading corner
+reading nook (bottom right, `L.library`): bookshelf x856–944 y338–458
+           (2 CH + crown; browse spot (834,480), loanable spines vanish while
+           borrowed); green wing chairs at (712,514)→ and (812,538)←, each
+           with a small side table ((664,520), (864,542)) for the sitter's
+           drink and a floor reading lamp ((642,504), (848,528)); magazine
+           basket at the shelf's foot (924,474)
 y=576 ───────────────────────────────────────────── 16:9 crop bottom
 y=600 ───────────────────────────────────────────── master bottom (overscan)
 ```
@@ -125,9 +133,14 @@ Rules that keep it looking right:
   anyone standing behind it. That is why **Nora's y must stay 286** — she
   reads hip-up above the slab (y 264–278), legs hidden. Lower and she
   vanishes; higher and she floats above it.
-- **Each armchair is split**: back part (baseline y−4 = 292) draws behind the
-  sitter (y 296), the seat-front/armrest (baseline y+12 = 308) draws in front
-  — the sitter nestles *into* the chair.
+- **Each wing chair is split** (fireside pair and nook pair share one
+  construction, `wingChairBack`/`wingChairFront` with a color swatch): back
+  part (baseline y−4) draws behind the sitter (y), the seat-front/armrest
+  (baseline y+12) draws in front — the sitter nestles *into* the chair.
+- **The bookshelf** is one drawable at baseline 458; anyone on the lane above
+  it is correctly occluded by it. Keep walk targets (seats, bus spots) out of
+  its x-span (856–944) so nobody appears to vanish behind it — the nook side
+  tables are bussed from the left (`busX = tb.x − 28`) for this reason.
 
 ## People (drawPerson)
 

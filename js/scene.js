@@ -31,7 +31,20 @@
     lane: 368,                // main walking corridor
     lamp1: { x: 318, y: 84 },
     lamp2: { x: 614, y: 84 },
-    floorLamp: { x: 843, y: 544 },    // reading light over the magazine basket
+    // the reading nook (bottom right): a 2 CH bookshelf patrons borrow from,
+    // green wing chairs each with a side table + reading lamp, on their own rug
+    library: {
+      shelf: { x: 900, y: 458, w: 88, h: 120 },
+      browseSpot: { x: 834, y: 480 },   // where patrons stand to browse spines
+      chairs: [
+        { x: 712, y: 514, dir: 1 },
+        { x: 812, y: 538, dir: -1 }
+      ],
+      sideTables: [{ x: 664, y: 520 }, { x: 864, y: 542 }],
+      lamps: [{ x: 642, y: 504 }, { x: 848, y: 528 }],
+      basket: { x: 924, y: 474 },
+      rug: { x: 762, y: 528, rx: 96, ry: 28 }
+    },
     // fireside pair flanking the hearth rug; dir = facing (+1 right, -1 left),
     // seat sits at x + 6*dir. Backs top out at y-58 = 238, just under the wall line.
     armchairs: [
@@ -245,6 +258,9 @@
     ell(g, 390, 450, 118, 46, '#a34d3b');
     ell(g, 388, 290, 50, 16, '#8f5a3a');
     ell(g, 388, 290, 40, 11, '#a0693f');
+    // reading nook rug under the wing chairs
+    ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#8f5a3a');
+    ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx - 14, L.library.rug.ry - 7, '#a0693f');
 
     drawFireplaceStatic(g);
     drawMenuBoard(g);
@@ -605,9 +621,14 @@
     const C = L.counter;
     const SHADOW = 'rgba(20,12,8,0.2)';
 
-    // tables + their seats (chair with a back on the left, stool on the right)
+    // tables + their seats (chair with a back on the left, stool on the right);
+    // the nook's small side tables carry items but seat no one themselves
     world.tables.forEach(function (tb, i) {
       const cx = tb.x, cy = tb.y;
+      if (tb.small) {
+        out.push({ y: cy + 12, draw: function (g) { drawSideTable(g, cx, cy, tb.items); } });
+        return;
+      }
       [-1, 1].forEach(function (side) {
         const sx = cx + side * L.stoolDX, sy = cy + L.stoolDY;
         out.push({ y: sy + 4, draw: function (g) {
@@ -650,38 +671,24 @@
       } });
     });
 
-    // armchairs flanking the hearth rug (each split so a sitter nestles into
-    // it). Art is authored facing right; m() mirrors an x-offset for dir=-1.
+    // wing chairs: the fireside pair (red) and the reading nook pair (green).
+    // Each is split so a sitter nestles into it; art is authored facing right.
     L.armchairs.forEach(function (A) {
-      const m = function (off, w) { return A.x + (A.dir > 0 ? off : -off - w); };
-      out.push({ y: A.y - 4, draw: function (g) {
-        ell(g, A.x + 2 * A.dir, A.y + 8, 30, 8, SHADOW);
-        px(g, m(-21, 15), A.y - 56, 15, 56, '#8a3d3d');
-        px(g, m(-19, 11), A.y - 58, 11, 4, '#9c4848');
-        px(g, m(-16, 2), A.y - 48, 2, 30, 'rgba(40,16,16,0.3)');   // wing seam
-        px(g, m(-19, 44), A.y - 16, 44, 20, '#8a3d3d');
-        px(g, m(-17, 40), A.y - 18, 40, 6, '#a05252');
-        px(g, m(-17, 40), A.y - 11, 40, 2, 'rgba(40,16,16,0.25)'); // cushion piping
-      } });
-      out.push({ y: A.y + 12, draw: function (g) {
-        px(g, m(19, 13), A.y - 30, 13, 34, '#8a3d3d');
-        px(g, m(21, 9), A.y - 32, 9, 4, '#9c4848');
-        px(g, m(21, 2), A.y - 18, 2, 18, 'rgba(40,16,16,0.3)');    // arm seam
-        px(g, m(-21, 53), A.y + 2, 53, 8, '#7a3535');
-        px(g, m(-19, 7), A.y + 10, 7, 4, '#4a3222'); px(g, m(23, 7), A.y + 10, 7, 4, '#4a3222');
-      } });
+      out.push({ y: A.y - 4, draw: function (g) { wingChairBack(g, A, CHAIR_RED); } });
+      out.push({ y: A.y + 12, draw: function (g) { wingChairFront(g, A, CHAIR_RED); } });
+    });
+    L.library.chairs.forEach(function (A) {
+      out.push({ y: A.y - 4, draw: function (g) { wingChairBack(g, A, CHAIR_GREEN); } });
+      out.push({ y: A.y + 12, draw: function (g) { wingChairFront(g, A, CHAIR_GREEN); } });
     });
 
-    // floor lamp over the magazine basket — the bottom-right reading corner
-    const F = L.floorLamp;
-    out.push({ y: F.y, draw: function (g) {
-      ell(g, F.x + 1, F.y - 2, 12, 4, SHADOW);
-      px(g, F.x - 8, F.y - 6, 18, 6, '#4a3222');
-      px(g, F.x - 1, F.y - 48, 4, 42, '#4a3222');
-      px(g, F.x - 12, F.y - 68, 26, 8, '#d9a05a');
-      px(g, F.x - 10, F.y - 60, 22, 10, '#c98f4a');
-      px(g, F.x - 12, F.y - 50, 26, 4, '#b57c38');
-    } });
+    // reading lamps, one leaning over each nook chair
+    L.library.lamps.forEach(function (F) {
+      out.push({ y: F.y, draw: function (g) { drawFloorLamp(g, F.x, F.y); } });
+    });
+
+    // the bookshelf — spines thin out while borrowed books are on loan
+    out.push({ y: L.library.shelf.y, draw: function (g) { drawBookshelf(g, world); } });
 
     // coat stand just inside the door
     const CS = L.coatStand;
@@ -702,15 +709,16 @@
       out.push({ y: P.y, draw: function (g) { ell(g, P.x, P.y - 2, 13, 4, SHADOW); drawBigPlant(g, P.x, P.y); } });
     });
 
-    // bottom-right reading corner: magazine basket (under the floor lamp)
-    out.push({ y: 540, draw: function (g) {
-      ell(g, 790, 538, 17, 5, SHADOW);
-      px(g, 776, 516, 28, 22, '#a5763f');
-      px(g, 780, 520, 2, 14, '#8a5a2a'); px(g, 788, 520, 2, 14, '#8a5a2a'); px(g, 796, 520, 2, 14, '#8a5a2a');
-      px(g, 774, 514, 32, 4, '#8a5a2a');
-      px(g, 780, 500, 7, 16, '#7a89a5');   // magazines poking out
-      px(g, 789, 498, 7, 18, '#a94f3f');
-      px(g, 791, 502, 3, 4, '#e8dfc9');
+    // magazine basket tucked at the bookshelf's foot
+    const BK = L.library.basket;
+    out.push({ y: BK.y, draw: function (g) {
+      ell(g, BK.x, BK.y - 2, 17, 5, SHADOW);
+      px(g, BK.x - 14, BK.y - 24, 28, 22, '#a5763f');
+      px(g, BK.x - 10, BK.y - 20, 2, 14, '#8a5a2a'); px(g, BK.x - 2, BK.y - 20, 2, 14, '#8a5a2a'); px(g, BK.x + 6, BK.y - 20, 2, 14, '#8a5a2a');
+      px(g, BK.x - 16, BK.y - 26, 32, 4, '#8a5a2a');
+      px(g, BK.x - 10, BK.y - 40, 7, 16, '#7a89a5');   // magazines poking out
+      px(g, BK.x - 1, BK.y - 42, 7, 18, '#a94f3f');
+      px(g, BK.x + 1, BK.y - 38, 3, 4, '#e8dfc9');
     } });
     // log pile leaning on the firewood crate beside the hearth
     out.push({ y: 254, draw: function (g) {
@@ -725,6 +733,133 @@
 
     return out;
   };
+
+  /* ---------- wing chairs (fireside red, reading-nook green) ----------
+     m() mirrors an x-offset for dir = -1; upholstery colors come in as a
+     swatch so both pairs share one construction. */
+  const CHAIR_RED = {
+    body: '#8a3d3d', light: '#9c4848', cushion: '#a05252', front: '#7a3535',
+    seam: 'rgba(40,16,16,0.3)', piping: 'rgba(40,16,16,0.25)'
+  };
+  const CHAIR_GREEN = {
+    body: '#4a7a5a', light: shade('#4a7a5a', 0.14), cushion: shade('#4a7a5a', 0.22),
+    front: shade('#4a7a5a', -0.16),
+    seam: 'rgba(16,32,22,0.3)', piping: 'rgba(16,32,22,0.25)'
+  };
+
+  function wingChairBack(g, A, C) {
+    const m = function (off, w) { return A.x + (A.dir > 0 ? off : -off - w); };
+    ell(g, A.x + 2 * A.dir, A.y + 8, 30, 8, 'rgba(20,12,8,0.2)');
+    px(g, m(-21, 15), A.y - 56, 15, 56, C.body);
+    px(g, m(-19, 11), A.y - 58, 11, 4, C.light);
+    px(g, m(-16, 2), A.y - 48, 2, 30, C.seam);       // wing seam
+    px(g, m(-19, 44), A.y - 16, 44, 20, C.body);
+    px(g, m(-17, 40), A.y - 18, 40, 6, C.cushion);
+    px(g, m(-17, 40), A.y - 11, 40, 2, C.piping);    // cushion piping
+  }
+
+  function wingChairFront(g, A, C) {
+    const m = function (off, w) { return A.x + (A.dir > 0 ? off : -off - w); };
+    px(g, m(19, 13), A.y - 30, 13, 34, C.body);
+    px(g, m(21, 9), A.y - 32, 9, 4, C.light);
+    px(g, m(21, 2), A.y - 18, 2, 18, C.seam);        // arm seam
+    px(g, m(-21, 53), A.y + 2, 53, 8, C.front);
+    px(g, m(-19, 7), A.y + 10, 7, 4, '#4a3222'); px(g, m(23, 7), A.y + 10, 7, 4, '#4a3222');
+  }
+
+  function drawFloorLamp(g, x, y) {
+    ell(g, x + 1, y - 2, 12, 4, 'rgba(20,12,8,0.2)');
+    px(g, x - 8, y - 6, 18, 6, '#4a3222');
+    px(g, x - 1, y - 48, 4, 42, '#4a3222');
+    px(g, x - 12, y - 68, 26, 8, '#d9a05a');
+    px(g, x - 10, y - 60, 22, 10, '#c98f4a');
+    px(g, x - 12, y - 50, 26, 4, '#b57c38');
+  }
+
+  /* a low round table beside each nook chair — just big enough for a cup */
+  function drawSideTable(g, sx, sy, items) {
+    ell(g, sx, sy + 10, 15, 4, 'rgba(20,12,8,0.2)');
+    px(g, sx - 3, sy, 6, 10, '#5a3d28');             // pedestal
+    px(g, sx - 3, sy, 2, 10, '#6e4c30');
+    px(g, sx - 9, sy + 8, 18, 4, '#4a3222');         // foot
+    ell(g, sx, sy + 1, 16, 6, '#6e4c30');
+    ell(g, sx, sy - 2, 16, 6, '#8a6142');
+    ell(g, sx, sy - 3, 12, 4, '#96704c');
+    px(g, sx - 6, sy - 5, 10, 2, 'rgba(90,58,34,0.3)');   // grain
+    items.forEach(function (it) { if (!it.hidden) drawTableItem(g, sx, sy - 2, it); });
+  }
+
+  /* ---------- the bookshelf ----------
+     2 CH of warm wood and colorful spines, drawn deterministically via h2()
+     so it never flickers. Three designated "loanable" spines vanish while
+     patrons have books out (world.patrons[].hasShelfBook) and return with
+     them — the shelf quietly tells the story. */
+  const BOOKCOLS = ['#a94f3f', '#4a7a5a', '#7a89a5', '#c9a04a', '#8a6a9a', '#6b7a55', '#b5654a', '#5a7a8a', '#9c4848', '#d9a05a'];
+  const LOAN_SLOTS = [
+    { row: 0, off: 34, col: '#c9a04a' },
+    { row: 1, off: 58, col: '#a94f3f' },
+    { row: 2, off: 16, col: '#5a7a8a' }
+  ];
+
+  function drawBookshelf(g, world) {
+    const S = L.library.shelf;
+    const left = S.x - S.w / 2, top = S.y - S.h, w = S.w;
+    let out = 0;
+    world.patrons.forEach(function (p) { if (p.hasShelfBook) out++; });
+    // ground shadow, carcass, crown, plinth
+    px(g, left - 4, S.y, w + 8, 3, 'rgba(20,12,8,0.22)');
+    px(g, left, top, w, S.h, '#5a3d28');
+    px(g, left + 4, top + 4, w - 8, S.h - 12, '#2e1d12');   // interior
+    px(g, left - 4, top - 8, w + 8, 10, '#6e4a33');         // crown
+    px(g, left - 4, top - 8, w + 8, 2, '#7d5334');
+    px(g, left, top + 2, w, 2, 'rgba(20,10,6,0.35)');       // shadow under crown
+    px(g, left, S.y - 8, w, 8, '#4a3222');                  // plinth
+    px(g, left, S.y - 8, w, 2, '#5a3d28');
+    // shelf boards + four rows of spines
+    for (let r = 0; r < 4; r++) {
+      const bot = r < 3 ? top + 31 + 27 * r : S.y - 8;
+      if (r < 3) {
+        px(g, left + 2, bot, w - 4, 4, '#7d5334');
+        px(g, left + 2, bot + 4, w - 4, 2, '#5f402c');
+      }
+      const loan = LOAN_SLOTS.find(function (s) { return s.row === r; });
+      let loanDone = false;
+      let cx = left + 6;
+      const lim = left + w - 6;
+      while (cx < lim - 4) {
+        if (loan && !loanDone && cx >= left + loan.off) {
+          loanDone = true;
+          if (LOAN_SLOTS.indexOf(loan) >= out) {            // still on the shelf
+            px(g, cx, bot - 20, 7, 20, loan.col);
+            px(g, cx, bot - 20, 7, 2, shade(loan.col, -0.2));
+            px(g, cx + 2, bot - 12, 3, 2, 'rgba(240,232,213,0.6)');
+          }                                                 // else: the gap it left
+          cx += 9;
+          continue;
+        }
+        const n = h2(cx, r * 3 + 1);
+        if (n < 0.1) { cx += 5; continue; }                 // breathing gap
+        if (n > 0.92 && cx + 16 <= lim) {                   // a small flat stack
+          px(g, cx, bot - 4, 16, 4, BOOKCOLS[(h2(cx, r + 40) * BOOKCOLS.length) | 0]);
+          px(g, cx + 1, bot - 8, 14, 4, BOOKCOLS[(h2(cx, r + 41) * BOOKCOLS.length) | 0]);
+          cx += 18;
+          continue;
+        }
+        let bw = 5 + ((h2(cx, r * 7 + 2) * 4) | 0);
+        if (cx + bw > lim) { if (lim - cx < 4) break; bw = lim - cx; }
+        const bh = 14 + ((h2(cx, r * 5 + 3) * 8) | 0);
+        const col = BOOKCOLS[(h2(cx, r * 11 + 4) * BOOKCOLS.length) | 0];
+        px(g, cx, bot - bh, bw, bh, col);
+        px(g, cx, bot - bh, bw, 2, shade(col, -0.2));
+        if (h2(cx, r + 9) > 0.5) px(g, cx + 1, bot - (bh >> 1), bw - 2, 2, 'rgba(240,232,213,0.5)');
+        cx += bw + 1;
+      }
+    }
+    // on top: a trailing plant and a couple of books lying flat
+    drawTinyPlant(g, left + 8, top - 8);
+    px(g, left + w - 34, top - 12, 22, 4, '#7a89a5');
+    px(g, left + w - 32, top - 16, 18, 4, '#a94f3f');
+  }
 
   function drawBigPlant(g, x, y) {
     px(g, x - 10, y - 20, 20, 20, '#b5654a');
@@ -990,6 +1125,14 @@
         px(g, hx, y - 26, 10, 7, '#7a89a5');
         px(g, hx + 2, y - 29, 4, 3, c.skin);               // hand on the cloth
       }
+    } else if (held === 'book') {
+      // borrowed book tucked under the arm
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 12, c.top);
+      const bkx = x + facing * 12 - (facing > 0 ? 0 : 10);
+      px(g, bkx, y - 25, 10, 8, '#a94f3f');
+      px(g, bkx, y - 25, 10, 2, shade('#a94f3f', -0.2));
+      px(g, bkx + (facing > 0 ? 8 : 0), y - 24, 2, 6, '#f5efdf');   // page edges
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 22, 4, 4, c.skin);
     } else {
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3) + swing, y - 34, 5, 16, c.top);
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2) + swing, y - 20, 4, 4, c.skin);
@@ -1166,7 +1309,9 @@
     const lampA = pal.lamp;
     glow(g, L.lamp1.x, 96, 104, 255, 176, 84, 0.05 + 0.26 * lampA);
     glow(g, L.lamp2.x, 96, 104, 255, 176, 84, 0.05 + 0.26 * lampA);
-    glow(g, L.floorLamp.x, L.floorLamp.y - 58, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
+    L.library.lamps.forEach(function (lp) {
+      glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
+    });
     // fire, always flickering
     const flick = 0.2 + 0.06 * Math.sin(t * 8.7) + 0.04 * Math.sin(t * 23.3);
     glow(g, 388, 204, 92, 255, 140, 50, flick);

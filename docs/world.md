@@ -22,8 +22,8 @@ All in `js/sim.js` (state) and `js/scene.js` (appearance).
 | 22–24 | deep night | 0.00 | 1.00 |
 
 - `daylight` scales the multiply-tint over the whole scene and patron spawn
-  rates; `lamp` scales every warm glow (hanging lamps, floor lamp, candles,
-  town windows) and the star/moon alpha.
+  rates; `lamp` scales every warm glow (hanging lamps, the two nook reading
+  lamps, candles, town windows) and the star/moon alpha.
 - Threshold captions: lamps crossing on → "The streetlamps flicker on, one by
   one."; off → "Morning light spills across the floorboards."
 
@@ -44,8 +44,9 @@ Applied after all sprites, in `SCENE.drawLighting`:
 
 1. **Multiply tint** over the full canvas: night `rgb(112,120,172)` →
    day `rgb(255,250,242)`, lerped by `daylight`.
-2. **Additive glows** (`lighter` composite): the two hanging lamps, the floor
-   lamp, mantel candles (all scaled by `lamp`); the fireplace (always on,
+2. **Additive glows** (`lighter` composite): the two hanging lamps, the two
+   reading lamps in the nook, mantel candles (all scaled by `lamp`); the
+   fireplace (always on,
    flickering via layered sines); a candle jar on every table (always lit,
    stronger after dark, per-table flicker); a soft daylight pool below the
    window.
@@ -72,9 +73,10 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   (one "tak!" allowed). British-cozy rather than game-y.
 - Current triggers: arrivals (rain-aware), orders (`withArticle` for correct
   a/an), Nora serving/tidying/clearing, seat choices ("sinks into the armchair
-  by the fire"), page turns (12% of them), murmuring tables (15%), cup
-  returns, departures (rain/night-aware), cat movements and petting, weather
-  changes, lamp threshold moments.
+  by the fire", "curls up in the reading nook"), bookshelf moments (drifting
+  over, picking a book out, slipping it back), page turns (12% of them),
+  murmuring tables (15%), cup returns, departures (rain/night-aware), cat
+  movements and petting, weather changes, lamp threshold moments.
 - When adding events, prefer **occasional** captions (probability-gated) —
   the narrator should feel like she only speaks when something is worth
   mentioning.

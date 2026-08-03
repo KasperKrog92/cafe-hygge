@@ -62,7 +62,9 @@ beard. Walk speed 46–60 px/s, animated as a 4-frame cycle.
 
 **Personality rolls:**
 
-- `wantsBook` (35%) — a reader. Prefers the armchair; reads at tables too.
+- `wantsBook` (35%) — a reader. 45% of readers brought their own book
+  (`ownBook`); the rest borrow one from the nook bookshelf. Readers prefer
+  the nook chairs / fireside armchairs; they read at tables too.
 - `chatty` (55%) — will murmur with a table-mate.
 - `murmurPitch` (125–235 Hz) — their voice in the murmur synth.
 
@@ -73,7 +75,8 @@ croissant 1.
 ### Patron lifecycle (states)
 
 ```
-enter → queueing → ordering → waitDrink → pickup → toSeat → seated → (return) → exit
+enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
+  → seated ⇄ (fetchBook → backToSeat) → (returnBook) → (return) → exit
 ```
 
 1. **enter** — appears at the door (bell jingle, door swings, thud ~1.1 s
@@ -83,25 +86,34 @@ enter → queueing → ordering → waitDrink → pickup → toSeat → seated �
    showing their order icon; caption fires ("Freja orders a cappuccino.").
 3. **waitDrink** — steps aside to a waiting spot until their cup appears at
    the pass with their id on it.
-4. **pickup** — takes the cup (clink) and picks a seat: readers take a
-   fireside armchair if one is free; otherwise a random free stool. If the
-   café is full they take it to go.
+4. **pickup** — takes the cup (clink). Book-borrowers (`wantsBook` without
+   `ownBook`) first **browse** the bookshelf (2.5–5.5 s at the browse spot,
+   page-turn sound, `hasShelfBook = true` — a spine visibly leaves the shelf),
+   then pick a seat. Seat choice: borrowers prefer the nook chairs; readers
+   in general prefer nook chairs / fireside armchairs; otherwise a random
+   free seat. If the café is full they take it to go.
 5. **seated** — the long, cozy middle (stay 100–260 s):
    - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — cup rises
      from the table (the table item hides, cup appears in hand), sip sound at
-     the peak, cup set down (soft clink). Steam rises while the cup is hot
-     (first ~45 s).
+     the peak, cup set down (soft clink). Readers lower the book for the sip
+     and pick it back up. Steam rises while the cup is hot (first ~45 s).
+     Nook sitters rest their drink on their own little side table.
    - **Reading** (readers): page-turn sound every 12–26 s; occasional caption.
+   - **Fetching a book**: a seated non-reader at a table sometimes wanders to
+     the bookshelf mid-stay (seat and drink stay put), browses, and walks
+     back with the book tucked under an arm (`holding: 'book'`), then reads.
    - **Chatting** (chatty, with a seated table-mate): every 16–34 s, a "…"
      bubble + murmur; the mate replies 1.2–2 s later with their own pitch.
 6. **leaving** — 40% carry their cup back to the counter ("returns the cup —
-   tak!"); the rest leave it for Nora. Exit via the door (bell again). Armchair
-   readers wander out cup-in-hand — the café allows it.
+   tak!"); the rest leave it for Nora. Anyone with a borrowed book stops at
+   the shelf first to slide it home (**returnBook**, ~1.1 s — the spine
+   reappears). Exit via the door (bell again). Armchair readers wander out
+   cup-in-hand — the café allows it.
 
 **Spawning:** roughly every 26 s at full daylight stretching to ~80 s at
 night. Caps: 7 patrons in daytime, 4 in the evening, 2 between 23:00 and 06:00
-(the night owls). Two regulars are pre-seated at boot so the café is never
-empty on arrival.
+(the night owls). Three regulars are pre-seated at boot (one of them reading
+a borrowed book in the nook) so the café is never empty on arrival.
 
 ---
 
@@ -110,7 +122,8 @@ empty on arrival.
 Orange tabby, no name (it has not told anyone yet). The café's true owner.
 
 **Favorite spots:** the fireplace rug (390, 294), by the window (168, 378), the
-big rug (340, 468), beside the left armchair (252, 312).
+big rug (340, 468), beside the left armchair (252, 312), the reading nook rug
+(768, 550).
 
 **States:** `sleep` (35–100 s; purrs every 10–25 s; occasional "zzz" bubble)
 → `sit` (5–12 s) → sometimes `groom` (3–6 s, with a raised paw) or `stretch`
