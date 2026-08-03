@@ -38,6 +38,11 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   `__dev.audit()` (bounds/occlusion/seat/constant invariants — run it after
   any layout change).
 
+## Git workflow
+
+- Commit and push directly to `main` unless the owner explicitly asks for a
+  different branch or a pull request.
+
 ## Architecture (11 scripts, deliberate order)
 
 | File | Global | Role |
