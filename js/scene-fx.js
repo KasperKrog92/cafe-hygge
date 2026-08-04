@@ -37,6 +37,7 @@
     L.library.lamps.forEach(function (lp) {
       glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
     });
+    glow(g, L.piano.lamp.x, L.piano.lamp.y, 22, 255, 190, 100, 0.03 + 0.28 * lampA);
     // fire, always flickering
     const flick = 0.2 + 0.06 * Math.sin(t * 8.7) + 0.04 * Math.sin(t * 23.3);
     glow(g, 388, 204, 92, 255, 140, 50, flick);
@@ -46,7 +47,7 @@
     glow(g, 385, 118, 20, 255, 200, 110, mantel * (0.1 + 0.06 * Math.sin(t * 11)));
     // window poseur tables carry no candle: cups only, cushions nearby
     world.tables.forEach(function (tb, i) {
-      if (tb.tall) return;
+      if (tb.tall || tb.piano) return;
       const a = tb.candle * (0.07 + 0.07 * (1 - d) + 0.025 * Math.sin(t * 9 + i * 2.1));
       glow(g, tb.x + (tb.small ? 7 : 0), tb.y - 14, 34, 255, 195, 105, a);
       tb.items.forEach(function (it) {

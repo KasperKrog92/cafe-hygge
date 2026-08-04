@@ -66,6 +66,12 @@ daily care, then small counter-life:
   09:00 and 16:00, carries a copper can to the counter plant and both floor
   plants. A queue arrival parks the round after the current plant. The three
   cumulative `waterRoute` paths are shared with `__dev.audit()`.
+- **Play the piano** (below plant care): after at least 30 truly empty seconds
+  with daylight below 0.35, a 25% candidate roll may send her out through the
+  lane and the piano's clear descent column. She sits and plays sparsely for
+  60–120 s, then observes a 600–1200 s cooldown. A doorbell, queue, or order
+  ends the phrase; she stands, returns behind the counter, and serves. The
+  route is shared with `__dev.audit()`.
 - **Chalk the menu** (due every 600–1200 s): reaches up behind the counter for
   3 s; the cached board then remembers a different heart, curled cat,
   steaming cup, sprig, umbrella, or bamboo whisk. Rain weights the umbrella
@@ -102,6 +108,10 @@ beard. Walk speed 46–60 px/s, animated as a 4-frame cycle.
 - `murmurPitch` (125–235 Hz) — their voice in the murmur synth.
 - `laptop` — 16% of non-readers by day, 6% from 21:00–07:00. They prefer a
   dining table; when only perches or wing chairs remain, the trait stays
+  dormant and the visit proceeds normally.
+- `pianist` — 10% of patrons who are neither readers nor laptop users; never
+  a couple member or Holger. They take the piano bench only when it and the
+  world-level 300–600 s music cooldown are free. Otherwise the trait stays
   dormant and the visit proceeds normally.
 
 **Order:** weighted pick — cappuccino 3, cinnamon latte 2.5, flat white 2,
@@ -141,6 +151,9 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    declared clear column, `seat.via`, so the walk never cuts the fireside
    armchair — and leaves the same way). Both perches at a window share the
    tall table under the glass for their drinks.
+   A pianist may instead take the appended piano bench; its drink goes to the
+   dedicated saucer spot on the lid, so sipping, steam, cup return, abandoned
+   cup avoidance, and Nora's normal bussing all use the shared table pipeline.
 5. **seated** — the long, cozy middle (stay 100–260 s):
    - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — the cup,
      handle-less matcha bowl, or iced glass rises from the table (the table
@@ -157,6 +170,11 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
      sipping pauses their hands. The open screen casts a very faint cool glow
      after dark. Before leaving they close the lid for 0.6 s and tuck it under
      the free arm.
+   - **Piano playing** (active pianist trait at the bench): 1–3 quiet
+     40–90 s bursts with 8–20 s sit-backs between them. The `playing` pose
+     reaches both forearms sideways to the keys; sipping pauses the hands and
+     felt-piano engine together, then resumes the same burst. The final burst
+     starts the room-wide cooldown, and the music box yields while keys sound.
    - **Dozing** (only one at a time): after dark, a reader in a fireside or
      nook wing chair with more than a minute left may fall asleep over the
      lowered book for 40–110 s. Closed eyes, slow breathing, and an occasional
@@ -226,7 +244,8 @@ in `L.catCorner`. The cushion is strongly preferred after a meal; the fire
 rug gains weight in the evening; the nook and shorter rests gain weight from
 23:00–06:00. A weighted choice can instead lead to the middle of either
 window sill (×2.5 in rain, ×2 at night) or the bookshelf top while the second
-nook chair is free. Safe pairs keep the old straight-line walk; the pairs that
+nook chair is free, or to the piano lid (weight 0.9, ×1.5 in the evening)
+while the bench and piano voice are free. Safe pairs keep the old straight-line walk; the pairs that
 clip furniture use the declared `catRoute` waypoints checked by the audit.
 
 **Needs, without consequences:** `hungerT` rolls 420–720 s and `thirstT`
@@ -242,7 +261,7 @@ task.
 parabolic tween; silent up, `softThump` on the final floor landing), `eat`,
 `drink`, `perch` (back view at the window), `knead`, `pounce`, and `lap`.
 `cat.surface` (`floor`, `sill`, `shelfTop`, `counter`, `machine`, `backShelf`,
-or `lap`) prevents floor habits from firing in mid-caper.
+`pianoKeys`, `pianoTop`, or `lap`) prevents floor habits from firing in mid-caper.
 
 **High places:** window visits hop from the declared stand spot to the middle
 of the sill, where the cat watches the rain/streetlamp or curls to sleep.
@@ -250,6 +269,13 @@ Bookshelf visits use the nook chair back as a step, then settle for 60–180 s;
 if that chair becomes occupied, the cat takes the declared direct escape hop.
 On any high perch, its head occasionally tracks the nearest walking patron
 for 2–4 s. `gazeFacing` changes the head/attention without changing the pose.
+
+**Piano claim:** from its declared stand the cat hops onto the grouped keys
+(2–3 soft accidental plinks), then to the lid for a 60–180 s loaf, sit, or
+sleep with its tail draped over the edge. A pianist who arrives later does not
+dislodge it—the shared tableau is intentional. The cat leaves by one direct,
+silent-front hop to the declared floor dismount; only that landing gets the
+usual `softThump`, so the keys never sound twice.
 
 **Counter caper:** only in a quiet café with no queue, order, or active brew,
 the cat rarely hops onto the counter's right end, pads along the slab, and

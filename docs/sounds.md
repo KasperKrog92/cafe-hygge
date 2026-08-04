@@ -26,6 +26,7 @@ one-shots ─────────────► sfx ───┐
 window taps + storm ───► amb ───┤
 rumble + crackles ─────► fire ──┼─► master ─► compressor ─► speakers
 music box + night pad ─► music ─┤
+corner felt piano ─────► music ─┤
       └─ send ─► delay "room" (0.31 s, feedback 0.34, damped 1700 Hz, wet 0.2) ─┘
 ```
 
@@ -58,6 +59,21 @@ pentatonic notes one octave lower. Each pitch is a triangle/sine pair detuned
 4–7 s, release for 4–5.5 s, then leave 2–5 s of silence; the combined peak is
 about 0.025. Dawn fades active voices without a click. The 🎵 toggle governs
 both layers. There is no vinyl crackle—the fireplace already owns that texture.
+
+## The corner piano
+
+The piano is an occasional **ostinato + drift** layer on the existing music
+bus. Its felt voice combines a triangle fundamental, quiet sine octave, and
+faint 2.9× partial under a 1.9 kHz lowpass; the shared 6 ms attack and
+1.6–2.4 s decay peak below 0.03 per note with moderate room send. A hand-written
+root–fifth–tenth figure rocks every 0.9–1.4 s through a small C / Am / F-ish /
+G-ish pentatonic-safe graph while a random-walk right hand answers every
+1.2–4 s with 25% rests and rare dyads. Nora's version leaves still more air.
+
+`SND.pianoStart(style)` / `pianoStop()` own the dt-driven session. While a
+session is active the music box rests; stopping resets its timer to 4–8 s so
+it returns gently. The compatible night pad continues underneath. The 🎵
+toggle mutes all three layers without changing their visual behavior.
 
 ## One-shot catalog
 
@@ -93,6 +109,7 @@ both layers. There is no vinyl crackle—the fireplace already owns that texture
 | `lapWater()` | cat drinking (~4/s) | tiny 330–410→250 Hz sine blip plus filtered noise, combined peak below 0.015 |
 | `kibblePour(dur)` | Nora refilling food | 10 granular noise bursts spread across ~0.9 s, bandpass jitter below a 3 kHz lowpass, density/gain decays from peak 0.035 |
 | `softThump()` | cat's final hop-down landing | 90→58 Hz sine thud plus a damped lowpassed click, peak 0.03 |
+| `pianoPlinks()` | cat stepping from the keyboard to the piano lid | 2–3 upper-register felt-piano notes 90–200 ms apart, including one allowable off-scale neighbour; each remains below 0.025 on the music bus |
 | `churchBells()` | noon hour edge | four human-loose strikes 1.7–2.1 s apart: ~330 Hz plus quiet 1.2× tierce and 2× partial, lowpass 1.2 kHz, 2.5–3.5 s decay, generous room send, peak below 0.02 |
 | `mantelChime()` | 09:00, 15:00, 18:00, 21:00 | soft 740→620 Hz triangle “ding… dong” 0.45 s apart with quiet octave partials, ~1.2 s decay, moderate room send, combined peak ~0.018 |
 | `kettleWhistle()` | once daily between 19:00 and 21:30 | distant 1.6 kHz sine bending gently upward with 5 Hz wobble under a 1 kHz lowpass; 1.2 s attack, quiet hold, then a downward lift-off chirp, peak 0.018 |

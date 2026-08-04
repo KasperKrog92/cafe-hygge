@@ -14,6 +14,16 @@
   function freeSeat(world, patron) {
     let free = world.seats.filter(function (s) { return !s.taken; });
     if (!free.length) return null;
+    // The piano trait is opportunistic: if the bench or the room-wide music
+    // cooldown is unavailable, this visit proceeds as an ordinary one.
+    if (patron.pianist) {
+      const piano = free.find(function (s) { return s.piano; });
+      const noraAway = world.barista.state.indexOf('piano') !== 0;
+      if (piano && cleanSeat(world, piano) && world.t >= world.pianoNextT &&
+          noraAway && !SND.pianoActive()) return piano;
+    }
+    free = free.filter(function (s) { return !s.piano; });
+    if (!free.length) return null;
     // skip spots where an abandoned drink still waits for Nora — a newcomer's
     // cup would land on the very same saucer spot (soak-test find)
     const clean = free.filter(function (s) {
@@ -32,7 +42,7 @@
     }
     if (patron.laptop) {
       const dining = free.filter(function (s) {
-        return s.table >= 0 && !s.armchair && !s.nook && !s.window;
+        return s.table >= 0 && !s.armchair && !s.nook && !s.window && !s.piano;
       });
       if (dining.length) return pick(dining);
     }
@@ -57,7 +67,7 @@
     if (!mate || p.seat || mate.seat) return !!p.seat;
     let pair = null;
     world.tables.forEach(function (tb, ti) {
-      if (pair || tb.small || tb.tall) return;
+      if (pair || tb.small || tb.tall || tb.piano) return;
       const seats = world.seats.filter(function (s) { return s.table === ti && cleanSeat(world, s); });
       if (seats.length >= 2) pair = seats.slice(0, 2);
     });
@@ -335,13 +345,18 @@
               hot: p.drink.kind === 'glass' ? 0 : 45, hidden: false });
             p.holding = null;
             SND.cupDown();
-            p.laptopActive = p.laptop && !p.seat.armchair && !p.seat.nook && !p.seat.window;
+            p.laptopActive = p.laptop && !p.seat.armchair && !p.seat.nook && !p.seat.window && !p.seat.piano;
             if (p.laptopActive) {
               world.tables[p.seat.table].items.push({ side: p.seat.side, kind: 'laptop', owner: p.id, open: true, hot: 0, hidden: false });
               p.typingT = rnd(6, 14);
             }
           }
-          if (p.isRegular && p.usualSeat) {
+          if (p.seat.piano) {
+            p.pianoBursts = 1 + Math.floor(rnd(0, 3));
+            p.pianoRestT = rnd(2, 6);
+            p.reading = false;
+            if (Math.random() < 0.7) caption(world, p.name + ' settles at the piano.');
+          } else if (p.isRegular && p.usualSeat) {
             p.reading = true;
             caption(world, 'Holger settles into his usual armchair.');
           } else if (p.partner && !p.pairCaptioned) {
@@ -484,6 +499,31 @@
       }
     }
 
+    // Pianists play a few composed-feeling bursts during an otherwise normal
+    // stay. A sip pauses hands and sound together, then resumes the same burst.
+    if (p.seat.piano) {
+      if (p.playing && p.sipPhase > 0) {
+        p.playing = false; p.pianoSipPaused = true; SND.pianoStop();
+      } else if (p.pianoSipPaused && p.sipPhase <= 0) {
+        p.pianoSipPaused = false; p.playing = true; SND.pianoStart('patron');
+      }
+      if (p.playing) {
+        p.pianoPlayT -= dt;
+        if (p.pianoPlayT <= 0) {
+          p.playing = false; SND.pianoStop(); p.pianoBursts--;
+          if (p.pianoBursts > 0) p.pianoRestT = rnd(8, 20);
+          else world.pianoNextT = world.t + rnd(300, 600);
+        }
+      } else if (!p.pianoSipPaused && p.pianoBursts > 0) {
+        p.pianoRestT -= dt;
+        if (p.pianoRestT <= 0) {
+          p.playing = true; p.pianoPlayT = rnd(40, 90);
+          SND.pianoStart('patron');
+          if (Math.random() < 0.12) caption(world, 'A soft tune drifts across the café.');
+        }
+      }
+    }
+
     // the window pulls a perched sitter's gaze now and then (head only —
     // the body keeps leaning on its cushion)
     if (p.seat.window) {
@@ -561,7 +601,7 @@
     }
 
     // now and then the bookshelf calls (drink stays on the table, seat stays theirs)
-    if (!p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
+    if (!p.seat.piano && !p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
         Math.random() < dt * 0.01) {
       p.pose = 'stand';
       chairScrape(p, true);
@@ -575,6 +615,11 @@
 
     // time to go
     if (p.stay <= 0 && p.sipPhase <= 0) {
+      if (p.seat.piano && (p.playing || p.pianoSipPaused)) return;
+      if (p.seat.piano && p.pianoBursts > 0) {
+        p.pianoBursts = 0;
+        world.pianoNextT = world.t + rnd(300, 600);
+      }
       if (p.partner) {
         if (!p.coupleLeaveAt) {
           if (p.partner.state !== 'seated' || p.partner.stay > 0) return;
@@ -618,6 +663,11 @@
     if (p.catLeaveT > 0) { p.catLeaveT -= dt; return; }
     if (world.cat.lapPatron === p) {
       SIM.dislodgeCat(p); p.catLeaveT = 1; return;
+    }
+    if (p.seat && p.seat.piano) {
+      if (p.playing || p.pianoSipPaused) SND.pianoStop();
+      p.playing = false; p.pianoSipPaused = false;
+      if (world.t >= world.pianoNextT) world.pianoNextT = world.t + rnd(300, 600);
     }
     p.pose = 'stand'; p.reading = false; p.dozing = false; p.armUp = 0; p.typing = false;
     chairScrape(p, true);

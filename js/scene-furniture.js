@@ -15,10 +15,22 @@
     const C = L.counter;
     const SHADOW = 'rgba(20,12,8,0.2)';
 
+    // The lid's depth stack is done with baselines: the lamp draws just below
+    // the cat's anchor y so a lid cat covers its stem (the lamp stands at the
+    // lid's back), while the case — and the drink on the saucer spot, drawn
+    // with it — draws at the floor baseline, in front of the cat. The bench
+    // and upright share that baseline; insertion order keeps the bench behind
+    // the piano, and entity drawables place a sitter in front of both.
+    const pianoTable = world.tables.find(function (tb) { return tb.piano; });
+    out.push({ y: L.piano.catAnchor.y - 1, draw: function (g) { drawPianoLamp(g, world); } });
+    out.push({ y: L.piano.baseline, draw: function (g) { drawPianoBench(g); } });
+    out.push({ y: L.piano.baseline, draw: function (g) { drawPiano(g, pianoTable, world); } });
+
     // tables + their seats (chair with a back on the left, stool on the right);
     // the nook's small side tables carry items but seat no one themselves
     world.tables.forEach(function (tb, i) {
       const cx = tb.x, cy = tb.y;
+      if (tb.piano) return;
       if (tb.small) {
         out.push({ y: cy + 12, draw: function (g) { drawSideTable(g, cx, cy, tb, world); } });
         return;
@@ -161,6 +173,60 @@
 
     return out;
   };
+
+  function drawPianoBench(g) {
+    const B = L.piano.bench;
+    ell(g, B.x, B.y + 2, 13, 4, 'rgba(20,12,8,0.2)');
+    px(g, B.x - 9, B.y - 13, 3, 13, '#4a3222');
+    px(g, B.x + 6, B.y - 13, 3, 13, '#4a3222');
+    px(g, B.x - 7, B.y - 7, 14, 2, '#4a3222');            // stretcher
+    px(g, B.x - 11, B.y - 18, 22, 5, '#6b4529');          // rectangular seat — a bench, not a stool
+    px(g, B.x - 11, B.y - 18, 22, 2, shade('#6b4529', 0.16));
+  }
+
+  /* The brass piano lamp is its own drawable, one baseline above the cat's
+     lid anchor: it stands at the BACK of the lid, so a resting cat must cover
+     its stem while the additive glow (drawLighting) still lands on top. */
+  function drawPianoLamp(g, world) {
+    const P = L.piano, lp = P.lamp, brass = '#c9a04a';
+    px(g, P.x + 1, P.y - 6, 6, 2, brass);                 // base on the lid, at the back
+    px(g, P.x + 2, P.y - 20, 2, 14, brass);               // stem
+    px(g, P.x + 2, P.y - 22, lp.x - P.x - 2, 2, brass);   // arm arched toward the room
+    px(g, lp.x - 4, lp.y - 1, 8, 3, world.pal.lamp > 0.2 ? '#f2c66d' : '#e8dfc9');
+    px(g, lp.x - 3, lp.y + 2, 6, 2, shade('#e8dfc9', -0.2));
+  }
+
+  function drawPiano(g, tb, world) {
+    const P = L.piano;
+    const dark = '#4a3222', body = '#5a3d28', panel = '#6b4529', brass = '#c9a04a';
+    ell(g, 36, P.baseline + 2, 24, 5, 'rgba(20,12,8,0.22)');
+    // the profile: a tall narrow case, back to the room's edge, front lit
+    px(g, P.x, P.y, P.w, P.baseline - P.y, dark);
+    px(g, P.x + 2, P.y + 2, P.w - 4, P.baseline - P.y - 6, body);
+    px(g, P.x + P.w - 4, P.y + 2, 2, P.baseline - P.y - 6, shade(body, 0.12));
+    px(g, P.x + 5, P.y + 8, P.w - 10, 26, panel);         // recessed side panel
+    px(g, P.x + 6, P.y + 10, P.w - 12, 2, shade(panel, 0.16));
+    px(g, P.x + 6, P.y + 30, P.w - 12, 2, shade(panel, -0.2));
+    px(g, P.x + 1, P.baseline - 7, P.w - 2, 5, shade(body, -0.18));   // plinth
+    // lid, seen edge-on; the cat's paw line hides behind its light strip
+    px(g, P.x - 2, P.y - 4, P.w + 6, 4, dark);
+    px(g, P.x - 1, P.y - 4, P.w + 4, 2, shade(body, 0.18));
+    // keybed stub toward the player — in profile the keys are a short shelf,
+    // cream top peeking past the cheek, never a long row
+    px(g, P.keyboardX, P.keyboardY - 4, P.keyboardW, 8, dark);
+    px(g, P.keyboardX + 2, P.keyboardY - 4, P.keyboardW - 2, 3, '#e8e0d0');
+    px(g, P.keyboardX + 5, P.keyboardY - 4, 2, 2, dark);  // black-key hints
+    px(g, P.keyboardX + 9, P.keyboardY - 4, 2, 2, dark);
+    px(g, P.keyboardX, P.keyboardY + 4, P.keyboardW, 2, 'rgba(20,12,8,0.18)');
+    // the score's edge on the rest, above the fallboard
+    px(g, P.keyboardX, P.y + 10, 2, 6, '#e8dfc9');
+    // the toe block carries the keybed's line to the floor; one pedal in profile
+    px(g, P.x + P.w - 2, P.baseline - 6, 10, 6, dark);
+    px(g, P.x + P.w + 6, P.baseline - 5, 4, 2, brass);
+    if (tb) tb.items.forEach(function (it) {
+      if (!it.hidden) drawTableItem(g, P.saucer.x, P.saucer.y - 2, it, 0);
+    });
+  }
 
   /* ---------- wing chairs (fireside red, reading-nook green) ----------
      m() mirrors an x-offset for dir = -1; upholstery colors come in as a

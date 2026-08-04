@@ -601,11 +601,81 @@
   const SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66]; // C major pentatonic-ish, two octaves reach
   let noteIdx = 2;
   let musicT = 4;
+  let pianoActive = false;
+  let pianoStyle = 'patron';
+  let pianoLeftT = 0, pianoRightT = 0, pianoChordT = 0;
+  let pianoChord = 0, pianoFigure = 0, pianoFigureStep = 0, pianoRightIdx = 2;
 
   function playNote(f, vel) {
     tone(f, { gain: vel, dur: 1.7, type: 'triangle', dest: musicBus, send: 0.7, attack: 0.006 });
     tone(f * 2, { gain: vel * 0.25, dur: 1.1, dest: musicBus });
   }
+
+  /* A soft felt-piano voice. Three restrained partials share one lowpass and
+     envelope, so the stated peak is the whole note rather than three stacked
+     peaks. This is also the single swap point for a future felt-piano sample. */
+  function pianoNote(f, vel, delay) {
+    if (!ctx) return;
+    const t = ctx.currentTime + (delay || 0);
+    const dur = 1.6 + Math.random() * 0.8;
+    const lp = filt('lowpass', 1900);
+    const g = gainNode(0);
+    lp.connect(g); g.connect(musicBus);
+    const send = gainNode(0.42); g.connect(send); send.connect(delaySend);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(Math.min(0.024, 0.022 * vel), t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0004, t + dur);
+    [
+      { type: 'triangle', mul: 1, gain: 1 },
+      { type: 'sine', mul: 2, gain: 0.18 },
+      { type: 'sine', mul: 2.9, gain: 0.07 }
+    ].forEach(function (v) {
+      const o = ctx.createOscillator();
+      const og = gainNode(v.gain);
+      o.type = v.type; o.frequency.value = f * v.mul;
+      o.connect(og); og.connect(lp);
+      o.start(t); o.stop(t + dur + 0.05);
+    });
+  }
+
+  // Root–fifth–tenth shapes using only the C-pentatonic pitch well. The
+  // third entry is deliberately F-ish by inversion instead of adding an F.
+  const PIANO_CHORDS = [
+    [130.81, 196.00, 329.63],
+    [110.00, 164.81, 261.63],
+    [110.00, 130.81, 164.81],
+    [98.00, 146.83, 220.00]
+  ];
+  const PIANO_NEXT = [[1, 2], [2, 3], [0, 3], [0, 1]];
+  const PIANO_FIGURES = [[0, 1, 2, 1], [0, 2, 1, 2], [0, 1, 0, 2, 1]];
+
+  SND.pianoStart = function (style) {
+    pianoStyle = style === 'nora' ? 'nora' : 'patron';
+    if (pianoActive) return;
+    pianoActive = true;
+    pianoLeftT = 0; pianoRightT = 0.7 + Math.random() * 1.2;
+    pianoChordT = 8 + Math.random() * 8;
+    pianoFigure = (Math.random() * PIANO_FIGURES.length) | 0;
+    pianoFigureStep = 0;
+  };
+
+  SND.pianoStop = function () {
+    if (!pianoActive) return;
+    pianoActive = false;
+    musicT = 4 + Math.random() * 4;
+  };
+
+  SND.pianoActive = function () { return pianoActive; };
+
+  SND.pianoPlinks = guard(function () {
+    const count = 2 + (Math.random() < 0.45 ? 1 : 0);
+    const plinkScale = [659.25, 698.46, 783.99, 880.00, 1046.50];
+    let delay = 0;
+    for (let i = 0; i < count; i++) {
+      pianoNote(plinkScale[(Math.random() * plinkScale.length) | 0], 0.78, delay);
+      delay += 0.09 + Math.random() * 0.11;
+    }
+  });
 
   const PAD_CHORDS = [
     [261.63, 329.63, 392.00], // C–E–G
@@ -691,7 +761,7 @@
     }
 
     // sparse music box
-    if (S.music && !S.muted) {
+    if (S.music && !S.muted && !pianoActive) {
       musicT -= dt;
       if (musicT <= 0) {
         const night = world.daylight < 0.35;
@@ -703,6 +773,38 @@
           if (Math.random() < 0.28) {
             const other = Math.min(SCALE.length - 1, noteIdx + 2);
             playNote(SCALE[other], 0.02);
+          }
+        }
+      }
+    }
+
+    // Corner-piano ostinato + drift. The left hand rocks steadily while the
+    // right hand wanders more sparsely; Nora leaves a little more air.
+    if (S.music && !S.muted && pianoActive) {
+      pianoChordT -= dt;
+      if (pianoChordT <= 0) {
+        const choices = PIANO_NEXT[pianoChord];
+        pianoChord = choices[(Math.random() * choices.length) | 0];
+        pianoChordT = 8 + Math.random() * 8;
+        pianoFigure = (Math.random() * PIANO_FIGURES.length) | 0;
+      }
+      pianoLeftT -= dt;
+      if (pianoLeftT <= 0) {
+        const fig = PIANO_FIGURES[pianoFigure];
+        pianoNote(PIANO_CHORDS[pianoChord][fig[pianoFigureStep]], 0.58);
+        pianoFigureStep = (pianoFigureStep + 1) % fig.length;
+        pianoLeftT = 0.9 + Math.random() * 0.5 + (Math.random() - 0.5) * 0.08;
+      }
+      pianoRightT -= dt;
+      if (pianoRightT <= 0) {
+        const nora = pianoStyle === 'nora';
+        pianoRightT = (nora ? 2.1 : 1.2) + Math.random() * (nora ? 3.4 : 2.8);
+        if (Math.random() >= (nora ? 0.38 : 0.25)) {
+          pianoRightIdx += [-2, -1, -1, 1, 1, 2][(Math.random() * 6) | 0];
+          pianoRightIdx = Math.max(0, Math.min(SCALE.length - 1, pianoRightIdx));
+          pianoNote(SCALE[pianoRightIdx] / 2, 0.78);
+          if (Math.random() < 0.18) {
+            pianoNote(SCALE[Math.min(SCALE.length - 1, pianoRightIdx + 2)] / 2, 0.46, 0.035);
           }
         }
       }

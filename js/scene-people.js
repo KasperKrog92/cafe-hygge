@@ -85,7 +85,8 @@
     const pass = cycle === 1 || cycle === 3;               // passing frames bob up
     const y = p.y - (walk && pass ? 2 : 0);
     const stretchLean = p.pose === 'stretch' ? Math.round(Math.sin(p.animT * 1.4) * 2) : 0;
-    const x = Math.round(p.x) + stretchLean;
+    const playSway = p.playing ? Math.round(Math.sin(p.animT * 1.15)) : 0;
+    const x = Math.round(p.x) + stretchLean + playSway;
     const c = p.colors;
     const breathe = !walk && Math.sin(p.animT * 1.6) > 0.3 ? 1 : 0;
     const topD = shade(c.top, -0.18);
@@ -123,6 +124,14 @@
         px(g, bx, by - 2, 18, 2, '#c9b28a');
         px(g, bx - 2, by + 3, 3, 4, c.skin);                    // hands on the covers
         px(g, bx + 17, by + 3, 3, 4, c.skin);
+      } else if (p.playing) {
+        const keyBob = Math.floor(p.animT * 5) % 2;
+        // A sideways version of the typing forearms: both hands reach left
+        // from the backless bench to the upright's grouped keys.
+        px(g, x - 10, y - 29 + keyBob, 7, 11, c.top);
+        px(g, x - 5, y - 25 + (1 - keyBob), 7, 9, c.top);
+        px(g, x - 15, y - 19 + keyBob, 6, 3, c.skin);
+        px(g, x - 12, y - 16 + (1 - keyBob), 6, 3, c.skin);
       } else if (p.typing) {
         const keyBob = Math.floor(p.animT * 6) % 2;
         px(g, x - 9, y - 28 + keyBob, 7, 12, c.top);
@@ -290,7 +299,7 @@
     const pose = cat.state === 'hop' ? 'stretch' : cat.state;
     // on the back-bar shelf the tail drapes off the board edge instead of the
     // pose's own tail (sleep keeps its tucked curl and skips the drape)
-    const drapeTail = cat.surface === 'backShelf' &&
+    const drapeTail = (cat.surface === 'backShelf' || cat.surface === 'pianoTop') &&
       (pose === 'loaf' || pose === 'sit' || pose === 'groom');
     const look = cat.gazeFacing || cat.facing;
     const f = look >= 0 ? 1 : -1;

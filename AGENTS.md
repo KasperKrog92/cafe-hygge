@@ -35,12 +35,13 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   overlay, `?dev&audit` runs the invariant sweep after load. Console:
   `__dev.hour(h)`, `__dev.ff(seconds)` (fast-forward,
   muted), `__dev.spawn({wantsBook, ownBook, drink, chatty, umbrella, laptop,
-  couple})` (a real patron, or linked pair, with chosen traits),
+  pianist, couple})` (a real patron, or linked pair, with chosen traits),
   `__dev.regular()` (force Holger's next arrival), `__dev.doze()` (sleep the
   first eligible reader), `__dev.send(name, x, y)`,
-  `__dev.noraDo('stretch'|'chalk'|'water'|'candles')`,
+  `__dev.noraDo('stretch'|'chalk'|'water'|'candles'|'piano')`,
+  `__dev.piano(on)`,
   `__dev.kettle()`, `__dev.storm(on)`,
-  `__dev.catDo('eat'|'window'|'bookshelf'|'counter'|'topShelf'|'lap'|'mote'|'knead')`,
+  `__dev.catDo('eat'|'window'|'bookshelf'|'counter'|'topShelf'|'piano'|'lap'|'mote'|'knead')`,
   `__dev.bowls(food, water)`, `__dev.overlay()`,
   `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus
   live-world consistency checks — run it after any layout or sim change).

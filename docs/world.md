@@ -27,8 +27,8 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 | 22–24 | deep night | 0.00 | 1.00 |
 
 - `daylight` scales the multiply-tint over the whole scene and patron spawn
-  rates; `lamp` scales the electric warm glows (hanging lamps and the two
-  nook reading lamps) and the star/moon alpha. Candle light has its own
+  rates; `lamp` scales the electric warm glows (hanging lamps, the two
+  nook reading lamps, and the little brass piano lamp) and the star/moon alpha. Candle light has its own
   per-flame state, tended by Nora.
 - Threshold captions: lamps crossing on → "The streetlamps flicker on, one by
   one."; off → "Morning light spills across the floorboards."
@@ -63,7 +63,8 @@ Applied after all sprites, in `SCENE.drawLighting`:
 2. **Additive glows** (`lighter` composite): the three hanging lamps (the
    third hangs over the counter, with two spill pools across the back bar —
    machine + pass, pastry case — so the counter stays warm after dark), the
-   two reading lamps in the nook; the fireplace (always on,
+   two reading lamps in the nook; the piano lamp's tight pool over the score,
+   keys, and bench; the fireplace (always on,
    flickering via layered sines); a candle jar on every dining and nook side
    table plus the mantel pair (each glow scaled by its live 0–1 flame state;
    window poseur tables carry no candle, cups only); a soft daylight pool
@@ -124,7 +125,9 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   (rain/night-aware), umbrella shakes/collections, linked-pair arrivals,
   shared orders and seats, Holger's usual-chair moment, falling asleep and
   finding the line again, cat
-  movements and petting, Nora stretching/chalking/watering and the dusk/dawn
+  movements and petting (including the cat's accidental piano plinks), Nora
+  stretching/chalking/watering, her rare empty-night piano tune, a pianist
+  settling at the bench / beginning a sparse burst, and the dusk/dawn
   candle ritual, weather changes, noon church bells, the evening kettle, lamp
   threshold moments, and occasional tip-jar coins. Cat-life
   lines cover the patient empty-bowl wait, Nora's refill/supervision, rain and

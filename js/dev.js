@@ -20,6 +20,7 @@
      __dev.spawn(o)    real patron with chosen traits, via the front door
      __dev.regular()   force Holger's next arrival
      __dev.doze()      put the first eligible reader to sleep
+     __dev.piano(on)   force/stop the corner-piano sound engine
      __dev.send(n,x,y) path an entity through the real makePath
      __dev.noraDo(name) force a Nora ritual on her next idle task
      __dev.catDo(name) force a cat ritual on the next simulation tick
@@ -110,15 +111,16 @@
   /* ---------- scenario forcing ---------- */
 
   /* A real patron through the real front-door flow, with chosen traits.
-     opts adds umbrella, laptop and couple to the original reader traits. */
+     opts adds umbrella, laptop, pianist and couple to the reader traits. */
   D.spawn = function (opts) {
     opts = opts || {};
     const w = world();
     if (opts.couple) return SIM._.spawnCouple(w, opts);
     const p = SIM._.makePatron();
-    ['wantsBook', 'ownBook', 'chatty'].forEach(function (k) {
+    ['wantsBook', 'ownBook', 'chatty', 'pianist'].forEach(function (k) {
       if (k in opts) p[k] = !!opts[k];
     });
+    if (opts.pianist) { p.wantsBook = false; p.laptop = false; }
     if (opts.name) p.name = opts.name;
     if ('laptop' in opts) p.laptop = !!opts.laptop;
     if (opts.umbrella) {
@@ -150,6 +152,12 @@
     return p;
   };
 
+  D.piano = function (on) {
+    on = on === undefined ? true : !!on;
+    if (on) SND.pianoStart('patron'); else SND.pianoStop();
+    return SND.pianoActive();
+  };
+
   /* Path an entity through the real makePath. Only states that run the
      walker will actually move (the cat is forced into 'walk'; a seated
      patron stays seated — this is a path tool, not a state override). */
@@ -165,7 +173,7 @@
   };
 
   D.catDo = function (action) {
-    const allowed = ['eat', 'window', 'bookshelf', 'counter', 'topShelf', 'lap', 'mote', 'knead'];
+    const allowed = ['eat', 'window', 'bookshelf', 'counter', 'topShelf', 'piano', 'lap', 'mote', 'knead'];
     if (allowed.indexOf(action) < 0) {
       console.warn('[dev] unknown cat behavior "' + action + '"');
       return null;
@@ -180,7 +188,7 @@
   };
 
   D.noraDo = function (action) {
-    const allowed = ['stretch', 'chalk', 'water', 'candles'];
+    const allowed = ['stretch', 'chalk', 'water', 'candles', 'piano'];
     if (allowed.indexOf(action) < 0) {
       console.warn('[dev] unknown Nora behavior "' + action + '"');
       return null;
@@ -501,6 +509,9 @@
     const candles = SIM._.candleRoute(w);
     const candleEnd = candles[candles.length - 1];
     routeProblems(candles, candleEnd, 'candle round', ['counter'], true, problems);
+    const piano = SIM._.pianoRoute();
+    const pianoEnd = piano[piano.length - 1];
+    routeProblems(piano, pianoEnd, 'Nora piano route', ['counter'], true, problems);
 
     // Cat floor stops obey floor collision rules; aerial anchors are checked
     // against their declared surface instead. The cushion is deliberately
@@ -512,6 +523,9 @@
       { id: 'bookshelfEscape', x: L.catPerches.bookshelf.escape.x, y: L.catPerches.bookshelf.escape.y },
       { id: 'counterStand', x: L.catPerches.counter.stand.x, y: L.catPerches.counter.stand.y },
       { id: 'topShelfStand', x: L.catPerches.topShelf.stand.x, y: L.catPerches.topShelf.stand.y },
+      { id: 'pianoStand', x: L.catPerches.piano.stand.x, y: L.catPerches.piano.stand.y },
+      { id: 'pianoDismount', x: L.piano.dismount.x, y: L.piano.dismount.y,
+        approach: L.catRoutes.pianoDismount },
       { id: 'eat', x: L.catCorner.eatSpot.x, y: L.catCorner.eatSpot.y, catCorner: true }
     ]);
     w.seats.filter(function (s) { return s.armchair || s.nook; }).forEach(function (seat, i) {
@@ -552,6 +566,15 @@
     if (L.catPerches.topShelf.anchor.y !== 104) {
       problems.push('cat back-shelf perch is not anchored on shelf 1');
     }
+    if (L.catPerches.piano.anchor.x !== L.piano.catAnchor.x ||
+        L.catPerches.piano.anchor.y !== L.piano.catAnchor.y) {
+      problems.push('cat piano perch is not anchored on the lid');
+    }
+    if (L.piano.keysStep.x < L.piano.keyboardX ||
+        L.piano.keysStep.x > L.piano.keyboardX + L.piano.keyboardW ||
+        L.piano.keysStep.y !== L.piano.keyboardY) {
+      problems.push('cat piano-key transit is not anchored on the keyboard');
+    }
 
     // seats reference existing tables; nook seats pair with small side
     // tables, window seats with tall window tables
@@ -559,6 +582,8 @@
       if (s.table >= 0) {
         const tb = w.tables[s.table];
         if (!tb) problems.push('seat[' + i + '] references missing table ' + s.table);
+        else if (s.piano && !tb.piano) problems.push('seat[' + i + '] is a piano seat but table ' + s.table + ' is not the piano lid');
+        else if (!s.piano && tb.piano) problems.push('seat[' + i + '] points at the piano lid but is not the piano bench');
         else if (s.nook && !tb.small) problems.push('seat[' + i + '] is a nook seat but table ' + s.table + ' is not a small side table');
         else if (!s.nook && tb.small) problems.push('seat[' + i + '] points at small side table ' + s.table + ' but is not a nook seat');
         else if (s.window && !tb.tall) problems.push('seat[' + i + '] is a window seat but table ' + s.table + ' is not a tall window table');

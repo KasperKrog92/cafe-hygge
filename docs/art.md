@@ -38,7 +38,8 @@ architecture textures, retuned atmosphere and real typography.
   stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
   side-table top ~26, window-perch cushions 24, window poseur tables ~52 to
   the top (tall on purpose: the top must meet the sill so a perched sitter
-  can reach their drink). **Deliberate exceptions:** the espresso
+  can reach their drink), corner upright piano body 46 (0.77 CH) with an
+  18 px brass lamp. **Deliberate exceptions:** the espresso
   machine (40 h) and pastry case stay a notch above strict scale so brewing
   stays legible — don't "fix" them; mugs stay oversized (charm).
 - **Grounding shadows.** Every floor-standing thing (tables, seats, armchair,
@@ -122,6 +123,15 @@ y=368 ── the walking lane (L.lane — all pathing routes through this corrid
           browse spot in front, loanable spines vanish while borrowed), two
           green wing chairs each with a candle side table for the sitter's drink
           and a floor reading lamp, magazine basket at the shelf's foot
+          corner upright, bottom left (L.piano): seen in profile, back to the
+          room's left edge — tall narrow dark-wood case, keybed a short stub
+          toward the backless bench (cream keys peeking past the cheek, never
+          a long row), the score's edge on the rest, toe block and one brass
+          pedal at the floor. The lid's three lives stack in DEPTH, not left
+          to right: brass lamp arched at the back, saucer spot at the front
+          edge, the cat's anchor between — draw order (lamp behind cat, cat
+          behind drink) keeps the overlaps honest. Its whole shadow stays
+          above the caption strip
 y=576 ── 16:9 crop bottom
 y=600 ── master bottom: 24 px overscan strip (plus 12 px per side)
 ```
@@ -175,9 +185,16 @@ Rules that keep it looking right:
   mid-window anchors sort at y=190 so the poseur tabletop overlaps the paw
   line; the bookshelf anchor sits 4 px above its crown; the counter anchor is
   2 px below the slab top so the slab hides the paws; the back-bar anchor
-  sits on shelf 1. These anchors are deliberately exempt from floor
-  footprint rules and instead checked against their declared surface by
-  `__dev.audit()`.
+  sits on shelf 1; the piano path touches the keybed stub, then the lid
+  (2 px below the lid top, so the lid strip hides the paws), and dismounts
+  directly to the clear floor in front. These anchors are deliberately
+  exempt from floor footprint rules and instead checked against their
+  declared surface by `__dev.audit()`.
+- **The piano lamp is its own drawable** one baseline above the cat's lid
+  anchor (the wing-chair split, applied to the lid's depth stack): it stands
+  at the back of the lid, so a resting cat must cover its stem while the
+  case drawable — and the drink drawn with it at the floor baseline — stays
+  in front of the cat. Break the stack and the lamp floats over the cat.
 - **The bookshelf** is one drawable at its `L.occluders` baseline; anyone on
   the lane above it is correctly occluded by it. Keep walk targets (seats,
   bus spots) and walk routes out of its occluder x-span so nobody vanishes
@@ -204,7 +221,9 @@ pocket and a tie bow at the back. Options per character: scarf, long hair,
 `hairStyle`, `beard`, apron (Nora), `holding` (`cup`/`glass`/`plate`/`cloth`),
 `armUp` 0–1 (sip animation lifts the cup toward the face), `reading` (open
 book replaces held items while seated), `typing` (forearms alternate toward
-the table), and `dozing` (head and book lower, eye closes). A furled umbrella
+the table), `playing` (the same alternating forearm language turned sideways
+toward the piano keys, with a 1 px sway), and `dozing` (head and book lower,
+eye closes). A furled umbrella
 or closed laptop tucks under the mirror-side arm so it can coexist with a
 cup. Facing is ±1 (side profile both
 ways); the face details and hair-back column flip with it.
@@ -223,7 +242,7 @@ muzzle + pink nose, sleeping/lap curl a closed-eye line. New variants are a
 back-view window perch (haunches, shoulder taper, rear ears, sill-curled tail),
 head-down eat/drink with a tiny lapping tongue, kneading loaf with alternating
 2 px front paws, quicker-legged pounce, the stretched mid-hop pose, and a
-back-shelf tail that hangs and sways below the board.
+back-shelf/piano-lid tail that hangs and sways below the board or lid.
 
 ## Typography
 

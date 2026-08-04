@@ -195,6 +195,34 @@
         }
         break;
       }
+      case 'pianoOut': {
+        if (walker(b, dt)) {
+          if (world.patrons.length || world.queue.length || b.orders.length) {
+            b.state = 'pianoHome'; b.stateT = 0; b.pose = 'stand';
+            b.path = pianoHomeRoute();
+          } else {
+            b.state = 'pianoPlaying'; b.stateT = 0; b.pose = 'sit';
+            b.facing = -1; b.playing = true; SND.pianoStart('nora');
+          }
+        }
+        break;
+      }
+      case 'pianoPlaying': {
+        b.pose = 'sit'; b.facing = -1; b.playing = true;
+        if (world.patrons.length || world.queue.length || b.orders.length || b.stateT >= b.pianoDur) {
+          b.playing = false; SND.pianoStop();
+          b.pose = 'stand'; b.state = 'pianoHome'; b.stateT = 0;
+          b.path = pianoHomeRoute();
+        }
+        break;
+      }
+      case 'pianoHome': {
+        b.playing = false; b.pose = 'stand';
+        if (walker(b, dt)) {
+          b.state = 'idle'; b.idleT = rnd(5, 10); b.emptyT = 0;
+        }
+        break;
+      }
       case 'chalkWalk': {
         if (walker(b, dt)) {
           b.state = 'chalk'; b.stateT = 0; b.chalkPlayed = 0;
@@ -402,16 +430,32 @@
      occluder and footprint boxes. */
   function busRoute(world, ti) {
     const tb = world.tables[ti];
-    const busX = tb.x + (tb.small ? -28 : 24);
+    const busX = tb.piano ? L.piano.bench.x : tb.x + (tb.small ? -28 : 24);
     // tall window tables live on the wall; Nora stands at their floor line
-    const busY = tb.tall ? tb.base + 2 : tb.y + 20;
-    const dropX = tb.small ? tb.busVia : busX;
+    const busY = tb.piano ? L.piano.bench.y : tb.tall ? tb.base + 2 : tb.y + 20;
+    const dropX = tb.piano ? tb.busVia : tb.small ? tb.busVia : busX;
     const route = [
       { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
       { x: dropX, y: L.lane }, { x: dropX, y: busY }
     ];
     if (dropX !== busX) route.push({ x: busX, y: busY });
     return route;
+  }
+
+  function pianoRoute() {
+    return [
+      { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
+      { x: L.piano.via, y: L.lane }, { x: L.piano.via, y: L.piano.bench.y },
+      { x: L.piano.bench.x, y: L.piano.bench.y }
+    ];
+  }
+
+  function pianoHomeRoute() {
+    return [
+      { x: L.piano.via, y: L.piano.bench.y }, { x: L.piano.via, y: L.lane },
+      { x: L.baristaExitX, y: L.lane }, { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: L.baristaHome.x, y: L.baristaHome.y }
+    ];
   }
 
   function refillRoute() {
@@ -471,7 +515,7 @@
 
   function candleTableIndices(world) {
     return world.tables.map(function (tb, i) { return { tb: tb, i: i }; })
-      .filter(function (v) { return !v.tb.tall; })
+      .filter(function (v) { return !v.tb.tall && !v.tb.piano; })
       .sort(function (a, b) { return a.tb.x - b.tb.x; })
       .map(function (v) { return v.i; });
   }
@@ -589,6 +633,13 @@
     }
   }
 
+  function startPiano(world, b) {
+    b.state = 'pianoOut'; b.stateT = 0; b.pose = 'stand'; b.playing = false;
+    b.pianoDur = rnd(60, 120); b.path = pianoRoute();
+    world.noraPianoNextT = world.t + rnd(600, 1200);
+    if (Math.random() < 0.7) caption(world, 'The café is empty; Nora plays a little.');
+  }
+
   function startIdleTask(world, b) {
     if (b.forcedTask) {
       const forced = b.forcedTask; b.forcedTask = '';
@@ -596,6 +647,7 @@
       else if (forced === 'chalk') startChalk(b);
       else if (forced === 'water') startWater(world, b);
       else if (forced === 'candles') startCandleRound(world, b);
+      else if (forced === 'piano') startPiano(world, b);
       return;
     }
     // any abandoned cups to collect?
@@ -622,6 +674,10 @@
     }
     if (b.candlePending) { startCandleRound(world, b); return; }
     if (b.wateringPending) { startWater(world, b); return; }
+    if (!world.patrons.length && world.daylight < 0.35 && b.emptyT > 30 &&
+        world.t >= world.noraPianoNextT && Math.random() < 0.25) {
+      startPiano(world, b); return;
+    }
     if (b.emptyT > 20 && Math.random() < 0.3) { startStretch(world, b); return; }
     if (b.chalkT <= 0 && Math.random() < 0.35) { startChalk(b); return; }
     const r = Math.random();
@@ -650,6 +706,8 @@
   });
   const BOOK_SPOT = { id: 'bookshelf', name: 'the top of the bookshelf', kind: 'perch',
     surface: CP.bookshelf.surface, stand: CP.bookshelf.stand, anchor: CP.bookshelf.anchor };
+  const PIANO_SPOT = { id: 'piano', name: 'the piano lid', kind: 'perch',
+    surface: CP.piano.surface, stand: CP.piano.stand, anchor: CP.piano.anchor };
 
   // Only pairs that fail the cat-journey audit take the little shared clear
   // corridor. Every other pair keeps the house-precedent straight cat line.
@@ -682,6 +740,16 @@
     CAT_VIA_PAIRS[id + '>bookshelfEscape'] = true;
     CAT_VIA_PAIRS['bookshelfEscape>' + id] = true;
   });
+  ['fire', 'windowFloor', 'bigRug', 'armchair', 'nookRug', 'cushion',
+    'window1Stand', 'window2Stand', 'bookshelfStand', 'bookshelfEscape',
+    'counterStand', 'topShelfStand', 'eat'].forEach(function (id) {
+    CAT_VIA_PAIRS[id + '>pianoStand'] = true;
+    CAT_VIA_PAIRS['pianoStand>' + id] = true;
+    CAT_VIA_PAIRS[id + '>pianoDismount'] = true;
+    CAT_VIA_PAIRS['pianoDismount>' + id] = true;
+  });
+  CAT_VIA_PAIRS['pianoStand>pianoDismount'] = true;
+  CAT_VIA_PAIRS['pianoDismount>pianoStand'] = true;
 
   const CAT_APPROACH = L.catRoutes;
 
@@ -689,7 +757,7 @@
     if (/^lapStand/.test(id)) return 'lapStand';
     return id === 'window1' ? 'window1Stand' : id === 'window2' ? 'window2Stand'
       : id === 'bookshelf' ? 'bookshelfStand' : id === 'counter' ? 'counterStand'
-      : id === 'topShelf' ? 'topShelfStand' : id;
+      : id === 'topShelf' ? 'topShelfStand' : id === 'piano' ? 'pianoStand' : id;
   }
 
   function catRoute(from, to) {
@@ -713,6 +781,11 @@
     return !nook[1] || !nook[1].taken;
   }
 
+  function pianoFree(world) {
+    const bench = world.seats.find(function (s) { return s.piano; });
+    return (!bench || !bench.taken) && !SND.pianoActive();
+  }
+
   function spotWeight(world, cat, spot) {
     if (spot.id === 'fire') return (world.hour >= 18 || world.hour < 6) ? 3.2 : 1.4;
     if (spot.id === 'windowFloor') return 1.1;
@@ -724,11 +797,14 @@
       return 0.65 * (world.rain > 0.3 ? 2.5 : 1) * (world.daylight < 0.3 ? 2 : 1);
     }
     if (spot.id === 'bookshelf') return nookChairTwoFree(world) ? 0.45 : 0;
+    if (spot.id === 'piano') {
+      return pianoFree(world) ? 0.9 * ((world.hour >= 18 || world.hour < 6) ? 1.5 : 1) : 0;
+    }
     return 1;
   }
 
   function pickCatSpot(world, cat) {
-    const all = CAT_SPOTS.concat(WINDOW_SPOTS).concat([BOOK_SPOT]).filter(function (s) {
+    const all = CAT_SPOTS.concat(WINDOW_SPOTS).concat([BOOK_SPOT, PIANO_SPOT]).filter(function (s) {
       if (cat.target && routeId(s.id) === routeId(cat.target.id)) return false;
       return spotWeight(world, cat, s) > 0;
     });
@@ -799,6 +875,10 @@
     } else if (after.intent === 'topShelf') {
       cat.state = Math.random() < 0.5 ? 'loaf' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
       if (Math.random() < 0.45) caption(world, 'Nora pretends not to see the cat on the shelf.');
+    } else if (after.intent === 'piano') {
+      const r = Math.random();
+      cat.state = r < 0.55 ? 'loaf' : r < 0.8 ? 'sit' : 'sleep';
+      cat.stateT = rnd(60, 180); cat.facing = 1;
     } else if (after.intent === 'lap') {
       cat.state = 'lap'; cat.stateT = 9999; cat.facing = after.patron.facing;
       cat.lapPatron = after.patron; after.patron.lapCat = true;
@@ -821,6 +901,10 @@
     cat.x = step.x; cat.y = step.y;
     if (step.surface) cat.surface = step.surface;
     if (step.land) SND.softThump();
+    if (cat.hopPurpose === 'piano' && step.surface === 'pianoKeys') {
+      SND.pianoPlinks();
+      if (Math.random() < 0.5) caption(world, 'The cat pads up the keys and claims the piano lid.');
+    }
     if (cat.hopPurpose === 'topShelf' && cat.ascentMayAbort && step.surface === 'counter' && world.barista.state === 'idle') {
       cat.hopQueue = null; cat.hopAfter = null; cat.hopPurpose = ''; cat.state = 'sit';
       cat.ascentMayAbort = false;
@@ -897,6 +981,13 @@
       ], { intent: 'topShelf' });
       return;
     }
+    if (cat.intent === 'piano') {
+      beginHopQueue(cat, [
+        { x: L.piano.keysStep.x, y: L.piano.keysStep.y, surface: 'pianoKeys' },
+        { x: CP.piano.anchor.x, y: CP.piano.anchor.y, surface: 'pianoTop' }
+      ], { intent: 'piano' });
+      return;
+    }
     if (cat.intent === 'lap') {
       beginHopQueue(cat, [{ x: cat.lapAnchor.x, y: cat.lapAnchor.y, surface: 'lap' }],
         { intent: 'lap', patron: cat.lapCandidate });
@@ -932,6 +1023,10 @@
         { x: CP.topShelf.stand.x, y: CP.topShelf.stand.y, surface: 'floor', land: true }
       ];
       floorTarget = { id: 'topShelfStand', x: CP.topShelf.stand.x, y: CP.topShelf.stand.y, kind: 'floor' };
+    } else if (cat.surface === 'pianoTop' || cat.surface === 'pianoKeys') {
+      steps = [{ x: L.piano.dismount.x, y: L.piano.dismount.y, surface: 'floor', land: true }];
+      floorTarget = { id: 'pianoDismount', x: L.piano.dismount.x, y: L.piano.dismount.y,
+        kind: 'floor', approach: L.catRoutes.pianoDismount };
     } else if (cat.surface === 'lap') {
       steps = [{ x: cat.lapStand.x, y: cat.lapStand.y, surface: 'floor', land: true }];
       floorTarget = { id: 'lapStand', x: cat.lapStand.x, y: cat.lapStand.y, kind: 'floor',
@@ -993,6 +1088,7 @@
     else if (action === 'bookshelf') startTravel(cat, BOOK_SPOT, 'bookshelf');
     else if (action === 'counter') startTravel(cat, { id: 'counter', stand: CP.counter.stand, kind: 'perch' }, 'counter');
     else if (action === 'topShelf') startTravel(cat, { id: 'topShelf', stand: CP.topShelf.stand, kind: 'perch' }, 'topShelf');
+    else if (action === 'piano') startTravel(cat, PIANO_SPOT, 'piano');
     else if (action === 'lap') {
       const p = findLapPatron(world);
       if (p) startLap(cat, p); else { cat.state = 'sit'; cat.stateT = 2; }
@@ -1194,10 +1290,11 @@
   R.updateBarista = updateBarista;
   R.updateCat = updateCat;
   R.busRoute = busRoute;
+  R.pianoRoute = pianoRoute;
   R.refillRoute = refillRoute;
   R.waterRoute = waterRoute;
   R.candleRoute = candleRoute;
   R.catRoute = catRoute;
   R.catSpots = CAT_SPOTS;
-  R.catPerches = WINDOW_SPOTS.concat([BOOK_SPOT]);
+  R.catPerches = WINDOW_SPOTS.concat([BOOK_SPOT, PIANO_SPOT]);
 })();

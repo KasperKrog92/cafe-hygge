@@ -74,7 +74,12 @@
           // sitters' cups on the slim top
           return { x: wt.x, y: wt.y, base: wt.base, tag: 'in the window',
             tall: true, reach: 12, items: [], candle: 0, candleTarget: 0 };
-        })),
+        }))
+        .concat([{
+          x: L.piano.saucer.x, y: L.piano.saucer.y, base: L.piano.baseline,
+          tag: 'at the piano', piano: true, busVia: L.piano.via, reach: 0,
+          items: [], candle: 0, candleTarget: 0
+        }]),
       seats: [],
       barista: makeBarista(),
       cat: makeCat(),
@@ -85,6 +90,8 @@
       spawnT: rnd(4, 9),
       regular: { lastDay: -1, day: 0, hour: rnd(9, 9 + 2 / 3), force: false },
       sleeper: null,
+      pianoNextT: 0,
+      noraPianoNextT: rnd(600, 1200),
       wasLampOn: false,
       steamAcc: 0,
       wateredDay: -1,
@@ -95,7 +102,7 @@
     // (each nook chair pairs with its own side table for the sitter's drink);
     // small side tables and tall window tables seat no one themselves
     world.tables.forEach(function (tb, ti) {
-      if (tb.small || tb.tall) return;
+      if (tb.small || tb.tall || tb.piano) return;
       [-1, 1].forEach(function (side) {
         world.seats.push({
           x: tb.x + side * L.stoolDX, y: tb.y + L.stoolDY + 4,
@@ -120,6 +127,14 @@
         table: L.tables.length + LB.sideTables.length + s.win,
         side: s.side, armchair: false, window: true, taken: false
       });
+    });
+    // Append: boot-seeded regulars intentionally keep their historical seat
+    // indices (10 and 12).
+    world.seats.push({
+      x: L.piano.bench.x, y: L.piano.bench.y, facing: -1,
+      via: L.piano.via,
+      table: world.tables.length - 1, side: 0, armchair: false,
+      piano: true, taken: false
     });
 
     // a few regulars are already settled in
@@ -161,6 +176,8 @@
 
   function makePatron() {
     const drink = pickDrink();
+    const wantsBook = Math.random() < 0.35;
+    const pianist = !wantsBook && Math.random() < 0.1;
     return {
       id: nextId++,
       kind: 'patron',
@@ -173,7 +190,7 @@
         beard: Math.random() < 0.15
       },
       drink: drink,
-      wantsBook: Math.random() < 0.35,
+      wantsBook: wantsBook,
       ownBook: Math.random() < 0.45,     // readers: brought one vs. borrowing
       hasShelfBook: false,
       browseDur: 0, afterBook: '', resumeReading: false,
@@ -190,6 +207,8 @@
       umbrella: null, umbrellaParked: false, shakeDropT: 0, shakeDrops: 0,
       laptop: false, laptopActive: false, laptopPacked: false,
       typing: false, typingT: rnd(6, 14), typingRemain: 0, keyT: 0,
+      pianist: pianist, playing: false, pianoBursts: 0,
+      pianoPlayT: 0, pianoRestT: 0, pianoSipPaused: false,
       partner: null, coupleStay: 0, coupleBus: null, coupleLeaveAt: 0,
       orderCaptioned: false, pairCaptioned: false,
       dozing: false, dozeT: rnd(50, 120), dozeRemain: 0, zzzT: rnd(7, 14),
@@ -208,7 +227,7 @@
       facing: -1, pose: 'stand', animT: 0,
       speed: 60, path: null,
       state: 'idle', stateT: 0, idleT: rnd(4, 9), emptyT: 0,
-      holding: null, armUp: 0, reading: false,
+      holding: null, armUp: 0, reading: false, playing: false,
       orders: [], steps: null, stepIdx: 0, busTarget: null,
       chalkT: rnd(600, 1200), chalkPlayed: 0,
       wateringPending: false, candlePending: false, forcedTask: ''
@@ -412,7 +431,7 @@
   }
 
   function candleTables(world) {
-    return world.tables.filter(function (tb) { return !tb.tall; });
+    return world.tables.filter(function (tb) { return !tb.tall && !tb.piano; });
   }
 
   function snapCandles(world) {
@@ -473,7 +492,7 @@
 
   function applyArrivalTraits(world, p) {
     const night = world.hour >= 21 || world.hour < 7;
-    if (!p.wantsBook && Math.random() < (night ? 0.06 : 0.16)) p.laptop = true;
+    if (!p.wantsBook && !p.pianist && Math.random() < (night ? 0.06 : 0.16)) p.laptop = true;
     if (world.rain > 0.4 && Math.random() < 0.75) {
       p.umbrella = { color: pick(UMBRELLAS) };
     }
@@ -505,6 +524,7 @@
     const a = makePatron(), b = makePatron();
     applyArrivalTraits(world, a); applyArrivalTraits(world, b);
     a.partner = b; b.partner = a;
+    a.pianist = false; b.pianist = false;
     a.chatty = true; b.chatty = true;
     a.chatT = rnd(12, 26); b.chatT = rnd(12, 26);
     ['wantsBook', 'ownBook'].forEach(function (k) {
@@ -539,7 +559,7 @@
     };
     p.drink = DRINKS.find(function (d) { return d.name === 'espresso'; });
     p.wantsBook = true; p.ownBook = true; p.chatty = false;
-    p.murmurPitch = 130; p.speed = 46; p.isRegular = true; p.laptop = false;
+    p.murmurPitch = 130; p.speed = 46; p.isRegular = true; p.laptop = false; p.pianist = false;
     if (world.rain > 0.4) p.umbrella = { color: '#3d4a5c' };
     return p;
   }

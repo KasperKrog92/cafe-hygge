@@ -118,6 +118,10 @@
       topShelf: {
         id: 'topShelf', stand: { x: 700, y: 314 }, counter: { x: 700, y: 266 },
         machine: { x: 684, y: 228 }, anchor: { x: 782, y: 104 }, surface: 'backShelf'
+      },
+      piano: {
+        id: 'piano', stand: { x: 48, y: 532 },
+        anchor: { x: 26, y: 476 }, surface: 'pianoTop'
       }
     },
     // Clear approach nodes used only by cat-route pairs whose old straight
@@ -135,7 +139,26 @@
       bookshelfEscape: [{ x: 848, y: 368 }],
       counterStand: [{ x: 840, y: 314 }, { x: 840, y: 368 }],
       topShelfStand: [{ x: 700, y: 368 }],
+      pianoStand: [{ x: 112, y: 532 }, { x: 112, y: 368 }],
+      pianoDismount: [{ x: 112, y: 532 }, { x: 112, y: 368 }],
       eat: [{ x: 160, y: 300 }, { x: 160, y: 368 }]
+    },
+    // An upright seen in profile, back to the room's left edge: the keyboard
+    // is a short stub toward the player, and the lid's three lives stack in
+    // depth rather than left-to-right — lamp arched at the back, drink at the
+    // lid's front edge, the cat resting between them. Every anchor used by
+    // art or movement lives here so those overlaps stay deliberate (draw
+    // order: lamp behind cat, cat behind drink).
+    piano: {
+      x: 14, y: 478, w: 24, baseline: 524,
+      keyboardX: 38, keyboardY: 500, keyboardW: 14,
+      bench: { x: 64, y: 524 },
+      lamp: { x: 28, y: 459 },     // the shade's center — the glow anchors here
+      saucer: { x: 30, y: 480 },
+      catAnchor: { x: 26, y: 476 },
+      keysStep: { x: 46, y: 500 },
+      dismount: { x: 48, y: 532 },
+      via: 112
     },
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
@@ -232,6 +255,8 @@
   L.footprints.push({ name: 'cat corner', x0: 102, x1: 152, y0: 248, y1: 284, catOnly: true });
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
+  L.footprints.push({ name: 'piano', x0: 12, x1: 50, y0: 502, y1: 526 });
+  L.footprints.push({ name: 'piano bench', x0: 51, x1: 77, y0: 516, y1: 528 });
 
   /* ---------- helpers ---------- */
   function px(g, x, y, w, h, c) { g.fillStyle = c; g.fillRect(x | 0, y | 0, w, h); }
