@@ -39,6 +39,7 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   `__dev.regular()` (force Holger's next arrival), `__dev.doze()` (sleep the
   first eligible reader), `__dev.send(name, x, y)`,
   `__dev.noraDo('stretch'|'chalk'|'water'|'candles')`,
+  `__dev.kettle()`, `__dev.storm(on)`,
   `__dev.catDo('eat'|'window'|'bookshelf'|'counter'|'topShelf'|'lap'|'mote'|'knead')`,
   `__dev.bowls(food, water)`, `__dev.overlay()`,
   `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus

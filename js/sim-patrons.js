@@ -108,6 +108,12 @@
     }
   }
 
+  function chairScrape(p, long) {
+    if (p.seat && !p.seat.window && !p.seat.armchair && Math.random() < 0.8) {
+      SND.chairScrape(long);
+    }
+  }
+
   function pathToUmbrella(p, seat) {
     pathFrom(p, seat, L.patronRoutes.umbrellaApproach[0].x, L.patronRoutes.umbrellaApproach[0].y);
     p.path.push(L.patronRoutes.umbrellaApproach[1], L.patronRoutes.umbrellaApproach[2]);
@@ -290,6 +296,7 @@
       case 'backToSeat': {
         if (walker(p, dt)) {
           p.pose = 'sit';
+          chairScrape(p, false);
           perchUp(p);
           p.facing = p.seat.facing;
           p.holding = null;
@@ -318,6 +325,7 @@
       case 'toSeat': {
         if (walker(p, dt)) {
           p.pose = 'sit';
+          chairScrape(p, false);
           perchUp(p);
           p.facing = p.seat.facing;
           p.state = 'seated'; p.stateT = 0;
@@ -368,7 +376,11 @@
         if (walker(p, dt)) {
           SND.clink(0.7, 0.04);
           p.holding = null;
-          if (Math.random() < 0.5) caption(world, p.name + ' returns the cup — tak!');
+          const tipped = Math.random() < 0.5;
+          if (tipped) SND.coins();
+          if (Math.random() < 0.5) {
+            caption(world, tipped ? 'a coin in the tip jar — tak!' : p.name + ' returns the cup — tak!');
+          }
           leaveCafe(world, p);
         }
         break;
@@ -544,6 +556,7 @@
     if (!p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
         Math.random() < dt * 0.01) {
       p.pose = 'stand';
+      chairScrape(p, true);
       stepDown(p, p.seat);
       p.state = 'fetchBook'; p.stateT = 0;
       p.browseDur = rnd(2.5, 4.5);
@@ -599,6 +612,7 @@
       SIM.dislodgeCat(p); p.catLeaveT = 1; return;
     }
     p.pose = 'stand'; p.reading = false; p.dozing = false; p.armUp = 0; p.typing = false;
+    chairScrape(p, true);
     if (world.sleeper === p) world.sleeper = null;
     p.seat.taken = false;
     const list = p.seat.table >= 0 ? world.tables[p.seat.table].items : null;

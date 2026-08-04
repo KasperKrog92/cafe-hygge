@@ -10,9 +10,10 @@ Nothing here is committed; the owner picks what sounds lovely next.
 > sweep (a multi-day soak-test bug hunt plus the journey/footprint rules now
 > in `__dev.audit()`), and cat life (corner + bowl care, high perches,
 > counter/shelf capers, laps, kneading, and dust motes), Nora's care rituals
-> (watering, chalkboard doodles, dusk candles, quiet stretches), and patron
-> life (umbrellas, laptops, Holger, couples, night dozing) were specced here,
-> executed, and their plan docs
+> (watering, chalkboard doodles, dusk candles, quiet stretches), patron life
+> (umbrellas, laptops, Holger, couples, night dozing), and the synthesized
+> sound pass (chair and coin foley, town time, thunderstorms, and the night
+> music layer) were specced here, executed, and their plan docs
 > retired (git history has them).
 
 ## 🎧 Real sound clips (owner-requested — design ready)
@@ -41,31 +42,7 @@ machines, rain, café room tone…). Plan for when clips arrive:
 6. Document each replacement in sounds.md (recipe column becomes "sample:
    filename + credit/license").
 
-## 🔊 More sound, still synthesized (plan ready — see [plans/more-sound.md](plans/more-sound.md))
-
-Pooled into four independently shippable phases: small foley → the town
-keeps time → thunderstorms → a night music layer. The mantel-clock chime
-moved here from "More world" — the clock art already exists and keeps
-time, so the chime is purely a sound feature.
-
-- **Thunderstorms** (owner-requested). A rare storm state above heavy rain
-  in the sim's weather walk. Only during a storm does the rain get a voice
-  beyond the window taps: the hissing broadband wash returns (the retired
-  recipe is in git history — noise loop → highpass → cascaded lowpasses,
-  slow two-LFO swell; keep it dark, it is still heard through glass), plus
-  distant thunder — very rare, very low filtered-noise rumbles, seconds
-  long, maybe a brief dim flash through the window. Normal rain stays
-  taps-only by design (the wash felt like standing outside in it).
-- Kettle whistle far off in the back room, once an evening.
-- Chair scrape (tiny, filtered) when patrons sit/stand.
-- Coins in the tip jar when a patron returns a cup.
-- A generative lo-fi layer (soft chords under the music box, night only).
-- Church bells at noon, faint, from across the street.
-- The mantel clock chiming softly — but one in-world hour is one real
-  minute, so "on the hour" would be a metronome; the plan gates it to a
-  few chosen hours.
-
-Further sound ideas, not yet in the plan:
+## 🔊 Further synthesized sound ideas
 
 - The street heard through the open door: while the door stands open, the
   outside (rain taps, storm wash) lifts a touch, then ducks back as it

@@ -60,6 +60,11 @@
       glow(g, 200, 236, 130, 255, 245, 215, 0.06 * d);
       glow(g, 524, 236, 130, 255, 245, 215, 0.06 * d);
     }
+    // A storm flash is a cool reflection below the windows, visible mostly
+    // after dark; it never becomes a full-screen strobe.
+    const flashA = (world.flash || 0) * (1 - d) * 0.08;
+    glow(g, L.win.x + L.win.w / 2, 238, 112, 176, 205, 255, flashA);
+    glow(g, L.win2.x + L.win2.w / 2, 238, 112, 176, 205, 255, flashA);
 
     // vignette (centred on the 16:9 crop; deepens a touch after dark)
     g.globalCompositeOperation = 'source-over';

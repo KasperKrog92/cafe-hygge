@@ -9,6 +9,11 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   08:24 so a fresh visit opens onto morning light.
 - `world.hour` (0–24 float) drives everything: the sky, the lighting, the
   mantel clock's hands, spawn rates, music sparseness.
+- Hour edges are tracked without replaying skipped time after `?hour=` or
+  `__dev.hour()` jumps. The church rings four distant strikes at noon; the
+  mantel clock gives one soft two-note chime at 09:00, 15:00, 18:00, and
+  21:00. A back-room kettle whistles once per day at a slot rolled between
+  19:00 and 21:30.
 - The palette comes from `SCENE.dayPalette(hour)`, interpolating these
   keyframes (`DAYKEYS` in `scene-core.js`):
 
@@ -31,16 +36,23 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 ## Weather
 
 - `world.rainTarget` re-rolls every 150–420 s: clear (34%), drizzle 0.4 (34%),
-  rain 0.8 (32%). `world.rain` eases toward it at 0.18/s.
-- Rain drives: streak count/alpha on the window glass, the rain-loop gain in
+  rain 0.8 (24%), or storm 1.0 (8%). `world.rain` eases toward it at 0.18/s;
+  `world.storm` lasts until the next non-storm roll.
+- Rain drives: streak count/alpha on the window glass, window-tap density in
   the audio engine, arrival flavor, and umbrellas. Most wet-weather patrons
   shake a furled umbrella at the door, park it in the stand, then collect it
   as their final departure stop. `world.umbrellaStand` stores the visible
   owner/color links; it is glanceable room state, never inventory.
 - The 🌧️ toggle doesn't just mute rain audio — it forces the *weather* clear,
   because hearing rain that isn't on the glass (or vice versa) breaks the room.
+  It also cancels storm wash, pending thunder, and lightning together.
 - Transition captions fire only on meaningful changes: rain starting, easing
-  to drizzle, or stopping.
+  to drizzle, stopping, or a storm settling over the street.
+- During a storm, normal glass taps gain a dark continuous rain bed. Once the
+  rain has risen above 0.6, lightning rolls every 25–75 s: `world.flash`
+  briefly lifts the two window panes and door glass, then a 1–4 s distance gap
+  ends in a low thunder rumble. The flash decays at 4/s and adds only faint
+  cool pools below the windows after dark—never a full-screen strobe.
 
 ## Lighting (the pass that sells the coziness)
 
@@ -56,7 +68,8 @@ Applied after all sprites, in `SCENE.drawLighting`:
    table plus the mantel pair (each glow scaled by its live 0–1 flame state;
    window poseur tables carry no candle, cups only); a soft daylight pool
    below each window; and one deliberately tiny cool-blue radius-18 pool for
-   each open laptop, scaled by `1 − daylight`.
+   each open laptop, scaled by `1 − daylight`. Storm lightning briefly adds a
+   faint cool reflection below both windows, also scaled by darkness.
 3. **Vignette**: radial darkening toward the edges, always.
 
 Speech bubbles and captions draw **after** this pass so they stay readable at
@@ -111,7 +124,8 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   shared orders and seats, Holger's usual-chair moment, falling asleep and
   finding the line again, cat
   movements and petting, Nora stretching/chalking/watering and the dusk/dawn
-  candle ritual, weather changes, lamp threshold moments. Cat-life
+  candle ritual, weather changes, noon church bells, the evening kettle, lamp
+  threshold moments, and occasional tip-jar coins. Cat-life
   lines cover the patient empty-bowl wait, Nora's refill/supervision, rain and
   streetlamp window watches, bookshelf survey, counter shoo, aborted ascent,
   Nora ignoring the top shelf, kneading, dust-mote battle, and gentle lap

@@ -173,6 +173,11 @@
       }
       g.globalAlpha = 1;
     }
+    // Lightning catches on the glass rather than flashing the whole room.
+    if (world.flash > 0) {
+      g.fillStyle = 'rgba(214,229,255,' + (world.flash * 0.15).toFixed(3) + ')';
+      g.fillRect(w.x, w.y, w.w, w.h);
+    }
     // glass sits recessed: soft shadow under the top/left of the frame
     px(g, w.x, w.y, w.w, 3, 'rgba(15,10,6,0.3)');
     px(g, w.x, w.y, 3, w.h, 'rgba(15,10,6,0.22)');
@@ -232,6 +237,10 @@
       for (let i = 12; i < d.w - 4; i += 14) px(g, d.x + i, d.y + 4, 2, d.h - 8, '#5a3d26');
       // little window in the door showing the sky
       px(g, d.x + 8, d.y + 12, d.w - 16, 30, world.pal.skyBot);
+      if (world.flash > 0) {
+        g.fillStyle = 'rgba(214,229,255,' + (world.flash * 0.15).toFixed(3) + ')';
+        g.fillRect(d.x + 8, d.y + 12, d.w - 16, 30);
+      }
       px(g, d.x + d.w / 2 - 2, d.y + 12, 4, 30, '#4a3020');
       px(g, d.x + 8, d.y + 25, d.w - 16, 4, '#4a3020');
       g.strokeStyle = '#4a3020'; g.lineWidth = 3;

@@ -5,8 +5,10 @@
   const SND = (window.SND = {});
 
   let ctx = null;
-  let master, sfx, amb, musicBus, fireBus, delaySend;
+  let master, sfx, amb, musicBus, fireBus, delaySend, nightGain;
   let noiseBuf = null;
+  let stormGain = null;
+  let stormLfo1, stormLfo2, stormSwell1, stormSwell2;
 
   const S = (SND.settings = { volume: 0.7, muted: false, rain: true, fire: true, music: true });
   try { Object.assign(S, JSON.parse(localStorage.getItem('cafe-hygge-audio') || '{}')); } catch (e) {}
@@ -67,6 +69,7 @@
     amb = gainNode(1); amb.connect(master);
     fireBus = gainNode(S.fire ? 1 : 0); fireBus.connect(master);
     musicBus = gainNode(S.music ? 1 : 0); musicBus.connect(master);
+    nightGain = gainNode(0); nightGain.connect(musicBus);
 
     // a soft "room" — feedback delay standing in for reverb
     const dly = ctx.createDelay(1.0);
@@ -80,6 +83,7 @@
     delaySend.connect(dly);
 
     noiseBuf = makeNoiseBuffer();
+    startStormWash();
     startFireRumble();
   };
 
@@ -94,6 +98,29 @@
   };
 
   /* ---------- ambience loops ---------- */
+
+  function startStormWash() {
+    const src = noiseSrc(true);
+    const hp = filt('highpass', 360);
+    const lp1 = filt('lowpass', 2300);
+    const lp2 = filt('lowpass', 1400);
+    stormGain = gainNode(0);
+    src.connect(hp); hp.connect(lp1); lp1.connect(lp2); lp2.connect(stormGain); stormGain.connect(amb);
+    src.start();
+
+    // Two slow, wandering swells keep the rain bed from settling into a loop.
+    // Their depth is scaled alongside the base gain, so clear weather is silent.
+    stormLfo1 = ctx.createOscillator();
+    stormLfo1.frequency.value = 0.07;
+    stormSwell1 = gainNode(0);
+    stormLfo1.connect(stormSwell1); stormSwell1.connect(stormGain.gain);
+    stormLfo1.start();
+    stormLfo2 = ctx.createOscillator();
+    stormLfo2.frequency.value = 0.121;
+    stormSwell2 = gainNode(0);
+    stormLfo2.connect(stormSwell2); stormSwell2.connect(stormGain.gain);
+    stormLfo2.start();
+  }
 
   function startFireRumble() {
     const src = noiseSrc(true);
@@ -143,14 +170,17 @@
   /* ---------- one-shot helpers ---------- */
 
   function tone(freq, opts) {
-    // opts: {type, gain, dur, attack, dest, sweepTo, sweepDur, send}
-    const t = ctx.currentTime;
+    // opts: {type, gain, dur, attack, delay, dest, lp, sweepTo, sweepDur, send}
+    const t = ctx.currentTime + (opts.delay || 0);
     const o = ctx.createOscillator();
     o.type = opts.type || 'sine';
     o.frequency.setValueAtTime(freq, t);
     if (opts.sweepTo) o.frequency.exponentialRampToValueAtTime(opts.sweepTo, t + (opts.sweepDur || opts.dur));
     const g = gainNode(0);
-    o.connect(g);
+    if (opts.lp) {
+      const lp = filt('lowpass', opts.lp);
+      o.connect(lp); lp.connect(g);
+    } else o.connect(g);
     g.connect(opts.dest || sfx);
     if (opts.send) { const sg = gainNode(opts.send); g.connect(sg); sg.connect(delaySend); }
     const a = opts.attack || 0.004;
@@ -162,8 +192,8 @@
   }
 
   function hiss(opts) {
-    // filtered noise burst. opts: {dur, gain, attack, release, hp, lp, bp, q, dest, sweep:[from,to,onWhat]}
-    const t = ctx.currentTime;
+    // filtered noise burst. opts: {dur, gain, attack, release, delay, hp, lp, bp, q, dest, sweep:[from,to,onWhat]}
+    const t = ctx.currentTime + (opts.delay || 0);
     const src = noiseSrc(false);
     let node = src;
     let bpf = null;
@@ -219,6 +249,32 @@
     tone(f, { gain: (vol || 0.055), dur: 0.09, send: 0.35 });
     tone(f * 1.51, { gain: (vol || 0.055) * 0.4, dur: 0.06 });
     tone(f * 2.63, { gain: (vol || 0.055) * 0.2, dur: 0.045 });
+  });
+
+  SND.chairScrape = guard(function (long) {
+    const dur = long ? 0.16 : 0.09 + Math.random() * 0.05;
+    hiss({ dur: dur, gain: 0.02 + Math.random() * 0.008,
+      lp: 900, bp: 380 + Math.random() * 270, q: 1.6,
+      attack: 0.008, release: long ? 0.08 : 0.05 });
+    if (long) {
+      hiss({ dur: 0.075, gain: 0.011 + Math.random() * 0.003, delay: 0.06,
+        lp: 820, bp: 340 + Math.random() * 220, q: 1.5,
+        attack: 0.006, release: 0.05 });
+    }
+  });
+
+  SND.coins = guard(function () {
+    const count = 2 + ((Math.random() * 2) | 0);
+    let delay = 0;
+    for (let i = 0; i < count; i++) {
+      const f = 2900 + Math.random() * 1300;
+      const peak = 0.011 + Math.random() * 0.003;
+      tone(f, { gain: peak, dur: 0.035 + Math.random() * 0.025,
+        delay: delay, lp: 5200, send: 0.15 });
+      tone(f * 1.43, { gain: peak * 0.38, dur: 0.03 + Math.random() * 0.018,
+        delay: delay, lp: 5200 });
+      delay += 0.04 + Math.random() * 0.05;
+    }
   });
 
   SND.cupDown = guard(function () {
@@ -434,6 +490,79 @@
     hiss({ dur: 0.045, gain: 0.012, lp: 480, attack: 0.002, release: 0.035 });
   });
 
+  SND.churchBells = guard(function () {
+    let delay = 0;
+    for (let i = 0; i < 4; i++) {
+      const f = 330 * (0.99 + Math.random() * 0.02);
+      const dur = 2.5 + Math.random();
+      tone(f, { gain: 0.012, dur: dur, attack: 0.025, delay: delay,
+        lp: 1200, send: 0.72, type: 'triangle' });
+      tone(f * 1.2, { gain: 0.0045, dur: dur * 0.82, attack: 0.025,
+        delay: delay, lp: 1200, send: 0.55, type: 'triangle' });
+      tone(f * 2, { gain: 0.0025, dur: dur * 0.65, attack: 0.018,
+        delay: delay, lp: 1200, send: 0.45 });
+      delay += 1.7 + Math.random() * 0.4;
+    }
+  });
+
+  SND.mantelChime = guard(function () {
+    tone(740, { gain: 0.012, dur: 1.2, attack: 0.018,
+      lp: 1500, send: 0.42, type: 'triangle' });
+    tone(1480, { gain: 0.003, dur: 0.85, attack: 0.018, lp: 1500 });
+    tone(620, { gain: 0.012, dur: 1.2, attack: 0.018, delay: 0.45,
+      lp: 1400, send: 0.42, type: 'triangle' });
+    tone(1240, { gain: 0.003, dur: 0.85, attack: 0.018, delay: 0.45, lp: 1400 });
+  });
+
+  SND.kettleWhistle = guard(function () {
+    const t = ctx.currentTime;
+    const dur = 5.2;
+    const o = ctx.createOscillator();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(1600, t);
+    o.frequency.exponentialRampToValueAtTime(1656, t + 2);
+    o.frequency.setValueAtTime(1656, t + 4.65);
+    o.frequency.exponentialRampToValueAtTime(1380, t + dur);
+    const wobble = ctx.createOscillator();
+    wobble.frequency.value = 5;
+    const wobbleDepth = gainNode(7);
+    wobble.connect(wobbleDepth); wobbleDepth.connect(o.frequency);
+    const lp = filt('lowpass', 1000);
+    const g = gainNode(0);
+    o.connect(lp); lp.connect(g); g.connect(sfx);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.018, t + 1.2);
+    g.gain.setValueAtTime(0.018, t + 3.7);
+    g.gain.linearRampToValueAtTime(0.008, t + 4.65);
+    g.gain.exponentialRampToValueAtTime(0.0004, t + dur);
+    o.start(t); o.stop(t + dur + 0.05);
+    wobble.start(t); wobble.stop(t + dur + 0.05);
+  });
+
+  SND.thunder = guard(function () {
+    const t = ctx.currentTime;
+    const dur = 2.8 + Math.random() * 2.2;
+    const src = noiseSrc(true);
+    const lp = filt('lowpass', 140);
+    lp.frequency.setValueAtTime(140, t);
+    lp.frequency.exponentialRampToValueAtTime(70, t + dur);
+    const g = gainNode(0);
+    src.connect(lp); lp.connect(g); g.connect(amb);
+    const roll = new Float32Array([0, 0.18, 0.62, 0.32, 0.84, 0.48, 1, 0.38, 0.58, 0.16, 0]);
+    for (let i = 0; i < roll.length; i++) roll[i] *= 0.044;
+    g.gain.setValueCurveAtTime(roll, t, dur);
+    src.start(t, Math.random() * 1.5); src.stop(t + dur + 0.05);
+
+    const o = ctx.createOscillator();
+    o.type = 'sine'; o.frequency.value = 45 + Math.random() * 15;
+    const og = gainNode(0);
+    o.connect(og); og.connect(amb);
+    og.gain.setValueAtTime(0, t);
+    og.gain.linearRampToValueAtTime(0.008, t + dur * 0.48);
+    og.gain.exponentialRampToValueAtTime(0.0004, t + dur);
+    o.start(t); o.stop(t + dur + 0.05);
+  });
+
   /* ---------- music box ---------- */
 
   const SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66]; // C major pentatonic-ish, two octaves reach
@@ -445,10 +574,47 @@
     tone(f * 2, { gain: vel * 0.25, dur: 1.1, dest: musicBus });
   }
 
+  const PAD_CHORDS = [
+    [261.63, 329.63, 392.00], // C–E–G
+    [220.00, 261.63, 329.63], // A–C–E
+    [196.00, 293.66, 440.00], // G–D–A
+    [293.66, 440.00, 329.63]  // D–A–E
+  ];
+
+  function playNightChord() {
+    const t = ctx.currentTime;
+    const attack = 2 + Math.random() * 1.5;
+    const hold = 4 + Math.random() * 3;
+    const release = 4 + Math.random() * 1.5;
+    const dur = attack + hold + release;
+    const chord = PAD_CHORDS[Math.random() < 0.72
+      ? (Math.random() < 0.62 ? 0 : 1)
+      : 2 + ((Math.random() * 2) | 0)];
+    const lp = filt('lowpass', 900);
+    const g = gainNode(0);
+    lp.connect(g); g.connect(nightGain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.0042, t + attack);
+    g.gain.setValueAtTime(0.0042, t + attack + hold);
+    g.gain.linearRampToValueAtTime(0, t + dur);
+    chord.forEach(function (f) {
+      const tri = ctx.createOscillator();
+      tri.type = 'triangle'; tri.frequency.value = f; tri.detune.value = -4;
+      tri.connect(lp); tri.start(t); tri.stop(t + dur + 0.05);
+      const sine = ctx.createOscillator();
+      sine.type = 'sine'; sine.frequency.value = f; sine.detune.value = 4;
+      sine.connect(lp); sine.start(t); sine.stop(t + dur + 0.05);
+    });
+    return dur + 2 + Math.random() * 3;
+  }
+
   /* ---------- per-frame scheduling ---------- */
 
   let crackleT = 0.3;
   let tapT = 1;
+  let swellT = 5;
+  let padT = 3;
+  let wasNight = false;
 
   SND.update = function (dt, world) {
     if (!ctx) return;
@@ -456,9 +622,8 @@
     // Rain is heard only as droplets ticking on the window glass — denser
     // when it pours. A tap is sometimes followed almost immediately by
     // another, so drops spatter in little wind-thrown clusters instead of a
-    // steady metronome. There is deliberately no continuous hissing wash:
-    // that (plus thunder) is reserved for a future storm weather state
-    // (see roadmap).
+    // steady metronome. Normal rain deliberately has no continuous wash;
+    // the darker bed below belongs only to the storm state.
     const rainLvl = S.rain && !S.muted ? world.rain : 0;
     if (rainLvl > 0.03) {
       tapT -= dt;
@@ -468,6 +633,19 @@
           ? 0.03 + Math.random() * 0.07
           : (0.05 + Math.random() * 0.5) / (0.2 + rainLvl * 1.4);
       }
+    }
+
+    // Normal rain is taps-only. The dark continuous bed belongs exclusively
+    // to the rare storm state and takes about four seconds to breathe in/out.
+    const stormLvl = rainLvl * (world.storm ? 1 : 0);
+    stormGain.gain.setTargetAtTime(stormLvl * 0.022, ctx.currentTime, 1.3);
+    stormSwell1.gain.setTargetAtTime(stormLvl * 0.004, ctx.currentTime, 1.3);
+    stormSwell2.gain.setTargetAtTime(stormLvl * 0.003, ctx.currentTime, 1.3);
+    swellT -= dt;
+    if (swellT <= 0) {
+      swellT = 7 + Math.random() * 12;
+      stormLfo1.frequency.setTargetAtTime(0.045 + Math.random() * 0.055, ctx.currentTime, 3);
+      stormLfo2.frequency.setTargetAtTime(0.095 + Math.random() * 0.06, ctx.currentTime, 3);
     }
 
     // fire crackles
@@ -495,6 +673,17 @@
           }
         }
       }
+    }
+
+    // A low pentatonic pad fades in only at night. The music bus toggle owns
+    // both this layer and the box, so no extra control is needed.
+    const night = world.daylight < 0.35;
+    nightGain.gain.setTargetAtTime(night ? 1 : 0, ctx.currentTime, 1.7);
+    if (night && !wasNight) padT = 2 + Math.random() * 3;
+    wasNight = night;
+    if (night && S.music && !S.muted) {
+      padT -= dt;
+      if (padT <= 0) padT = playNightChord();
     }
   };
 })();

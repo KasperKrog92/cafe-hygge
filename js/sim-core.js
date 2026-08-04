@@ -49,6 +49,9 @@
       pal: SCENE.dayPalette(START_HOUR),
       daylight: 1,
       rain: 0.55, rainTarget: 0.55, weatherT: rnd(120, 300),
+      storm: false, flash: 0, thunderT: rnd(25, 75), thunderIn: 0,
+      lastWholeHour: Math.floor(START_HOUR), clockHour: START_HOUR,
+      kettle: { day: 0, hour: rnd(19, 21.5), firedDay: -1 },
       door: { open: 0, target: 0, jiggle: 0 },
       patrons: [],
       queue: [],
@@ -311,14 +314,54 @@
     if (world.weatherT <= 0) {
       world.weatherT = rnd(150, 420);
       const r = Math.random();
-      const next = r < 0.34 ? 0 : r < 0.68 ? 0.4 : 0.8;
-      if (next > 0.5 && world.rainTarget < 0.2) caption(world, 'Rain begins to patter against the window.');
-      else if (next < 0.1 && world.rainTarget > 0.3) caption(world, 'The rain lets up outside.');
-      else if (next > 0.2 && next < 0.5 && world.rainTarget > 0.6) caption(world, 'The rain softens to a drizzle.');
-      world.rainTarget = next;
+      const next = r < 0.34 ? 0 : r < 0.68 ? 0.4 : r < 0.92 ? 0.8 : 1;
+      const enabled = SND.settings.rain !== false;
+      const wasStorm = world.storm;
+      world.storm = enabled && next === 1;
+      if (enabled) {
+        if (world.storm && !wasStorm) caption(world, 'the sky darkens; a storm settles over the street.');
+        else if (next > 0.5 && world.rainTarget < 0.2) caption(world, 'Rain begins to patter against the window.');
+        else if (next < 0.1 && world.rainTarget > 0.3) caption(world, 'The rain lets up outside.');
+        else if (next > 0.2 && next < 0.5 && world.rainTarget > 0.6) caption(world, 'The rain softens to a drizzle.');
+      }
+      // A storm rolled while weather was disabled comes back as ordinary
+      // heavy rain if the owner restores the toggle before the next re-roll.
+      world.rainTarget = !enabled && next === 1 ? 0.8 : next;
+      if (world.storm && !wasStorm) world.thunderT = rnd(25, 75);
     }
-    const effTarget = (SND.settings.rain === false) ? 0 : world.rainTarget;
+
+    const enabled = SND.settings.rain !== false;
+    if (!enabled) {
+      world.storm = false;
+      world.rainTarget = Math.min(0.8, world.rainTarget);
+      world.thunderT = 0; world.thunderIn = 0; world.flash = 0;
+    } else {
+      world.flash = Math.max(0, world.flash - dt * 4);
+    }
+
+    const effTarget = enabled ? world.rainTarget : 0;
     world.rain += (effTarget - world.rain) * Math.min(1, dt * 0.18);
+
+    // Lightning and thunder share the sim clock: the cool flash arrives first,
+    // then distance is heard as a one-to-four-second delay before the rumble.
+    if (world.storm && world.rain > 0.6) {
+      if (world.thunderIn > 0) {
+        world.thunderIn -= dt;
+        if (world.thunderIn <= 0) {
+          world.thunderIn = 0;
+          SND.thunder();
+        }
+      } else {
+        world.thunderT -= dt;
+        if (world.thunderT <= 0) {
+          world.flash = 1;
+          world.thunderIn = rnd(1, 4);
+          world.thunderT = rnd(25, 75);
+        }
+      }
+    } else if (!world.storm) {
+      world.thunderIn = 0;
+    }
   }
 
   function updateClock(world, dt) {
@@ -329,6 +372,35 @@
     if (lampOn && !world.wasLampOn) caption(world, 'The streetlamps flicker on, one by one.');
     if (!lampOn && world.wasLampOn) caption(world, 'Morning light spills across the floorboards.');
     world.wasLampOn = lampOn;
+
+    const whole = Math.floor(world.hour);
+    const advance = (world.hour - world.clockHour + 24) % 24;
+    const jumped = dt <= 0 || advance > 1.5;
+    if (!jumped && whole !== world.lastWholeHour) {
+      if (whole === 12) {
+        SND.churchBells();
+        if (Math.random() < 0.5) caption(world, 'noon — the church bells, from across the street.');
+      } else if ([9, 15, 18, 21].indexOf(whole) >= 0) {
+        SND.mantelChime();
+      }
+    }
+    world.lastWholeHour = whole;
+    world.clockHour = world.hour;
+
+    const day = dayIndex(world);
+    if (world.kettle.day !== day) {
+      world.kettle.day = day;
+      world.kettle.hour = rnd(19, 21.5);
+      world.kettle.firedDay = -1;
+    }
+    if (jumped) {
+      // Clock jumps show their destination without replaying a missed evening.
+      if (world.hour >= world.kettle.hour) world.kettle.firedDay = day;
+    } else if (world.kettle.firedDay !== day && world.hour >= world.kettle.hour) {
+      world.kettle.firedDay = day;
+      SND.kettleWhistle();
+      if (Math.random() < 0.6) caption(world, 'a kettle sings, somewhere in the back.');
+    }
   }
 
   function dayIndex(world) {

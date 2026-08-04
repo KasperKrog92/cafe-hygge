@@ -14,6 +14,8 @@
 
    Console API:
      __dev.hour(h)     jump the in-world clock (no arg: read it)
+     __dev.kettle()    re-arm the evening kettle to sound shortly
+     __dev.storm(on)   force the weather into/out of a storm
      __dev.ff(sec)     fast-forward the sim in 0.25 s ticks, muted
      __dev.spawn(o)    real patron with chosen traits, via the front door
      __dev.regular()   force Holger's next arrival
@@ -56,6 +58,32 @@
     if (h == null) return world().hour;
     setHour(world(), h);
     return world().hour;
+  };
+
+  D.kettle = function () {
+    const w = world();
+    w.kettle.day = SIM._.dayIndex(w);
+    w.kettle.hour = Math.min(23.99, w.hour + SIM._.rnd(0.05, 0.25));
+    w.kettle.firedDay = -1;
+    return w.kettle.hour;
+  };
+
+  D.storm = function (on) {
+    const w = world();
+    on = on === undefined ? true : !!on;
+    if (on) {
+      if (!w.storm) SIM._.caption(w, 'the sky darkens; a storm settles over the street.');
+      SND.settings.rain = true;
+      w.storm = true; w.rainTarget = 1; w.rain = Math.max(0.65, w.rain);
+      w.weatherT = SIM._.rnd(150, 420);
+      w.thunderT = SIM._.rnd(3, 10); w.thunderIn = 0; w.flash = 0;
+    } else {
+      w.storm = false;
+      if (w.rainTarget > 0.8) w.rainTarget = 0.4;
+      w.weatherT = SIM._.rnd(150, 420);
+      w.thunderT = 0; w.thunderIn = 0; w.flash = 0;
+    }
+    return w.storm;
   };
 
   /* Fast-forward by ticking the sim like the hidden-tab path (0.25 s steps,
@@ -609,6 +637,15 @@
     if (w.candles.mantel < 0 || w.candles.mantel > 1 ||
         w.candles.mantelTarget < 0 || w.candles.mantelTarget > 1) {
       problems.push('mantel candle state must stay between 0 and 1');
+    }
+    if (w.rain < 0 || w.rain > 1 || w.rainTarget < 0 || w.rainTarget > 1) {
+      problems.push('rain levels must stay between 0 and 1');
+    }
+    if (typeof w.storm !== 'boolean' || w.flash < 0 || w.flash > 1) {
+      problems.push('storm flag and flash level must stay valid');
+    }
+    if (!w.kettle || w.kettle.hour < 0 || w.kettle.hour >= 24) {
+      problems.push('kettle slot must be a valid in-world hour');
     }
 
     if (problems.length) {
