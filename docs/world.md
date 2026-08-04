@@ -33,7 +33,10 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 - `world.rainTarget` re-rolls every 150–420 s: clear (34%), drizzle 0.4 (34%),
   rain 0.8 (32%). `world.rain` eases toward it at 0.18/s.
 - Rain drives: streak count/alpha on the window glass, the rain-loop gain in
-  the audio engine, and flavor in captions ("Freja ducks in out of the rain.").
+  the audio engine, arrival flavor, and umbrellas. Most wet-weather patrons
+  shake a furled umbrella at the door, park it in the stand, then collect it
+  as their final departure stop. `world.umbrellaStand` stores the visible
+  owner/color links; it is glanceable room state, never inventory.
 - The 🌧️ toggle doesn't just mute rain audio — it forces the *weather* clear,
   because hearing rain that isn't on the glass (or vice versa) breaks the room.
 - Transition captions fire only on meaningful changes: rain starting, easing
@@ -51,8 +54,9 @@ Applied after all sprites, in `SCENE.drawLighting`:
    two reading lamps in the nook; the fireplace (always on,
    flickering via layered sines); a candle jar on every dining and nook side
    table plus the mantel pair (each glow scaled by its live 0–1 flame state;
-   window poseur tables carry no candle, cups only); a soft daylight pool below each of the two
-   windows.
+   window poseur tables carry no candle, cups only); a soft daylight pool
+   below each window; and one deliberately tiny cool-blue radius-18 pool for
+   each open laptop, scaled by `1 − daylight`.
 3. **Vignette**: radial darkening toward the edges, always.
 
 Speech bubbles and captions draw **after** this pass so they stay readable at
@@ -76,8 +80,8 @@ so a jump to night does not replay a dusk that never elapsed.
 - **Sparks** (`type: 'spark'`): rare 1-px embers rising inside the firebox.
 - **Dust mote** (`type: 'mote'`): a single 2-px cream fleck with slow drift,
   spawned for the cat's daylight pounce ritual and removed with that beat.
-- **Water drop** (`type: 'drop'`): three or four tiny blue-grey pixels arc
-  from Nora's watering-can spout during each plant stop.
+- **Water drop** (`type: 'drop'`): tiny blue-grey pixels arc from Nora's
+  watering-can spout during plant care and fall from a shaken umbrella.
 - Spawned in `updateParticles` (sim), drawn in `SCENE.drawParticles`.
 
 ## Cat corner state
@@ -102,7 +106,10 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   seat"), window gazes (20% of them, weather/hour-aware: rain on the glass,
   streetlamps, the street drifting by), bookshelf moments (drifting
   over, picking a book out, slipping it back), page turns (12% of them),
-  murmuring tables (15%), cup returns, departures (rain/night-aware), cat
+  murmuring tables (15%), quiet laptop bouts (10%), cup returns, departures
+  (rain/night-aware), umbrella shakes/collections, linked-pair arrivals,
+  shared orders and seats, Holger's usual-chair moment, falling asleep and
+  finding the line again, cat
   movements and petting, Nora stretching/chalking/watering and the dusk/dawn
   candle ritual, weather changes, lamp threshold moments. Cat-life
   lines cover the patient empty-bowl wait, Nora's refill/supervision, rain and

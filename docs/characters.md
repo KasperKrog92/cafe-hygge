@@ -94,6 +94,9 @@ beard. Walk speed 46–60 px/s, animated as a 4-frame cycle.
   the nook chairs / fireside armchairs; they read at tables too.
 - `chatty` (55%) — will murmur with a table-mate.
 - `murmurPitch` (125–235 Hz) — their voice in the murmur synth.
+- `laptop` — 16% of non-readers by day, 6% from 21:00–07:00. They prefer a
+  dining table; when only perches or wing chairs remain, the trait stays
+  dormant and the visit proceeds normally.
 
 **Order:** weighted pick — cappuccino 3, cinnamon latte 2.5, flat white 2,
 chamomile tea 1.6, hot chocolate 1.6, espresso 1.2, cardamom bun 1.2, butter
@@ -102,13 +105,18 @@ croissant 1.
 ### Patron lifecycle (states)
 
 ```
-enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
-  → seated ⇄ (fetchBook → backToSeat) → (returnBook) → (return) → exit
+(enterDelay) → (shake → parkUmbrella) → enter → queueing → ordering
+  → waitDrink → pickup → (browse) → toSeat → seated
+  ⇄ (fetchBook → backToSeat) → (closeLaptop) → (returnBook)
+  → (return) → (collectUmbrella) → exit
 ```
 
 1. **enter** — appears at the door (bell jingle, door swings, thud ~1.1 s
    later), walks to the back of the queue. Queue slots fan out diagonally from
-   the till (`L.orderSpot` 696, 316).
+   the till (`L.orderSpot` 696, 316). In rain, 75% carry a furled umbrella:
+   **shake** holds at the door for 1.1 s with five falling drops and a soft
+   flap, then **parkUmbrella** follows the declared door-to-stand route and
+   adds the umbrella to `world.umbrellaStand` before queueing.
 2. **ordering** — when at slot 0 and Nora is free: 2 s with a speech bubble
    showing their order icon; caption fires ("Freja orders a cappuccino.").
 3. **waitDrink** — steps aside to the lowest free waiting spot (the cluster
@@ -134,6 +142,17 @@ enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
      and pick it back up. Steam rises while the cup is hot (first ~45 s).
      Nook sitters rest their drink on their own little side table.
    - **Reading** (readers): page-turn sound every 12–26 s; occasional caption.
+   - **Laptop work** (day-weighted non-readers at dining tables): an open
+     16 px laptop shares the tabletop with the drink. Every 6–14 s they type
+     for 2–3.5 s, with alternating forearms and sparse keystroke clusters;
+     sipping pauses their hands. The open screen casts a very faint cool glow
+     after dark. Before leaving they close the lid for 0.6 s and tuck it under
+     the free arm.
+   - **Dozing** (only one at a time): after dark, a reader in a fireside or
+     nook wing chair with more than a minute left may fall asleep over the
+     lowered book for 40–110 s. Closed eyes, slow breathing, and an occasional
+     `zzz` bubble carry the beat; page and sip clocks pause. They wake on their
+     own, or on 25% of doorbells, and continue reading. Nora never intervenes.
    - **Fetching a book**: a seated non-reader at a table sometimes wanders to
      the bookshelf mid-stay (seat and drink stay put), browses, and walks
      back with the book tucked under an arm (`holding: 'book'`), then reads.
@@ -153,12 +172,38 @@ enter → queueing → ordering → waitDrink → pickup → (browse) → toSeat
    cup-in-hand — the café allows it. A reader with the cat asleep on their
    lap waits while `SIM.dislodgeCat` hops the cat gently to the floor; one
    second later the patron stands and continues the normal departure.
+   A parked umbrella is always collected last, after book and cup returns;
+   the return route is declared in `L.patronRoutes`, and the furled umbrella
+   shares the off hand with a carried drink or closed laptop.
 
 **Spawning:** roughly every 26 s at full daylight stretching to ~80 s at
 night. Caps: 7 patrons in daytime, 4 in the evening, 2 between 23:00 and 06:00
 (the night owls). Four regulars are pre-seated at boot (one reading a
 borrowed book in the nook, one perched on the first window sill) so the café
 is never empty on arrival.
+
+### Couples
+
+When a normal spawn fires with room for two, 22% are a linked pair. The
+second comes through the still-open door 1.2–1.8 s later without a second
+bell. In rain they share the first patron's umbrella. They remain FIFO queue
+neighbors and order individually, but the first pickup atomically reserves
+both sides of one clean dining table, then both window perches if no dining
+pair is free; without a pair of seats they both take their drinks to go.
+At the table they murmur every 12–26 s, with a rare heart bubble. Their stays
+share one 120–260 s roll with a small individual wobble; once both expire,
+they leave 0.8 s apart and share one cup-bussing decision.
+
+### Holger — the regular
+
+Holger is the one fixed patron: grey hair and beard, forest-green jumper,
+brown trousers, dark-red scarf, espresso, his own book, 46 px/s walk, and a
+quiet 130 Hz murmur voice. Once each café day he arrives between 09:00 and
+09:40 (the fresh 08:24 boot reaches this within its first real minute) and
+stays 280–420 s. He prefers the left fireside chair, found by its flags rather
+than an index. If it is free he settles into his usual armchair; if occupied,
+he gives it one patient look and chooses by the normal reader rules. In rain
+he reliably brings the same blue-grey umbrella.
 
 ---
 

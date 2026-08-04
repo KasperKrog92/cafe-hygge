@@ -33,11 +33,13 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `rain` / `rainTarget` | current and target rain intensity 0–1 (lerped) |
 | `door` | `{open: 0–1, target, jiggle}` — door swing + bell animation |
 | `patrons[]` | live patron entities (see characters.md for the state machine) |
+| `umbrellaStand[]` | visible parked umbrellas `{owner, color}`; owner links are audited and removed on collection |
+| `regular` / `sleeper` | Holger's once-per-day schedule and the single active dozing-patron reference |
 | `queue[]` | patrons currently in the order line (index 0 = at the till) |
 | `barista` | Nora's entity |
 | `cat` | the cat entity: core pose/path plus `surface`, `hopFrom/hopTo/hopT`, `hungerT`/`thirstT`, `gazeT/gazeFacing`, `lapPatron`, `sniffedPass`, and rare-event `counterT`/`ascentT`/`moteT` fields |
 | `catBowls` | `{food, water}` levels (0–1); visible world state consumed by cat needs and restored by Nora |
-| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates on the table. The four dining tables come first, then the reading nook's two side tables (`small: true`, no stools), then the two tall window tables (`tall: true` — `y` is the tabletop up at the sill, `base` the floor line, `reach` keeps both sitters' cups on the slim top) |
+| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates and optional owner-linked laptops. The four dining tables come first, then the reading nook's two side tables (`small: true`, no stools), then the two tall window tables (`tall: true` — `y` is the tabletop up at the sill, `base` the floor line, `reach` keeps both sitters' cups on the slim top) |
 | `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table. Window seats add `window: true`, `perchX/perchY` (the sill position sat at; `x/y` stay the floor spot walked to) and optionally `via` (clear descent column) — both perches at a window share its tall table |
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
 | `particles[]` | steam wisps, fire sparks, and one-off dust motes |
@@ -149,13 +151,14 @@ or console calls:
 | --- | --- |
 | `__dev.hour(h)` | jump the in-world clock (no arg: read it) |
 | `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
-| `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`) |
+| `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`, `umbrella`, `laptop`); `couple: true` returns a linked pair |
+| `__dev.regular()` / `__dev.doze()` | force Holger's next arrival / put the first eligible seated reader to sleep |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
 | `__dev.noraDo(action)` | wake Nora's idle picker and force `stretch`, `chalk`, `water`, or `candles`; candle forcing clears the current flames so the full round is visible |
 | `__dev.catDo(action)` | reset the cat to a safe floor spot and force `eat`, `window`, `bookshelf`, `counter`, `topShelf`, `lap`, `mote`, or `knead` on the next tick |
 | `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Nora's idle picker |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
-| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — patrons, Nora's bus/refill/water/candle routes, and every cat floor-stop pair checked leg by leg — seat↔table wiring, patron and cat perch anchors, barista y=286 / lane 368, plus live-world checks: seat↔patron and lap↔cat consistency, queue contiguity, orphaned/stacked items, bowl/candle ranges, spawn cap) |
+| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — umbrella, Nora and cat routes included — seat↔table wiring, anchors, barista y=286 / lane 368, plus live-world checks for seats, pairs, umbrellas, sleeper, queue, props, bowls/candles, and spawn cap) |
 
 Three contracts support it: `SIM._` (the private seam shared by the sim
 siblings and consumed by dev.js; other app code must not touch it — includes

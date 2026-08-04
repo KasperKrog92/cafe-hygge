@@ -10,7 +10,7 @@ signal chains so they can be tuned, replaced with real recordings (see
 This app plays beside someone reading a real book. Rules:
 
 - **Quiet by default.** One-shot peaks sit between 0.016 and 0.09 gain;
-  ambience loops around 0.03–0.11. If a new sound feels satisfying at demo
+  ambience stays at or below ~0.05. If a new sound feels satisfying at demo
   volume, it is probably too loud in situ.
 - **Silence is content.** Sparse scheduling (music every 1.7–5.3 s, crackles
   in clusters, murmurs occasionally) matters more than the timbres.
@@ -23,7 +23,7 @@ This app plays beside someone reading a real book. Rules:
 
 ```
 one-shots ─────────► sfx ───┐
-rain loop ─────────► amb ───┤
+window taps ───────► amb ───┤
 rumble + crackles ─► fire ──┼─► master ─► compressor ─► speakers
 music box ─────────► music ─┤
       └─ send ─► delay "room" (0.31 s, feedback 0.34, damped 1700 Hz, wet 0.2) ─┘
@@ -37,7 +37,7 @@ music notes) take the delay send — it makes the room sound like a room.
 
 | Sound | Recipe |
 | --- | --- |
-| **Rain** | White-noise loop → highpass 550 → lowpass 5200 → gain. Target gain = `world.rain × 0.11`, eased (τ 0.8 s). Two detuned LFOs (~0.045–0.10 Hz and ~0.095–0.155 Hz, rates re-randomized every 7–19 s) add a combined ±`rain × 0.018` swell so the rain "breathes" irregularly — depth scales with the rain level, so no swell remains when the rain stops. |
+| **Rain (window taps)** | The entire voice of normal rain: individual droplets on the glass. 22–36 ms noise ticks → bandpass 2.3–4.6 kHz (Q 7), peak 0.008–0.022; 18% are fatter frame/sill drops (bandpass 0.8–1.3 kHz, Q 3.5, 50 ms, peak ≤0.018). Next tap in `(0.05–0.55 s) ÷ (0.2 + rain × 1.4)` — denser as it pours — but 25% of taps are followed by another within 30–100 ms, so drops spatter in little wind-thrown clusters instead of a metronome. Skipped entirely below `rain` 0.03. There is deliberately **no continuous hissing wash** — that (plus thunder) is reserved for a future storm weather state (see [roadmap.md](roadmap.md)); the retired wash recipe is in git history. |
 | **Fire rumble** | Noise loop → lowpass 240 → gain 0.05 on the fire bus. |
 | **Fire crackles** | Scheduled every 50–450 ms (72% fire): noise burst → bandpass 700–3500 Hz (Q 2.2) → 15–65 ms exponential decay, peak 0.02–0.10. 6% chance of a deep pop (70–110 Hz sine, 90 ms). |
 
@@ -56,6 +56,8 @@ octave sine, 1.7 s exponential decay, heavy delay send. Peak 0.035.
 | `doorClose()` | ~1.1 s after entry | 95→55 Hz sine thump + lowpassed noise tap |
 | `clink(pitch, vol)` | cup pickups, plates, busing | 3 partials (f, 1.51f, 2.63f) of ~2350×pitch Hz, 45–90 ms decays |
 | `cupDown()` | cup set on table/counter | 260 Hz tap + `clink(0.62)` |
+| `umbrellaShake()` | rainy arrival at the door | 3–4 lowpassed noise flaps around 900 Hz, 60 ms each at loose ~90 ms spacing, peak 0.03 |
+| `keys()` | laptop typing bout | 2–4 jittered 18 ms bandpassed noise ticks around 2.1–3 kHz, peak 0.02 |
 | `ding()` | order ready at the pass | 1720 Hz bell + 2.7× partial, 0.75 s |
 | `grinder(dur)` | espresso prep | sawtooth ~55–63 Hz → lowpass 320, 26 Hz AM wobble + noise bandpass 850; 1.5 s |
 | `tamp()` | after grinding | 185 Hz knock + click |

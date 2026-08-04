@@ -42,7 +42,7 @@ architecture textures, retuned atmosphere and real typography.
   machine (40 h) and pastry case stay a notch above strict scale so brewing
   stays legible — don't "fix" them; mugs stay oversized (charm).
 - **Grounding shadows.** Every floor-standing thing (tables, seats, armchair,
-  lamp, coat stand, plants, baskets — and every character) gets a soft
+  lamp, coat stand, umbrella crock, plants, baskets — and every character) gets a soft
   `rgba(20,12,8,~0.2)` contact ellipse. Furniture without one looks unmoored.
 - **Warm limited palette.** Woods and creams dominate; color accents come from
   clothing, the red armchair, plants, and pastry pinks. Reuse existing hexes
@@ -113,7 +113,8 @@ y=368 ── the walking lane (L.lane — all pathing routes through this corrid
           four round tables (L.tables, tagged "by the window" / "near the
           fire"); each seats two at ±L.stoolDX facing inward — chair (with
           back) on the left, stool on the right; a candle jar on every
-          table; coat stand by the door (L.coatStand), plants at the
+          table; coat stand and slatted umbrella crock by the door
+          (L.coatStand / L.umbrellaStand), plants at the
           counter's ends (L.plants), rugs
           reading nook, bottom right (L.library): bookshelf (2 CH + crown;
           browse spot in front, loanable spines vanish while borrowed), two
@@ -200,7 +201,10 @@ with hanging tail and fringe, and Nora's apron has neck straps, waistband,
 pocket and a tie bow at the back. Options per character: scarf, long hair,
 `hairStyle`, `beard`, apron (Nora), `holding` (`cup`/`plate`/`cloth`),
 `armUp` 0–1 (sip animation lifts the cup toward the face), `reading` (open
-book replaces held items while seated). Facing is ±1 (side profile both
+book replaces held items while seated), `typing` (forearms alternate toward
+the table), and `dozing` (head and book lower, eye closes). A furled umbrella
+or closed laptop tucks under the mirror-side arm so it can coexist with a
+cup. Facing is ±1 (side profile both
 ways); the face details and hair-back column flip with it.
 
 Nora adds two quiet standing poses: `stretch` (both arms overhead with a
@@ -242,6 +246,8 @@ scaled by `pal.lamp`. Table and mantel candles are the exception: their visible
 flame and additive glow share the same 0–1 live state, blooming when Nora
 lights them and fading after dawn; each keeps its slow phase-offset flicker.
 Speech bubbles/captions draw after lighting on purpose.
+Open laptops are the single cool exception: dark 16×3 base, 14×10 screen,
+blue-grey one-pixel text, and a faint radius-18 glow scaled by darkness.
 
 ## Adding furniture — checklist
 

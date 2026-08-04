@@ -108,6 +108,28 @@
       px(g, CS.x - 10, CS.y - 4, 20, 4, '#4a3222');
     } });
 
+    // A small slatted crock for rainy arrivals. The state is intentionally
+    // only the umbrellas currently visible in the room, never inventory UI.
+    const US = L.umbrellaStand;
+    out.push({ y: US.y, draw: function (g) {
+      const umbrellas = world.umbrellaStand || [];
+      ell(g, US.x, US.y - 1, 10, 3, SHADOW);
+      umbrellas.slice(-4).forEach(function (u, i) {
+        const col = typeof u === 'string' ? u : u.color;
+        const ux = US.x - 6 + i * 4, top = US.y - 30 - (i % 2) * 3;
+        px(g, ux, top, 2, 25, '#3a2a1c');
+        px(g, ux - 1, top + 7, 4, 9, col);
+        px(g, ux, top - 3, 5, 2, '#3a2a1c');
+        px(g, ux + 3, top - 2, 2, 4, '#3a2a1c');
+      });
+      px(g, US.x - 9, US.y - 20, 18, 18, '#6b4529');
+      px(g, US.x - 11, US.y - 21, 22, 4, '#8a6142');
+      px(g, US.x - 6, US.y - 18, 2, 14, '#4a3222');
+      px(g, US.x - 1, US.y - 18, 2, 14, '#4a3222');
+      px(g, US.x + 4, US.y - 18, 2, 14, '#4a3222');
+      px(g, US.x - 9, US.y - 5, 18, 3, '#4a3222');
+    } });
+
     // potted plants anchoring the counter: one against the wall at its left
     // end, one tucked against its right front corner
     L.plants.forEach(function (P) {
@@ -303,8 +325,18 @@
   }
 
   function drawTableItem(g, cx, cy, it, reach) {
-    const ix = cx + it.side * (reach || 24) - 5;
-    if (it.kind === 'plate') {
+    const ix = cx + it.side * (it.kind === 'laptop' ? 12 : (reach || 24)) - 5;
+    if (it.kind === 'laptop') {
+      ell(g, ix + 5, cy, 10, 3, 'rgba(20,12,8,0.18)');
+      px(g, ix - 3, cy - 4, 16, 3, '#424854');
+      px(g, ix - 2, cy - 5, 14, 2, '#687080');
+      if (it.open) {
+        px(g, ix - 2, cy - 15, 14, 10, '#424854');
+        px(g, ix, cy - 13, 10, 7, '#2c3038');
+        px(g, ix + 2, cy - 11, 7, 1, '#8a9ab5');
+        px(g, ix + 2, cy - 8, 5, 1, '#6f809b');
+      }
+    } else if (it.kind === 'plate') {
       ell(g, ix + 5, cy - 2, 12, 4, 'rgba(20,12,8,0.18)');   // contact shadow
       ell(g, ix + 5, cy - 4, 11, 4, '#e8e0d0');
       px(g, ix + 1, cy - 12, 10, 7, '#c98f4a');

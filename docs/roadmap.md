@@ -9,8 +9,9 @@ Nothing here is committed; the owner picks what sounds lovely next.
 > file splits, doc slimming — future changes cost less), and the harness
 > sweep (a multi-day soak-test bug hunt plus the journey/footprint rules now
 > in `__dev.audit()`), and cat life (corner + bowl care, high perches,
-> counter/shelf capers, laps, kneading, and dust motes), and Nora's care
-> rituals (watering, chalkboard doodles, dusk candles, quiet stretches) were specced here,
+> counter/shelf capers, laps, kneading, and dust motes), Nora's care rituals
+> (watering, chalkboard doodles, dusk candles, quiet stretches), and patron
+> life (umbrellas, laptops, Holger, couples, night dozing) were specced here,
 > executed, and their plan docs
 > retired (git history has them).
 
@@ -33,15 +34,23 @@ machines, rain, café room tone…). Plan for when clips arrive:
 4. **Same buses and gain discipline:** samples route through the existing
    sfx/amb/fire/music buses and the delay send; normalize clips beforehand,
    then trim per-id gain in the manifest (`{file, gain}` entries).
-5. **Loops with variation:** long beds (rain, room tone, fire) as loopable
-   files with gentle crossfade on loop points; keep intensity driven by
-   `world.rain` / toggles exactly as today.
+5. **Loops with variation:** long beds (storm rain, room tone, fire) as
+   loopable files with gentle crossfade on loop points; keep intensity driven
+   by `world.rain` / toggles. (Normal rain is discrete window taps, not a
+   bed — see sounds.md.)
 6. Document each replacement in sounds.md (recipe column becomes "sample:
    filename + credit/license").
 
 ## 🔊 More sound, still synthesized
 
-- Distant thunder on heavy rain (very rare, very low).
+- **Thunderstorms** (owner-requested). A rare storm state above heavy rain
+  in the sim's weather walk. Only during a storm does the rain get a voice
+  beyond the window taps: the hissing broadband wash returns (the retired
+  recipe is in git history — noise loop → highpass → cascaded lowpasses,
+  slow two-LFO swell; keep it dark, it is still heard through glass), plus
+  distant thunder — very rare, very low filtered-noise rumbles, seconds
+  long, maybe a brief dim flash through the window. Normal rain stays
+  taps-only by design (the wash felt like standing outside in it).
 - Kettle whistle far off in the back room, once an evening.
 - Chair scrape (tiny, filtered) when patrons sit/stand.
 - Coins in the tip jar when a patron returns a cup.
@@ -50,11 +59,14 @@ machines, rain, café room tone…). Plan for when clips arrive:
 
 ## 🐈 More life
 
-- Patrons: umbrellas on rainy days (shaken at the door), laptops (soft rare
-  keystrokes), a regular who always takes the same seat, couples sharing a
-  table, someone who falls asleep over their book at night.
 - A café dog that visits occasionally and naps by the door. The cat has
   opinions (one caption, no drama).
+- A knitter by the fire on rainy evenings — needle clicks quieter than the
+  crackles, a slowly growing scarf.
+- Someone writing postcards at a window table: pen scratches, a pause to
+  look out, one careful stamp.
+- A patron who greets the cat on the way in — one crouch, one pat, and on
+  to the queue.
 
 ## 🌍 More world
 
@@ -63,23 +75,10 @@ machines, rain, café room tone…). Plan for when clips arrive:
   date.
 - Holiday touches (subtle): a string of lights in December, a pumpkin on the
   mantel in October.
-- Window bar seating (two stools facing the glass) — needs a sill-height
-  redesign so seated heads align with the view.
 - Passers-by outside the window: silhouettes with umbrellas.
 - The mantel clock chiming softly on the hour (in-world time).
 - A real "closing hour" mood at 02:00: Nora stacks chairs, lights low, only
   the fire and the cat — never actually closed, just quieter.
-
-## 🖥️ Delivery & polish
-
-- PWA manifest (installable, remembers window size) — probably the best
-  effort-to-value next step for "runs in the corner of my screen".
-- Electron/Tauri wrap only if the owner wants always-on-top.
-- OBS-friendly mode (no controls, no start overlay once audio unlocked).
-- `?seed=` URL param for reproducible moods (`?hour=` shipped with the dev
-  harness — `?dev&hour=20`, see architecture.md).
-- Accessibility: `prefers-reduced-motion` → calmer particles/flicker.
-- Optional ultra-low-power mode (10 fps render, full-rate audio).
 
 ## 🚫 Explicitly out (unless the vision changes)
 

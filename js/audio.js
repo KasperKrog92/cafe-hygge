@@ -7,8 +7,6 @@
   let ctx = null;
   let master, sfx, amb, musicBus, fireBus, delaySend;
   let noiseBuf = null;
-  let rainGain = null;
-  let rainLfo1, rainLfo2, rainSwell1, rainSwell2;
 
   const S = (SND.settings = { volume: 0.7, muted: false, rain: true, fire: true, music: true });
   try { Object.assign(S, JSON.parse(localStorage.getItem('cafe-hygge-audio') || '{}')); } catch (e) {}
@@ -82,7 +80,6 @@
     delaySend.connect(dly);
 
     noiseBuf = makeNoiseBuffer();
-    startRainLoop();
     startFireRumble();
   };
 
@@ -97,30 +94,6 @@
   };
 
   /* ---------- ambience loops ---------- */
-
-  function startRainLoop() {
-    const src = noiseSrc(true);
-    const hp = filt('highpass', 550);
-    const lp = filt('lowpass', 5200);
-    rainGain = gainNode(0);
-    src.connect(hp); hp.connect(lp); lp.connect(rainGain); rainGain.connect(amb);
-    src.start();
-    /* Slow swell so the rain "breathes". Two detuned LFOs at incommensurate
-       rates drift in and out of phase, so the swell never settles into a
-       rhythm; their frequencies also wander (see SND.update). Depth gains
-       start at 0 and are scaled by the live rain level each update — the
-       breathing dies out completely when the rain does. */
-    rainLfo1 = ctx.createOscillator();
-    rainLfo1.frequency.value = 0.07;
-    rainSwell1 = gainNode(0);
-    rainLfo1.connect(rainSwell1); rainSwell1.connect(rainGain.gain);
-    rainLfo1.start();
-    rainLfo2 = ctx.createOscillator();
-    rainLfo2.frequency.value = 0.121;
-    rainSwell2 = gainNode(0);
-    rainLfo2.connect(rainSwell2); rainSwell2.connect(rainGain.gain);
-    rainLfo2.start();
-  }
 
   function startFireRumble() {
     const src = noiseSrc(true);
@@ -150,6 +123,20 @@
       og.gain.setValueAtTime(0.09, t);
       og.gain.exponentialRampToValueAtTime(0.0005, t + 0.09);
       o.start(t); o.stop(t + 0.1);
+    }
+  }
+
+  /* One raindrop reaching the window: a tiny damped tick, mostly high and
+     glassy. Sometimes a fatter drop lands on the frame or sill instead. */
+  function playWindowTap() {
+    if (Math.random() < 0.18) {
+      hiss({ dur: 0.05, gain: 0.009 + Math.random() * 0.009,
+             bp: 800 + Math.random() * 500, q: 3.5,
+             attack: 0.002, release: 0.045, dest: amb });
+    } else {
+      hiss({ dur: 0.022 + Math.random() * 0.014, gain: 0.008 + Math.random() * 0.014,
+             bp: 2300 + Math.random() * 2300, q: 7,
+             attack: 0.001, release: 0.02, dest: amb });
     }
   }
 
@@ -237,6 +224,28 @@
   SND.cupDown = guard(function () {
     tone(260, { gain: 0.035, dur: 0.05 });
     SND.clink(0.62, 0.04);
+  });
+
+  SND.umbrellaShake = guard(function () {
+    const flaps = 3 + ((Math.random() * 2) | 0);
+    for (let i = 0; i < flaps; i++) {
+      setTimeout(function () {
+        if (!ctx || S.muted) return;
+        hiss({ dur: 0.06, gain: 0.022 + Math.random() * 0.008,
+          lp: 900, bp: 620 + Math.random() * 260, q: 0.7, attack: 0.005, release: 0.04 });
+      }, i * (82 + Math.random() * 20));
+    }
+  });
+
+  SND.keys = guard(function () {
+    const ticks = 2 + ((Math.random() * 3) | 0);
+    for (let i = 0; i < ticks; i++) {
+      setTimeout(function () {
+        if (!ctx || S.muted) return;
+        hiss({ dur: 0.018, gain: 0.014 + Math.random() * 0.006,
+          bp: 2100 + Math.random() * 900, q: 2.1, attack: 0.002, release: 0.012 });
+      }, i * (32 + Math.random() * 28));
+    }
   });
 
   SND.ding = guard(function () {
@@ -439,22 +448,26 @@
   /* ---------- per-frame scheduling ---------- */
 
   let crackleT = 0.3;
-  let swellT = 5;
+  let tapT = 1;
 
   SND.update = function (dt, world) {
     if (!ctx) return;
 
-    // rain follows the weather outside; the swell depth follows the rain
+    // Rain is heard only as droplets ticking on the window glass — denser
+    // when it pours. A tap is sometimes followed almost immediately by
+    // another, so drops spatter in little wind-thrown clusters instead of a
+    // steady metronome. There is deliberately no continuous hissing wash:
+    // that (plus thunder) is reserved for a future storm weather state
+    // (see roadmap).
     const rainLvl = S.rain && !S.muted ? world.rain : 0;
-    rainGain.gain.setTargetAtTime(rainLvl * 0.11, ctx.currentTime, 0.8);
-    rainSwell1.gain.setTargetAtTime(rainLvl * 0.011, ctx.currentTime, 0.8);
-    rainSwell2.gain.setTargetAtTime(rainLvl * 0.007, ctx.currentTime, 0.8);
-    // let the swell rates wander so the breathing never turns rhythmic
-    swellT -= dt;
-    if (swellT <= 0) {
-      swellT = 7 + Math.random() * 12;
-      rainLfo1.frequency.setTargetAtTime(0.045 + Math.random() * 0.055, ctx.currentTime, 3);
-      rainLfo2.frequency.setTargetAtTime(0.095 + Math.random() * 0.06, ctx.currentTime, 3);
+    if (rainLvl > 0.03) {
+      tapT -= dt;
+      if (tapT <= 0) {
+        playWindowTap();
+        tapT = Math.random() < 0.25
+          ? 0.03 + Math.random() * 0.07
+          : (0.05 + Math.random() * 0.5) / (0.2 + rainLvl * 1.4);
+      }
     }
 
     // fire crackles

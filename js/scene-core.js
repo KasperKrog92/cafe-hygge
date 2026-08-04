@@ -76,6 +76,13 @@
       { x: 524, y: 196, base: 248 }
     ],
     coatStand: { x: 96, y: 298 },
+    umbrellaStand: { x: 74, y: 296 },
+    umbrellaSpot: { x: 74, y: 312 },
+    patronRoutes: {
+      doorToUmbrella: [{ x: 54, y: 252 }, { x: 54, y: 312 }, { x: 74, y: 312 }],
+      umbrellaApproach: [{ x: 54, y: 368 }, { x: 54, y: 312 }, { x: 74, y: 312 }],
+      umbrellaToDoor: [{ x: 74, y: 312 }, { x: 54, y: 312 }, { x: 54, y: 252 }]
+    },
     catCorner: {
       cushion: { x: 126, y: 262 },
       food: { x: 116, y: 278 },
@@ -220,6 +227,7 @@
     L.footprints.push({ name: 'window table ' + i, x0: t.x - 16, x1: t.x + 16, y0: t.base - 8, y1: t.base + 4, passable: true });
   });
   L.footprints.push({ name: 'coat stand', x0: L.coatStand.x - 12, x1: L.coatStand.x + 10, y0: L.coatStand.y - 6, y1: L.coatStand.y + 2 });
+  L.footprints.push({ name: 'umbrella stand', x0: 66, x1: 82, y0: 288, y1: 298 });
   L.footprints.push({ name: 'cat corner', x0: 102, x1: 152, y0: 248, y1: 284, catOnly: true });
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });

@@ -14,6 +14,7 @@
   const HAIRS = ['#2a1a12', '#4a2f1c', '#8a5a2a', '#c9a04a', '#a5763f', '#5a5a5a', '#d9d2c0', '#8f4a35'];
   const TOPS = ['#a94f3f', '#4a7a5a', '#7a89a5', '#c9a04a', '#8a6a9a', '#6b7a55', '#b5654a', '#5a7a8a', '#9c4848'];
   const PANTS = ['#3d4a5c', '#4a3222', '#5a5a5a', '#6e4a33', '#2c3038'];
+  const UMBRELLAS = ['#a94f3f', '#4a7a5a', '#3d4a5c', '#c9a04a'];
 
   const DRINKS = [
     { name: 'cappuccino',      icon: 'coffee',    prep: 'coffee_milk', kind: 'cup',    w: 3 },
@@ -52,6 +53,7 @@
       patrons: [],
       queue: [],
       counterCups: [],
+      umbrellaStand: [],
       catBowls: { food: 1, water: 1 },
       particles: [],
       tables: L.tables.map(function (tb) {
@@ -75,6 +77,8 @@
       activeCaption: null,
       lastCapT: -10,
       spawnT: rnd(4, 9),
+      regular: { lastDay: -1, day: 0, hour: rnd(9, 9 + 2 / 3), force: false },
+      sleeper: null,
       wasLampOn: false,
       steamAcc: 0,
       wateredDay: -1,
@@ -125,6 +129,7 @@
   function seedPatron(world, seatIdx) {
     const p = makePatron();
     const seat = world.seats[seatIdx];
+    p.laptop = !p.wantsBook && Math.random() < 0.16;
     seat.taken = true;
     p.seat = seat;
     p.x = seat.x; p.y = seat.y;
@@ -135,6 +140,10 @@
     p.stay = rnd(60, 160);
     if (seat.table >= 0) {
       world.tables[seat.table].items.push({ side: seat.side, kind: p.drink.kind, owner: p.id, hot: 30, hidden: false });
+      p.laptopActive = p.laptop && !seat.nook && !seat.window;
+      if (p.laptopActive) {
+        world.tables[seat.table].items.push({ side: seat.side, kind: 'laptop', owner: p.id, open: true, hot: 0, hidden: false });
+      }
     }
     if (seat.armchair || seat.nook) {
       p.reading = true;
@@ -171,6 +180,13 @@
       seat: null, stay: 0,
       sipT: rnd(4, 10), sipPhase: 0, sipPlayed: false,
       pageT: rnd(6, 16), chatT: rnd(8, 20), chatReply: 0,
+      umbrella: null, umbrellaParked: false, shakeDropT: 0, shakeDrops: 0,
+      laptop: false, laptopActive: false, laptopPacked: false,
+      typing: false, typingT: rnd(6, 14), typingRemain: 0, keyT: 0,
+      partner: null, coupleStay: 0, coupleBus: null, coupleLeaveAt: 0,
+      orderCaptioned: false, pairCaptioned: false,
+      dozing: false, dozeT: rnd(50, 120), dozeRemain: 0, zzzT: rnd(7, 14),
+      isRegular: false, usualSeat: false, regularSeatNoted: false,
       gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
       lapCat: false, catLeaveT: 0,
       bubble: null, queueIdx: -1, waitIdx: -1, doorCloseT: 0
@@ -264,6 +280,15 @@
       cat.doorFacing = cat.facing;
       cat.facing = L.doorSpot.x < cat.x ? -1 : 1;
     }
+    if (world.sleeper && world.sleeper.dozing && Math.random() < 0.25) {
+      const p = world.sleeper;
+      p.dozing = false;
+      p.reading = true;
+      p.resumeReading = false;
+      p.dozeT = rnd(70, 140);
+      world.sleeper = null;
+      if (Math.random() < 0.5) caption(world, p.name + ' blinks awake and finds the line again.');
+    }
   }
 
   function updateDoor(world, dt) {
@@ -271,7 +296,8 @@
     let near = false;
     world.patrons.forEach(function (p) {
       if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 44 &&
-          (p.state === 'enter' || p.state === 'exit')) near = true;
+          (p.state === 'enter' || p.state === 'enterDelay' || p.state === 'shake' ||
+           p.state === 'parkUmbrella' || p.state === 'collectUmbrella' || p.state === 'exit')) near = true;
     });
     d.target = near ? 1 : 0;
     d.open += (d.target - d.open) * Math.min(1, dt * 5);
@@ -369,25 +395,109 @@
     return world.daylight > 0.3 ? 7 : 4;
   }
 
+  function applyArrivalTraits(world, p) {
+    const night = world.hour >= 21 || world.hour < 7;
+    if (!p.wantsBook && Math.random() < (night ? 0.06 : 0.16)) p.laptop = true;
+    if (world.rain > 0.4 && Math.random() < 0.75) {
+      p.umbrella = { color: pick(UMBRELLAS) };
+    }
+    return p;
+  }
+
+  function enqueueArrival(world, p, delay, ring) {
+    p.queueIdx = world.queue.length;
+    world.queue.push(p);
+    world.patrons.push(p);
+    p.doorCloseT = ring ? 1.1 : (delay ? delay + 1.1 : 0);
+    if (delay) {
+      p.state = 'enterDelay';
+      p.stateT = -delay;
+    } else if (p.umbrella) {
+      p.state = 'shake';
+      p.stateT = 0;
+    } else {
+      p.state = 'enter';
+      const slot = queueSlot(p.queueIdx);
+      makePath(p, slot.x, slot.y);
+    }
+    if (ring) ringDoor(world);
+    return p;
+  }
+
+  function spawnCouple(world, opts) {
+    opts = opts || {};
+    const a = makePatron(), b = makePatron();
+    applyArrivalTraits(world, a); applyArrivalTraits(world, b);
+    a.partner = b; b.partner = a;
+    a.chatty = true; b.chatty = true;
+    a.chatT = rnd(12, 26); b.chatT = rnd(12, 26);
+    ['wantsBook', 'ownBook'].forEach(function (k) {
+      if (k in opts) { a[k] = !!opts[k]; b[k] = !!opts[k]; }
+    });
+    if (opts.drink) {
+      const drink = DRINKS.find(function (d) { return d.name === opts.drink; });
+      if (drink) { a.drink = drink; b.drink = drink; }
+    }
+    if (Math.random() < 0.5) b.colors.scarf = a.colors.scarf || pick(TOPS);
+    if ('laptop' in opts) { a.laptop = !!opts.laptop; b.laptop = !!opts.laptop; }
+    if ('umbrella' in opts && opts.umbrella) a.umbrella = { color: typeof opts.umbrella === 'string' ? opts.umbrella : pick(UMBRELLAS) };
+    if (world.rain > 0.4) {
+      a.umbrella = { color: (a.umbrella && a.umbrella.color) || pick(UMBRELLAS) };
+      b.umbrella = null;
+    }
+    enqueueArrival(world, a, 0, true);
+    enqueueArrival(world, b, rnd(1.2, 1.8), false);
+    a.doorCloseT = 0;   // the trailing partner owns the pair's single close
+    caption(world, world.rain > 0.4
+      ? 'Two come in together out of the rain, under one umbrella.'
+      : 'Two come in together, shoulder to shoulder.');
+    return [a, b];
+  }
+
+  function makeRegular(world) {
+    const p = makePatron();
+    p.name = 'Holger';
+    p.colors = {
+      skin: '#d99c6b', hair: '#d9d2c0', top: '#4a7a5a', pants: '#4a3222',
+      scarf: '#a94f3f', longHair: false, hairStyle: 1, beard: true
+    };
+    p.drink = DRINKS.find(function (d) { return d.name === 'espresso'; });
+    p.wantsBook = true; p.ownBook = true; p.chatty = false;
+    p.murmurPitch = 130; p.speed = 46; p.isRegular = true; p.laptop = false;
+    if (world.rain > 0.4) p.umbrella = { color: '#3d4a5c' };
+    return p;
+  }
+
+  function updateRegular(world) {
+    const r = world.regular;
+    const day = dayIndex(world);
+    if (day !== r.day) { r.day = day; r.hour = rnd(9, 9 + 2 / 3); }
+    if (world.patrons.some(function (p) { return p.isRegular; })) return;
+    const due = r.force || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
+    if (!due || world.patrons.length >= spawnCap(world)) return;
+    const p = makeRegular(world);
+    enqueueArrival(world, p, 0, true);
+    r.lastDay = day; r.force = false;
+    caption(world, 'Holger steps in, as steady as the clock.');
+    return p;
+  }
+
   function updateSpawning(world, dt) {
+    updateRegular(world);
     world.spawnT -= dt;
     if (world.spawnT > 0) return;
     world.spawnT = rnd(1, 1.4) * (26 + (1 - world.daylight) * 55);
     if (world.patrons.length >= spawnCap(world)) return;
-    const p = makePatron();
-    p.state = 'enter';
-    p.doorCloseT = 1.1;
-    world.patrons.push(p);
-    ringDoor(world);
+    if (world.patrons.length + 2 <= spawnCap(world) && Math.random() < 0.22) {
+      spawnCouple(world);
+      return;
+    }
+    const p = applyArrivalTraits(world, makePatron());
+    enqueueArrival(world, p, 0, true);
     const lines = world.rain > 0.4
-      ? [p.name + ' ducks in out of the rain.', p.name + ' shakes off the rain at the door.']
+      ? [p.name + ' ducks in out of the rain.', p.name + ' slips in from the wet street.']
       : [p.name + ' pushes the door open.', p.name + ' steps inside.', p.name + ' wanders in.'];
     caption(world, pick(lines));
-    // join the queue
-    p.queueIdx = world.queue.length;
-    world.queue.push(p);
-    const slot = queueSlot(p.queueIdx);
-    makePath(p, slot.x, slot.y);
   }
 
   function queueSlot(i) {
@@ -456,6 +566,8 @@
     DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, DRINKS: DRINKS,
     rnd: rnd, withArticle: withArticle, pick: pick,
     makePatron: makePatron, caption: caption, updateCaptions: updateCaptions,
+    applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
+    spawnCouple: spawnCouple, updateRegular: updateRegular,
     makePath: makePath, walker: walker,
     ringDoor: ringDoor, updateDoor: updateDoor,
     updateWeather: updateWeather, updateClock: updateClock,

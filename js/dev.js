@@ -16,6 +16,8 @@
      __dev.hour(h)     jump the in-world clock (no arg: read it)
      __dev.ff(sec)     fast-forward the sim in 0.25 s ticks, muted
      __dev.spawn(o)    real patron with chosen traits, via the front door
+     __dev.regular()   force Holger's next arrival
+     __dev.doze()      put the first eligible reader to sleep
      __dev.send(n,x,y) path an entity through the real makePath
      __dev.noraDo(name) force a Nora ritual on her next idle task
      __dev.catDo(name) force a cat ritual on the next simulation tick
@@ -80,28 +82,43 @@
   /* ---------- scenario forcing ---------- */
 
   /* A real patron through the real front-door flow, with chosen traits.
-     opts: { wantsBook, ownBook, chatty, drink: 'espresso', name: 'Freja' } */
+     opts adds umbrella, laptop and couple to the original reader traits. */
   D.spawn = function (opts) {
     opts = opts || {};
     const w = world();
+    if (opts.couple) return SIM._.spawnCouple(w, opts);
     const p = SIM._.makePatron();
     ['wantsBook', 'ownBook', 'chatty'].forEach(function (k) {
       if (k in opts) p[k] = !!opts[k];
     });
     if (opts.name) p.name = opts.name;
+    if ('laptop' in opts) p.laptop = !!opts.laptop;
+    if (opts.umbrella) {
+      p.umbrella = { color: typeof opts.umbrella === 'string' ? opts.umbrella : '#3d4a5c' };
+    }
     if (opts.drink) {
       const d = SIM._.DRINKS.find(function (d) { return d.name === opts.drink; });
       if (d) p.drink = d;
       else console.warn('[dev] unknown drink "' + opts.drink + '" — kept ' + p.drink.name);
     }
-    p.state = 'enter';
-    p.doorCloseT = 1.1;
-    w.patrons.push(p);
-    SIM._.ringDoor(w);
-    p.queueIdx = w.queue.length;
-    w.queue.push(p);
-    const slot = SIM._.queueSlot(p.queueIdx);
-    SIM._.makePath(p, slot.x, slot.y);
+    return SIM._.enqueueArrival(w, p, 0, true);
+  };
+
+  D.regular = function () {
+    const w = world();
+    const present = w.patrons.find(function (p) { return p.isRegular; });
+    if (present) return present;
+    w.regular.force = true;
+    return SIM._.updateRegular(w) || null;
+  };
+
+  D.doze = function () {
+    const w = world();
+    const p = w.patrons.find(function (p) {
+      return p.state === 'seated' && p.reading && p.seat && (p.seat.armchair || p.seat.nook) && !p.laptop;
+    });
+    if (!p) { console.warn('[dev] no eligible seated reader to doze'); return null; }
+    SIM._.startDoze(w, p);
     return p;
   };
 
@@ -204,6 +221,7 @@
     });
     t.push({ x: L.library.browseSpot.x, y: L.library.browseSpot.y, name: 'browseSpot' });
     t.push({ x: L.doorSpot.x, y: L.doorSpot.y, name: 'doorSpot' });
+    t.push({ x: L.umbrellaSpot.x, y: L.umbrellaSpot.y, name: 'umbrellaSpot' });
     t.push({ x: L.orderSpot.x, y: L.orderSpot.y, name: 'orderSpot' });
     t.push({ x: L.pickupSpot.x, y: L.pickupSpot.y, name: 'pickupSpot' });
     t.push({ x: L.returnSpot.x, y: L.returnSpot.y, name: 'returnSpot' });
@@ -417,7 +435,7 @@
     // else may. Bus spots are excluded here — Nora reaches them by her own
     // routes, checked next.
     walkTargets(w).forEach(function (t) {
-      if (/^busSpot/.test(t.name)) return;
+      if (/^busSpot/.test(t.name) || t.name === 'umbrellaSpot') return;
       const scratch = { x: L.doorSpot.x, y: L.lane, path: null, pose: 'stand', facing: 1, speed: 0 };
       // window seats with a declared clear column descend there first,
       // exactly as the sim's seatPath does
@@ -433,6 +451,11 @@
       const route = SIM._.busRoute(w, i);
       const end = route[route.length - 1];
       routeProblems(route, end, 'busSpot(table ' + i + ')', ['counter'], true, problems);
+    });
+
+    ['doorToUmbrella', 'umbrellaApproach', 'umbrellaToDoor'].forEach(function (name) {
+      const route = L.patronRoutes[name];
+      routeProblems(route, route[route.length - 1], 'patron route ' + name, null, false, problems);
     });
 
     // Nora's bowl-refill route shares the same declared geometry as bussing.
@@ -547,14 +570,27 @@
       const bySide = {};
       tb.items.forEach(function (it) {
         if (it.owner !== null && !live[it.owner]) problems.push('table ' + ti + ' item owned by departed patron ' + it.owner);
-        bySide[it.side] = (bySide[it.side] || 0) + 1;
-        if (bySide[it.side] === 2) problems.push('table ' + ti + ' has items stacked at side ' + it.side);
+        const key = it.side + ':' + (it.kind === 'laptop' ? 'laptop' : 'service');
+        bySide[key] = (bySide[key] || 0) + 1;
+        if (bySide[key] === 2) problems.push('table ' + ti + ' has duplicate ' + key + ' items');
       });
     });
     w.counterCups.forEach(function (c) {
       if (!live[c.owner]) problems.push('counter cup owned by departed patron ' + c.owner);
     });
     if (w.patrons.length > 7) problems.push(w.patrons.length + ' patrons exceed the spawn cap (7)');
+    const parkedOwners = {};
+    w.umbrellaStand.forEach(function (u) {
+      if (!live[u.owner]) problems.push('umbrella in stand belongs to departed patron ' + u.owner);
+      if (parkedOwners[u.owner]) problems.push('patron ' + u.owner + ' has two umbrellas in the stand');
+      parkedOwners[u.owner] = true;
+    });
+    w.patrons.forEach(function (p) {
+      if (!!p.umbrellaParked !== !!parkedOwners[p.id]) problems.push(p.name + ' umbrella/stand link is inconsistent');
+      if (p.partner && p.partner.partner !== p) problems.push(p.name + ' has a one-way partner link');
+    });
+    if (w.sleeper && (!live[w.sleeper.id] || !w.sleeper.dozing)) problems.push('world.sleeper is stale');
+    if (w.patrons.filter(function (p) { return p.dozing; }).length > 1) problems.push('more than one patron is dozing');
     if (w.cat.surface === 'lap' && (!w.cat.lapPatron || !w.cat.lapPatron.lapCat)) {
       problems.push('cat is on a lap without a matching patron link');
     } else if (w.cat.surface === 'lap') {

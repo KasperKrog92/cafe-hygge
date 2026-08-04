@@ -13,7 +13,7 @@
      Detail pass: brows + 3×4 eyes, actual hands, four hair styles
      (0 classic / 1 side-part / 2 curly / 3 bun), clothing folds, scarf
      knots, apron strings, a 4-frame walk and a subtle idle breathe. */
-  function drawHead(g, x, hy, facing, c) {
+  function drawHead(g, x, hy, facing, c, closed) {
     const hairL = shade(c.hair, 0.18);
     const st = c.hairStyle || 0;
     const bx = facing > 0 ? x - 8 : x + 6;                 // back of the head
@@ -41,13 +41,33 @@
     // brow + eye
     const ex = facing > 0 ? x + 5 : x - 8;
     px(g, ex, hy + 3, 4, 2, c.hair);
-    px(g, ex, hy + 6, 3, 4, '#2a1a12');
+    if (closed) px(g, ex - 1, hy + 8, 5, 2, '#2a1a12');
+    else px(g, ex, hy + 6, 3, 4, '#2a1a12');
     if (c.beard) {
       px(g, facing > 0 ? x - 1 : x - 8, hy + 12, 9, 4, c.hair);
       px(g, facing > 0 ? x + 3 : x - 4, hy + 13, 3, 2, shade(c.hair, -0.25));
     } else {
       px(g, facing > 0 ? x + 5 : x - 6, hy + 12, 3, 2, shade(c.skin, -0.22));   // mouth
       px(g, facing > 0 ? x - 1 : x - 2, hy + 10, 4, 2, 'rgba(214,106,90,0.3)'); // blush
+    }
+  }
+
+  function drawOffhand(g, p, x, y, facing, c) {
+    const side = -facing;
+    if (p.umbrella && !p.umbrellaParked) {
+      const shake = p.state === 'shake' ? Math.round(Math.sin(p.animT * 62)) : 0;
+      const ux = x + side * (p.laptopPacked ? 17 : 12) + shake;
+      px(g, ux - 1, y - 45, 2, 31, '#3a2a1c');
+      px(g, ux - 3, y - 36, 6, 13, p.umbrella.color);
+      px(g, ux - 2, y - 39, 4, 3, shade(p.umbrella.color, -0.18));
+      px(g, ux - (side > 0 ? 0 : 5), y - 48, 6, 2, '#3a2a1c');
+      px(g, ux + side * 4 - (side < 0 ? 2 : 0), y - 47, 2, 5, '#3a2a1c');
+    }
+    if (p.laptopPacked) {
+      const lx = x + side * 11 - 6;
+      px(g, lx, y - 31, 13, 10, '#363b45');
+      px(g, lx + (side > 0 ? 0 : 11), y - 30, 2, 8, '#687080');
+      px(g, x + side * 8 - (side < 0 ? 3 : 0), y - 23, 4, 4, c.skin);
     }
   }
 
@@ -84,16 +104,24 @@
       }
       // gazeFacing (window sitters looking out) turns the head only —
       // the body keeps leaning on its cushion
-      drawHead(g, x, y - 48 + breathe, p.gazeFacing || facing, c);
+      const dozeDrop = p.dozing ? 2 + (Math.sin(p.animT * 1.15) > 0 ? 1 : 0) : 0;
+      drawHead(g, x, y - 48 + breathe + dozeDrop, p.gazeFacing || facing, c, p.dozing);
       // arms + what they hold
-      if (p.reading) {
+      if (p.reading || p.dozing) {
         px(g, x + facing * 3 - 2, y - 24, 5, 8, c.top);
         const bx = x + facing * 10 - 9;
-        px(g, bx, y - 29, 18, 10, '#f5efdf');
-        px(g, bx + 8, y - 29, 2, 10, '#b5a888');
-        px(g, bx, y - 31, 18, 2, '#c9b28a');
-        px(g, bx - 2, y - 26, 3, 4, c.skin);                    // hands on the covers
-        px(g, bx + 17, y - 26, 3, 4, c.skin);
+        const by = y - 29 + (p.dozing ? 6 : 0);
+        px(g, bx, by, 18, 10, '#f5efdf');
+        px(g, bx + 8, by, 2, 10, '#b5a888');
+        px(g, bx, by - 2, 18, 2, '#c9b28a');
+        px(g, bx - 2, by + 3, 3, 4, c.skin);                    // hands on the covers
+        px(g, bx + 17, by + 3, 3, 4, c.skin);
+      } else if (p.typing) {
+        const keyBob = Math.floor(p.animT * 6) % 2;
+        px(g, x - 9, y - 28 + keyBob, 7, 12, c.top);
+        px(g, x + 2, y - 28 + (1 - keyBob), 7, 12, c.top);
+        px(g, x - 7, y - 18 + keyBob, 5, 3, c.skin);
+        px(g, x + 3, y - 17 + (1 - keyBob), 5, 3, c.skin);
       } else if (p.holding === 'cup') {
         const up = p.armUp || 0;
         const hy = y - 26 - up * 17;
@@ -218,6 +246,7 @@
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3) + swing, y - 34, 5, 16, c.top);
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2) + swing, y - 20, 4, 4, c.skin);
     }
+    drawOffhand(g, p, x, y, facing, c);
   };
 
   /* ---------- the cat ---------- */
