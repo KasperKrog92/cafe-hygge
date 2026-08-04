@@ -7,7 +7,10 @@ patron** orders as usual, then settles at the bench and plays part of their
 stay, drink resting on the lid. **Nora**, on truly empty nights, slips out
 from behind the counter and plays a few quiet minutes. And the **cat**
 sometimes hops up via the keyboard — two or three soft accidental plinks —
-and loafs on the lid, tail draped over the edge.
+and loafs on the lid, tail draped over the edge. A small **brass piano lamp**
+at the right end of the lid arches over the sheet music and glows with the
+café's other lamps at dusk, so the corner is never a dark hole — and Nora's
+night tune happens in a warm pool of light.
 
 The playing itself is **ostinato + drift**: a composed, slowly rocking
 left-hand figure under a sparse generative right hand borrowed from the music
@@ -94,10 +97,14 @@ The piano and bench appear, fully grounded, before anything uses them.
   ≈ 0.73 CH — honest upright scale against the ruler, no hero exception);
   keyboard cheek x 82–98 with the key strip at ~y 498 (0.43 CH, a real
   keyboard height for a bench sitter's hands); `bench: { x: 114, y: 524 }`;
-  `saucer: { x: 74, y: 480 }` (the lid spot a drink lands on, right end,
-  within the player's reach); `catAnchor: { x: 44, y: 478 }` (left end of
-  the lid); `keysStep: { x: 92, y: 498 }` (the cat's transit landing);
-  `via: 112` (the clear descent column — the busVia twin).
+  `lamp: { x: 84, y: 478 }` (the piano lamp's base at the right end of the
+  lid, head arched left over the music rest); `saucer: { x: 60, y: 480 }`
+  (the lid spot a drink lands on, mid-lid, within the player's reach);
+  `catAnchor: { x: 40, y: 478 }` (left end of the lid); `keysStep:
+  { x: 92, y: 498 }` (the cat's transit landing); `via: 112` (the clear
+  descent column — the busVia twin). Lamp, drink, and cat share the ~60 px
+  lid left-to-right in that reverse order — the three anchors are declared
+  together in `L.piano` precisely so they can never overlap.
 - **Art** (`js/scene-furniture.js`, two drawables pushed at baseline 524 —
   bench first so insertion order stacks bench < piano < sitter): body in the
   counter dark woods `#5a3d28`/`#4a3222` with `#6b4529` panels and
@@ -106,16 +113,27 @@ The piano and bench appear, fully grounded, before anything uses them.
   small brass hinge and pedal glints `#c9a04a`; a sheet of music `#e8dfc9`
   on the rest. Bench = stool construction in the same wood. Contact
   ellipses under both.
+- **The piano lamp**, drawn as part of the piano drawable at `L.piano.lamp`:
+  a small brass stem `#c9a04a` rising from the right end of the lid, arched
+  left so its little warm shade (`#e8dfc9` with a `shade()` underside) hangs
+  over the music rest — the classic upright-piano lamp, ~14 px tall so it
+  stays under the lid-height + 0.25 CH silhouette. It **glows**: a `glow()`
+  call in `drawLighting` (`js/scene-fx.js`) centered under the shade,
+  radius ~22 (between the laptop's 18 and the reading lamps), scaled by
+  `pal.lamp` like every other lamp — it fades up at dusk and off after
+  dawn with the room, no new state. The lit shade's visible warm pixel
+  swaps with `pal.lamp` the way the other lamp heads do.
 - **Footprints**: a new furniture kind → explicit `L.footprints` entries in
   `js/scene-core.js` (piano ~x 18–100, y 504–526; bench stool-style,
   ~x 101–127, y 516–528; neither passable — the bench is a seat).
 - **Not an occluder**: a 44 px body cannot fully hide a 60 px walker;
   painter's sort handles the partial overlaps.
-- No glow — the piano doesn't light.
 - **Verify**: `?dev&overlay` screenshot; walk checks on the lane behind it;
-  caption clearance with a long caption on screen; `__dev.hour()` sweep;
+  caption clearance with a long caption on screen; `__dev.hour()` sweep
+  including dusk/night for the lamp glow pooling on the keys and bench;
   `__dev.audit()` → 0. **Docs**: art.md (layout map bottom-left entry,
-  ruler row, palette-reuse note).
+  ruler row, palette-reuse note), world.md (the lighting pass gains the
+  piano lamp).
 
 ## Phase 2 — the piano's voice (audio, dev-triggered)
 
@@ -235,5 +253,7 @@ below plant care):
 The standard smoke test, plus one full evening watched end to end: a
 pianist session with the music box yielding and returning, drink on the
 lid bussed by Nora, the cat's plink ascent and its silent front dismount,
-Nora's empty-café tune interrupted by a doorbell, captions never crowding
-the limiter — and `__dev.audit()` → 0 problems at every phase boundary.
+the piano lamp fading up with the room at dusk and pooling on the keys
+through Nora's empty-café tune (interrupted by a doorbell), captions never
+crowding the limiter — and `__dev.audit()` → 0 problems at every phase
+boundary.
