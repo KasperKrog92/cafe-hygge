@@ -91,13 +91,17 @@ If anyone is waiting in the queue she stays at the till and faces them.
 
 Generated on spawn from pools, so every visitor is a little different.
 
-**Names (Danish):** Freja, Søren, Astrid, Mikkel, Ida, Emil, Clara, Anton,
-Sofie, Johan, Maja, Viggo, Ellen, Oskar, Alma, Karl.
+**Names (Danish):** a name style is selected first, with equal odds, then a
+name from its pool. The feminine pool is Freja, Astrid, Ida, Clara, Sofie,
+Maja, Ellen, Alma; the masculine pool is Søren, Mikkel, Emil, Anton, Johan,
+Viggo, Oskar, Karl. Custom dev-harness names use a neutral `custom` style.
 
 **Appearance rolls:** 5 skin tones, 8 hair colors, 9 top colors, 5 trouser
 colors; 40% wear a scarf (knotted, with a hanging tail); 40% have long hair;
-4 hair styles (classic / side-part / curly / bun, uniform roll); 15% wear a
-beard. Walk speed 46–60 px/s, animated as a 4-frame cycle.
+4 hair styles (classic / side-part / curly / bun, uniform roll). Patrons with
+a masculine name style have a 30% beard roll; other styles do not, preserving
+the former 15% overall rate while keeping names and facial hair coherent.
+Walk speed 46–60 px/s, animated as a 4-frame cycle.
 
 **Personality rolls:**
 

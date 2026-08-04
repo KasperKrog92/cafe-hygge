@@ -9,7 +9,12 @@
   const DAY_SECONDS = 1440;          // one full day passes in 24 real minutes
   const START_HOUR = 8.4;
 
-  const NAMES = ['Freja', 'Søren', 'Astrid', 'Mikkel', 'Ida', 'Emil', 'Clara', 'Anton', 'Sofie', 'Johan', 'Maja', 'Viggo', 'Ellen', 'Oskar', 'Alma', 'Karl'];
+  /* Pick the name style before appearance so strongly gender-coded details do
+     not contradict it. Everything else stays independent and varied. */
+  const PATRON_NAMES = {
+    feminine: ['Freja', 'Astrid', 'Ida', 'Clara', 'Sofie', 'Maja', 'Ellen', 'Alma'],
+    masculine: ['Søren', 'Mikkel', 'Emil', 'Anton', 'Johan', 'Viggo', 'Oskar', 'Karl']
+  };
   const SKINS = ['#e8b48a', '#d99c6b', '#b57a4a', '#8a5a3a', '#f0c49a'];
   const HAIRS = ['#2a1a12', '#4a2f1c', '#8a5a2a', '#c9a04a', '#a5763f', '#5a5a5a', '#d9d2c0', '#8f4a35'];
   const TOPS = ['#a94f3f', '#4a7a5a', '#7a89a5', '#c9a04a', '#8a6a9a', '#6b7a55', '#b5654a', '#5a7a8a', '#9c4848'];
@@ -32,6 +37,11 @@
   function rnd(a, b) { return a + Math.random() * (b - a); }
   function withArticle(name) { return (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name; }
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function nameStyleFor(name) {
+    if (PATRON_NAMES.feminine.indexOf(name) >= 0) return 'feminine';
+    if (PATRON_NAMES.masculine.indexOf(name) >= 0 || name === 'Holger') return 'masculine';
+    return 'custom';
+  }
   function holdingFor(kind) { return kind === 'plate' ? 'plate' : kind === 'glass' ? 'glass' : 'cup'; }
   function pickDrink() {
     let total = 0;
@@ -174,20 +184,22 @@
     world.patrons.push(p);
   }
 
-  function makePatron() {
+  function makePatron(requestedName) {
     const drink = pickDrink();
     const wantsBook = Math.random() < 0.35;
     const pianist = !wantsBook && Math.random() < 0.1;
+    const nameStyle = requestedName ? nameStyleFor(requestedName) : (Math.random() < 0.5 ? 'feminine' : 'masculine');
     return {
       id: nextId++,
       kind: 'patron',
-      name: pick(NAMES),
+      name: requestedName || pick(PATRON_NAMES[nameStyle]),
+      nameStyle: nameStyle,
       colors: {
         skin: pick(SKINS), hair: pick(HAIRS), top: pick(TOPS), pants: pick(PANTS),
         scarf: Math.random() < 0.4 ? pick(TOPS) : null,
         longHair: Math.random() < 0.4,
         hairStyle: (Math.random() * 4) | 0,   // 0 classic, 1 side-part, 2 curly, 3 bun
-        beard: Math.random() < 0.15
+        beard: nameStyle === 'masculine' && Math.random() < 0.3
       },
       drink: drink,
       wantsBook: wantsBook,
@@ -551,8 +563,7 @@
   }
 
   function makeRegular(world) {
-    const p = makePatron();
-    p.name = 'Holger';
+    const p = makePatron('Holger');
     p.colors = {
       skin: '#d99c6b', hair: '#d9d2c0', top: '#4a7a5a', pants: '#4a3222',
       scarf: '#a94f3f', longHair: false, hairStyle: 1, beard: true

@@ -116,12 +116,11 @@
     opts = opts || {};
     const w = world();
     if (opts.couple) return SIM._.spawnCouple(w, opts);
-    const p = SIM._.makePatron();
+    const p = SIM._.makePatron(opts.name);
     ['wantsBook', 'ownBook', 'chatty', 'pianist'].forEach(function (k) {
       if (k in opts) p[k] = !!opts[k];
     });
     if (opts.pianist) { p.wantsBook = false; p.laptop = false; }
-    if (opts.name) p.name = opts.name;
     if ('laptop' in opts) p.laptop = !!opts.laptop;
     if (opts.umbrella) {
       p.umbrella = { color: typeof opts.umbrella === 'string' ? opts.umbrella : '#3d4a5c' };
@@ -641,6 +640,7 @@
     w.patrons.forEach(function (p) {
       if (!!p.umbrellaParked !== !!parkedOwners[p.id]) problems.push(p.name + ' umbrella/stand link is inconsistent');
       if (p.partner && p.partner.partner !== p) problems.push(p.name + ' has a one-way partner link');
+      if (p.colors.beard && p.nameStyle !== 'masculine') problems.push(p.name + ' has a beard inconsistent with nameStyle ' + p.nameStyle);
     });
     if (w.sleeper && (!live[w.sleeper.id] || !w.sleeper.dozing)) problems.push('world.sleeper is stale');
     if (w.patrons.filter(function (p) { return p.dozing; }).length > 1) problems.push('more than one patron is dozing');
