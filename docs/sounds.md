@@ -65,7 +65,7 @@ both layers. There is no vinyl crackle—the fireplace already owns that texture
 | --- | --- | --- |
 | `doorBell()` | patron entering/leaving | 3 staggered bell tones around 1244 Hz (±2% detune, ×1.335 second strike) + 2.76× partial, 1.1 s decay, big delay send |
 | `doorClose()` | ~1.1 s after entry | 95→55 Hz sine thump + lowpassed noise tap |
-| `clink(pitch, vol)` | cup pickups, plates, busing | 3 partials (f, 1.51f, 2.63f) of ~2350×pitch Hz, 45–90 ms decays |
+| `clink(pitch, vol)` | cup pickups, plates, busing, matcha-caddy scoop | 3 partials (f, 1.51f, 2.63f) of ~2350×pitch Hz, 45–90 ms decays |
 | `chairScrape(long)` | ordinary chairs settling / patrons standing | 90–140 ms noise scrape around 380–650 Hz under a 900 Hz lowpass, soft 8 ms attack, peak 0.02–0.028; the 160 ms standing variant adds a half-gain scuff |
 | `coins()` | about half of returned cups | 2–3 muffled inharmonic clinks around 2.9–4.2 kHz and 1.43×, loosely spaced 40–90 ms, combined peak ≤0.025, small room send |
 | `cupDown()` | cup set on table/counter | 260 Hz tap + `clink(0.62)` |
@@ -75,8 +75,10 @@ both layers. There is no vinyl crackle—the fireplace already owns that texture
 | `grinder(dur)` | espresso prep | sawtooth ~55–63 Hz → lowpass 320, 26 Hz AM wobble + noise bandpass 850; 1.5 s |
 | `tamp()` | after grinding | 185 Hz knock + click |
 | `espresso(dur)` | shot pulling | noise bandpass sweeping 1600→850 Hz, slow attack + 52 Hz pump hum; 2.4 s |
-| `steamWand(dur)` | milk steaming | highpass-1900 noise with a randomized sputter envelope; 1.8 s |
-| `kettlePour(dur)` | tea | noise bandpass sweeping up 700→2100 Hz (cup filling) + 3–4 bubble blips |
+| `steamWand(dur)` | milk steaming, including hot matcha | highpass-1900 noise with a randomized sputter envelope; 1.8 s |
+| `kettlePour(dur)` | tea and matcha concentrate | noise bandpass sweeping up 700→2100 Hz (cup filling) + 3–4 bubble blips |
+| `whisk(dur)` | both matcha preparations | hand-loose 14–24 ms noise ticks every 55–85 ms → bandpass 1.5–2.4 kHz (Q 2.5), per-tick peak 0.012–0.02 inside a 150 ms-in / 200 ms-out envelope, combined peak ≤0.028, no room send |
+| `iceRattle()` | iced-matcha finish | 3–4 jittered glass partial stacks (f, 1.51f, 2.63f) around 2.6–3.4 kHz, 40–70 ms decays spaced 60–120 ms, combined peak ≤0.03 with a small 0.15 room send |
 | `chalkTick()` | Nora chalking the menu | one 45–70 ms high, narrow filtered-noise scrape; called 2–3 times across the gesture, peak ~0.025 |
 | `waterPour(dur)` | Nora watering a plant | dark bandpassed/lowpassed noise sweeping 520→980 Hz, 1.2 s, peak 0.03 |
 | `matchStrike()` | first stop of Nora's candle round | 100 ms scratch around 1.8 kHz followed by a 200 ms high fizz, combined peak ~0.03 |

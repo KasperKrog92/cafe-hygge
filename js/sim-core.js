@@ -23,6 +23,8 @@
     { name: 'espresso',        icon: 'coffee',    prep: 'coffee',      kind: 'cup',    w: 1.2 },
     { name: 'chamomile tea',   icon: 'tea',       prep: 'tea',         kind: 'teacup', w: 1.6 },
     { name: 'hot chocolate',   icon: 'cocoa',     prep: 'milk',        kind: 'cup',    w: 1.6 },
+    { name: 'matcha latte',    icon: 'matcha',    prep: 'matcha_hot',  kind: 'matcha', w: 1.8 },
+    { name: 'iced matcha',     icon: 'icedmatcha', prep: 'matcha_iced', kind: 'glass',  w: 1.4 },
     { name: 'cardamom bun',    icon: 'bun',       prep: 'food',        kind: 'plate',  w: 1.2 },
     { name: 'butter croissant', icon: 'croissant', prep: 'food',       kind: 'plate',  w: 1 }
   ];
@@ -30,6 +32,7 @@
   function rnd(a, b) { return a + Math.random() * (b - a); }
   function withArticle(name) { return (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name; }
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function holdingFor(kind) { return kind === 'plate' ? 'plate' : kind === 'glass' ? 'glass' : 'cup'; }
   function pickDrink() {
     let total = 0;
     DRINKS.forEach(function (d) { total += d.w; });
@@ -75,7 +78,7 @@
       seats: [],
       barista: makeBarista(),
       cat: makeCat(),
-      brew: { active: false, stage: '' },
+      brew: { active: false, stage: '', progress: 0 },
       captionQueue: [],
       activeCaption: null,
       lastCapT: -10,
@@ -142,7 +145,8 @@
     p.state = 'seated';
     p.stay = rnd(60, 160);
     if (seat.table >= 0) {
-      world.tables[seat.table].items.push({ side: seat.side, kind: p.drink.kind, owner: p.id, hot: 30, hidden: false });
+      world.tables[seat.table].items.push({ side: seat.side, kind: p.drink.kind, owner: p.id,
+        hot: p.drink.kind === 'glass' ? 0 : 30, hidden: false });
       p.laptopActive = p.laptop && !seat.nook && !seat.window;
       if (p.laptopActive) {
         world.tables[seat.table].items.push({ side: seat.side, kind: 'laptop', owner: p.id, open: true, hot: 0, hidden: false });
@@ -181,7 +185,7 @@
       path: null, state: 'idle', stateT: 0,
       holding: null, armUp: 0, reading: false,
       seat: null, stay: 0,
-      sipT: rnd(4, 10), sipPhase: 0, sipPlayed: false,
+      sipT: rnd(4, 10), sipPhase: 0, sipPlayed: false, matchaSipCaptioned: false,
       pageT: rnd(6, 16), chatT: rnd(8, 20), chatReply: 0,
       umbrella: null, umbrellaParked: false, shakeDropT: 0, shakeDrops: 0,
       laptop: false, laptopActive: false, laptopPacked: false,
@@ -597,7 +601,7 @@
     if (world.hotAcc > 0.4) {
       world.hotAcc = 0;
       world.counterCups.forEach(function (c) {
-        if (c.kind !== 'plate') spawnSteam(world, c.x + 5, c.y - 4);   // pastries don't steam
+        if (c.kind !== 'plate' && c.kind !== 'glass') spawnSteam(world, c.x + 5, c.y - 4);   // pastries and iced drinks don't steam
       });
       world.tables.forEach(function (tb) {
         tb.items.forEach(function (it) {
@@ -607,7 +611,7 @@
         });
       });
       world.patrons.forEach(function (p) {
-        if (p.armUp > 0.7) spawnSteam(world, p.x + p.facing * 8, p.y - 52);
+        if (p.armUp > 0.7 && p.drink.kind !== 'glass') spawnSteam(world, p.x + p.facing * 8, p.y - 52);
       });
     }
     world.tables.forEach(function (tb) {
@@ -636,7 +640,7 @@
   SIM._ = {
     L: L, LB: LB,
     DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, DRINKS: DRINKS,
-    rnd: rnd, withArticle: withArticle, pick: pick,
+    rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor,
     makePatron: makePatron, caption: caption, updateCaptions: updateCaptions,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
     spawnCouple: spawnCouple, updateRegular: updateRegular,

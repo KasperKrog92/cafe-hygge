@@ -366,6 +366,39 @@
     }
   });
 
+  SND.whisk = guard(function (dur) {
+    dur = dur || 2.2;
+    const t = ctx.currentTime;
+    const envelope = gainNode(0);
+    envelope.connect(sfx);
+    envelope.gain.setValueAtTime(0, t);
+    envelope.gain.linearRampToValueAtTime(1, t + Math.min(0.15, dur * 0.25));
+    envelope.gain.setValueAtTime(1, t + Math.max(0.15, dur - 0.2));
+    envelope.gain.linearRampToValueAtTime(0, t + dur);
+    let at = 0;
+    while (at < dur - 0.02) {
+      const tickDur = 0.014 + Math.random() * 0.01;
+      hiss({ dur: tickDur, gain: 0.012 + Math.random() * 0.008,
+        delay: at, bp: 1500 + Math.random() * 900, q: 2.5,
+        attack: 0.003, release: Math.max(0.006, tickDur - 0.003), dest: envelope });
+      at += 0.055 + Math.random() * 0.03;
+    }
+  });
+
+  SND.iceRattle = guard(function () {
+    const count = 3 + ((Math.random() * 2) | 0);
+    let delay = 0;
+    for (let i = 0; i < count; i++) {
+      const f = 2600 + Math.random() * 800;
+      const peak = 0.014 + Math.random() * 0.002;
+      const dur = 0.04 + Math.random() * 0.03;
+      tone(f, { gain: peak, dur: dur, delay: delay, send: 0.15 });
+      tone(f * 1.51, { gain: peak * 0.38, dur: dur * 0.75, delay: delay });
+      tone(f * 2.63, { gain: peak * 0.2, dur: dur * 0.6, delay: delay });
+      delay += 0.06 + Math.random() * 0.06;
+    }
+  });
+
   SND.chalkTick = guard(function () {
     hiss({ dur: 0.045 + Math.random() * 0.025, gain: 0.02 + Math.random() * 0.005,
       bp: 2200 + Math.random() * 900, q: 2.4, hp: 1200, attack: 0.003, release: 0.035 });

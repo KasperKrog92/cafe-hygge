@@ -28,11 +28,16 @@ station and works through timed steps (each with its own sound):
 | `coffee` (espresso) | grind → tamp → pull |
 | `tea` (chamomile) | 700 kettle pour 2.0 s |
 | `milk` (hot chocolate) | 706 steam 1.8 s |
+| `matcha_hot` (matcha latte) | `L.matchaBar.x` scoop 0.8 s → 700 kettle pour 1.4 s → `L.matchaBar.x` whisk 2.2 s → 706 steam 1.8 s |
+| `matcha_iced` (iced matcha) | `L.matchaBar.x` scoop 0.8 s → 700 kettle pour 1.0 s → `L.matchaBar.x` whisk 2.2 s → ice 1.0 s |
 | `food` (bun, croissant) | 858 fetch from pastry case 1.4 s |
 
-Then she carries the cup/plate to the pass (`L.serveSpot` = 744, 266), sets it
-down (clink), and rings the counter bell (*ding*). While pulling/steaming, the
-machine light blinks and steam particles rise (`world.brew`).
+Then she carries the cup/glass/plate to the pass (`L.serveSpot` = 744, 266),
+sets it down (clink), and rings the counter bell (*ding*). During machine-stage
+steps the machine light blinks and steam particles rise (`world.brew`). Matcha
+whisking instead animates the chasen and a pale-green surface in the chawan,
+with sparser steam there; the iced finish visibly fills a glass at the matcha
+bar.
 
 ### Idle life (only when nobody is queueing)
 
@@ -63,7 +68,8 @@ daily care, then small counter-life:
   cumulative `waterRoute` paths are shared with `__dev.audit()`.
 - **Chalk the menu** (due every 600–1200 s): reaches up behind the counter for
   3 s; the cached board then remembers a different heart, curled cat,
-  steaming cup, sprig, or umbrella. Rain weights the umbrella heavily.
+  steaming cup, sprig, umbrella, or bamboo whisk. Rain weights the umbrella
+  heavily; the whisk's matching caption describes it appearing by the prices.
 - **Stretch** (30% candidate after 20 quiet seconds with a truly empty café):
   both arms overhead for 2.2 s, then back to watching the room.
 - **Wipe the counter** (35% of the ordinary pool): cloth in hand, three slow swishes.
@@ -99,8 +105,8 @@ beard. Walk speed 46–60 px/s, animated as a 4-frame cycle.
   dormant and the visit proceeds normally.
 
 **Order:** weighted pick — cappuccino 3, cinnamon latte 2.5, flat white 2,
-chamomile tea 1.6, hot chocolate 1.6, espresso 1.2, cardamom bun 1.2, butter
-croissant 1.
+matcha latte 1.8, chamomile tea 1.6, hot chocolate 1.6, iced matcha 1.4,
+espresso 1.2, cardamom bun 1.2, butter croissant 1.
 
 ### Patron lifecycle (states)
 
@@ -136,10 +142,13 @@ croissant 1.
    armchair — and leaves the same way). Both perches at a window share the
    tall table under the glass for their drinks.
 5. **seated** — the long, cozy middle (stay 100–260 s):
-   - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — cup rises
-     from the table (the table item hides, cup appears in hand), sip sound at
-     the peak, cup set down (soft clink). Readers lower the book for the sip
-     and pick it back up. Steam rises while the cup is hot (first ~45 s).
+   - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — the cup,
+     handle-less matcha bowl, or iced glass rises from the table (the table
+     item hides, the right vessel appears in hand), sip sound at the peak,
+     then it is set down (soft clink). Readers lower the book for the sip and
+     pick it back up. Steam rises while a drink is hot (first ~45 s); the iced
+     matcha never steams. Either matcha may earn one first-sip caption check
+     per visitor.
      Nook sitters rest their drink on their own little side table.
    - **Reading** (readers): page-turn sound every 12–26 s; occasional caption.
    - **Laptop work** (day-weighted non-readers at dining tables): an open

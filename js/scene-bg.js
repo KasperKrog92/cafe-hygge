@@ -20,7 +20,7 @@
 
   SCENE.invalidateBG = function () { bgCache = null; };
   SCENE.setMenuDoodle = function (i) {
-    i = Math.max(0, Math.min(4, i | 0));
+    i = Math.max(0, Math.min(5, i | 0));
     if (i === menuDoodle) return;
     menuDoodle = i;
     SCENE.invalidateBG();
@@ -383,13 +383,15 @@
     SCENE.chalkText(g, m.x + 16, m.y + 9, 'CAFÉ HYGGE', '#e8dfc9');
     px(g, m.x + 16, m.y + 21, 76, 2, 'rgba(232,223,201,0.45)');
     SCENE.chalkText(g, m.x + 12, m.y + 27, 'KAFFE', 'rgba(220,214,196,0.75)');
-    SCENE.chalkText(g, m.x + 12, m.y + 39, 'KAKAO', 'rgba(220,214,196,0.75)');
-    SCENE.chalkText(g, m.x + 12, m.y + 51, 'BOLLER', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, m.x + 12, m.y + 39, 'MATCHA', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, m.x + 12, m.y + 51, 'KAKAO', 'rgba(220,214,196,0.75)');
+    SCENE.chalkText(g, m.x + 12, m.y + 63, 'BOLLER', 'rgba(220,214,196,0.75)');
     // chalk price dashes
     g.fillStyle = 'rgba(220,214,196,0.6)';
     g.fillRect(m.x + 82, m.y + 32, 10, 2);
     g.fillRect(m.x + 82, m.y + 44, 10, 2);
     g.fillRect(m.x + 82, m.y + 56, 10, 2);
+    g.fillRect(m.x + 82, m.y + 68, 10, 2);
     drawMenuDoodle(g, m.x + 94, m.y + 50, menuDoodle);
   }
 
@@ -413,6 +415,11 @@
       px(g, x + 2, y + 4, 12, 2, c); px(g, x + 4, y + 2, 8, 2, c);
       px(g, x + 7, y, 2, 10, c); px(g, x + 7, y + 9, 5, 2, c);
       px(g, x + 10, y + 8, 2, 2, c);
+    } else if (id === 5) { // bamboo whisk
+      px(g, x + 7, y, 2, 7, c);
+      px(g, x + 4, y + 6, 8, 2, c);
+      px(g, x + 2, y + 8, 2, 5, c); px(g, x + 5, y + 8, 2, 4, c);
+      px(g, x + 9, y + 8, 2, 4, c); px(g, x + 12, y + 8, 2, 5, c);
     } else { // heart
       px(g, x + 2, y + 4, 2, 2, c); px(g, x + 6, y + 4, 2, 2, c);
       px(g, x + 2, y + 6, 6, 2, c); px(g, x + 3, y + 8, 4, 2, c);
@@ -495,7 +502,8 @@
     px(g, m.x + m.w - 2, m.y + 25, 3, 10, '#8a919c');
     px(g, m.x + m.w - 2, m.y + 35, 3, 2, '#5a616e');
     const brew = world.brew;
-    if (brew && brew.active) {
+    const machineStages = ['grind', 'tamp', 'pull', 'steam', 'kettle'];
+    if (brew && brew.active && machineStages.indexOf(brew.stage) >= 0) {
       px(g, m.x + 5, m.y + 4, 4, 4, (world.t * 3 | 0) % 2 ? '#f5b942' : '#8a611e');
       px(g, m.x + 29, m.y + 13, 2, 2, '#a94f3f');            // needle swings up under pressure
       if (brew.stage === 'pull') {

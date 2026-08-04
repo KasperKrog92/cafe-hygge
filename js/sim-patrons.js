@@ -5,7 +5,7 @@
   const SIM = window.SIM;
   const R = SIM._;
   const L = R.L, LB = R.LB;
-  const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick;
+  const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
   const caption = R.caption, makePath = R.makePath, walker = R.walker;
   const ringDoor = R.ringDoor, queueSlot = R.queueSlot, waitSpot = R.waitSpot;
 
@@ -229,7 +229,7 @@
         if (walker(p, dt)) {
           const idx = world.counterCups.findIndex(function (c) { return c.owner === p.id; });
           if (idx >= 0) world.counterCups.splice(idx, 1);
-          p.holding = p.drink.kind === 'plate' ? 'plate' : 'cup';
+          p.holding = holdingFor(p.drink.kind);
           SND.clink(0.9, 0.05);
           if (p.coupleToGo || (p.partner && !p.seat && !reserveCoupleSeats(world, p))) {
             caption(world, p.name + ' and ' + p.partner.name + ' take their drinks to go.');
@@ -331,7 +331,8 @@
           p.state = 'seated'; p.stateT = 0;
           p.stay = p.isRegular ? rnd(280, 420) : (p.coupleStay || rnd(100, 260));
           if (p.seat.table >= 0) {
-            world.tables[p.seat.table].items.push({ side: p.seat.side, kind: p.drink.kind, owner: p.id, hot: 45, hidden: false });
+            world.tables[p.seat.table].items.push({ side: p.seat.side, kind: p.drink.kind, owner: p.id,
+              hot: p.drink.kind === 'glass' ? 0 : 45, hidden: false });
             p.holding = null;
             SND.cupDown();
             p.laptopActive = p.laptop && !p.seat.armchair && !p.seat.nook && !p.seat.window;
@@ -455,7 +456,14 @@
       p.sipPhase -= dt;
       const tp = 1.3 - p.sipPhase;
       p.armUp = tp < 0.4 ? tp / 0.4 : tp < 0.9 ? 1 : Math.max(0, (1.3 - tp) / 0.4);
-      if (tp > 0.45 && !p.sipPlayed) { p.sipPlayed = true; SND.sip(); }
+      if (tp > 0.45 && !p.sipPlayed) {
+        p.sipPlayed = true;
+        SND.sip();
+        if (!p.matchaSipCaptioned && (p.drink.prep === 'matcha_hot' || p.drink.prep === 'matcha_iced')) {
+          p.matchaSipCaptioned = true;
+          if (Math.random() < 0.2) caption(world, p.name + ' takes a slow, grassy-sweet sip.');
+        }
+      }
       if (p.sipPhase <= 0) {
         p.armUp = 0;
         if (item) { item.hidden = false; p.holding = null; SND.cupDown(); }
@@ -468,8 +476,8 @@
         p.sipT = rnd(9, 22);
         p.sipPhase = 1.3;
         p.sipPlayed = false;
-        if (item) { item.hidden = true; p.holding = 'cup'; }
-        else if (p.seat.armchair) { p.holding = 'cup'; }
+        if (item) { item.hidden = true; p.holding = holdingFor(p.drink.kind); }
+        else if (p.seat.armchair) { p.holding = holdingFor(p.drink.kind); }
         if (p.reading) { p.reading = false; p.resumeReading = true; }   // book down for the sip
         p.typing = false;                                               // hands leave the keys
         p.gazeDur = 0; p.gazeFacing = 0;                                // head back for the sip
@@ -622,7 +630,7 @@
     if (item) {
       if (bussing) {
         list.splice(list.indexOf(item), 1);
-        p.holding = item.kind === 'plate' ? 'plate' : 'cup';
+        p.holding = holdingFor(item.kind);
       } else item.owner = null;
     }
     const seat = p.seat;

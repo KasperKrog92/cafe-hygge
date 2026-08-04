@@ -52,6 +52,13 @@
     }
   }
 
+  function heldDrinkKind(p) {
+    if (p.kind !== 'barista') return p.drink ? p.drink.kind : 'cup';
+    if (p.state === 'serveWalk' && p.orders[0]) return p.orders[0].drink.kind;
+    if (p.state === 'busHome' && p.busTarget) return p.busTarget.item.kind;
+    return 'cup';
+  }
+
   function drawOffhand(g, p, x, y, facing, c) {
     const side = -facing;
     if (p.umbrella && !p.umbrellaParked) {
@@ -122,14 +129,29 @@
         px(g, x + 2, y - 28 + (1 - keyBob), 7, 12, c.top);
         px(g, x - 7, y - 18 + keyBob, 5, 3, c.skin);
         px(g, x + 3, y - 17 + (1 - keyBob), 5, 3, c.skin);
-      } else if (p.holding === 'cup') {
+      } else if (p.holding === 'cup' || p.holding === 'glass') {
         const up = p.armUp || 0;
         const hy = y - 26 - up * 17;
         const hx = x + facing * (13 - up * 5);
+        const vessel = heldDrinkKind(p);
         px(g, x + facing * 5, y - 30, 5, Math.round(10 - up * 3), c.top);
-        px(g, hx - 3, hy, 10, 10, '#e8e0d0');
-        px(g, hx + (facing > 0 ? 7 : -6), hy + 3, 3, 4, '#e8e0d0');
-        px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
+        if (vessel === 'glass') {
+          px(g, hx - 1, hy - 4, 2, 7, '#d9738a');
+          px(g, hx - 3, hy, 8, 13, 'rgba(200,220,230,0.7)');
+          px(g, hx - 2, hy + 5, 6, 7, '#8a9a4a');
+          px(g, hx - 2, hy + 2, 6, 3, '#e8dfc9');
+          px(g, hx - 1, hy + 7, 2, 2, 'rgba(255,255,255,0.5)');
+          px(g, hx + 2, hy + 9, 2, 2, 'rgba(255,255,255,0.5)');
+          px(g, hx + (facing > 0 ? -5 : 4), hy + 6, 3, 4, c.skin);
+        } else if (vessel === 'matcha') {
+          px(g, hx - 4, hy + 2, 12, 9, '#e8e0d0');
+          px(g, hx - 2, hy + 2, 8, 2, '#8a9a4a');
+          px(g, hx + (facing > 0 ? -6 : 7), hy + 5, 3, 4, c.skin);
+        } else {
+          px(g, hx - 3, hy, 10, 10, '#e8e0d0');
+          px(g, hx + (facing > 0 ? 7 : -6), hy + 3, 3, 4, '#e8e0d0');
+          px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
+        }
       } else {
         px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
         px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
@@ -196,10 +218,22 @@
       px(g, ax, y - 48, 5, 13, c.top);
       px(g, ax + facing * 2, y - 58, 4, 12, c.skin);
       px(g, ax + facing * 2, y - 61, 4, 4, c.skin);
-    } else if (held === 'cup' || held === 'plate' || held === 'cloth') {
+    } else if (held === 'cup' || held === 'glass' || held === 'plate' || held === 'cloth') {
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 10, c.top);
       const hx = x + facing * 13 - (facing > 0 ? 0 : 8);
-      if (held === 'cup') {
+      const vessel = heldDrinkKind(p);
+      if (held === 'glass') {
+        px(g, hx + 6, y - 37, 2, 8, '#d9738a');
+        px(g, hx + 1, y - 34, 8, 13, 'rgba(200,220,230,0.7)');
+        px(g, hx + 2, y - 29, 6, 7, '#8a9a4a');
+        px(g, hx + 2, y - 32, 6, 3, '#e8dfc9');
+        px(g, hx + 3, y - 27, 2, 2, 'rgba(255,255,255,0.5)');
+        px(g, hx + (facing > 0 ? -2 : 8), y - 28, 4, 4, c.skin);
+      } else if (held === 'cup' && vessel === 'matcha') {
+        px(g, hx - 1, y - 31, 12, 9, '#e8e0d0');
+        px(g, hx + 1, y - 31, 8, 2, '#8a9a4a');
+        px(g, hx + (facing > 0 ? -3 : 10), y - 28, 4, 4, c.skin);
+      } else if (held === 'cup') {
         px(g, hx, y - 32, 10, 10, '#e8e0d0');
         px(g, hx + (facing > 0 ? 10 : -3), y - 29, 3, 5, '#e8e0d0');
         px(g, hx + (facing > 0 ? -3 : 9), y - 28, 4, 4, c.skin);
@@ -407,6 +441,19 @@
         px(g, x + 14, y + 6, 2, 4, '#4a7a5a');
         px(g, x + 2, y + 6, 10, 2, '#8a9a4a');
         px(g, x + 4, y, 2, 4, '#5a8a52'); px(g, x + 8, y - 2, 2, 4, '#5a8a52');
+        break;
+      case 'matcha':
+        px(g, x, y + 6, 14, 7, '#e8e0d0');
+        px(g, x + 2, y + 6, 10, 2, '#8a9a4a');
+        px(g, x - 1, y + 13, 16, 2, '#d9d2c0');
+        px(g, x + 3, y + 1, 2, 3, '#b5aa92'); px(g, x + 8, y - 1, 2, 4, '#b5aa92');
+        break;
+      case 'icedmatcha':
+        px(g, x + 5, y - 2, 2, 6, '#d9738a');
+        px(g, x + 3, y + 2, 10, 14, 'rgba(200,220,230,0.7)');
+        px(g, x + 5, y + 8, 6, 6, '#8a9a4a');
+        px(g, x + 5, y + 5, 6, 3, '#e8dfc9');
+        px(g, x + 6, y + 10, 2, 2, 'rgba(255,255,255,0.5)');
         break;
       case 'cocoa':
         px(g, x, y + 2, 12, 12, '#8a5a3a');

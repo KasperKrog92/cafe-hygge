@@ -87,9 +87,10 @@ so a jump to night does not replay a dusk that never elapsed.
 ## Particles
 
 - **Steam** (`type: 'steam'`): 1–2 px wisps with sinusoidal drift, rising from
-  hot table cups (first ~45 s after serving), cups at the pass, raised cups
-  mid-sip, and the espresso machine during pull/steam/kettle stages. Plates
-  (pastries) never steam, on the table or at the pass.
+  hot table cups (first ~45 s after serving), hot vessels at the pass, raised
+  hot drinks mid-sip, and the espresso machine during pull/steam/kettle
+  stages. Matcha whisking adds a sparser wisp above the chawan. Plates
+  (pastries) and iced-matcha glasses never steam.
 - **Sparks** (`type: 'spark'`): rare 1-px embers rising inside the firebox.
 - **Dust mote** (`type: 'mote'`): a single 2-px cream fleck with slow drift,
   spawned for the cat's daylight pounce ritual and removed with that beat.
@@ -130,6 +131,11 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   streetlamp window watches, bookshelf survey, counter shoo, aborted ascent,
   Nora ignoring the top shelf, kneading, dust-mote battle, and gentle lap
   dislodging; every repeatable line remains probability-gated.
+- Matcha adds three limiter-paced lines: the whisk step may note the bamboo
+  patter and pale-green foam (30%); the ice step may note ice singing against
+  glass (25%); and only the first matcha sip of a visit checks for a slow,
+  grassy-sweet sip line (20%). Nora's sixth chalk doodle, a bamboo whisk, may
+  likewise be acknowledged when it appears beside the prices.
 - When adding events, prefer **occasional** captions (probability-gated) —
   the narrator should feel like she only speaks when something is worth
   mentioning.

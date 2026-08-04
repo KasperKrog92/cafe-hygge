@@ -5,7 +5,7 @@
   const SIM = window.SIM;
   const R = SIM._;
   const L = R.L;
-  const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick;
+  const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
   const caption = R.caption, walker = R.walker, spawnSteam = R.spawnSteam;
   const updateClock = R.updateClock, updateWeather = R.updateWeather;
   const updateCandles = R.updateCandles, dayIndex = R.dayIndex;
@@ -29,6 +29,18 @@
     ],
     tea: [{ x: 700, act: 'kettle', dur: 2.0 }],
     milk: [{ x: 706, act: 'steam', dur: 1.8 }],
+    matcha_hot: [
+      { x: L.matchaBar.x, act: 'scoop', dur: 0.8 },
+      { x: 700, act: 'kettle', dur: 1.4 },
+      { x: L.matchaBar.x, act: 'whisk', dur: 2.2 },
+      { x: 706, act: 'steam', dur: 1.8 }
+    ],
+    matcha_iced: [
+      { x: L.matchaBar.x, act: 'scoop', dur: 0.8 },
+      { x: 700, act: 'kettle', dur: 1.0 },
+      { x: L.matchaBar.x, act: 'whisk', dur: 2.2 },
+      { x: L.matchaBar.x, act: 'ice', dur: 1.0 }
+    ],
     food: [{ x: 858, act: 'fetch', dur: 1.4 }]
   };
 
@@ -41,6 +53,15 @@
       case 'pull': SND.espresso(s.dur); break;
       case 'steam': SND.steamWand(s.dur); break;
       case 'kettle': SND.kettlePour(s.dur); break;
+      case 'scoop': SND.clink(0.4, 0.02); break;
+      case 'whisk':
+        SND.whisk(s.dur);
+        if (Math.random() < 0.3) caption(world, 'the bamboo whisk patters — a pale green foam comes up.');
+        break;
+      case 'ice':
+        SND.iceRattle();
+        if (Math.random() < 0.25) caption(world, 'ice sings against the glass.');
+        break;
       case 'fetch': break;
     }
   }
@@ -83,7 +104,7 @@
           if (b.stepIdx >= b.steps.length) {
             // walk to the pass and serve
             b.state = 'serveWalk';
-            b.holding = b.orders[0].drink.kind === 'plate' ? 'plate' : 'cup';
+            b.holding = holdingFor(b.orders[0].drink.kind);
             b.path = [{ x: L.serveSpot.x - 8, y: L.baristaHome.y }];
           } else {
             b.state = 'prepping';
@@ -96,11 +117,18 @@
         const s = b.steps[b.stepIdx];
         world.brew.active = true;
         world.brew.stage = s.act;
+        world.brew.progress = Math.min(1, b.stateT / s.dur);
         if (s.act === 'pull' || s.act === 'steam' || s.act === 'kettle') {
           world.steamAcc += dt;
           if (world.steamAcc > 0.12) {
             world.steamAcc = 0;
             spawnSteam(world, L.machine.x + 16 + Math.random() * 28, L.machine.y + 16);
+          }
+        } else if (s.act === 'whisk') {
+          world.steamAcc += dt;
+          if (world.steamAcc > 0.25) {
+            world.steamAcc = 0;
+            spawnSteam(world, L.matchaBar.x, L.matchaBar.y - 9);
           }
         }
         if (b.stateT >= s.dur) {
@@ -108,7 +136,7 @@
           b.stepIdx++;
           if (b.stepIdx >= b.steps.length) {
             b.state = 'serveWalk';
-            b.holding = b.orders[0].drink.kind === 'plate' ? 'plate' : 'cup';
+            b.holding = holdingFor(b.orders[0].drink.kind);
             b.path = [{ x: L.serveSpot.x - 8, y: L.baristaHome.y }];
           } else {
             b.state = 'prepWalk';
@@ -297,7 +325,7 @@
           const tb = world.tables[b.busTarget.table];
           const idx = tb.items.indexOf(b.busTarget.item);
           if (idx >= 0) tb.items.splice(idx, 1);
-          b.holding = b.busTarget.item.kind === 'plate' ? 'plate' : 'cup';
+          b.holding = holdingFor(b.busTarget.item.kind);
           SND.clink(0.6, 0.04);
           SND.swish();
           b.state = 'busHome';
@@ -509,7 +537,7 @@
 
   function nextMenuDoodle(world) {
     const current = SCENE.getMenuDoodle();
-    const choices = world.rain > 0.3 ? [0, 1, 2, 3, 4, 4, 4] : [0, 1, 2, 3, 4];
+    const choices = world.rain > 0.3 ? [0, 1, 2, 3, 4, 4, 4, 5] : [0, 1, 2, 3, 4, 5];
     let next = current;
     while (next === current) next = pick(choices);
     return next;
@@ -520,6 +548,7 @@
     if (doodle === 2) return 'Today the board gets a steaming cup.';
     if (doodle === 3) return 'A small chalk sprig curls beside the prices.';
     if (doodle === 4) return 'Rain on the glass; an umbrella on the board.';
+    if (doodle === 5) return 'A little bamboo whisk appears beside the prices.';
     return 'Nora touches up the chalk heart.';
   }
 

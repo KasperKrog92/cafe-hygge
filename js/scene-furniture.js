@@ -324,6 +324,26 @@
     px(g, x - 2, y - 54, 4, 8, '#6b9a5f');
   }
 
+  function drawMatchaCup(g, x, top) {
+    ell(g, x + 5, top + 11, 10, 3, '#d9d2c0');
+    px(g, x - 1, top + 1, 12, 10, '#e8e0d0');
+    px(g, x + 1, top + 1, 8, 2, '#8a9a4a');
+  }
+
+  function drawIcedMatcha(g, x, top, fill) {
+    fill = fill == null ? 1 : Math.max(0, Math.min(1, fill));
+    px(g, x + 8, top - 5, 2, 9, '#d9738a');
+    px(g, x + 1, top, 8, 13, 'rgba(200,220,230,0.7)');
+    const bodyH = Math.max(1, Math.round(8 * fill));
+    px(g, x + 2, top + 12 - bodyH, 6, bodyH, '#8a9a4a');
+    if (fill > 0.55) px(g, x + 2, top + 2, 6, 3, '#e8dfc9');
+    if (fill > 0.75) {
+      px(g, x + 3, top + 6, 2, 2, 'rgba(255,255,255,0.5)');
+      px(g, x + 6, top + 8, 2, 2, 'rgba(255,255,255,0.5)');
+    }
+    px(g, x + 1, top, 8, 2, 'rgba(255,255,255,0.5)');
+  }
+
   function drawTableItem(g, cx, cy, it, reach) {
     const ix = cx + it.side * (it.kind === 'laptop' ? 12 : (reach || 24)) - 5;
     if (it.kind === 'laptop') {
@@ -341,6 +361,12 @@
       ell(g, ix + 5, cy - 4, 11, 4, '#e8e0d0');
       px(g, ix + 1, cy - 12, 10, 7, '#c98f4a');
       px(g, ix + 3, cy - 14, 6, 2, '#b57c38');
+    } else if (it.kind === 'matcha') {
+      ell(g, ix + 5, cy, 11, 3, 'rgba(20,12,8,0.18)');
+      drawMatchaCup(g, ix, cy - 14);
+    } else if (it.kind === 'glass') {
+      ell(g, ix + 5, cy, 7, 3, 'rgba(20,12,8,0.18)');
+      drawIcedMatcha(g, ix, cy - 15);
     } else {
       ell(g, ix + 5, cy, 10, 3, 'rgba(20,12,8,0.18)');       // contact shadow
       ell(g, ix + 5, cy - 2, 9, 3, '#e8e0d0');   // saucer
@@ -378,6 +404,35 @@
     px(g, W.x - 8, W.y - 4, 16, 4, '#7a89a5');
     ell(g, W.x, W.y - 4, 8, 3, waterQ ? '#8fb2bf' : '#4d5968');
     if (waterQ) px(g, W.x - 5, W.y - 5, 2 + waterQ * 2, 1, 'rgba(232,244,240,0.8)');
+  }
+
+  function drawMatchaBar(g, world) {
+    const M = L.matchaBar;
+    const whisking = world.brew.active && world.brew.stage === 'whisk';
+    // matcha caddy: green tin, lid band picked from the existing swatch
+    px(g, M.x - 12, M.y - 10, 8, 10, '#4a7a5a');
+    px(g, M.x - 12, M.y - 10, 8, 2, shade('#4a7a5a', 0.18));
+    px(g, M.x - 12, M.y - 3, 8, 2, shade('#4a7a5a', -0.18));
+    // clay chawan, with its tea surface revealed during whisking
+    px(g, M.x - 6, M.y - 7, 12, 6, '#8f4a35');
+    ell(g, M.x, M.y - 7, 6, 2, whisking ? '#8a9a4a' : shade('#8f4a35', -0.24));
+    px(g, M.x - 4, M.y - 1, 8, 2, shade('#8f4a35', -0.14));
+    if (whisking) {
+      const j = ((world.t * 12) | 0) % 2 ? -1 : 1;
+      px(g, M.x - 1 + j, M.y - 21, 2, 12, '#c9a04a');
+      px(g, M.x - 4 + j, M.y - 10, 2, 4, '#e0b06a');
+      px(g, M.x - 1 + j, M.y - 10, 2, 4, '#e0b06a');
+      px(g, M.x + 2 + j, M.y - 10, 2, 4, '#e0b06a');
+    } else {
+      // bamboo chasen leaning between the tin and bowl
+      px(g, M.x - 8, M.y - 20, 2, 11, '#c9a04a');
+      px(g, M.x - 7, M.y - 10, 2, 5, '#e0b06a');
+      px(g, M.x - 4, M.y - 9, 2, 4, '#e0b06a');
+      px(g, M.x - 10, M.y - 9, 2, 4, '#e0b06a');
+    }
+    if (world.brew.active && world.brew.stage === 'ice') {
+      drawIcedMatcha(g, M.x + 2, M.y - 13, world.brew.progress);
+    }
   }
 
   function drawCounter(g, world) {
@@ -437,12 +492,19 @@
     // the tiny shelf plant migrated beside the pastry case when the cat
     // claimed the right end of the top shelf.
     drawTinyPlant(g, L.counterPlant.x, L.counterPlant.y);
+    // the matcha kit lives in the narrow clear gap between machine and pass;
+    // waiting orders paint after it so the pass remains immediately legible.
+    drawMatchaBar(g, world);
     // orders waiting at the pass
     world.counterCups.forEach(function (c) {
       if (c.kind === 'plate') {
         ell(g, c.x + 5, c.y + 8, 11, 4, '#e8e0d0');
         px(g, c.x, c.y, 11, 7, '#c98f4a');
         px(g, c.x + 2, c.y - 2, 7, 2, '#b57c38');
+      } else if (c.kind === 'matcha') {
+        drawMatchaCup(g, c.x, c.y);
+      } else if (c.kind === 'glass') {
+        drawIcedMatcha(g, c.x, c.y - 3);
       } else {
         ell(g, c.x + 5, c.y + 10, 9, 3, '#d9d2c0');
         px(g, c.x, c.y, 10, 11, '#e8e0d0');

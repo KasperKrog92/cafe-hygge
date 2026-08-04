@@ -33,7 +33,7 @@ architecture textures, retuned atmosphere and real typography.
   The cat is ~28×21.
 - **The café ruler** (tuned values; ratios between neighbors matter more than
   absolutes): door 102 h (1.7 CH), window 80 h, fireplace breast 120 h
-  (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×68,
+  (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×80,
   floor lamp 68, coat stand ~70, table top at ~32 above the floor (Ø 64),
   stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
   side-table top ~26, window-perch cushions 24, window poseur tables ~52 to
@@ -66,6 +66,7 @@ architecture textures, retuned atmosphere and real typography.
 | Book spines | reuse clothing/accent hexes (`BOOKCOLS` in `scene-furniture.js`) |
 | Rugs | `#a34d3b` / `#8f5a3a` |
 | Crockery | `#e8e0d0`, saucers `#d9d2c0` |
+| Matcha service | tea `#8a9a4a`; hot bowl uses the crockery pair; iced glass reuses tip-jar `rgba(200,220,230,0.7)`, milk `#e8dfc9`, pastry pink `#d9738a` |
 | Cat | `#d98d4a`, stripes `#b5702e`, chest `#f0e0c8` |
 | Metal / machine | `#b8bfc7`, dark `#3c414d`, highlight `#d3d9de` |
 | Pastry glaze pink | `#d9738a` (light `#e8b4c4`) |
@@ -100,7 +101,8 @@ y=36  ── 16:9 crop top
 y=232 ── wall meets floor (L.wallY — kept high so the floor, the life layer,
           dominates the frame)
           counter along the right (L.counter: slab → front face → baseline;
-          register, tip jar, pastry case, tiny plant on top; serve spot at the
+          register, tip jar, pastry case, tiny plant, and the matcha caddy /
+          clay chawan / bamboo chasen at L.matchaBar on top; serve spot at the
           pass = L.serveSpot); Nora's walking line behind it at y=286
           (L.baristaHome — see depth model for why); order and pickup spots
           in front (L.orderSpot, L.pickupSpot; the queue fans back-left)
@@ -199,7 +201,7 @@ fall (suppressed by the bun); cap gets a `shade()` shine streak. Clothing:
 shoulder light + centre fold + hem on tops, creases on trousers, scarf knot
 with hanging tail and fringe, and Nora's apron has neck straps, waistband,
 pocket and a tie bow at the back. Options per character: scarf, long hair,
-`hairStyle`, `beard`, apron (Nora), `holding` (`cup`/`plate`/`cloth`),
+`hairStyle`, `beard`, apron (Nora), `holding` (`cup`/`glass`/`plate`/`cloth`),
 `armUp` 0–1 (sip animation lifts the cup toward the face), `reading` (open
 book replaces held items while seated), `typing` (forearms alternate toward
 the table), and `dozing` (head and book lower, eye closes). A furled umbrella
@@ -227,11 +229,11 @@ back-shelf tail that hangs and sways below the board.
 
 - **Chalk: a 6×10 hand** (`SCENE.chalkText`, `CHALK` glyphs in `scene-core.js`) with
   2 px strokes and a ±1 px per-character jitter so boards look hand-written.
-  Used on the menu board ("CAFÉ HYGGE", KAFFE / KAKAO / BOLLER + price
+  Used on the menu board ("CAFÉ HYGGE", KAFFE / MATCHA / KAKAO / BOLLER + price
   dashes + one small changing doodle: heart, sleeping cat, steaming cup,
-  sprig, or umbrella). The doodle id invalidates the static background cache
-  only when Nora finishes chalking. Glyph set is caps A–Y subset + É; extend the map
-  when a new word needs a missing letter.
+  sprig, umbrella, or bamboo whisk). The doodle id invalidates the static
+  background cache only when Nora finishes chalking. Glyph set is caps A–Y
+  subset + É; extend the map when a new word needs a missing letter.
 - **Captions render as bitmap text**: each caption is drawn once at 10 px
   into an offscreen canvas, thresholded to crisp 1-bit glyphs in the caption
   cream (+ dark shadow copy), then blitted ×2 nearest-neighbour — a 20 px
