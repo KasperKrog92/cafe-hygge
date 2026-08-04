@@ -193,6 +193,7 @@
     px(g, w.x + w.w / 2 - 2, w.y, 2, w.h, '#6e4a33');
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 4, '#5a3d28');
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 2, '#6e4a33');
+    drawCurtains(g, w);
     // deep sill: lit top, front face, shadow underneath
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 8, '#6e4a33');
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 2, '#8a6142');
@@ -211,6 +212,67 @@
     { body: '#8a3d3d', light: '#a05252', dark: shade('#8a3d3d', -0.16), seam: 'rgba(40,16,16,0.3)' },
     { body: '#4a7a5a', light: shade('#4a7a5a', 0.22), dark: shade('#4a7a5a', -0.16), seam: 'rgba(16,32,22,0.3)' }
   ];
+
+  const CURTAIN = {
+    body: '#9b4d43',
+    light: '#b45e4e',
+    shadow: '#74362f',
+    deep: '#572923',
+    tie: '#d2a14f'
+  };
+
+  /* Short tied-back drapes frame the weather without crowding the little
+     window seats. Their stepped hems keep the folds crisp at native scale. */
+  function drawCurtains(g, w) {
+    const rodY = w.y - 13;
+    px(g, w.x - 13, rodY, w.w + 26, 3, '#4a3020');
+    px(g, w.x - 13, rodY, w.w + 26, 1, '#7a5234');
+    px(g, w.x - 16, rodY - 1, 3, 5, '#5a3d28');
+    px(g, w.x + w.w + 13, rodY - 1, 3, 5, '#5a3d28');
+
+    drawCurtainPanel(g, w.x - 6, w.y - 7, 1);
+    drawCurtainPanel(g, w.x + w.w + 6, w.y - 7, -1);
+
+    // small loops over the rod and warm brass tiebacks
+    [0, 7, 14].forEach(function (dx) {
+      px(g, w.x - 2 + dx, rodY + 2, 2, 5, CURTAIN.deep);
+      px(g, w.x + w.w - dx, rodY + 2, 2, 5, CURTAIN.deep);
+    });
+  }
+
+  function drawCurtainPanel(g, outerX, top, dir) {
+    const p = function (n) { return outerX + n * dir; };
+
+    g.fillStyle = CURTAIN.shadow;
+    g.beginPath();
+    g.moveTo(p(0), top);
+    g.lineTo(p(28), top);
+    g.lineTo(p(25), top + 16);
+    g.lineTo(p(20), top + 31);
+    g.lineTo(p(14), top + 42);
+    g.lineTo(p(21), top + 58);
+    g.lineTo(p(2), top + 58);
+    g.closePath();
+    g.fill();
+
+    // broad fabric face, recessed edge, and two economical fold highlights
+    g.fillStyle = CURTAIN.body;
+    g.beginPath();
+    g.moveTo(p(3), top + 2);
+    g.lineTo(p(24), top + 2);
+    g.lineTo(p(21), top + 16);
+    g.lineTo(p(16), top + 31);
+    g.lineTo(p(11), top + 41);
+    g.lineTo(p(17), top + 55);
+    g.lineTo(p(5), top + 55);
+    g.closePath();
+    g.fill();
+    px(g, Math.min(p(7), p(9)), top + 4, 2, 32, CURTAIN.light);
+    px(g, Math.min(p(15), p(17)), top + 4, 2, 23, CURTAIN.deep);
+    px(g, Math.min(p(11), p(17)), top + 38, 6, 4, CURTAIN.tie);
+    px(g, Math.min(p(13), p(19)), top + 42, 6, 2, '#9c6b36');
+    px(g, Math.min(p(7), p(9)), top + 46, 2, 8, CURTAIN.light);
+  }
 
   function drawSillCushion(g, x, top, C) {
     px(g, x + 1, top, 10, 2, C.light);          // rounded, lit crown

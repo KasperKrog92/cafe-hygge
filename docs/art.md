@@ -89,7 +89,9 @@ y=36  ── 16:9 crop top
           wall band: door + bell (L.door, L.bell), window (L.win), fireplace
           breast with mantel clock/candles + firewood basket (L.fire), second
           window (L.win2 — same glass, its own stretch of town; the moon hangs
-          in L.win only); both deep sills are window perches (L.winSeats):
+          in L.win only); short rust-red drapes frame both views, held open by
+          brass tiebacks so weather and seated silhouettes stay glanceable;
+          both deep sills are window perches (L.winSeats):
           a back cushion against each side frame (red pair by the door, green
           near the counter — the wing-chair swatches) with one plant between,
           and a slim poseur table under each window (L.winTables) whose top
