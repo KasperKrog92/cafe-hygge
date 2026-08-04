@@ -41,7 +41,12 @@ machines, rain, café room tone…). Plan for when clips arrive:
 6. Document each replacement in sounds.md (recipe column becomes "sample:
    filename + credit/license").
 
-## 🔊 More sound, still synthesized
+## 🔊 More sound, still synthesized (plan ready — see [plans/more-sound.md](plans/more-sound.md))
+
+Pooled into four independently shippable phases: small foley → the town
+keeps time → thunderstorms → a night music layer. The mantel-clock chime
+moved here from "More world" — the clock art already exists and keeps
+time, so the chime is purely a sound feature.
 
 - **Thunderstorms** (owner-requested). A rare storm state above heavy rain
   in the sim's weather walk. Only during a storm does the rain get a voice
@@ -56,6 +61,24 @@ machines, rain, café room tone…). Plan for when clips arrive:
 - Coins in the tip jar when a patron returns a cup.
 - A generative lo-fi layer (soft chords under the music box, night only).
 - Church bells at noon, faint, from across the street.
+- The mantel clock chiming softly — but one in-world hour is one real
+  minute, so "on the hour" would be a metronome; the plan gates it to a
+  few chosen hours.
+
+Further sound ideas, not yet in the plan:
+
+- The street heard through the open door: while the door stands open, the
+  outside (rain taps, storm wash) lifts a touch, then ducks back as it
+  swings shut.
+- A spoon stirred twice around a fresh cup — two or three tiny porcelain
+  tinks just after a drink lands on the table.
+- The espresso machine sighing off pressure — a soft "pff" every few idle
+  minutes, nobody near it.
+- One creaky floorboard near the door that only sounds sometimes.
+- Radiator ticks on cold evenings — gentle metal pings as the heat comes
+  up (pairs with seasons, below).
+- Book foley at the shelf: fingertip ticks along the spines while
+  browsing, a soft cover thump on take and return.
 
 ## 🐈 More life
 
@@ -76,7 +99,6 @@ machines, rain, café room tone…). Plan for when clips arrive:
 - Holiday touches (subtle): a string of lights in December, a pumpkin on the
   mantel in October.
 - Passers-by outside the window: silhouettes with umbrellas.
-- The mantel clock chiming softly on the hour (in-world time).
 - A real "closing hour" mood at 02:00: Nora stacks chairs, lights low, only
   the fire and the cat — never actually closed, just quieter.
 
