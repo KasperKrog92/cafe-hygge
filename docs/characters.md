@@ -306,8 +306,8 @@ The door bell turns an awake floor cat's head toward the door for about 2 s.
 bubble, meow or purr, caption "The cat purrs happily." If asleep on a normal
 surface, it sits up; lap cats stay settled. Walking, hopping, and pouncing are
 not interrupted.
-This is the app's only direct interaction; keep it that way unless a new
-interaction is equally gentle.
+This is currently the café's only direct interaction. Any interaction the café
+gains must stay this gentle — optional, never necessary, never nagging.
 
 ---
 

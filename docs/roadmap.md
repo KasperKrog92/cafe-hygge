@@ -89,7 +89,49 @@ machines, rain, café room tone…). Plan for when clips arrive:
 - A real "closing hour" mood at 02:00: Nora stacks chairs, lights low, only
   the fire and the cat — never actually closed, just quieter.
 
+## 💬 Regulars & conversations (owner's direction)
+
+The café is growing a **narrative layer**: a roster of established regulars
+with fixed looks, habits, and — over many visits — backstories, plus optional
+conversations the reader can choose to have or simply overhear.
+
+**Guiding rule:** interaction is always *opt-in and ignorable*. The café is
+complete if the reader never touches it. An invitation may appear, go
+unanswered, and drift away at no cost — nothing nags, blocks, counts, or
+accumulates. This is the same hygge bar as petting the cat, held to the letter.
+
+Rough order (each slice ships something lovely on its own):
+
+1. **A roster of regulars.** Generalize Holger's one-off `makeRegular` into a
+   data-driven `REGULARS` table (fixed appearance, drink, arrival window, seat
+   preference, and a small pool of lines). Add a few more regulars spread
+   across the day, each reusing behavior that already exists (reading,
+   window-gazing, laptop, piano). Doc: characters.md.
+2. **Legible overheard lines ("listen in", passive).** Where table murmurs
+   emit a generic caption today, occasionally surface a real in-character line
+   through the existing caption gate — sparse, rate-limited, each line standing
+   alone so nothing needs catching up. No new UI.
+3. **Habits & continuity.** Wire the dormant `usualSeat` / `regularSeatNoted`
+   flags; let regulars react to their spot, the weather, the day. Recurring
+   pairs who tend to sit together.
+4. **Focus a table (gentle opt-in).** Clicking a chatting table softly focuses
+   it so the next few captions are that table's actual exchange, then it fades
+   back to ambience — a lean-in, not a minigame. Built on the single click
+   handler that today only pets the cat (main.js).
+5. **Conversations with Nora (opt-in, chapter-break friendly).** When Nora has
+   something to say, a *soft, ignorable* indication appears — no badge, no
+   count, no timer. If the reader looks up (say, at the end of a chapter) they
+   may choose a short exchange or just keep reading; the invitation drifts away
+   unanswered at no cost, and nothing is missed by never engaging. Open design
+   question: how the indication reads as inviting-not-nagging.
+6. **Backstories, in drips.** A per-regular backstory surfaced as rare solo
+   captions over many visits — a slow reveal assembled just by being present,
+   rewarding the long reading sessions the app is built around.
+
 ## 🚫 Explicitly out (unless the vision changes)
 
-Scores, currencies, upgrades, timers, notifications, chat integrations,
-anything that asks the reader to stop reading.
+Scores, currencies, upgrades, timers, streaks, unread counts — and any
+notification, badge, or prompt that *demands* the reader's attention or makes
+reading straight through feel like missing out. Interaction is welcome when it
+is optional and ignorable (see *Regulars & conversations* above); pressure
+never is. External chat/stream integrations stay out for now.

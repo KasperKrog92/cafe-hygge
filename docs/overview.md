@@ -8,9 +8,13 @@ product spec.
 
 ## Design principles
 
-1. **Ambience over interaction.** The café runs itself. The only interactions
-   are gentle and optional (petting the cat, toggling rain). Nothing ever asks
-   the user for attention — no notifications, badges, timers, or prompts.
+1. **Interaction is optional, never required.** The café runs itself and is
+   whole if you never touch it. What interaction there is stays gentle and
+   opt-in — petting the cat, toggling rain, and short conversations the reader
+   may choose to have (or overhear) when they glance up between chapters.
+   Nothing ever *demands* attention: no notifications, badges, timers, or
+   unread counts. An invitation may appear softly and drift away unanswered —
+   ignoring it costs nothing.
 2. **Glanceable storytelling.** A single glance should always answer "what's
    happening?" — a caption line, a patron mid-order, steam rising, the cat
    stretching. Events narrate themselves; they never accumulate or require
