@@ -688,6 +688,13 @@
           ['arrival', 'overheard', 'musing', 'backstory'].forEach(function (ctx) {
             if (!Array.isArray(spec.lines[ctx])) problems.push(who + ' lines.' + ctx + ' is not an array');
           });
+          // the optional Phase 3 continuity pools: present-and-not-an-array is a
+          // malformed row (specLine reads them with pick()); absent is fine
+          ['arrivalRain', 'arrivalReturn', 'settle', 'usualTaken'].forEach(function (ctx) {
+            if (spec.lines[ctx] !== undefined && !Array.isArray(spec.lines[ctx])) {
+              problems.push(who + ' lines.' + ctx + ' is present but not an array');
+            }
+          });
           // a chatty regular with no mate-facing pool would fall silent at the table
           if (spec.traits && spec.traits.chatty && (!spec.lines.overheard || !spec.lines.overheard.length)) {
             problems.push(who + ' is chatty but has no overheard lines');

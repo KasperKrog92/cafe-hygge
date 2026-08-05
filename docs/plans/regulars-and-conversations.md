@@ -45,8 +45,14 @@ are untouched.
   the scarf for good). Audit grew the narrative invariants; harness grew
   `__dev.arc/age/memory/reset`. Built ahead of Phase 3 because the passive
   continuity phase depends on cross-visit memory.
-- ⏭️ **Phase 3 — habits & continuity**: next up, now unblocked by `MEMORY`
-  (visit counts / "back again" can persist). Not started.
+- ✅ **Phase 3 — habits & continuity**: per-regular `settle` / `usualTaken`
+  lines (via `specLine`, generic fallback), weather- and recognition-aware
+  openers (`regularArrivalLine`), a persisted bond visit-count in the save
+  (`noteRegularVisit` → `bonds[id]`, no version bump — bonds are free-form), and
+  boot-seeding Holger into his fireside armchair (`seedRegular`, schedule marked
+  done-for-today). **Recurring pairs deferred** (see the Phase 3 note below): the
+  current roster has no two regulars sharing a table, so `withId` is left for
+  when an overlapping regular or a seat-sharing rework arrives.
 - ⏭️ **Phase 4 — focus a table**: the click handler now runs a general hit-test
   (`SIM.beatAt`) before petting the cat — the seam a table-focus would extend.
 - Phases 5–6 remain sketches, to be split into their own plans when their turn
@@ -247,7 +253,7 @@ family). No sound changes (murmur stays the audible layer).
 
 ---
 
-## Phase 3 — habits & continuity (still passive)
+## Phase 3 — habits & continuity (still passive) ✅ DONE
 
 Make regulars feel *known*.
 
@@ -268,6 +274,45 @@ Make regulars feel *known*.
 ### Docs
 
 characters.md (continuity notes), world.md (openers).
+
+### As built
+
+- **Per-regular seat lines.** `specLine(spec, key, fallback)` in `sim-core.js`
+  (exposed on `SIM._`) returns a line from the named pool or a generic default.
+  `freeSeat`'s patient-look now reads `usualTaken`; the `toSeat` settle line
+  reads `settle`. Each roster row grew both pools; a row without them keeps the
+  old templated wording. The `usualSeat` / `regularSeatNoted` flags already
+  existed from Phase 1 — Phase 3 only made their captions per-character.
+- **Continuity is Nora's memory, persisted.** Rather than the plan's sketch of a
+  session-only counter on the schedule slot, the visit-count lives in the
+  `MEMORY` save (`noteRegularVisit` → `bonds[id] = { known, warmth, visits,
+  lastDay }`), so a returning reader's café already knows its regulars — matching
+  [narrative.md](../narrative.md) §5 (bonds are Nora's memory) and the roadmap's
+  note that Phase 3 is "unblocked by MEMORY". Bonds are free-form and created
+  lazily, so this needed **no `MEMORY.VERSION` bump** (an old save simply grows
+  the field). `regularArrivalLine` picks the opener: `arrivalRain` when wet, else
+  a 60%-gated `arrivalReturn` for a known face, else `arrival`. `warmth` is left
+  unused for the conversation phase.
+- **Boot-seed.** `seedRegular(world, spec)` mirrors `seedPatron` but builds via
+  `makeRegular`, clears any rain umbrella, finds a free preferred seat via the
+  spec's `SEAT_PREFS` predicate, and marks `world.regulars[id].lastDay =
+  dayIndex` so the day's real arrival is suppressed. Called for Holger after the
+  `reconcileNarrative` bind; one generic boot seed (old seat 4) was dropped so
+  the boot population stays four. No arrival caption and no bond bump — a seeded
+  face is ambience, and recognition should accrue on arrivals the reader sees.
+- **Recurring pairs — deferred, on purpose.** The four current regulars each
+  have a distinct usual seat (fireside-left, window perch, dining, fireside-
+  right), so none would ever share a table for the couple-free chat path to fire
+  on. Implementing `withId` now would mean either adding a fifth regular whose
+  window overlaps another's *and* shares its seat, or reworking seat assignment
+  so a regular prefers a table-mate's table over their own usual spot — both
+  bigger than this phase and at odds with the just-shipped "usual seat" flavor.
+  Left as a clean follow-up for when such a regular exists. The existing
+  `updateSeated` chat path already murmurs between any two seated table-mates, so
+  the runtime is ready; only the seating bias is missing.
+- **Audit.** The roster constant-check now also flags any optional Phase 3 pool
+  (`arrivalRain`, `arrivalReturn`, `settle`, `usualTaken`) that is present but
+  not an array. No new geometry (regulars still reuse existing seats/routes).
 
 ---
 

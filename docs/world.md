@@ -156,8 +156,9 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   murmuring tables (15%), quiet laptop bouts (10%), cup returns, departures
   (rain/night-aware), shoes wiped on the doormat (28% of wet arrivals),
   umbrella shakes/collections, linked-pair arrivals,
-  shared orders and seats, Holger's usual-chair moment, falling asleep and
-  finding the line again, cat
+  shared orders and seats, a regular settling into (or finding taken) their
+  usual seat, a regular's weather- or recognition-aware arrival opener,
+  falling asleep and finding the line again, cat
   movements and petting (including the cat's accidental piano plinks), Nora
   stretching/chalking/watering, her rare empty-night piano tune, a pianist
   settling at the bench / beginning a sparse burst, and the dusk/dawn
@@ -176,6 +177,13 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   rarer `backstory` fragment instead — a life leaking out across many visits.
   Narrated fragments only, never quoted dialogue. Non-regulars are untouched;
   see characters.md for the pools and voice rules.
+- **Regular continuity (Phase 3).** Two more seams carry a regular's continuity,
+  driven by the persisted `bonds` count in the save (Nora's memory of them):
+  `regularArrivalLine` chooses the **opener** — a wet-weather line, a
+  recognition line for a face she already knows, or the plain arrival — and
+  `specLine` supplies the once-per-visit **settle** line and the **usual-seat-
+  taken** patient-look line, each falling back to a generic templated line.
+  Every such line still stands alone. See characters.md (*Continuity*).
 - **Story beats** use a second caption track, `captionScript` (fed by
   `captionRun`): the few deliberate lines a chosen beat plays queue in order,
   drain **ahead of** the ambient queue, and are never dropped by its 2-line cap

@@ -91,7 +91,10 @@
       // the usual spot is taken — one patient look, then the normal fallback
       if (!patron.regularSeatNoted) {
         patron.regularSeatNoted = true;
-        if (Math.random() < 0.7) caption(world, 'The usual spot is taken; ' + patron.name + ' gives it a patient look.');
+        if (Math.random() < 0.7) {
+          caption(world, R.specLine(patron.spec, 'usualTaken',
+            'The usual spot is taken; ' + patron.name + ' gives it a patient look.'));
+        }
       }
     }
     if (patron.laptop) {
@@ -441,7 +444,7 @@
             // readers settle in with a book; the writer keeps typing, the
             // window-watcher keeps her eyes on the street
             if (!p.laptopActive && (p.wantsBook || p.seat.armchair || p.seat.nook)) p.reading = true;
-            caption(world, p.name + ' settles into the usual ' + seatNoun(p.seat) + '.');
+            caption(world, R.specLine(p.spec, 'settle', p.name + ' settles into the usual ' + seatNoun(p.seat) + '.'));
           } else if (p.partner && !p.pairCaptioned) {
             p.pairCaptioned = true; p.partner.pairCaptioned = true;
             if (p.seat.window) caption(world, 'Two mugs on one window sill.');

@@ -23,11 +23,16 @@
      arrival    { from, to } in-world hour window
      stay       [min, max] seconds
      seat       preference key → a SEAT_PREFS predicate in sim-core.js
-     lines      { arrival, overheard, musing, backstory } pools (Phase 2):
-                arrival fires once on entry; overheard rides a shared-table
-                murmur; musing rides a solo beat (reading, gazing, typing);
-                backstory is a rarer tier under musing. See regularLine() in
-                sim-patrons.js. A chatty:false regular carries no overheard pool.
+     lines      line pools — arrival fires once on entry; overheard rides a
+                shared-table murmur; musing rides a solo beat (reading, gazing,
+                typing); backstory is a rarer tier under musing (Phase 2). The
+                optional continuity pools (Phase 3) refine the openers and seat
+                moments: arrivalRain (a wet arrival), arrivalReturn (a familiar
+                face Nora already knows, from the persisted bonds count), settle
+                (once, taking the usual seat), and usualTaken (the usual seat is
+                occupied). Each falls back to a generic line when absent. See
+                regularLine()/specLine() in sim-patrons.js / sim-core.js. A
+                chatty:false regular carries no overheard pool.
 
    Row one is Holger, carrying the exact values his hardcoded builder used, so
    his behavior is unchanged. Phase 1 added the rest of the roster and wired the
@@ -64,6 +69,10 @@
         seat: 'firesideLeft',
         lines: {
           arrival: ['Holger steps in, as steady as the clock.'],
+          arrivalRain: ['Holger comes in out of the wet, hat dripping, unhurried as ever.'],
+          arrivalReturn: ['Holger takes his corner as though he never left it.'],
+          settle: ['Holger lowers himself into the usual armchair and opens his book.'],
+          usualTaken: ['His chair is taken; Holger waits by the fire, patient as the tide.'],
           // chatty: false — his story is solo, so no overheard pool by design
           overheard: [],
           musing: [
@@ -95,6 +104,10 @@
         seat: 'windowPerch',
         lines: {
           arrival: ['Gerda comes in with the morning and takes her window seat.'],
+          arrivalRain: ['Gerda shakes the rain from her scarf and makes for the warm window.'],
+          arrivalReturn: ['Gerda gives Nora a small wave — an old, easy habit.'],
+          settle: ['Gerda settles onto the window sill, right where she likes it.'],
+          usualTaken: ['Her window seat is taken; Gerda finds another and watches the street anyway.'],
           overheard: [
             'Gerda drifts into a story about the coldest winter she remembers.',
             'Gerda tells someone about the garden she used to keep.',
@@ -129,6 +142,10 @@
         seat: 'diningTable',
         lines: {
           arrival: ['Kasper drops into a chair with his laptop and a sigh.'],
+          arrivalRain: ['Kasper hurries in from the rain, shielding the laptop bag.'],
+          arrivalReturn: ['Kasper is back — same chapter, same chair, same sigh.'],
+          settle: ['Kasper claims the usual table and opens the laptop.'],
+          usualTaken: ['His table is taken; Kasper hovers a beat, then settles for another.'],
           overheard: [],
           musing: [
             'Kasper types a sentence, reads it back, and deletes it.',
@@ -159,6 +176,10 @@
         seat: 'firesideRight',
         lines: {
           arrival: ['Freya slips in as the lamps come on, her book already in hand.'],
+          arrivalRain: ['Freya ducks in from the rain, hugging her book dry.'],
+          arrivalReturn: ['Freya returns to the fire, picking up just where she left off.'],
+          settle: ['Freya sinks into the fireside chair, book already open.'],
+          usualTaken: ['Her fireside chair is taken; Freya takes the near one in stride.'],
           overheard: [],
           musing: [
             'Freya turns a page and sinks a little deeper into the armchair.',

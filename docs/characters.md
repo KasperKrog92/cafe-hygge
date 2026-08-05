@@ -219,9 +219,10 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
 
 **Spawning:** roughly every 26 s at full daylight stretching to ~80 s at
 night. Caps: 7 patrons in daytime, 4 in the evening, 2 between 23:00 and 06:00
-(the night owls). Four regulars are pre-seated at boot (one reading a
-borrowed book in the nook, one perched on the first window sill) so the café
-is never empty on arrival.
+(the night owls). Four patrons are pre-seated at boot — among them **Holger**,
+already settled in his fireside armchair with a book (see *Boot-seeding a
+familiar face*), plus a reader in the nook and a sitter on the first window
+sill — so the café opens onto a recognisable, unhurried room.
 
 ### Couples
 
@@ -262,11 +263,34 @@ talk), and one of each existing behavior.
 **Usual seats.** Each row's `seat` names a `SEAT_PREFS` predicate in
 `sim-core.js` (`firesideLeft`, `firesideRight`, `windowPerch`, `nook`,
 `diningTable`). `freeSeat` steers a regular to a free preferred seat and marks
-`usualSeat`; on arrival they settle into it with a per-name line ("Holger
-settles into the usual armchair"). If every preferred seat is taken, one
-patient-look line fires and they fall back to the normal seating rules.
-Readers settle in with a book, the writer keeps typing, the window-watcher
-keeps her eyes on the street.
+`usualSeat`; on arrival they settle into it with their own `settle` line
+("Holger lowers himself into the usual armchair and opens his book"). If every
+preferred seat is taken, one `usualTaken` patient-look line fires and they fall
+back to the normal seating rules. Both pull from the spec via `specLine` and
+fall back to a generic templated line when a row has no bespoke pool. Readers
+settle in with a book, the writer keeps typing, the window-watcher keeps her
+eyes on the street.
+
+**Continuity — Nora's memory (Phase 3).** The café remembers its regulars.
+When a regular arrives while the reader is present, `noteRegularVisit` bumps a
+persisted bond in the `MEMORY` save (`bonds[id].visits`, `lastDay`, `known`) —
+this is *Nora's* memory of them ([narrative.md](narrative.md) §5), and it is
+the only thing that accrues just by being present. The **opener** then reflects
+it: `regularArrivalLine` prefers a weather line (`arrivalRain`) when they come
+in wet, otherwise — for a face Nora already knows — sometimes a recognition
+line (`arrivalReturn`, "Holger takes his corner as though he never left it"),
+otherwise the plain `arrival`. Every branch still stands alone; recognition is
+flavor, never a thread the reader must have followed. Bonds are free-form data
+in the save, created lazily, so a fresh café simply starts knowing no one and
+an old save grows the field without a version bump. `warmth` is reserved for
+the later conversation phase.
+
+**Boot-seeding a familiar face (Phase 3).** So the café never opens onto only
+strangers, `seedRegular` seats **Holger** in his fireside armchair at boot,
+reading, and marks his schedule done-for-today so `updateRegulars` never brings
+a second Holger the same café day. It is set-dressing — no arrival caption, no
+bond bump (recognition accrues on the arrivals the reader actually watches). If
+his armchair is somehow taken at boot the seed is skipped gracefully.
 
 **Appearance & habits.** Holger: grey hair and beard, forest-green jumper,
 dark-red scarf, 130 Hz murmur, 46 px/s. Gerda: bun of grey hair, mauve top and

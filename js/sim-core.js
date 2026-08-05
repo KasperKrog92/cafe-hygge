@@ -51,6 +51,13 @@
   function rnd(a, b) { return a + Math.random() * (b - a); }
   function withArticle(name) { return (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name; }
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  /* A regular's own line from a spec pool, or a generic fallback when that
+     regular has no bespoke pool for the moment. Keeps the continuity captions
+     (settle, patient-look, openers) data-driven with a graceful default. */
+  function specLine(spec, key, fallback) {
+    const pool = spec && spec.lines && spec.lines[key];
+    return (pool && pool.length) ? pick(pool) : fallback;
+  }
   function nameStyleFor(name) {
     if (PATRON_NAMES.feminine.indexOf(name) >= 0) return 'feminine';
     if (PATRON_NAMES.masculine.indexOf(name) >= 0) return 'masculine';
@@ -164,10 +171,9 @@
       piano: true, taken: false
     });
 
-    // a few regulars are already settled in
+    // a few patrons are already settled in
     // (seat 10 = the first nook chair, 12 = the first window perch)
     seedPatron(world, 1);
-    seedPatron(world, 4);
     seedPatron(world, 10);
     seedPatron(world, 12);
 
@@ -176,6 +182,12 @@
 
     // bind persistent memory and fold in any idle progress before the first frame
     reconcileNarrative(world);
+
+    // and one familiar face already by the fire, so the café opens onto someone
+    // you recognise. His schedule is marked done-for-today inside seedRegular so
+    // updateRegulars never brings a second Holger the same café day.
+    const holger = CAST.regulars.find(function (r) { return r.id === 'holger'; });
+    if (holger) seedRegular(world, holger);
 
     return world;
   };
@@ -205,6 +217,45 @@
       p.hasShelfBook = !!seat.nook;   // the nook regular borrowed theirs
     }
     world.patrons.push(p);
+  }
+
+  /* Seed a roster regular already in their usual seat at boot (Phase 3). Builds
+     via makeRegular so the fixed look/drink/traits are exact, drops them into a
+     free preferred seat exactly as a walk-in would end up, and marks today's
+     schedule done so updateRegulars never spawns a second copy the same café
+     day. Set-dressing only: no arrival caption, no bond bump — recognition
+     accrues on the arrivals the reader is present to see (updateRegulars). */
+  function seedRegular(world, spec, seat) {
+    const pref = SEAT_PREFS[spec.seat];
+    seat = seat || world.seats.find(function (s) { return !s.taken && pref && pref(s); });
+    if (!seat) return null;                 // usual seat busy at boot → skip gracefully
+    const p = makeRegular(world, spec);
+    p.umbrella = null;                      // already inside; no phantom umbrella
+    seat.taken = true;
+    p.seat = seat;
+    p.usualSeat = true;
+    p.x = seat.x; p.y = seat.y;
+    if (seat.window) { p.x = seat.perchX; p.y = seat.perchY; }
+    p.facing = seat.facing;
+    p.pose = 'sit';
+    p.state = 'seated';
+    p.stay = rnd(spec.stay[0], spec.stay[1]);
+    if (seat.table >= 0) {
+      world.tables[seat.table].items.push({ side: seat.side, kind: p.drink.kind, owner: p.id,
+        hot: p.drink.kind === 'glass' ? 0 : 30, hidden: false });
+      p.laptopActive = p.laptop && !seat.armchair && !seat.nook && !seat.window && !seat.piano;
+      if (p.laptopActive) {
+        world.tables[seat.table].items.push({ side: seat.side, kind: 'laptop', owner: p.id, open: true, hot: 0, hidden: false });
+      }
+    }
+    if (seat.armchair || seat.nook) {
+      p.reading = true;
+      p.hasShelfBook = !!seat.nook;
+    }
+    world.patrons.push(p);
+    const r = world.regulars[spec.id];
+    if (r) r.lastDay = dayIndex(world);     // done for today: no double arrival
+    return p;
   }
 
   function makePatron(requestedName) {
@@ -740,6 +791,45 @@
       : spec.name + ' steps inside.';
   }
 
+  /* The real calendar day (UTC) — the ruler continuity is measured against,
+     the same clock arc progress uses (docs/narrative.md §3). */
+  function realDay() {
+    return Math.floor((window.MEMORY ? MEMORY.now() : Date.now()) / DAY_MS);
+  }
+
+  /* Nora's memory of a regular, deepened just by her being present when they
+     arrive (docs/narrative.md §5). Bumps the persisted bond visit-count and
+     records the real day, then reports whether Nora already knew this face — the
+     signal a recognition-flavoured opener needs, without any line depending on a
+     previous one. The saved `lastDay` leaves room for later day-gap nuance
+     ("same as yesterday"). Bonds live in the MEMORY save; a fresh café simply
+     starts knowing no one. */
+  function noteRegularVisit(world, spec) {
+    const mem = world.memory;
+    if (!mem || !mem.bonds) return { returning: false };
+    let b = mem.bonds[spec.id];
+    if (!b || typeof b !== 'object') { b = { known: false, warmth: 0, visits: 0, lastDay: -1 }; mem.bonds[spec.id] = b; }
+    if (typeof b.visits !== 'number') b.visits = 0;
+    const returning = b.visits > 0;
+    b.visits += 1;
+    b.known = true;
+    b.lastDay = realDay();
+    if (window.MEMORY) MEMORY.save();
+    return { returning: returning };
+  }
+
+  /* The opener when a regular arrives: weather first (a wet arrival reads on
+     the coat, not the calendar), then recognition for a face Nora already
+     knows, else the plain arrival line. Every branch stands alone. */
+  function regularArrivalLine(world, spec, info) {
+    const lines = spec.lines || {};
+    if (world.rain > 0.4 && lines.arrivalRain && lines.arrivalRain.length) return pick(lines.arrivalRain);
+    if (info.returning && lines.arrivalReturn && lines.arrivalReturn.length && Math.random() < 0.6) {
+      return pick(lines.arrivalReturn);
+    }
+    return arrivalLine(spec);
+  }
+
   function updateRegulars(world) {
     const day = dayIndex(world);
     CAST.regulars.forEach(function (spec) {
@@ -753,7 +843,8 @@
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
-      caption(world, arrivalLine(spec));
+      const info = noteRegularVisit(world, spec);
+      caption(world, regularArrivalLine(world, spec, info));
     });
   }
 
@@ -890,7 +981,7 @@
     DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, WIPE_RAIN: WIPE_RAIN, DRINKS: DRINKS,
     PATRON_NAMES: PATRON_NAMES, SEAT_PREFS: SEAT_PREFS,
     DAY_MS: DAY_MS,
-    rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor,
+    rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor, specLine: specLine,
     makePatron: makePatron, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
     arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
