@@ -350,17 +350,26 @@
         break;
       }
       case 'busCollect': {
-        if (b.stateT > 1.3) {
-          const tb = world.tables[b.busTarget.table];
-          const idx = tb.items.indexOf(b.busTarget.item);
-          if (idx >= 0) tb.items.splice(idx, 1);
-          b.holding = holdingFor(b.busTarget.item.kind);
-          SND.clink(0.6, 0.04);
-          SND.swish();
-          b.state = 'busHome';
-          // back behind the counter: the outbound route reversed, then home
-          b.path = busRoute(world, b.busTarget.table).slice(0, -1).reverse();
-          b.path.push({ x: L.baristaHome.x, y: L.baristaHome.y });
+        // one visit clears the whole table: each abandoned piece gets its
+        // own clink a beat apart, then the stack travels home together
+        const t = b.busTarget;
+        if (b.stateT > (t.nextPickT || 1.3)) {
+          const tb = world.tables[t.table];
+          const it = tb.items.find(function (i) { return i.owner === null; });
+          if (it) {
+            tb.items.splice(tb.items.indexOf(it), 1);
+            t.item = it; t.count = (t.count || 0) + 1;
+            b.holding = t.count > 1 ? 'stack' : holdingFor(it.kind);
+            SND.clink(0.6, 0.04);
+            t.nextPickT = b.stateT + 0.55;
+          } else {
+            SND.swish();
+            if (t.count > 1 && Math.random() < 0.3) caption(world, 'Nora gathers the empties in one practiced armful.');
+            b.state = 'busHome';
+            // back behind the counter: the outbound route reversed, then home
+            b.path = busRoute(world, t.table).slice(0, -1).reverse();
+            b.path.push({ x: L.baristaHome.x, y: L.baristaHome.y });
+          }
         }
         break;
       }

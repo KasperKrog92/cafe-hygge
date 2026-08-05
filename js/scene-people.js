@@ -370,6 +370,11 @@
           px(g, x + 6, y - 25, 15, 5, '#e8e0d0');
           px(g, x + 9, y - 30, 10, 5, '#c98f4a');
           px(g, x + 10, y - 21, 5, 3, c.skin);             // palm under the plate
+        } else if (held === 'stack') {                     // bussed empties
+          px(g, x + 6, y - 25, 15, 5, '#e8e0d0');          // saucer at the bottom
+          px(g, x + 8, y - 34, 10, 9, '#e8e0d0');          // cup riding on top
+          px(g, x + 8, y - 26, 10, 1, '#c9b28a');          // seam between the two
+          px(g, x + 10, y - 21, 5, 3, c.skin);             // palm under the stack
         } else if (held === 'cloth') {
           px(g, x + 8, y - 25, 10, 7, '#7a89a5');
           px(g, x + 10, y - 27, 4, 3, c.skin);
@@ -392,7 +397,7 @@
           px(g, x + 10, y - 19, 4, 3, c.skin);             // fingers curled under
         }
       }
-    } else if (held === 'cup' || held === 'glass' || held === 'plate' || held === 'cloth') {
+    } else if (held === 'cup' || held === 'glass' || held === 'plate' || held === 'cloth' || held === 'stack') {
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 10, c.top);
       const hx = x + facing * 13 - (facing > 0 ? 0 : 8);
       const vessel = heldDrinkKind(p);
@@ -415,6 +420,11 @@
         px(g, hx - 3, y - 26, 15, 5, '#e8e0d0');
         px(g, hx, y - 31, 10, 5, '#c98f4a');
         px(g, hx + 3, y - 21, 5, 3, c.skin);               // palm under the plate
+      } else if (held === 'stack') {                       // bussed empties
+        px(g, hx - 3, y - 26, 15, 5, '#e8e0d0');           // saucer at the bottom
+        px(g, hx, y - 35, 10, 9, '#e8e0d0');               // cup riding on top
+        px(g, hx, y - 27, 10, 1, '#c9b28a');               // seam between the two
+        px(g, hx + 3, y - 21, 5, 3, c.skin);               // palm under the stack
       } else {
         px(g, hx, y - 26, 10, 7, '#7a89a5');
         px(g, hx + 2, y - 29, 4, 3, c.skin);               // hand on the cloth

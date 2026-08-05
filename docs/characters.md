@@ -45,8 +45,11 @@ Every 6–15 s she picks a task. The priority ladder is service first, then
 daily care, then small counter-life:
 
 - **Bus a table** (priority if any table has an abandoned cup — `item.owner
-  === null`): walks out, collects it (clink + wipe swish), carries it home.
-  Routes come from `SIM._.busRoute` (shared with `__dev.audit()`), every leg
+  === null`): walks out and clears the whole table in one visit — every
+  abandoned piece picked up a beat apart (a clink each, wipe swish once the
+  stack is squared), then carried home together. Two or more pieces render
+  as a saucer-and-cup stack in her hands; a rare caption (30%) marks the
+  armful. Routes come from `SIM._.busRoute` (shared with `__dev.audit()`), every leg
   axis-aligned: big tables are approached by dropping from the lane at the
   bus spot; the nook side tables via their declared `busVia` columns, which
   thread between the wing chairs and reading lamps (a straight drop would
