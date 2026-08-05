@@ -294,11 +294,14 @@ window-gaze and reading page-turn and laptop bout → `musing`; the table murmur
 pool ever fires, and only when a walk-in shares her window table.
 
 **Voice rules for the pools.** Warm, understated, lowercase-cozy, Danish flavor
-welcome — the same narrator voice as every other caption. Every line stands
-alone: none may lean on having read a previous one (the glanceability
-principle), nothing plot-heavy or urgent, and — for now — narrated fragments,
-never quoted dialogue. (Quoted back-and-forth is reserved for the opt-in
-table-focus step, a later phase.)
+welcome — the same narrator voice as every other caption. These passive ambient
+lines still **stand alone**: none may lean on having read a previous one, so the
+glanceable layer never asks the reader to catch up. Continuity now lives one
+layer down, in the story **arcs** ([narrative.md](narrative.md)) — which the
+reader only ever advances by taking an invitation, never by happening to catch a
+caption. Keep the pools un-plot-heavy and unurgent, and — here — narrated
+fragments, not quoted dialogue. (Quoted back-and-forth is reserved for the
+opt-in conversation beats; see [narrative.md](narrative.md) §6.)
 
 ---
 
@@ -364,8 +367,12 @@ The door bell turns an awake floor cat's head toward the door for about 2 s.
 bubble, meow or purr, caption "The cat purrs happily." If asleep on a normal
 surface, it sits up; lap cats stay settled. Walking, hopping, and pouncing are
 not interrupted.
-This is currently the café's only direct interaction. Any interaction the café
-gains must stay this gentle — optional, never necessary, never nagging.
+This is today the café's only direct interaction, and the template for the ones
+to come. The narrative layer adds one more — tapping a soft **invitation** bubble
+to take a story beat ([narrative.md](narrative.md)) — built on this same click
+handler and held to this same bar. Any interaction the café gains must stay this
+gentle: optional, never necessary, never nagging, and — for story beats —
+patient, waiting until the reader chooses it, never expiring.
 
 ---
 

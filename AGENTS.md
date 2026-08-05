@@ -4,15 +4,24 @@ Guidance for AI agents (and future humans) working on this project.
 
 ## What this is
 
-Café Hygge is an **idle café companion app** — a cozy pixel-art café that runs
-in the browser while the owner reads a book in real life. Autonomous characters
-(a barista, patrons, a cat) live their small lives; procedural ASMR-ish audio
-(rain, fire, espresso, page turns) plays underneath. There are **no goals, no
-score, no fail states**. It is ambience software.
+Café Hygge is a **soft narrative game that is also a companion app** — a cozy
+pixel-art café that runs in the browser while its owner reads a book in real
+life. Autonomous characters (a barista, patrons, a cat) live their small lives;
+procedural ASMR-ish audio (rain, fire, espresso, page turns) plays underneath.
+Left alone it is pure ambience, whole if you never touch it. Attended to, it is
+a soft narrative: the regulars grow histories and small projects that advance in
+the background across real days, and turn to you — you keep the café as **Nora** —
+when they have something to share. There is **no score and no fail state**;
+progression is patient, never pressure.
 
-**The design bar for every change: does it make the café cozier or more
-glanceable?** If a feature adds challenge, pressure, or UI noise, it does not
-belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
+**The design bar for every change: does it make the café cozier, more
+glanceable, or gently more alive — without ever nagging or punishing absence?**
+A feature that adds challenge, pressure, decay, or UI noise does not belong; one
+that adds warmth, life, or a story beat that *waits for you* does. The one rule
+that reconciles idle progression with never-miss-out — *arcs advance on their
+own; their payoffs never fire on their own and never expire* — lives in
+[docs/narrative.md](docs/narrative.md). See [docs/overview.md](docs/overview.md)
+for the full design ethos.
 
 ## Running & testing
 
@@ -201,6 +210,7 @@ matching doc updated in the same change.
 | Doc | Contents |
 | --- | --- |
 | [docs/overview.md](docs/overview.md) | Vision, design principles, what this is and isn't |
+| [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, idle/real-day progression, the `MEMORY` save model, conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
 | [docs/characters.md](docs/characters.md) | Nora, patrons, the cat — identities and full behavior state machines |
 | [docs/world.md](docs/world.md) | Time, weather, lighting, spawning, captions/events |

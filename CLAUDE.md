@@ -6,7 +6,10 @@ applies to Claude Code sessions in this repo.
 
 Quick anchors:
 
-- Cozy-first design bar: no goals, no pressure, no UI noise — ambience only.
+- Design bar: a **soft narrative game that is also a companion app**. Cozy,
+  glanceable, gently alive — patient progression, never pressure. Story beats
+  wait for the reader (opt-in, never expire); nothing nags or punishes absence.
+  You keep the café as Nora. See `docs/narrative.md`.
 - No build step / no dependencies; open `index.html` or `python -m http.server 8137`.
 - Depth = baseline y sort; layout lives in `SCENE.L` (master 960×600 coords);
   the barista stands at y=286 to stay visible above the counter.

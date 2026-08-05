@@ -72,7 +72,9 @@ machines, rain, café room tone…). Plan for when clips arrive:
 - A café dog that visits occasionally and naps by the door. The cat has
   opinions (one caption, no drama).
 - A knitter by the fire on rainy evenings — needle clicks quieter than the
-  crackles, a slowly growing scarf.
+  crackles, a slowly growing scarf. (Now elevated into **Gerda's scarf arc** —
+  the growing scarf becomes a real, persisted, real-day arc with a waiting
+  payoff; see the narrative foundations below and [narrative.md](narrative.md) §8.)
 - Someone writing postcards at a window table: pen scratches, a pause to
   look out, one careful stamp.
 - A patron who greets the cat on the way in — one crouch, one pat, and on
@@ -92,13 +94,18 @@ machines, rain, café room tone…). Plan for when clips arrive:
 ## 💬 Regulars & conversations (owner's direction)
 
 The café is growing a **narrative layer**: a roster of established regulars
-with fixed looks, habits, and — over many visits — backstories, plus optional
-conversations the reader can choose to have or simply overhear.
+with fixed looks, habits, and — over many visits — backstories and small
+projects that advance in the background, plus optional conversations the reader
+can choose to have or simply overhear. The full design of this layer now lives
+in **[narrative.md](narrative.md)**; this section is its roadmap.
 
-**Guiding rule:** interaction is always *opt-in and ignorable*. The café is
-complete if the reader never touches it. An invitation may appear, go
-unanswered, and drift away at no cost — nothing nags, blocks, counts, or
-accumulates. This is the same hygge bar as petting the cat, held to the letter.
+**Guiding rule (see narrative.md §1):** progression is *patient*. Arcs advance
+on their own, across real days — but a payoff never fires unattended and never
+expires. It raises a soft, ignorable invitation (a bubble over a character) and
+waits until the reader chooses it, or never does. The café is complete if the
+reader never touches it, and nothing is ever lost by being away. This is the
+same hygge bar as petting the cat — optional, never nagging — now extended to
+things that grow.
 
 Rough order (each slice ships something lovely on its own):
 
@@ -118,20 +125,90 @@ Rough order (each slice ships something lovely on its own):
    it so the next few captions are that table's actual exchange, then it fades
    back to ambience — a lean-in, not a minigame. Built on the single click
    handler that today only pets the cat (main.js).
-5. **Conversations with Nora (opt-in, chapter-break friendly).** When Nora has
-   something to say, a *soft, ignorable* indication appears — no badge, no
-   count, no timer. If the reader looks up (say, at the end of a chapter) they
-   may choose a short exchange or just keep reading; the invitation drifts away
-   unanswered at no cost, and nothing is missed by never engaging. Open design
-   question: how the indication reads as inviting-not-nagging.
+5. **Conversations with Nora (opt-in, chapter-break friendly).** When a patron
+   has something to say to Nora, a *soft, ignorable* invitation appears — no
+   badge, no count, no timer. If the reader looks up (say, at the end of a
+   chapter) they may choose a short exchange or just keep reading; the invitation
+   *waits* rather than drifting away — it never expires and nothing is lost by
+   never engaging (the invitation-waits rule, [narrative.md](narrative.md) §1).
+   Branching is welcome as choices that *color* the moment, never gate content
+   (§6). Open design question: how the invitation reads as inviting-not-nagging.
 6. **Backstories, in drips.** A per-regular backstory surfaced as rare solo
    captions over many visits — a slow reveal assembled just by being present,
    rewarding the long reading sessions the app is built around.
 
-## 🚫 Explicitly out (unless the vision changes)
+**New foundations the soft-narrative vision needs** (keystone for everything
+above the passive layers — see [narrative.md](narrative.md)):
 
-Scores, currencies, upgrades, timers, streaks, unread counts — and any
-notification, badge, or prompt that *demands* the reader's attention or makes
-reading straight through feel like missing out. Interaction is welcome when it
-is optional and ignorable (see *Regulars & conversations* above); pressure
-never is. External chat/stream integrations stay out for now.
+- **Persistent memory (`MEMORY`).** A `js/memory.js` global mirroring
+  `SND.save()`: a versioned `cafe-hygge-save` JSON blob (arcs, bonds, flags,
+  `lastSeen`), a migration ladder so a growing save never bricks a returning
+  reader, and a reconcile-on-boot that tolerates drift. This is the single
+  unlock behind cross-visit continuity and every arc. Build it first.
+- **Idle / real-day progression.** A boot reconcile that advances each arc by
+  `elapsedDays` from `Date`, folding in quiet background progress in one
+  deterministic step, with any beats that came ready simply waiting.
+- **The invitation + trigger loop.** A `pendingBeat` bubble (reusing the bubble
+  renderer) and a general hit-test in the single canvas click handler
+  ([main.js](../js/main.js)) that today only pets the cat.
+- **Gerda's scarf — the reference arc.** The first end-to-end build of the
+  arc → progress → ready beat → invitation → trigger loop
+  ([narrative.md](narrative.md) §8): knits across real days, waits as a soft
+  yarn-ball bubble, and on tap loops the scarf onto the cat for good. Also
+  realizes the roadmap's earlier "a knitter by the fire… a slowly growing
+  scarf" idea, now with a payoff that waits for you.
+- **`__dev.audit()` grows narrative invariants.** No arc names a missing
+  regular, no `stage` exceeds its definition, the loaded save matches
+  `version`, no beat fires without an invitation.
+
+### Save durability — making the memory as sturdy as no-build allows
+
+`localStorage` is durable on the browser a reader actually uses day to day — it
+survives tab closes, browser quits, and reboots indefinitely. It is lost only in
+nameable cases: clearing site data, private/incognito windows, a different
+browser or device, disk-pressure eviction, and — the one that bites an idle app
+— Safari/iOS purging script storage after **~7 days** without a visit. A save
+is never a high-stakes thing to lose here (companion mode is whole at day zero),
+but the invested reader's familiarity is worth protecting. The plan, all of it
+staying zero-dependency and offline:
+
+- **Request persistent storage.** Call `navigator.storage.persist()` on boot —
+  exempts the origin from disk-pressure eviction (Firefox prompts, Chrome often
+  grants silently). Cheap and strictly better; does not beat Safari's cap.
+- **Graceful fallback is a hard rule.** A missing, unparseable, or
+  wrong-`version` save always opens a **fresh café** — never an error, never a
+  "save not found" screen. Data loss degrades to day zero, which is still a
+  complete experience. (This is a `MEMORY.load()` guarantee; the audit checks it.)
+- **Encourage install / Add to Home Screen.** Installed-web-app storage is
+  treated far more durably and is the best mitigation for Safari's 7-day purge.
+  Worth a gentle, dismissible hint at most — never a nag.
+- **Export / import a save ("copy your café").** A tiny JSON download and
+  re-import: manual insurance the reader controls, and the hand-carry path to a
+  new browser or machine. Pure data, no backend, no build.
+- **Known limitation, stated honestly.** On Apple platforms a reader away for
+  over a week may return to a fresh café. That is an accepted trade for staying
+  backend-free, softened by install + export and by loss being low-stakes.
+- **Cross-device cloud sync: not pursued.** The owner does not want it, and it
+  is the one option that would break the offline / `file://` / no-server
+  promise. Out of scope — the durability above is the ceiling, on purpose.
+
+## 🚫 Explicitly out (the line moved — here's where it is now)
+
+The vision has grown: Café Hygge is now a **soft narrative game that is also a
+companion app** ([overview.md](overview.md), [narrative.md](narrative.md)). The
+old bar forbade *all* accumulation; the new line sits between **patient
+progression** (welcome) and **pressure** (never).
+
+**Now welcome** — because it waits for you and punishes nothing: persistent
+memory across sessions, story arcs that advance in the background over real
+days, opt-in beats that sit as a soft invitation until the reader chooses them,
+and branching conversations whose choices *color* a moment. All governed by the
+one rule in [narrative.md](narrative.md): *arcs advance on their own; their
+payoffs never fire on their own, and never expire.*
+
+**Still out, permanently:** scores, currencies, upgrades, and any timer,
+streak, decay, unread count, badge, or notification that *demands* the reader's
+attention, penalizes absence, or makes reading straight through feel like
+missing out. A beat you can lose by being away is out; a beat that waits is in.
+Nothing may ever slide backward while you're gone. External chat/stream
+integrations stay out for now.
