@@ -13,9 +13,11 @@
      Detail pass: brows + 3×4 eyes, actual hands, four hair styles
      (0 classic / 1 side-part / 2 curly / 3 bun), clothing folds, scarf
      knots, apron strings, a 4-frame walk and a subtle idle breathe.
-     Standing/walking bodies come in two views: the classic side profile
-     (facing ±1) and a front view when `heading` is 'down' — walking toward
-     the room, or Nora watching it from the till. */
+     Standing/walking bodies come in three views: the classic side profile
+     (facing ±1), a front view when `heading` is 'down' — walking toward
+     the room, or Nora watching it from the till — and a back view when
+     `heading` is 'up' — walking away up the room, or facing the counter
+     to order. */
   function drawHead(g, x, hy, facing, c, closed) {
     const hairL = shade(c.hair, 0.18);
     const st = c.hairStyle || 0;
@@ -99,6 +101,35 @@
     }
   }
 
+  /* The back head is hair all the way down to a narrow neck between two
+     nape tapers. The bun sits as a darker blob mid-head, curls bump the
+     crown and the nape, the side-part shows as a faint groove, and long
+     hair falls in one sheet over the neck and onto the shoulders. */
+  function drawHeadBack(g, x, hy, facing, c) {
+    const hairL = shade(c.hair, 0.18);
+    const st = c.hairStyle || 0;
+    px(g, x - 8, hy, 18, 16, c.skin);                      // neck strip below the hair
+    px(g, x - 8, hy - 4, 18, 16, c.hair);                  // the whole back of the head
+    px(g, x - 8, hy + 12, 5, 4, c.hair);                   // nape tapers
+    px(g, x + 5, hy + 12, 5, 4, c.hair);
+    px(g, x - 2, hy - 3, 7, 2, hairL);                     // shine
+    if (st === 1) {                                        // side-part groove
+      px(g, x + (facing > 0 ? 3 : -3), hy - 4, 2, 5, shade(c.hair, -0.12));
+    } else if (st === 2) {                                 // curly: crown + nape bumps
+      px(g, x - 7, hy - 6, 5, 2, c.hair);
+      px(g, x - 1, hy - 7, 6, 3, c.hair);
+      px(g, x + 5, hy - 6, 5, 2, c.hair);
+      px(g, x - 7, hy + 11, 4, 3, c.hair);
+      px(g, x + 5, hy + 11, 4, 3, c.hair);
+    } else if (st === 3) {                                 // the bun, seen properly
+      px(g, x - 2, hy, 7, 7, shade(c.hair, -0.15));
+      px(g, x - 1, hy + 1, 3, 2, hairL);
+    }
+    if (c.longHair && st !== 3) {
+      px(g, x - 7, hy + 12, 16, 12, c.hair);               // one sheet over the neck
+    }
+  }
+
   function heldDrinkKind(p) {
     if (p.kind !== 'barista') return p.drink ? p.drink.kind : 'cup';
     if (p.state === 'serveWalk' && p.orders[0]) return p.orders[0].drink.kind;
@@ -129,6 +160,7 @@
     const facing = p.facing >= 0 ? 1 : -1;
     const walk = p.pose === 'walk';
     const front = p.heading === 'down' && (walk || p.pose === 'stand');
+    const back = p.heading === 'up' && (walk || p.pose === 'stand');
     const cycle = walk ? (Math.floor(p.animT * 8) % 4) : 0;
     const pass = cycle === 1 || cycle === 3;               // passing frames bob up
     const y = p.y - (walk && pass ? 2 : 0);
@@ -217,9 +249,9 @@
     }
 
     // standing / walking legs (4-frame walk: stride, pass, stride, pass;
-    // the front view steps in place — the trailing shoe lifts 2 px instead
-    // of the profile's horizontal stride)
-    if (walk && front) {
+    // the front/back views step in place — the trailing shoe lifts 2 px
+    // instead of the profile's horizontal stride)
+    if (walk && (front || back)) {
       if (pass) {
         px(g, x - 10, y - 16, 8, 16, c.pants);
         px(g, x + 2, y - 16, 8, 16, c.pants);
@@ -257,14 +289,27 @@
     px(g, x - 10, y - 40, 20, 2, shade(c.top, 0.12));
     px(g, x - 1, y - 34, 2, 14, topD);
     px(g, x - 10, y - 18, 20, 2, topD);
-    if (c.scarf) {
+    if (c.scarf && back) {
+      // from behind: just the wrap band, one tail tossed down the back
+      px(g, x - 10, y - 40, 20, 5, c.scarf);
+      const bkx = facing > 0 ? x + 3 : x - 7;
+      px(g, bkx, y - 35, 4, 9, c.scarf);
+      px(g, bkx, y - 27, 2, 2, shade(c.scarf, -0.15));     // fringe
+    } else if (c.scarf) {
       px(g, x - 10, y - 40, 20, 5, c.scarf);
       const kx = front ? x - 1 : facing > 0 ? x + 5 : x - 9;   // knot centres up front
       px(g, kx, y - 37, 4, 4, shade(c.scarf, -0.15));      // knot
       px(g, kx, y - 33, 4, 8, c.scarf);                    // hanging tail
       px(g, kx, y - 26, 2, 2, shade(c.scarf, -0.15));      // fringe
     }
-    if (c.apron) {
+    if (c.apron && back) {
+      // from behind: straps over the shoulders, waistband, and the tie bow
+      px(g, x - 5, y - 39, 2, 3, '#c9b28a');
+      px(g, x + 3, y - 39, 2, 3, '#c9b28a');
+      px(g, x - 8, y - 32, 16, 2, '#c9b28a');
+      px(g, x - 2, y - 31, 4, 3, '#e8dfc9');               // the bow, centre stage
+      px(g, x - 1, y - 28, 2, 6, '#e8dfc9');
+    } else if (c.apron) {
       px(g, x - 8, y - 32, 16, 16, '#e8dfc9');
       px(g, x - 3, y - 37, 6, 5, '#e8dfc9');
       px(g, x - 5, y - 39, 2, 3, '#c9b28a');               // neck straps
@@ -279,6 +324,7 @@
       }
     }
     if (front) drawHeadFront(g, x, y - 56 + breathe, facing, c);
+    else if (back) drawHeadBack(g, x, y - 56 + breathe, facing, c);
     else drawHead(g, x, y - 56 + breathe, facing, c);
     // arm + held item, with actual hands
     const held = p.holding;
@@ -293,9 +339,10 @@
       px(g, ax, y - 48, 5, 13, c.top);
       px(g, ax + facing * 2, y - 58, 4, 12, c.skin);
       px(g, ax + facing * 2, y - 61, 4, 4, c.skin);
-    } else if (front) {
-      // front view: both arms hang at the sides with a small counter-swing;
-      // a held item rides at the hip in the near hand
+    } else if (front || back) {
+      // front/back views: both arms hang at the sides with a small
+      // counter-swing; a held item rides at the hip in the near hand
+      // (beside the body, so it reads from behind too)
       const fs = walk && !pass ? (cycle === 0 ? 1 : -1) : 0;
       px(g, x - 14, y - 38 + fs, 4, 14, c.top);
       px(g, x - 14, y - 25 + fs, 4, 4, c.skin);
@@ -329,7 +376,7 @@
         } else if (held === 'can') {
           px(g, x + 7, y - 28, 12, 10, '#b5654a');
           px(g, x + 9, y - 32, 8, 4, '#c98f4a');
-          px(g, x + 18, y - 26, 3, 4, '#b5654a');          // spout, foreshortened
+          if (front) px(g, x + 18, y - 26, 3, 4, '#b5654a');   // spout points at the room
           px(g, x + 10, y - 30, 4, 3, c.skin);
         } else if (held === 'taper') {
           px(g, x + 12, y - 43, 2, 17, '#e8dfc9');

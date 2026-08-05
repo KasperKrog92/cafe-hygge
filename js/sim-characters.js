@@ -415,17 +415,11 @@
       }
     }
 
-    // face customers at the till when taking an order; otherwise turn to
-    // the room (drawPerson's front view) and watch the café
+    // at the till she faces the room — and, across the counter, whoever
+    // steps up to order (they turn heading-up, she stays heading-down)
     if (b.state === 'idle' && (!b.path || !b.path.length)) {
-      const front = world.queue[0];
-      if (front && front.state === 'ordering') {
-        b.facing = front.x > b.x ? 1 : -1;
-        b.heading = '';
-      } else {
-        b.facing = -1;
-        b.heading = 'down';
-      }
+      b.facing = -1;
+      b.heading = 'down';
     }
   }
 

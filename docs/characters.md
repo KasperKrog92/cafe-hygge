@@ -84,9 +84,9 @@ daily care, then small counter-life:
 - Otherwise just stands, watching the room (drawn in the front view, facing
   out from behind the counter).
 
-If anyone is waiting in the queue she stays at the till, still facing the
-room; when the patron at the front steps up to order she turns to them in
-profile.
+If anyone is waiting in the queue she stays at the till, facing the room;
+the patron at the front steps up and turns to face her across the counter
+(their back view meeting her front view).
 
 ---
 

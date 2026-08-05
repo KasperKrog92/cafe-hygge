@@ -230,20 +230,29 @@ or closed laptop tucks under the mirror-side arm so it can coexist with a
 cup. Facing is ±1 (side profile both
 ways); the face details and hair-back column flip with it.
 
-Standing and walking bodies also have a **front view**, used when `heading`
-is `'down'`: the shared walker sets it on mostly-vertical legs longer than
-24 px that head down the room (door → lane, lane → seat, Nora's exit column
-and candle/water descents) and clears it on horizontal or upward legs and on
-arrival; short downward hops keep the current view so nothing flashes
-mid-journey. Nora also faces the room this way while idle at the till. The
-front body: a symmetric head (two brows/eyes, centred mouth, blush on both
-cheeks, front variants of all four hair styles, long hair falling both
-sides), centred scarf knot, the apron minus its back-tie bow, a step-in-place
-walk (trailing shoe lifts 2 px on stride frames, same 4-frame clock), and
-arms hanging at both sides with a 1 px counter-swing. Held items ride at the
-hip in the near hand (cup, matcha bowl, iced glass, plate, cloth, book,
-level watering can, upright taper); umbrella and packed laptop draw
-unchanged. There is no back view — upward legs keep the side profile — and
+Standing and walking bodies also have **front and back views**, driven by
+`heading`: the shared walker sets `'down'` on mostly-vertical legs longer
+than 24 px heading down the room (door → lane, lane → seat, Nora's exit
+column and candle/water descents) and `'up'` on the same legs heading up it
+(walking out to the door, returning a cup, Nora walking home); horizontal
+legs and arrival clear it, and short vertical hops keep the current view so
+nothing flashes mid-journey. Nora faces the room this way while idle at the
+till, and an ordering patron turns heading-up to meet her across the
+counter.
+
+Both views share a step-in-place walk (trailing shoe lifts 2 px on stride
+frames, same 4-frame clock), arms hanging at both sides with a 1 px
+counter-swing, and held items riding at the hip in the near hand (cup,
+matcha bowl, iced glass, plate, cloth, book, level watering can, upright
+taper — the can's spout only shows from the front); umbrella and packed
+laptop draw unchanged. The **front** head is symmetric: two brows/eyes,
+centred mouth, blush on both cheeks, front variants of all four hair
+styles, long hair falling both sides; the scarf knot centres and the apron
+loses its back-tie bow. The **back** head is hair down to a narrow neck
+between two nape tapers — the bun a darker mid-head blob, curls bumping
+crown and nape, the side-part a faint groove, long hair one sheet over the
+neck onto the shoulders; the back scarf is the wrap band plus one tail down
+the back, and the apron shows straps, waistband and a centred tie bow.
 `sit`, `stretch` and `reach` always draw in profile.
 
 Nora adds two quiet standing poses: `stretch` (both arms overhead with a

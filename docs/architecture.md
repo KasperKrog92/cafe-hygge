@@ -85,9 +85,9 @@ hidden; rAF resumes seamlessly on return.
 
 `walker(entity, dt)` advances an entity along `entity.path` (array of
 waypoints), sets `pose` (`walk`/`stand`), `facing`, and `heading` (`'down'`
-on mostly-vertical legs longer than 24 px heading down the room — the
-renderer's front-view switch, cleared on horizontal/upward legs and on
-arrival), and returns `true` on arrival. `makePath(e, tx, ty)` builds L-shaped routes via the walking lane
+/ `'up'` on mostly-vertical legs longer than 24 px — the renderer's
+front/back-view switch, cleared on horizontal legs and on arrival), and
+returns `true` on arrival. `makePath(e, tx, ty)` builds L-shaped routes via the walking lane
 (`L.lane = 368`): vertical to lane → horizontal → vertical to target. The
 barista has hand-built paths behind the counter (y = 286) and exits through
 the gap at `L.baristaExitX = 616`. Cat walks use `catRoute`: safe pairs keep a

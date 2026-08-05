@@ -301,13 +301,14 @@
     const step = e.speed * dt;
     e.x += (dx / dist) * Math.min(step, dist);
     e.y += (dy / dist) * Math.min(step, dist);
-    // heading drives drawPerson's front view: long vertical legs walking
-    // down the room face the viewer; horizontal and upward legs keep the
-    // side profile. Short downward hops (< 24 px, e.g. the wait-spot →
-    // pickup shuffle) keep the current view so it doesn't flash mid-journey.
+    // heading drives drawPerson's front/back views: long vertical legs
+    // walking down the room face the viewer ('down'), long legs walking up
+    // the room show the back ('up'); horizontal legs keep the side profile.
+    // Short vertical hops (< 24 px, e.g. the wait-spot → pickup shuffle)
+    // keep the current view so it doesn't flash mid-journey.
     if (Math.abs(dx) > 0.6) { e.facing = dx > 0 ? 1 : -1; e.heading = ''; }
-    else if (dy < -0.6) e.heading = '';
     else if (dy > 24) e.heading = 'down';
+    else if (dy < -24) e.heading = 'up';
     e.pose = 'walk';
     return false;
   }

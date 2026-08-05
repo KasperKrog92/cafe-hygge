@@ -191,6 +191,7 @@
         if (p.queueIdx === 0 && (!p.path || !p.path.length) && world.barista.state === 'idle' && !world.barista.orders.length) {
           p.state = 'ordering'; p.stateT = 0;
           p.facing = 1;
+          p.heading = 'up';        // step up and face Nora across the counter
           p.bubble = { icon: p.drink.icon, until: world.t + 1.9 };
           if (p.partner && !p.orderCaptioned) {
             p.orderCaptioned = true; p.partner.orderCaptioned = true;
