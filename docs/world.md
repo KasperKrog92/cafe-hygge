@@ -39,7 +39,8 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   rain 0.8 (24%), or storm 1.0 (8%). `world.rain` eases toward it at 0.18/s;
   `world.storm` lasts until the next non-storm roll.
 - Rain drives: streak count/alpha on the window glass, window-tap density in
-  the audio engine, arrival flavor, and umbrellas. Most wet-weather patrons
+  the audio engine, arrival flavor, and umbrellas — the patrons' and the
+  passers-by's outside alike. Most wet-weather patrons
   shake a furled umbrella at the door, park it in the stand, then collect it
   as their final departure stop. `world.umbrellaStand` stores the visible
   owner/color links; it is glanceable room state, never inventory.
@@ -53,6 +54,26 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   briefly lifts the two window panes and door glass, then a 1–4 s distance gap
   ends in a low thunder rumble. The flash decays at 4/s and adds only faint
   cool pools below the windows after dark—never a full-screen strobe.
+
+## The street (passers-by)
+
+- `world.passersby` holds the silhouettes crossing outside the glass. They
+  walk in master-canvas x along the whole facade (`STREET` in `sim-core.js`),
+  so a figure leaves the first pane, disappears behind the wall, and
+  reappears in the second a few seconds later. Scenery, not characters: they
+  never enter and never interact; `drawPassersby` (scene-bg.js) clips them
+  inside each pane, over the town and under the rain on the glass.
+- Cadence follows the day: every ~9–40 s in daylight, sparser toward dusk,
+  only the odd night owl 22:30–06:00; storms halve the traffic. About one in
+  five is a pair walking shoulder to shoulder (one object, drawn twice, so
+  they can never drift apart).
+- Rain above 0.15 raises umbrellas (patron umbrella colors via `shade(·,
+  −0.28)`; a pair shares one wide canopy). In heavy rain most walkers hurry:
+  faster steps, a lean, the canopy tilted into the weather.
+- Unhurried strollers occasionally slow mid-pane for a look at the room —
+  always at a pane still ahead of them, never behind the wall — and 18% of
+  those pauses earn a caption. `__dev.passer({dir, umbrella, pair, pause})`
+  forces one for testing.
 
 ## Lighting (the pass that sells the coziness)
 
@@ -119,7 +140,8 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   a/an), Nora serving/tidying/clearing, seat choices ("sinks into the armchair
   by the fire", "curls up in the reading nook", "perches on the window
   seat"), window gazes (20% of them, weather/hour-aware: rain on the glass,
-  streetlamps, the street drifting by), bookshelf moments (drifting
+  streetlamps, the street drifting by), a passer-by slowing at the glass
+  (18% of pauses), bookshelf moments (drifting
   over, picking a book out, slipping it back), page turns (12% of them),
   murmuring tables (15%), quiet laptop bouts (10%), cup returns, departures
   (rain/night-aware), umbrella shakes/collections, linked-pair arrivals,

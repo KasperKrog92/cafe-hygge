@@ -89,7 +89,10 @@ y=36  ── 16:9 crop top
           wall band: door + bell (L.door, L.bell), window (L.win), fireplace
           breast with mantel clock/candles + firewood basket (L.fire), second
           window (L.win2 — same glass, its own stretch of town; the moon hangs
-          in L.win only); short rust-red drapes frame both views, held open by
+          in L.win only); passers-by cross both panes as trouser-swatch
+          silhouettes on the near pavement, feet cropped by the sill,
+          umbrellas up in rain (drawPassersby in scene-bg.js; behavior in
+          world.md); short rust-red drapes frame both views, held open by
           brass tiebacks so weather and seated silhouettes stay glanceable;
           both deep sills are window perches (L.winSeats):
           a back cushion against each side frame (red pair by the door, green

@@ -16,6 +16,7 @@
      __dev.hour(h)     jump the in-world clock (no arg: read it)
      __dev.kettle()    re-arm the evening kettle to sound shortly
      __dev.storm(on)   force the weather into/out of a storm
+     __dev.passer(o)   silhouette past the windows ({dir, umbrella, pair, pause})
      __dev.ff(sec)     fast-forward the sim in 0.25 s ticks, muted
      __dev.spawn(o)    real patron with chosen traits, via the front door
      __dev.regular()   force Holger's next arrival
@@ -85,6 +86,11 @@
       w.thunderT = 0; w.thunderIn = 0; w.flash = 0;
     }
     return w.storm;
+  };
+
+  /* A street silhouette on demand: dir ±1, umbrella/pair/pause booleans. */
+  D.passer = function (opts) {
+    return SIM._.spawnPasser(world(), opts || {});
   };
 
   /* Fast-forward by ticking the sim like the hidden-tab path (0.25 s steps,

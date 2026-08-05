@@ -41,6 +41,7 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
   `__dev.noraDo('stretch'|'chalk'|'water'|'candles'|'piano')`,
   `__dev.piano(on)`,
   `__dev.kettle()`, `__dev.storm(on)`,
+  `__dev.passer({dir, umbrella, pair, pause})` (a street silhouette),
   `__dev.catDo('eat'|'window'|'bookshelf'|'counter'|'topShelf'|'piano'|'lap'|'mote'|'knead')`,
   `__dev.bowls(food, water)`, `__dev.overlay()`,
   `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus

@@ -158,6 +158,7 @@
       });
       g.globalAlpha = 1;
     }
+    drawPassersby(g, world, w);
     // rain streaks — 1 px at native res, mixed lengths and speeds
     if (world.rain > 0.02) {
       g.globalAlpha = 0.3 * Math.min(1, world.rain * 1.6);
@@ -279,6 +280,79 @@
     px(g, x, top + 2, 12, 20, C.body);
     px(g, x + 1, top + 22, 10, 2, C.dark);      // rounded base on the sill
     px(g, x + 2, top + 10, 8, 2, C.seam);       // tufting seam
+  }
+
+  /* ---------- passers-by beyond the glass ----------
+     Silhouettes strolling the pavement, positioned in master-canvas x (state
+     in updatePassersby, sim-core.js). Each pane clips its own view of the
+     same street, drawn over the town and under the rain on the glass. Feet
+     sit below the frame so the sill crops their shoes — the near pavement
+     runs closer than the town across the street. */
+  const PASSER = '#2c3038';        // existing trouser swatch, darker than the town
+  const PASSER_GY = 186;           // pavement line, just below the glass bottom
+
+  function drawPassersby(g, world, w) {
+    const list = world.passersby;
+    if (!list || !list.length) return;
+    g.save();
+    g.beginPath();
+    g.rect(w.x, w.y, w.w, w.h);
+    g.clip();
+    for (let i = 0; i < list.length; i++) {
+      const p = list[i];
+      if (p.x + 34 < w.x || p.x - 34 > w.x + w.w) continue;
+      const stride = p.pausing ? 0 : Math.sin(p.animT * p.speed * 0.19);
+      if (p.mate) drawPasserFigure(g, p.x + p.mate.dx, p.mate.h, -stride, p.dir, p.hurried);
+      drawPasserFigure(g, p.x, p.h, stride, p.dir, p.hurried);
+      if (p.umbrella) {
+        const ux = p.mate ? p.x + p.mate.dx / 2 : p.x;
+        const top = PASSER_GY - (p.mate ? Math.max(p.h, p.mate.h) : p.h);
+        drawPasserUmbrella(g, ux, top, p);
+      }
+    }
+    g.restore();
+  }
+
+  function drawPasserFigure(g, cx, h, stride, dir, hurried) {
+    cx = Math.round(cx);
+    const top = PASSER_GY - h;
+    const legH = Math.round(h * 0.42);
+    const hipY = PASSER_GY - legH;
+    const bob = Math.round(Math.abs(stride));        // 1 px gait bob
+    const lean = hurried ? dir * 2 : 0;              // leaning into the rain
+    const spread = Math.round(legH * 0.4 * stride);
+    passerLeg(g, cx, hipY, cx + spread);
+    passerLeg(g, cx, hipY, cx - spread);
+    // coat with a slight flare at the hem
+    px(g, cx - 4 + lean, top + 7 + bob, 9, hipY - top - 5 - bob, PASSER);
+    px(g, cx - 5 + lean, hipY - 4, 11, 6, PASSER);
+    // head over shoulders, nudged the way they're going
+    px(g, cx - 4 + lean, top + 6 + bob, 9, 3, PASSER);
+    px(g, cx - 2 + lean + dir, top + bob, 5, 2, PASSER);
+    px(g, cx - 3 + lean + dir, top + 2 + bob, 7, 5, PASSER);
+  }
+
+  /* one leg as two stacked segments: thigh toward the hip, shin to the foot */
+  function passerLeg(g, hx, hipY, fx) {
+    const half = Math.round((PASSER_GY - hipY) / 2);
+    const mx = Math.round((hx + fx) / 2);
+    px(g, mx - 1, hipY, 3, half, PASSER);
+    px(g, fx - 1, hipY + half, 3, PASSER_GY - hipY - half, PASSER);
+  }
+
+  function drawPasserUmbrella(g, cx, headTop, p) {
+    const c = shade(p.umbrella.color, -0.28);        // muted through the wet glass
+    const wide = p.mate ? 30 : 22;                   // a pair shares one canopy
+    const ux = Math.round(cx + (p.hurried ? p.dir * 3 : p.dir));
+    const uy = headTop - 10;
+    px(g, ux - wide / 2 + 7, uy, wide - 14, 2, c);
+    px(g, ux - wide / 2 + 3, uy + 2, wide - 6, 2, c);
+    px(g, ux - wide / 2, uy + 4, wide, 3, c);
+    for (let sx = ux - wide / 2; sx <= ux + wide / 2 - 4; sx += 6) {
+      px(g, sx, uy + 7, 4, 1, c);                    // scalloped edge
+    }
+    px(g, ux - 1, uy - 3, 2, 3, c);                  // ferrule
+    px(g, ux, uy + 7, 1, headTop + 14 - (uy + 7), PASSER);   // shaft to the hand
   }
 
   /* ---------- door with jingling bell ----------

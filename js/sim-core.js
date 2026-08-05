@@ -63,6 +63,7 @@
       daylight: 1,
       rain: 0.55, rainTarget: 0.55, weatherT: rnd(120, 300),
       storm: false, flash: 0, thunderT: rnd(25, 75), thunderIn: 0,
+      passersby: [], passerT: rnd(4, 12),
       lastWholeHour: Math.floor(START_HOUR), clockHour: START_HOUR,
       kettle: { day: 0, hour: rnd(19, 21.5), firedDay: -1 },
       door: { open: 0, target: 0, jiggle: 0 },
@@ -153,6 +154,9 @@
     seedPatron(world, 4);
     seedPatron(world, 10);
     seedPatron(world, 12);
+
+    // the street is never quite empty at boot
+    spawnPasser(world, { x: rnd(STREET.x0 + 40, STREET.x1 - 40) });
 
     return world;
   };
@@ -403,6 +407,87 @@
       }
     } else if (!world.storm) {
       world.thunderIn = 0;
+    }
+  }
+
+  /* ---------- passers-by (the street beyond the glass) ---------- */
+
+  /* Silhouettes crossing the panes in master-canvas x: the wall between the
+     windows hides the middle of the walk, so a figure leaves one pane and
+     reappears in the other a few seconds later. Scenery, not characters —
+     they never come in — but dt-driven here so hidden tabs keep the street
+     alive. Drawn by drawPassersby in scene-bg.js, clipped inside the glass. */
+  const STREET = { x0: 96, x1: 628 };
+
+  function makePasser(world, dir, x, opts) {
+    opts = opts || {};
+    const hurried = world.rain > 0.55 && Math.random() < 0.8;
+    const p = {
+      x: x, dir: dir,
+      speed: rnd(30, 44) * (hurried ? rnd(1.25, 1.5) : 1),
+      h: Math.round(rnd(38, 46)),
+      animT: rnd(0, 5),
+      hurried: hurried, pausing: false,
+      umbrella: null, mate: null,
+      pauseX: 0, pauseT: 0, glanced: false
+    };
+    const wantsUmbrella = 'umbrella' in opts
+      ? !!opts.umbrella
+      : world.rain > 0.15 && Math.random() < 0.45 + world.rain * 0.5;
+    if (wantsUmbrella) p.umbrella = { color: pick(UMBRELLAS) };
+    // fair-weather strollers sometimes slow mid-pane for a look at the room —
+    // only at a pane still ahead of them, so no one stops behind the wall
+    if ('pause' in opts ? opts.pause : !hurried && Math.random() < 0.14) {
+      const ahead = [L.win, L.win2].filter(function (win) {
+        return dir > 0 ? x < win.x : x > win.x + win.w;
+      });
+      if (ahead.length) {
+        const win = pick(ahead);
+        p.pauseX = win.x + rnd(20, win.w - 20);
+        p.pauseT = rnd(1.4, 2.8);
+      }
+    }
+    return p;
+  }
+
+  function spawnPasser(world, opts) {
+    opts = opts || {};
+    const dir = opts.dir || (Math.random() < 0.5 ? 1 : -1);
+    const x = 'x' in opts ? opts.x : dir > 0 ? STREET.x0 : STREET.x1;
+    const p = makePasser(world, dir, x, opts);
+    if ('pair' in opts ? opts.pair : Math.random() < 0.18) {
+      p.mate = { dx: -dir * Math.round(rnd(10, 13)), h: Math.max(35, p.h - Math.round(rnd(2, 6))) };
+    }
+    world.passersby.push(p);
+    return p;
+  }
+
+  function passerGap(world) {
+    if (world.hour >= 22.5 || world.hour < 6) return rnd(55, 140);   // the odd night owl
+    const gap = rnd(9, 20) + (1 - world.daylight) * rnd(6, 20);
+    return world.storm ? gap * 2 : gap;
+  }
+
+  function updatePassersby(world, dt) {
+    world.passerT -= dt;
+    if (world.passerT <= 0) {
+      world.passerT = passerGap(world);
+      if (world.passersby.length < 4) spawnPasser(world);
+    }
+    for (let i = world.passersby.length - 1; i >= 0; i--) {
+      const p = world.passersby[i];
+      p.animT += dt;
+      p.pausing = p.pauseT > 0 && (p.dir > 0 ? p.x >= p.pauseX : p.x <= p.pauseX);
+      if (p.pausing) {
+        p.pauseT -= dt;
+        if (!p.glanced) {
+          p.glanced = true;
+          if (Math.random() < 0.18) caption(world, 'someone slows on the pavement outside, peeking in.');
+        }
+      } else {
+        p.x += p.dir * p.speed * dt;
+      }
+      if (p.x < STREET.x0 - 30 || p.x > STREET.x1 + 30) world.passersby.splice(i, 1);
     }
   }
 
@@ -685,6 +770,7 @@
     makePath: makePath, walker: walker,
     ringDoor: ringDoor, updateDoor: updateDoor,
     updateWeather: updateWeather, updateClock: updateClock,
+    updatePassersby: updatePassersby, spawnPasser: spawnPasser,
     dayIndex: dayIndex, candleTables: candleTables,
     snapCandles: snapCandles, updateCandles: updateCandles,
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,

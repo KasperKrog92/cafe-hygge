@@ -8,6 +8,7 @@
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
   const caption = R.caption, walker = R.walker, spawnSteam = R.spawnSteam;
   const updateClock = R.updateClock, updateWeather = R.updateWeather;
+  const updatePassersby = R.updatePassersby;
   const updateCandles = R.updateCandles, dayIndex = R.dayIndex;
   const updateDoor = R.updateDoor, updateSpawning = R.updateSpawning;
   const updatePatron = R.updatePatron, updateParticles = R.updateParticles;
@@ -1261,6 +1262,7 @@
     updateClock(world, dt);
     updateCandles(world, dt);
     updateWeather(world, dt);
+    updatePassersby(world, dt);
     updateDoor(world, dt);
     updateSpawning(world, dt);
     updateBarista(world, world.barista, dt);
