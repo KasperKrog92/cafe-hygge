@@ -23,7 +23,37 @@ own; their payoffs never fire on their own and never expire* — lives in
 [docs/narrative.md](docs/narrative.md). See [docs/overview.md](docs/overview.md)
 for the full design ethos.
 
+## Working with the owner
+
+- **Explicit direction is a spec, not a suggestion.** When the owner says how
+  something should look or behave — especially art, layout, or framing —
+  implement *exactly that*, then show the result. Do not re-derive their intent,
+  substitute your own mental model, or argue the design mid-task. If you
+  genuinely believe a different approach is better, build what was asked first
+  and offer the alternative *after*. (Learned the hard way: an armchair redesign
+  took three passes because the agent kept re-imposing a front-view reading over
+  the owner's clearly stated **side-view** one. The owner's words — "seen from
+  the side, the backrest the only vertical, the armrest protruding horizontally"
+  — were the spec all along.)
+- **Show, don't explain.** For anything visual, a rendered screenshot ends the
+  argument faster than paragraphs. Make the change, capture it, let the picture
+  carry the turn. Skip the explanatory diagrams and option menus unless asked.
+- **Act on a clear instruction immediately.** Don't burn the turn scoping,
+  hedging, or verifying things the owner didn't ask about.
+
 ## Running & testing
+
+- **To see a visual change, open `http://localhost:8137/?dev` — with the query
+  string, not the bare URL.** `?dev` boots straight into the café with `SCENE`,
+  `SIM`, `__dev`, and `__world` all defined and no start-overlay click needed.
+  The bare URL sits on the splash: the canvas is an unsized 300×150 and none of
+  the globals exist yet, which is a dead end for inspection. If the in-app
+  preview pane is not *visibly displayed*, `computer screenshot` cannot
+  composite it — render off-screen instead: build a 960×600 canvas, call
+  `SCENE.drawScene(g, world)` then `SCENE.furnitureDrawables(world)` +
+  `SIM.entityDrawables(world).draws`, sort by `y`, draw each, and crop the
+  region you care about. (A one-call `__dev.shot()` for this is proposed in
+  [docs/plans/llm-dev-ergonomics.md](docs/plans/llm-dev-ergonomics.md).)
 
 - Live at <https://hygge.kasper-krog.dk> (GitHub Pages, `main` + `CNAME`) —
   pushes to `main` publish there.
