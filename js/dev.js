@@ -637,6 +637,19 @@
         if (names.feminine.indexOf(spec.name) >= 0 || names.masculine.indexOf(spec.name) >= 0) {
           problems.push(who + ' name "' + spec.name + '" collides with the random PATRON_NAMES pool');
         }
+        // line pools are read with pick() at the caption seams — each must be an
+        // array so a malformed row fails the audit, not the sim (Phase 2)
+        if (!spec.lines || typeof spec.lines !== 'object') {
+          problems.push(who + ' has no lines pools');
+        } else {
+          ['arrival', 'overheard', 'musing', 'backstory'].forEach(function (ctx) {
+            if (!Array.isArray(spec.lines[ctx])) problems.push(who + ' lines.' + ctx + ' is not an array');
+          });
+          // a chatty regular with no mate-facing pool would fall silent at the table
+          if (spec.traits && spec.traits.chatty && (!spec.lines.overheard || !spec.lines.overheard.length)) {
+            problems.push(who + ' is chatty but has no overheard lines');
+          }
+        }
       });
     }
 

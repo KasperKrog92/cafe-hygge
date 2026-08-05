@@ -18,6 +18,33 @@
       : seat.nook ? 'nook chair' : 'seat';
   }
 
+  /* how often a regular's own words displace the generic caption at a seam,
+     per context; backstory is a rarer tier under a solo musing (a life leaks
+     out only across many visits). */
+  const LINE_GATE = { overheard: 0.22, musing: 0.18 };
+  const BACKSTORY_GATE = 0.035;
+
+  /* A regular's voice, in the narrator's register. Where a caption already
+     fires around a regular, this sometimes lets it carry that regular's words
+     instead — pulled from their spec's pool for `context` ('overheard' at a
+     shared table, 'musing' when alone). Much more rarely, a solo musing
+     surfaces a fragment of backstory instead. Narrated fragments, never quoted
+     dialogue (that waits for the opt-in focus step). Returns whether it spoke,
+     so the caller can fall back to its generic line. Non-regulars have no
+     `spec` and get a quiet false. */
+  function regularLine(world, p, context) {
+    const spec = p.spec;
+    if (!spec || !spec.lines) return false;
+    if (context === 'musing') {
+      const back = spec.lines.backstory;
+      if (back && back.length && Math.random() < BACKSTORY_GATE) { caption(world, pick(back)); return true; }
+    }
+    const pool = spec.lines[context];
+    if (!pool || !pool.length || Math.random() >= LINE_GATE[context]) return false;
+    caption(world, pick(pool));
+    return true;
+  }
+
   function freeSeat(world, patron) {
     let free = world.seats.filter(function (s) { return !s.taken; });
     if (!free.length) return null;
@@ -548,7 +575,7 @@
         if (p.gazeT <= 0 && p.sipPhase <= 0) {
           p.gazeDur = rnd(3.5, 8);
           p.gazeFacing = -p.seat.facing;
-          if (Math.random() < 0.2) {
+          if (!regularLine(world, p, 'musing') && Math.random() < 0.2) {
             caption(world, p.name + (world.rain > 0.4 ? ' watches the rain run down the glass.'
               : world.daylight < 0.3 ? ' watches the streetlamps glow outside.'
               : ' watches the street drift by for a while.'));
@@ -563,7 +590,7 @@
       if (p.pageT <= 0) {
         p.pageT = rnd(12, 26);
         SND.pageTurn();
-        if (Math.random() < 0.12) caption(world, p.name + ' turns a page.');
+        if (!regularLine(world, p, 'musing') && Math.random() < 0.12) caption(world, p.name + ' turns a page.');
       }
     }
 
@@ -581,7 +608,7 @@
         p.typingT -= dt;
         if (p.typingT <= 0) {
           p.typingRemain = rnd(2, 3.5); p.keyT = 0;
-          if (Math.random() < 0.1) caption(world, p.name + pick([
+          if (!regularLine(world, p, 'musing') && Math.random() < 0.1) caption(world, p.name + pick([
             ' types a few quiet lines.',
             ' frowns gently at the screen, then lets it go.'
           ]));
@@ -601,7 +628,7 @@
           p.bubble = { icon: p.partner && Math.random() < 0.05 ? 'heart' : 'dots', until: world.t + 1.6 };
           SND.murmur(p.murmurPitch);
           mate.chatReply = rnd(1.2, 2);
-          if (Math.random() < 0.15) caption(world, 'Soft murmurs drift from the table ' + (world.tables[p.seat.table].tag || 'in the corner') + '.');
+          if (!regularLine(world, p, 'overheard') && Math.random() < 0.15) caption(world, 'Soft murmurs drift from the table ' + (world.tables[p.seat.table].tag || 'in the corner') + '.');
         }
       }
     }

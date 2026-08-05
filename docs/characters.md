@@ -236,8 +236,8 @@ they leave 0.8 s apart and share one cup-bussing decision.
 The regulars are the fixed faces — a roster kept as pure data in
 `js/characters-roster.js` (`window.CAST.regulars`), read by the sim at world
 creation. Each row fixes a look, a drink, a set of habits, a usual seat, an
-arrival window, and (from Phase 2) the pools of lines they might overhear or
-muse aloud. `makeRegular(world, spec)` stamps a row over a plain patron;
+arrival window, and the pools of lines they might overhear or muse aloud.
+`makeRegular(world, spec)` stamps a row over a plain patron;
 `world.regulars` holds one schedule slot per id (`{ lastDay, day, hour,
 force }`), and `updateRegulars` brings each in once per café day within its
 window. Every regular is chosen to ride a behavior that already exists, so the
@@ -252,7 +252,7 @@ roster is almost entirely data — no new behavior code.
 
 Deliberate contrasts keep them from blurring together: morning versus dusk
 (only Freya sits late enough that the after-dark doze can take her), silent
-versus chatty (Holger's story will arrive as solo musings, Gerda's as overheard
+versus chatty (Holger's story arrives as solo musings, Gerda's as overheard
 talk), and one of each existing behavior.
 
 **Usual seats.** Each row's `seat` names a `SEAT_PREFS` predicate in
@@ -273,6 +273,28 @@ colour brought reliably in rain, a fixed stay range, and its own `nameStyle`
 the random `PATRON_NAMES` pools so no walk-in ever shares one). The fresh 08:24
 boot reaches Holger's window within its first real minute; `__dev.ff()` walks a
 full day of arrivals quickly, and `__dev.regular(id)` forces any one in.
+
+**Their voices (the passive "listen in").** Each row carries four line pools in
+`lines`: `arrival` (one line as they come in), `overheard` (a shared-table
+murmur), `musing` (a solo beat — reading, window-gazing, typing), and
+`backstory` (a rarer drip). `regularLine(world, p, context)` in `sim-patrons.js`
+sits at the caption seams that already fired around these behaviors: it pulls
+from the matching pool and, if it speaks, suppresses the generic line, so a
+regular's own words replace "turns a page" rather than doubling it. A solo
+musing has a small chance (`BACKSTORY_GATE`, 3.5%) of surfacing a backstory
+fragment instead — a life leaks out only across many visits (Holger's sea years,
+Gerda's Erik, Kasper's unfinished chapter, Freya's re-read). Seams and contexts:
+window-gaze and reading page-turn and laptop bout → `musing`; the table murmur →
+`overheard`. A `chatty: false` regular (Holger, Kasper, Freya) carries no
+`overheard` pool by design — their narrative is solo; only Gerda's overheard
+pool ever fires, and only when a walk-in shares her window table.
+
+**Voice rules for the pools.** Warm, understated, lowercase-cozy, Danish flavor
+welcome — the same narrator voice as every other caption. Every line stands
+alone: none may lean on having read a previous one (the glanceability
+principle), nothing plot-heavy or urgent, and — for now — narrated fragments,
+never quoted dialogue. (Quoted back-and-forth is reserved for the opt-in
+table-focus step, a later phase.)
 
 ---
 

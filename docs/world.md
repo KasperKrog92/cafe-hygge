@@ -162,6 +162,15 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   streetlamp window watches, bookshelf survey, counter shoo, aborted ascent,
   Nora ignoring the top shelf, kneading, dust-mote battle, and gentle lap
   dislodging; every repeatable line remains probability-gated.
+- The **regulars' own voices** ride those same seams. `regularLine` (in
+  `sim-patrons.js`) sits at the window-gaze, page-turn, laptop-bout, and
+  table-murmur seams: for a regular it may pull a bespoke line from that
+  character's `lines` pool (`musing` at a solo beat, `overheard` at a shared
+  table) and, when it does, it suppresses the generic caption so the words
+  replace rather than double it. A solo musing has a 3.5% chance of surfacing a
+  rarer `backstory` fragment instead — a life leaking out across many visits.
+  Narrated fragments only, never quoted dialogue. Non-regulars are untouched;
+  see characters.md for the pools and voice rules.
 - Matcha adds three limiter-paced lines: the whisk step may note the bamboo
   patter and pale-green foam (30%); the ice step may note ice singing against
   glass (25%); and only the first matcha sip of a visit checks for a slow,

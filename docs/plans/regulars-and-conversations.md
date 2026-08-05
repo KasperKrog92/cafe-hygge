@@ -22,6 +22,24 @@ world.md updated in the same change. No new geometry: regulars reuse existing
 seats, routes, drinks, and behaviors, so the audit's footprint/journey checks
 are untouched.
 
+**Progress:**
+
+- ✅ **Phase 0 — groundwork** (commit `3b6cd2b`): `js/characters-roster.js`
+  ships `window.CAST`, the `regularId`/`spec` patron fields, `__dev.regular(id)`,
+  and the roster constant-checks in the audit.
+- ✅ **Phase 1 — the roster** (commit `1738049`): `makeRegular(world, spec)`,
+  `world.regulars` + `updateRegulars`, the `SEAT_PREFS` table, per-spec stay and
+  `nameStyle`. Roster grew to four: Holger, Gerda, Kasper, Freya. (The plan's
+  placeholder names Villads/Liv became Kasper/Freya in the build.)
+- ✅ **Phase 2 — legible overheard lines**: `regularLine(world, p, context)` in
+  `sim-patrons.js`, wired at the window-gaze, page-turn, laptop-bout, and
+  table-murmur seams; `overheard`/`musing`/`backstory` pools filled for all four;
+  backstory drips as a rarer tier under musing; audit now checks the pools are
+  arrays and that a chatty regular has an overheard pool.
+- ⏭️ **Phase 3 — habits & continuity**: next up. Not started.
+- Phases 4–6 remain sketches, to be split into their own plans when their turn
+  comes.
+
 ---
 
 ## Current state (what we build on)
@@ -60,7 +78,7 @@ are untouched.
 
 ---
 
-## Phase 0 — groundwork: the roster as data
+## Phase 0 — groundwork: the roster as data ✅ DONE (commit `3b6cd2b`)
 
 The bible will grow (more regulars, line pools, backstories), so it earns its
 own file rather than swelling `sim-core.js`.
@@ -104,7 +122,7 @@ own file rather than swelling `sim-core.js`.
 
 ---
 
-## Phase 1 — the roster
+## Phase 1 — the roster ✅ DONE (commit `1738049`)
 
 Generalize Holger's one-off into a table, then add three regulars spread across
 the day, each riding a behavior that already exists so this phase is mostly data.
@@ -165,7 +183,7 @@ Holger's existing section folded in); world.md notes the per-regular schedule.
 
 ---
 
-## Phase 2 — legible overheard lines (passive "listen in")
+## Phase 2 — legible overheard lines (passive "listen in") ✅ DONE
 
 The always-on layer. Where a caption already fires around a regular, sometimes
 let it carry the regular's own words — kept in the established narrator voice
@@ -196,6 +214,24 @@ opt-in focus step, Phase 4).
 
 characters.md (voice rules + the `lines` schema), world.md (the new caption
 family). No sound changes (murmur stays the audible layer).
+
+### As built
+
+- `regularLine(world, p, context)` lives above `updateSeated` in
+  `sim-patrons.js`, with module-level `LINE_GATE = { overheard: 0.22, musing:
+  0.18 }` and `BACKSTORY_GATE = 0.035`. It short-circuits to `false` for
+  non-regulars (no `spec`), so each seam calls it unconditionally as
+  `!regularLine(...) && Math.random() < <generic gate>` — the bespoke line
+  suppresses the generic one rather than doubling it.
+- Four seams wired: window-gaze and reading page-turn and laptop bout →
+  `musing`; the table murmur → `overheard`. The "sip" seam named in the sketch
+  was folded into the reading beat — no separate sip caption exists.
+- Backstory surfaces **only** under the `musing` context (not `overheard`), so a
+  history fragment always arrives as a solo beat, never as table chatter.
+- Only Gerda carries an `overheard` pool (she's the sole `chatty` regular);
+  Holger, Kasper, and Freya are `chatty: false` and have empty `overheard`. The
+  audit now flags a chatty regular that lacks overheard lines, and checks every
+  pool is an array (the seams read them with `pick()`).
 
 ---
 

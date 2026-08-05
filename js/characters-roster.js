@@ -18,13 +18,16 @@
      arrival    { from, to } in-world hour window
      stay       [min, max] seconds
      seat       preference key → a SEAT_PREFS predicate in sim-core.js
-     lines      { arrival, overheard, musing, backstory } — filled from Phase 2
+     lines      { arrival, overheard, musing, backstory } pools (Phase 2):
+                arrival fires once on entry; overheard rides a shared-table
+                murmur; musing rides a solo beat (reading, gazing, typing);
+                backstory is a rarer tier under musing. See regularLine() in
+                sim-patrons.js. A chatty:false regular carries no overheard pool.
 
    Row one is Holger, carrying the exact values his hardcoded builder used, so
-   his behavior is unchanged. Phase 1 adds the rest of the roster and wires the
-   sim to read these rows. The `lines.arrival` pool is populated now (each
-   regular needs a way in); overheard/musing/backstory stay empty until Phase 2
-   gives the roster its voice.
+   his behavior is unchanged. Phase 1 added the rest of the roster and wired the
+   sim to read these rows; Phase 2 gave the roster its voice — the overheard,
+   musing, and backstory pools below now surface at the existing caption seams.
 
    Each regular is chosen to ride a behavior that already exists — reading,
    window-gazing, laptop typing, dozing — so the roster is almost pure data:
@@ -56,7 +59,18 @@
         seat: 'firesideLeft',
         lines: {
           arrival: ['Holger steps in, as steady as the clock.'],
-          overheard: [], musing: [], backstory: []
+          // chatty: false — his story is solo, so no overheard pool by design
+          overheard: [],
+          musing: [
+            'Holger reads the same paragraph twice, in no hurry to move on.',
+            'Holger checks the weather through the window, weighing the ferries.',
+            'Holger lets the espresso go cold, lost in the page.',
+            'Holger nods to himself at something in the book.'
+          ],
+          backstory: [
+            'Holger sailed the Kattegat for thirty years; he still reads the sky out of habit.',
+            'Holger mentions a harbour town he hasn\'t seen in years, then lets it drift.'
+          ]
         }
       },
       {
@@ -76,7 +90,21 @@
         seat: 'windowPerch',
         lines: {
           arrival: ['Gerda comes in with the morning and takes her window seat.'],
-          overheard: [], musing: [], backstory: []
+          overheard: [
+            'Gerda drifts into a story about the coldest winter she remembers.',
+            'Gerda tells someone about the garden she used to keep.',
+            'Something at the next chair makes Gerda laugh, warm and unhurried.'
+          ],
+          musing: [
+            'Gerda watches a cyclist wobble past and smiles to herself.',
+            'Gerda follows a couple down the street until they turn the corner.',
+            'Gerda hums something old under her breath.',
+            'Gerda warms her hands on the tea and watches the light change.'
+          ],
+          backstory: [
+            'Gerda says mornings like this were Erik\'s favourite.',
+            'Gerda talks about Erik in the present tense, then gently corrects herself.'
+          ]
         }
       },
       {
@@ -96,7 +124,17 @@
         seat: 'diningTable',
         lines: {
           arrival: ['Kasper drops into a chair with his laptop and a sigh.'],
-          overheard: [], musing: [], backstory: []
+          overheard: [],
+          musing: [
+            'Kasper types a sentence, reads it back, and deletes it.',
+            'Kasper stares at the same chapter he stared at yesterday.',
+            'Kasper mutters at the screen and reaches for the matcha.',
+            'Kasper writes three good lines and looks cautiously pleased.'
+          ],
+          backstory: [
+            'Kasper has been on chapter seven since spring; he doesn\'t mention it anymore.',
+            'Kasper says the book is nearly done, the way he\'s said it all year.'
+          ]
         }
       },
       {
@@ -116,7 +154,17 @@
         seat: 'firesideRight',
         lines: {
           arrival: ['Freya slips in as the lamps come on, her book already in hand.'],
-          overheard: [], musing: [], backstory: []
+          overheard: [],
+          musing: [
+            'Freya turns a page and sinks a little deeper into the armchair.',
+            'Freya reads until the words go soft and warm.',
+            'Freya loses her place, finds it, loses it again.',
+            'Freya lets the fire do the talking for a while.'
+          ],
+          backstory: [
+            'Freya has read this one before; she comes back for the ending anyway.',
+            'Freya says the fire here is better than the one at home.'
+          ]
         }
       }
     ]
