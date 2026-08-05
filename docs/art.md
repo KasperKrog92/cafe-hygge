@@ -190,10 +190,17 @@ Rules that keep it looking right:
   anyone standing behind it. That is why **Nora's y must stay 286** — she
   reads hip-up above the slab (y 264–278), legs hidden. Lower and she
   vanishes; higher and she floats above it.
-- **Each wing chair is split** (fireside pair and nook pair share one
-  construction, `wingChairBack`/`wingChairFront` with a color swatch): back
-  part (baseline y−4) draws behind the sitter (y), the seat-front/armrest
-  (baseline y+12) draws in front — the sitter nestles *into* the chair.
+- **Each armchair is drawn from the SIDE, facing `dir`** (fireside pair and
+  nook pair share one construction, `wingChairBack`/`wingChairFront` with a
+  color swatch). The **backrest is the only vertical element**; it stands at
+  the back — behind the sitter, on the side away from the facing direction —
+  and draws in the back half (baseline y−4). The **near armrest is a
+  horizontal roll** that protrudes forward in the facing direction; it and the
+  seat cushion draw in the front half (baseline y+12), so the arm passes in
+  front of the sitter and hides their lap and legs — you see them from about
+  the waist up. `m()` mirrors the whole thing for `dir = −1`. Do **not** read
+  this chair as a front view: there are no left/right wings, just one back and
+  one forward-reaching arm.
 - **Window perches sit on the wall, not the floor**: a perched sitter's
   baseline is up at the sill, so they sort before all floor furniture and
   render straight onto the background window — cushions draw in the wall

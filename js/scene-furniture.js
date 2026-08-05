@@ -228,9 +228,14 @@
     });
   }
 
-  /* ---------- wing chairs (fireside red, reading-nook green) ----------
-     m() mirrors an x-offset for dir = -1; upholstery colors come in as a
-     swatch so both pairs share one construction. */
+  /* ---------- armchairs (fireside red, reading-nook green) ----------
+     Read from the SIDE, facing the way `dir` points. The backrest is the
+     only vertical element and stands at the back (behind the sitter, on the
+     side away from the facing direction). The near armrest is a horizontal
+     roll that protrudes forward in the facing direction, drawn in the FRONT
+     half so it passes in front of the sitter and hides their lap and legs —
+     you see them from about the waist up. m() mirrors an x-offset for
+     dir = -1; upholstery colors come in as a swatch so both pairs share it. */
   const CHAIR_RED = {
     body: '#8a3d3d', light: '#9c4848', cushion: '#a05252', front: '#7a3535',
     seam: 'rgba(40,16,16,0.3)', piping: 'rgba(40,16,16,0.25)'
@@ -243,22 +248,26 @@
 
   function wingChairBack(g, A, C) {
     const m = function (off, w) { return A.x + (A.dir > 0 ? off : -off - w); };
-    ell(g, A.x + 2 * A.dir, A.y + 8, 30, 8, 'rgba(20,12,8,0.2)');
-    px(g, m(-21, 15), A.y - 56, 15, 56, C.body);
-    px(g, m(-19, 11), A.y - 58, 11, 4, C.light);
-    px(g, m(-16, 2), A.y - 48, 2, 30, C.seam);       // wing seam
-    px(g, m(-19, 44), A.y - 16, 44, 20, C.body);
-    px(g, m(-17, 40), A.y - 18, 40, 6, C.cushion);
-    px(g, m(-17, 40), A.y - 11, 40, 2, C.piping);    // cushion piping
+    ell(g, A.x, A.y + 9, 32, 8, 'rgba(20,12,8,0.2)');           // floor shadow
+    px(g, m(-16, 14), A.y - 52, 14, 58, C.body);                // backrest — the only vertical
+    px(g, m(-16, 14), A.y - 52, 14, 4, C.light);                // rounded top roll
+    px(g, m(-13, 2), A.y - 46, 2, 42, C.seam);                  // back seam
   }
 
   function wingChairFront(g, A, C) {
     const m = function (off, w) { return A.x + (A.dir > 0 ? off : -off - w); };
-    px(g, m(19, 13), A.y - 30, 13, 34, C.body);
-    px(g, m(21, 9), A.y - 32, 9, 4, C.light);
-    px(g, m(21, 2), A.y - 18, 2, 18, C.seam);        // arm seam
-    px(g, m(-21, 53), A.y + 2, 53, 8, C.front);
-    px(g, m(-19, 7), A.y + 10, 7, 4, '#4a3222'); px(g, m(23, 7), A.y + 10, 7, 4, '#4a3222');
+    // seat the sitter sinks into — drawn over the legs
+    px(g, m(-16, 42), A.y - 6, 42, 12, C.cushion);             // seat cushion
+    px(g, m(-16, 42), A.y - 6, 42, 3, C.light);                // cushion top light
+    // near armrest: a horizontal roll protruding forward, passing in front
+    // of the sitter so their lap and legs are hidden behind it
+    px(g, m(-8, 36), A.y - 18, 36, 12, C.body);                // arm roll
+    px(g, m(-8, 36), A.y - 18, 36, 4, C.light);                // arm top light
+    px(g, m(26, 3), A.y - 16, 3, 9, C.front);                  // rounded front cap
+    px(g, m(-8, 36), A.y - 8, 36, 2, C.piping);                // seam under the arm
+    // front skirt + feet
+    px(g, m(-16, 45), A.y + 6, 45, 8, C.front);
+    px(g, m(-13, 7), A.y + 13, 7, 4, '#4a3222'); px(g, m(21, 7), A.y + 13, 7, 4, '#4a3222');
   }
 
   function drawFloorLamp(g, x, y) {

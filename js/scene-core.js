@@ -60,7 +60,7 @@
       rug: { x: 762, y: 528, rx: 96, ry: 28 }
     },
     // fireside pair flanking the hearth rug; dir = facing (+1 right, -1 left),
-    // seat sits at x + 6*dir. Backs top out at y-58 = 238, just under the wall line.
+    // seat sits at x + 6*dir. Backs top out at y-52 = 244, just under the wall line.
     armchairs: [
       { x: 298, y: 296, dir: 1 },
       { x: 478, y: 296, dir: -1 }
