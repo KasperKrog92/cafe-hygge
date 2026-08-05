@@ -42,6 +42,17 @@ architecture textures, retuned atmosphere and real typography.
   18 px brass lamp. **Deliberate exceptions:** the espresso
   machine (40 h) and pastry case stay a notch above strict scale so brewing
   stays legible — don't "fix" them; mugs stay oversized (charm).
+- **One projection: 3/4 top-down.** The camera sits above and in front of
+  the room. Floor planes are foreshortened and visible (elliptical table
+  tops, the rug, stool seats, the counter slab); vertical faces draw
+  straight-on; wall-mounted pieces (windows, fireplace, menu, shelves) are
+  pure front elevations — that flatness is correct, leave it. Every
+  *free-standing* prop needs three cues to sit in the room: a grounding
+  shadow (next rule), a straight-on front face, and a **visible top
+  plane** — a lighter band a few px tall, scaled to the piece's real depth
+  (the counter slab and the table ellipses set the foreshortening). A tall
+  piece missing its top plane reads as a cardboard cutout. Known drift:
+  the bookshelf crown and the piano lid (see roadmap.md).
 - **Grounding shadows.** Every floor-standing thing (tables, seats, armchair,
   lamp, coat stand, umbrella crock, plants, baskets — and every character) gets a soft
   `rgba(20,12,8,~0.2)` contact ellipse. Furniture without one looks unmoored.
