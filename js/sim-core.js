@@ -209,7 +209,7 @@
       chatty: Math.random() < 0.55,
       murmurPitch: rnd(125, 235),
       x: L.doorSpot.x, y: L.doorSpot.y,
-      facing: 1, pose: 'stand', animT: rnd(0, 5),
+      facing: 1, heading: '', pose: 'stand', animT: rnd(0, 5),
       speed: rnd(46, 60),
       path: null, state: 'idle', stateT: 0,
       holding: null, armUp: 0, reading: false,
@@ -236,7 +236,7 @@
       kind: 'barista', name: 'Nora',
       colors: { skin: '#e8b48a', hair: '#4a2f1c', top: '#5a7a8a', pants: '#3d4a5c', apron: true, longHair: true, scarf: null, hairStyle: 1 },
       x: L.baristaHome.x, y: L.baristaHome.y,
-      facing: -1, pose: 'stand', animT: 0,
+      facing: -1, heading: '', pose: 'stand', animT: 0,
       speed: 60, path: null,
       state: 'idle', stateT: 0, idleT: rnd(4, 9), emptyT: 0,
       holding: null, armUp: 0, reading: false, playing: false,
@@ -295,13 +295,19 @@
     if (dist < 3.2) {
       e.x = tgt.x; e.y = tgt.y;
       e.path.shift();
-      if (!e.path.length) { e.pose = 'stand'; return true; }
+      if (!e.path.length) { e.pose = 'stand'; e.heading = ''; return true; }
       return false;
     }
     const step = e.speed * dt;
     e.x += (dx / dist) * Math.min(step, dist);
     e.y += (dy / dist) * Math.min(step, dist);
-    if (Math.abs(dx) > 0.6) e.facing = dx > 0 ? 1 : -1;
+    // heading drives drawPerson's front view: long vertical legs walking
+    // down the room face the viewer; horizontal and upward legs keep the
+    // side profile. Short downward hops (< 24 px, e.g. the wait-spot →
+    // pickup shuffle) keep the current view so it doesn't flash mid-journey.
+    if (Math.abs(dx) > 0.6) { e.facing = dx > 0 ? 1 : -1; e.heading = ''; }
+    else if (dy < -0.6) e.heading = '';
+    else if (dy > 24) e.heading = 'down';
     e.pose = 'walk';
     return false;
   }

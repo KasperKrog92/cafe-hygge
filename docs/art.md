@@ -230,6 +230,22 @@ or closed laptop tucks under the mirror-side arm so it can coexist with a
 cup. Facing is ±1 (side profile both
 ways); the face details and hair-back column flip with it.
 
+Standing and walking bodies also have a **front view**, used when `heading`
+is `'down'`: the shared walker sets it on mostly-vertical legs longer than
+24 px that head down the room (door → lane, lane → seat, Nora's exit column
+and candle/water descents) and clears it on horizontal or upward legs and on
+arrival; short downward hops keep the current view so nothing flashes
+mid-journey. Nora also faces the room this way while idle at the till. The
+front body: a symmetric head (two brows/eyes, centred mouth, blush on both
+cheeks, front variants of all four hair styles, long hair falling both
+sides), centred scarf knot, the apron minus its back-tie bow, a step-in-place
+walk (trailing shoe lifts 2 px on stride frames, same 4-frame clock), and
+arms hanging at both sides with a 1 px counter-swing. Held items ride at the
+hip in the near hand (cup, matcha bowl, iced glass, plate, cloth, book,
+level watering can, upright taper); umbrella and packed laptop draw
+unchanged. There is no back view — upward legs keep the side profile — and
+`sit`, `stretch` and `reach` always draw in profile.
+
 Nora adds two quiet standing poses: `stretch` (both arms overhead with a
 2 px sway) and `reach` (one arm raised for board/candle care). Her held props
 also include a copper watering can (level while walking, tipped while

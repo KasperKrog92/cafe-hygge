@@ -415,10 +415,17 @@
       }
     }
 
-    // face customers at the till when taking an order
+    // face customers at the till when taking an order; otherwise turn to
+    // the room (drawPerson's front view) and watch the café
     if (b.state === 'idle' && (!b.path || !b.path.length)) {
       const front = world.queue[0];
-      b.facing = front && front.state === 'ordering' ? (front.x > b.x ? 1 : -1) : -1;
+      if (front && front.state === 'ordering') {
+        b.facing = front.x > b.x ? 1 : -1;
+        b.heading = '';
+      } else {
+        b.facing = -1;
+        b.heading = 'down';
+      }
     }
   }
 
@@ -686,7 +693,7 @@
       b.path = [{ x: rnd(660, 780), y: L.baristaHome.y }];
       if (Math.random() < 0.2) caption(world, 'Nora wipes down the counter.');
     } else if (r < 0.57) {
-      b.state = 'polish'; b.stateT = 0;
+      b.state = 'polish'; b.stateT = 0; b.heading = '';   // profile keeps the cup readable
       if (Math.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
     } else if (r < 0.75) {
       b.state = 'restock'; b.stateT = 0;

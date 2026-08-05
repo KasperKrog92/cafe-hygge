@@ -81,9 +81,12 @@ daily care, then small counter-life:
 - **Wipe the counter** (35% of the ordinary pool): cloth in hand, three slow swishes.
 - **Polish a cup** (22%): stands still, cup in hand.
 - **Tidy the pastry case** (18%): walks to the case, soft clink.
-- Otherwise just stands, watching the room.
+- Otherwise just stands, watching the room (drawn in the front view, facing
+  out from behind the counter).
 
-If anyone is waiting in the queue she stays at the till and faces them.
+If anyone is waiting in the queue she stays at the till, still facing the
+room; when the patron at the front steps up to order she turns to them in
+profile.
 
 ---
 

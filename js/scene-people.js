@@ -12,7 +12,10 @@
      torso 24, head 16 + hair. Seated reads slightly hunched at ~52.
      Detail pass: brows + 3×4 eyes, actual hands, four hair styles
      (0 classic / 1 side-part / 2 curly / 3 bun), clothing folds, scarf
-     knots, apron strings, a 4-frame walk and a subtle idle breathe. */
+     knots, apron strings, a 4-frame walk and a subtle idle breathe.
+     Standing/walking bodies come in two views: the classic side profile
+     (facing ±1) and a front view when `heading` is 'down' — walking toward
+     the room, or Nora watching it from the till. */
   function drawHead(g, x, hy, facing, c, closed) {
     const hairL = shade(c.hair, 0.18);
     const st = c.hairStyle || 0;
@@ -52,6 +55,50 @@
     }
   }
 
+  /* The front head is symmetric about the face centre (x+1): two brows and
+     eyes, a centred mouth, blush on both cheeks, and front variants of the
+     four hair styles. `facing` only picks which brow the side-part fringe
+     sweeps across, so the view stays consistent with the profile. */
+  function drawHeadFront(g, x, hy, facing, c) {
+    const hairL = shade(c.hair, 0.18);
+    const st = c.hairStyle || 0;
+    // face framed by the cap and both temples
+    px(g, x - 8, hy, 18, 16, c.skin);
+    px(g, x - 8, hy - 4, 18, 6, c.hair);
+    px(g, x - 2, hy - 3, 7, 2, hairL);
+    px(g, x - 8, hy + 2, 3, 6, c.hair);
+    px(g, x + 8, hy + 2, 3, 6, c.hair);
+    if (st === 1) {                                        // side-part fringe
+      px(g, facing > 0 ? x - 6 : x + 1, hy + 1, 8, 2, c.hair);
+    } else if (st === 2) {                                 // curly: bumps + cheek curls
+      px(g, x - 7, hy - 6, 5, 2, c.hair);
+      px(g, x - 1, hy - 7, 6, 3, c.hair);
+      px(g, x + 5, hy - 6, 5, 2, c.hair);
+      px(g, x - 9, hy + 4, 3, 5, c.hair);
+      px(g, x + 9, hy + 4, 3, 5, c.hair);
+    } else if (st === 3) {                                 // bun peeking over the crown
+      px(g, x - 2, hy - 9, 7, 5, c.hair);
+      px(g, x - 1, hy - 8, 3, 2, hairL);
+    }
+    if (c.longHair && st !== 3) {
+      px(g, x - 11, hy + 2, 4, 18, c.hair);
+      px(g, x + 10, hy + 2, 4, 18, c.hair);
+    }
+    // two brows + eyes, a centred mouth
+    px(g, x - 5, hy + 3, 4, 2, c.hair);
+    px(g, x + 4, hy + 3, 4, 2, c.hair);
+    px(g, x - 4, hy + 6, 3, 4, '#2a1a12');
+    px(g, x + 4, hy + 6, 3, 4, '#2a1a12');
+    if (c.beard) {
+      px(g, x - 6, hy + 12, 15, 4, c.hair);
+      px(g, x - 1, hy + 13, 4, 2, shade(c.hair, -0.25));
+    } else {
+      px(g, x - 1, hy + 12, 4, 2, shade(c.skin, -0.22));   // mouth
+      px(g, x - 7, hy + 10, 3, 2, 'rgba(214,106,90,0.3)'); // blush, both cheeks
+      px(g, x + 7, hy + 10, 3, 2, 'rgba(214,106,90,0.3)');
+    }
+  }
+
   function heldDrinkKind(p) {
     if (p.kind !== 'barista') return p.drink ? p.drink.kind : 'cup';
     if (p.state === 'serveWalk' && p.orders[0]) return p.orders[0].drink.kind;
@@ -81,6 +128,7 @@
   SCENE.drawPerson = function (g, p) {
     const facing = p.facing >= 0 ? 1 : -1;
     const walk = p.pose === 'walk';
+    const front = p.heading === 'down' && (walk || p.pose === 'stand');
     const cycle = walk ? (Math.floor(p.animT * 8) % 4) : 0;
     const pass = cycle === 1 || cycle === 3;               // passing frames bob up
     const y = p.y - (walk && pass ? 2 : 0);
@@ -168,8 +216,23 @@
       return;
     }
 
-    // standing / walking legs (4-frame walk: stride, pass, stride, pass)
-    if (walk) {
+    // standing / walking legs (4-frame walk: stride, pass, stride, pass;
+    // the front view steps in place — the trailing shoe lifts 2 px instead
+    // of the profile's horizontal stride)
+    if (walk && front) {
+      if (pass) {
+        px(g, x - 10, y - 16, 8, 16, c.pants);
+        px(g, x + 2, y - 16, 8, 16, c.pants);
+        px(g, x - 10, y - 3, 8, 3, '#3a2a1c');
+        px(g, x + 2, y - 3, 8, 3, '#3a2a1c');
+      } else {
+        const lLift = cycle === 0 ? 0 : 2, rLift = cycle === 0 ? 2 : 0;
+        px(g, x - 10, y - 16, 8, 16 - lLift, c.pants);
+        px(g, x + 2, y - 16, 8, 16 - rLift, c.pants);
+        px(g, x - 10, y - 3 - lLift, 8, 3, '#3a2a1c');
+        px(g, x + 2, y - 3 - rLift, 8, 3, '#3a2a1c');
+      }
+    } else if (walk) {
       if (pass) {
         px(g, x - 8, y - 16, 8, 16, c.pants);
         px(g, x + 1, y - 16, 7, 16, c.pants);
@@ -196,7 +259,7 @@
     px(g, x - 10, y - 18, 20, 2, topD);
     if (c.scarf) {
       px(g, x - 10, y - 40, 20, 5, c.scarf);
-      const kx = facing > 0 ? x + 5 : x - 9;
+      const kx = front ? x - 1 : facing > 0 ? x + 5 : x - 9;   // knot centres up front
       px(g, kx, y - 37, 4, 4, shade(c.scarf, -0.15));      // knot
       px(g, kx, y - 33, 4, 8, c.scarf);                    // hanging tail
       px(g, kx, y - 26, 2, 2, shade(c.scarf, -0.15));      // fringe
@@ -209,11 +272,14 @@
       px(g, x - 8, y - 32, 16, 2, '#c9b28a');              // waistband
       px(g, x - 5, y - 26, 10, 7, '#d9d2c0');              // pocket
       px(g, x - 5, y - 26, 10, 2, '#c9b28a');
-      const abx = facing > 0 ? x - 13 : x + 10;            // tie bow at the back
-      px(g, abx, y - 31, 4, 3, '#e8dfc9');
-      px(g, abx + 1, y - 28, 2, 6, '#e8dfc9');
+      if (!front) {                                        // tie bow at the back
+        const abx = facing > 0 ? x - 13 : x + 10;          // (hidden from the front)
+        px(g, abx, y - 31, 4, 3, '#e8dfc9');
+        px(g, abx + 1, y - 28, 2, 6, '#e8dfc9');
+      }
     }
-    drawHead(g, x, y - 56 + breathe, facing, c);
+    if (front) drawHeadFront(g, x, y - 56 + breathe, facing, c);
+    else drawHead(g, x, y - 56 + breathe, facing, c);
     // arm + held item, with actual hands
     const held = p.holding;
     const swing = walk && !pass ? (cycle === 0 ? 2 : -2) * facing : 0;
@@ -227,6 +293,58 @@
       px(g, ax, y - 48, 5, 13, c.top);
       px(g, ax + facing * 2, y - 58, 4, 12, c.skin);
       px(g, ax + facing * 2, y - 61, 4, 4, c.skin);
+    } else if (front) {
+      // front view: both arms hang at the sides with a small counter-swing;
+      // a held item rides at the hip in the near hand
+      const fs = walk && !pass ? (cycle === 0 ? 1 : -1) : 0;
+      px(g, x - 14, y - 38 + fs, 4, 14, c.top);
+      px(g, x - 14, y - 25 + fs, 4, 4, c.skin);
+      if (!held) {
+        px(g, x + 10, y - 38 - fs, 4, 14, c.top);
+        px(g, x + 10, y - 25 - fs, 4, 4, c.skin);
+      } else {
+        px(g, x + 10, y - 38, 4, 11, c.top);               // bent carrying arm
+        const vessel = heldDrinkKind(p);
+        if (held === 'glass') {
+          px(g, x + 12, y - 33, 2, 6, '#d9738a');
+          px(g, x + 9, y - 29, 8, 13, 'rgba(200,220,230,0.7)');
+          px(g, x + 10, y - 23, 6, 7, '#8a9a4a');
+          px(g, x + 10, y - 26, 6, 3, '#e8dfc9');
+          px(g, x + 11, y - 21, 2, 2, 'rgba(255,255,255,0.5)');
+          px(g, x + 9, y - 30, 4, 3, c.skin);
+        } else if (held === 'cup' && vessel === 'matcha') {
+          px(g, x + 7, y - 26, 12, 9, '#e8e0d0');
+          px(g, x + 9, y - 26, 8, 2, '#8a9a4a');
+          px(g, x + 10, y - 28, 4, 3, c.skin);
+        } else if (held === 'cup') {
+          px(g, x + 8, y - 27, 10, 10, '#e8e0d0');
+          px(g, x + 10, y - 29, 4, 3, c.skin);
+        } else if (held === 'plate') {
+          px(g, x + 6, y - 25, 15, 5, '#e8e0d0');
+          px(g, x + 9, y - 30, 10, 5, '#c98f4a');
+          px(g, x + 10, y - 21, 5, 3, c.skin);             // palm under the plate
+        } else if (held === 'cloth') {
+          px(g, x + 8, y - 25, 10, 7, '#7a89a5');
+          px(g, x + 10, y - 27, 4, 3, c.skin);
+        } else if (held === 'can') {
+          px(g, x + 7, y - 28, 12, 10, '#b5654a');
+          px(g, x + 9, y - 32, 8, 4, '#c98f4a');
+          px(g, x + 18, y - 26, 3, 4, '#b5654a');          // spout, foreshortened
+          px(g, x + 10, y - 30, 4, 3, c.skin);
+        } else if (held === 'taper') {
+          px(g, x + 12, y - 43, 2, 17, '#e8dfc9');
+          px(g, x + 11, y - 28, 4, 4, c.skin);
+          if (p.taperLit) {
+            px(g, x + 12, y - 47, 2, 4, '#f5b942');
+            px(g, x + 12, y - 49, 2, 2, '#f8dc8a');
+          }
+        } else if (held === 'book') {
+          px(g, x + 8, y - 26, 10, 8, '#a94f3f');
+          px(g, x + 8, y - 26, 10, 2, shade('#a94f3f', -0.2));
+          px(g, x + 16, y - 25, 2, 6, '#f5efdf');          // page edges
+          px(g, x + 10, y - 19, 4, 3, c.skin);             // fingers curled under
+        }
+      }
     } else if (held === 'cup' || held === 'glass' || held === 'plate' || held === 'cloth') {
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 10, c.top);
       const hx = x + facing * 13 - (facing > 0 ? 0 : 8);
