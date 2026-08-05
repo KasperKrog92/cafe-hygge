@@ -32,10 +32,12 @@ station and works through timed steps (each with its own sound):
 | `matcha_iced` (iced matcha) | `L.matchaBar.x` scoop 0.8 s → 700 kettle pour 1.0 s → `L.matchaBar.x` whisk 2.2 s → ice 1.0 s |
 | `food` (bun, croissant) | 858 fetch from pastry case 1.4 s |
 
-The prep stations (machine, kettle, matcha bar, pastry case) all sit above her
-standing line, so while a step is running she's shown from **behind** (`heading:
-'up'` — apron ties and bow to the room); she walks between stations in profile,
-and turns her **front** to the room to set the finished order on the pass. Then
+Where she stands sets which way she faces. The espresso-machine steps (grind,
+tamp, pull, steam, kettle — `MACHINE_STAGES`) are worked on the back wall above
+her standing line, so she's shown from **behind** (`heading: 'up'` — apron ties
+and bow to the room). The matcha bar and pastry case sit on the front counter,
+so scoop, whisk, ice and fetch face the room (**front**); she walks between
+stations in profile, and serves from the front. Then
 she carries the cup/glass/plate to the pass (`L.serveSpot` = 744, 266),
 sets it down (clink), and rings the counter bell (*ding*). During machine-stage
 steps the machine light blinks and steam particles rise (`world.brew`). Matcha

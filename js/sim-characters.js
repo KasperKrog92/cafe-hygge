@@ -17,6 +17,11 @@
 
   /* ---------- barista ---------- */
 
+  // steps worked at the espresso machine (back wall, above her standing line);
+  // she faces away from the room for these. Everything else — the matcha bar
+  // and the pastry case — sits on the front counter and she faces the room.
+  const MACHINE_STAGES = ['grind', 'tamp', 'pull', 'steam', 'kettle'];
+
   const PREP_STEPS = {
     coffee_milk: [
       { x: 664, act: 'grind', dur: 1.5 },
@@ -116,10 +121,12 @@
         break;
       }
       case 'prepping': {
-        // making the drink: she works the machine and back counter (all above
-        // her standing line), so she's seen from behind — apron ties and all
-        b.heading = 'up';
         const s = b.steps[b.stepIdx];
+        // where she stands tells us which way she faces: the espresso machine
+        // is on the back wall, above her standing line, so those steps show her
+        // back (apron ties and all); the matcha bar and pastry case sit on the
+        // front counter, so she faces the room to work them
+        b.heading = MACHINE_STAGES.indexOf(s.act) >= 0 ? 'up' : 'down';
         world.brew.active = true;
         world.brew.stage = s.act;
         world.brew.progress = Math.min(1, b.stateT / s.dur);
