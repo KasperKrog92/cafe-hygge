@@ -19,7 +19,7 @@
      __dev.passer(o)   silhouette past the windows ({dir, umbrella, pair, pause})
      __dev.ff(sec)     fast-forward the sim in 0.25 s ticks, muted
      __dev.spawn(o)    real patron with chosen traits, via the front door
-     __dev.regular()   force Holger's next arrival
+     __dev.regular(id) force a named regular's next arrival (default 'holger')
      __dev.doze()      put the first eligible reader to sleep
      __dev.piano(on)   force/stop the corner-piano sound engine
      __dev.send(n,x,y) path an entity through the real makePath
@@ -139,10 +139,16 @@
     return SIM._.enqueueArrival(w, p, 0, true);
   };
 
-  D.regular = function () {
+  D.regular = function (id) {
+    id = id || 'holger';
+    const spec = (window.CAST && CAST.regulars || []).find(function (r) { return r.id === id; });
+    if (!spec) { console.warn('[dev] unknown regular "' + id + '"'); return null; }
     const w = world();
-    const present = w.patrons.find(function (p) { return p.isRegular; });
+    const present = w.patrons.find(function (p) { return p.regularId === id; });
     if (present) return present;
+    // Phase 0: only Holger has a schedule slot (world.regular); Phase 1 adds
+    // the rest of the roster and its per-id force flags.
+    if (id !== 'holger') { console.warn('[dev] "' + id + '" has no schedule yet (Phase 1)'); return null; }
     w.regular.force = true;
     return SIM._.updateRegular(w) || null;
   };
@@ -612,6 +618,28 @@
     if (L.lane !== 368) problems.push('L.lane = ' + L.lane + ' (the walking lane is 368; see AGENTS.md)');
     if (!Array.isArray(L.occluders) || L.occluders.length < 2) problems.push('L.occluders missing or incomplete (expect at least bookshelf + counter)');
     if (!Array.isArray(L.footprints) || !L.footprints.length) problems.push('L.footprints missing (the journey check needs the furniture floor boxes)');
+
+    // the regulars roster (CAST): cheap constant-checks over the data the sim
+    // reads for each regular — no geometry (they reuse existing seats/routes)
+    if (!window.CAST || !Array.isArray(CAST.regulars)) {
+      problems.push('CAST.regulars roster is missing (js/characters-roster.js)');
+    } else {
+      const drinkNames = {};
+      SIM._.DRINKS.forEach(function (d) { drinkNames[d.name] = true; });
+      const names = SIM._.PATRON_NAMES;
+      const seenIds = {};
+      CAST.regulars.forEach(function (spec, i) {
+        const who = 'CAST.regulars[' + i + ']' + (spec.id ? ' (' + spec.id + ')' : '');
+        if (!spec.id) problems.push(who + ' has no id');
+        else if (seenIds[spec.id]) problems.push('duplicate regular id "' + spec.id + '"');
+        seenIds[spec.id] = true;
+        if (!drinkNames[spec.drink]) problems.push(who + ' drink "' + spec.drink + '" is not in DRINKS');
+        if (!SIM._.SEAT_PREFS[spec.seat]) problems.push(who + ' seat "' + spec.seat + '" has no SEAT_PREFS predicate');
+        if (names.feminine.indexOf(spec.name) >= 0 || names.masculine.indexOf(spec.name) >= 0) {
+          problems.push(who + ' name "' + spec.name + '" collides with the random PATRON_NAMES pool');
+        }
+      });
+    }
 
     // live-world invariants (the soak-test set — cheap enough to keep forever)
     const live = {};

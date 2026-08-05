@@ -34,6 +34,18 @@
     { name: 'butter croissant', icon: 'croissant', prep: 'food',       kind: 'plate',  w: 1 }
   ];
 
+  /* Seat-preference predicates keyed by a roster spec's `seat` string. The
+     dev audit checks every regular's seat key resolves here. Wiring these into
+     freeSeat for regular seating is Phase 1 — today Holger's firesideLeft is
+     still matched by the inline check in sim-patrons.js. */
+  const SEAT_PREFS = {
+    firesideLeft:  function (s) { return s.armchair && s.facing === 1; },
+    firesideRight: function (s) { return s.armchair && s.facing === -1; },
+    windowPerch:   function (s) { return !!s.window; },
+    nook:          function (s) { return !!s.nook; },
+    diningTable:   function (s) { return !s.armchair && !s.nook && !s.window && !s.piano && s.table >= 0; }
+  };
+
   function rnd(a, b) { return a + Math.random() * (b - a); }
   function withArticle(name) { return (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name; }
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -228,7 +240,7 @@
       partner: null, coupleStay: 0, coupleBus: null, coupleLeaveAt: 0,
       orderCaptioned: false, pairCaptioned: false,
       dozing: false, dozeT: rnd(50, 120), dozeRemain: 0, zzzT: rnd(7, 14),
-      isRegular: false, usualSeat: false, regularSeatNoted: false,
+      isRegular: false, regularId: null, usualSeat: false, regularSeatNoted: false,
       gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
       lapCat: false, catLeaveT: 0,
       bubble: null, queueIdx: -1, waitIdx: -1, doorCloseT: 0
@@ -663,6 +675,10 @@
     p.drink = DRINKS.find(function (d) { return d.name === 'espresso'; });
     p.wantsBook = true; p.ownBook = true; p.chatty = false;
     p.murmurPitch = 130; p.speed = 46; p.isRegular = true; p.laptop = false; p.pianist = false;
+    // tag him to his roster row so schedule, line lookup, and continuity can
+    // find his spec (Phase 1 builds his construction from this spec too)
+    p.regularId = 'holger';
+    p.spec = CAST.regulars.find(function (r) { return r.id === 'holger'; });
     if (world.rain > 0.4) p.umbrella = { color: '#3d4a5c' };
     return p;
   }
@@ -763,6 +779,7 @@
   SIM._ = {
     L: L, LB: LB,
     DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, DRINKS: DRINKS,
+    PATRON_NAMES: PATRON_NAMES, SEAT_PREFS: SEAT_PREFS,
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor,
     makePatron: makePatron, caption: caption, updateCaptions: updateCaptions,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
