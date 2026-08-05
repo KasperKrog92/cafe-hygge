@@ -109,6 +109,14 @@ things that grow.
 
 Rough order (each slice ships something lovely on its own):
 
+> **Status:** slices 1–3 are built — the roster (Phase 1), passive overheard
+> lines (Phase 2), and now habits & continuity (Phase 3: per-regular seat lines,
+> weather- and recognition-aware openers backed by persisted `bonds`, and a
+> boot-seeded familiar face). *Recurring pairs* within slice 3 are deferred — no
+> two current regulars share a table for the chat path to fire on. Slices 4–6
+> remain. Execution is tracked in
+> [plans/regulars-and-conversations.md](plans/regulars-and-conversations.md).
+
 1. **A roster of regulars.** Generalize Holger's one-off `makeRegular` into a
    data-driven `REGULARS` table (fixed appearance, drink, arrival window, seat
    preference, and a small pool of lines). Add a few more regulars spread
