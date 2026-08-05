@@ -45,8 +45,12 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   rain 0.8 (24%), or storm 1.0 (8%). `world.rain` eases toward it at 0.18/s;
   `world.storm` lasts until the next non-storm roll.
 - Rain drives: streak count/alpha on the window glass, window-tap density in
-  the audio engine, arrival flavor, and umbrellas — the patrons' and the
-  passers-by's outside alike. Most wet-weather patrons
+  the audio engine, arrival flavor, umbrellas — the patrons' and the
+  passers-by's outside alike — and the entrance doormat, which darkens toward
+  a damp coir tone with `world.rain` (with a rain-blue sheen in a downpour).
+  Every arrival above `world.rain` 0.3 (`SIM._.WIPE_RAIN`) pauses on the mat
+  to wipe the wet off their shoes (`wipeFeet` — a soft `shoeWipe` scuff and a
+  few low water flecks), umbrella or not. Most wet-weather patrons then
   shake a furled umbrella at the door, park it in the stand, then collect it
   as their final departure stop. `world.umbrellaStand` stores the visible
   owner/color links; it is glanceable room state, never inventory.
@@ -150,7 +154,8 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   (18% of pauses), bookshelf moments (drifting
   over, picking a book out, slipping it back), page turns (12% of them),
   murmuring tables (15%), quiet laptop bouts (10%), cup returns, departures
-  (rain/night-aware), umbrella shakes/collections, linked-pair arrivals,
+  (rain/night-aware), shoes wiped on the doormat (28% of wet arrivals),
+  umbrella shakes/collections, linked-pair arrivals,
   shared orders and seats, Holger's usual-chair moment, falling asleep and
   finding the line again, cat
   movements and petting (including the cat's accidental piano plinks), Nora

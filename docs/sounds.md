@@ -86,6 +86,7 @@ toggle mutes all three layers without changing their visual behavior.
 | `coins()` | about half of returned cups | 2–3 muffled inharmonic clinks around 2.9–4.2 kHz and 1.43×, loosely spaced 40–90 ms, combined peak ≤0.025, small room send |
 | `cupDown()` | cup set on table/counter | 260 Hz tap + `clink(0.62)` |
 | `umbrellaShake()` | rainy arrival at the door | 3–4 lowpassed noise flaps around 900 Hz, 60 ms each at loose ~90 ms spacing, peak 0.03 |
+| `shoeWipe()` | wet arrival wiping shoes on the doormat | 2–3 dull noise scuffs around 300–450 Hz under a 640 Hz lowpass, 110–160 ms each at ~150–210 ms spacing (real foot passes), soft 12 ms attack, peak ≤0.02 |
 | `keys()` | laptop typing bout | 2–4 jittered 18 ms bandpassed noise ticks around 2.1–3 kHz, peak 0.02 |
 | `ding()` | order ready at the pass | 1720 Hz bell + 2.7× partial, 0.75 s |
 | `grinder(dur)` | espresso prep | sawtooth ~55–63 Hz → lowpass 320, 26 Hz AM wobble + noise bandpass 850; 1.5 s |

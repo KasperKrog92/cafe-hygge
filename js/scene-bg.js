@@ -38,6 +38,7 @@
     drawWindow(g, world, L.win, 0);
     drawWindow(g, world, L.win2, 1);
     drawDoor(g, world);
+    drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
     drawWallFrame(g, 100, 120); // sits beside the window frame edge → paints after it
     drawHangingLamp(g, L.lamp1.x, world);
     drawHangingLamp(g, L.lamp2.x, world);
@@ -392,6 +393,35 @@
     px(g, L.bell.x + jig, L.bell.y, 10, 8, '#d9a33c');
     px(g, L.bell.x + 2 + jig, L.bell.y - 2, 6, 2, '#b5832a');
     px(g, L.bell.x + 4 + jig, L.bell.y + 8, 2, 2, '#8a611e');
+  }
+
+  /* ---------- doormat ----------
+     A woven coir mat across the threshold. Its coir field and bristles are
+     deterministic (h2) so they never flicker; the whole mat darkens toward a
+     damp tone with world.rain, and a rain-blue sheen catches the light in a
+     downpour — the visual half of the rainy-arrival "wipe your shoes" beat. */
+  function drawDoormat(g, world) {
+    const m = L.doormat;
+    const wet = Math.max(0, Math.min(1, world.rain));
+    const halfW = m.w >> 1, halfH = m.h >> 1;
+    const x0 = m.x - halfW, y0 = m.y - halfH;
+    const base = shade('#8a6142', -0.32 * wet);      // damp coir goes darker
+    const edge = shade('#4a3222', -0.15 * wet);
+    ell(g, m.x, y0 + m.h + 1, halfW, 4, 'rgba(20,12,8,0.18)');   // grounding shadow
+    px(g, x0, y0, m.w, m.h, edge);                                // dark woven border
+    px(g, x0 + 3, y0 + 3, m.w - 6, m.h - 6, base);               // coir field
+    px(g, x0 + 3, y0 + 3, m.w - 6, 2, shade(base, 0.14));        // lit top plane
+    // bristle rows: short dashes, deterministic so they never flicker
+    for (let bx = x0 + 5; bx < x0 + m.w - 5; bx += 4) {
+      const n = h2(bx, 21);
+      const by = y0 + 5 + ((n * (m.h - 12)) | 0);
+      px(g, bx, by, 2, 3 + ((h2(bx, 7) * 3) | 0), shade(base, n > 0.5 ? 0.12 : -0.16));
+    }
+    if (wet > 0.3) {                                              // rain catches the light
+      g.globalAlpha = (wet - 0.3) * 0.45;
+      px(g, x0 + 6, y0 + 6, m.w - 14, 2, '#cfe0ec');
+      g.globalAlpha = 1;
+    }
   }
 
   /* ---------- fireplace ---------- */

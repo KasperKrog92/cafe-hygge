@@ -8,6 +8,7 @@
 
   const DAY_SECONDS = 1440;          // one full day passes in 24 real minutes
   const START_HOUR = 8.4;
+  const WIPE_RAIN = 0.3;             // above this, arrivals wipe wet shoes on the mat
 
   /* Pick the name style before appearance so strongly gender-coded details do
      not contradict it. Everything else stays independent and varied. */
@@ -233,6 +234,7 @@
       sipT: rnd(4, 10), sipPhase: 0, sipPlayed: false, matchaSipCaptioned: false,
       pageT: rnd(6, 16), chatT: rnd(8, 20), chatReply: 0,
       umbrella: null, umbrellaParked: false, shakeDropT: 0, shakeDrops: 0,
+      wipeDropT: 0, wipeDrops: 0, wipePlayed: false,
       laptop: false, laptopActive: false, laptopPacked: false,
       typing: false, typingT: rnd(6, 14), typingRemain: 0, keyT: 0,
       pianist: pianist, playing: false, pianoBursts: 0,
@@ -357,8 +359,9 @@
     let near = false;
     world.patrons.forEach(function (p) {
       if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 44 &&
-          (p.state === 'enter' || p.state === 'enterDelay' || p.state === 'shake' ||
-           p.state === 'parkUmbrella' || p.state === 'collectUmbrella' || p.state === 'exit')) near = true;
+          (p.state === 'enter' || p.state === 'enterDelay' || p.state === 'wipeFeet' ||
+           p.state === 'shake' || p.state === 'parkUmbrella' ||
+           p.state === 'collectUmbrella' || p.state === 'exit')) near = true;
     });
     d.target = near ? 1 : 0;
     d.open += (d.target - d.open) * Math.min(1, dt * 5);
@@ -623,6 +626,9 @@
     if (delay) {
       p.state = 'enterDelay';
       p.stateT = -delay;
+    } else if (world.rain > WIPE_RAIN) {
+      p.state = 'wipeFeet';   // wet arrivals scuff off on the mat first
+      p.stateT = 0;
     } else if (p.umbrella) {
       p.state = 'shake';
       p.stateT = 0;
@@ -808,7 +814,7 @@
      consumes a documented subset after every sibling has loaded. */
   SIM._ = {
     L: L, LB: LB,
-    DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, DRINKS: DRINKS,
+    DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, WIPE_RAIN: WIPE_RAIN, DRINKS: DRINKS,
     PATRON_NAMES: PATRON_NAMES, SEAT_PREFS: SEAT_PREFS,
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor,
     makePatron: makePatron, caption: caption, updateCaptions: updateCaptions,

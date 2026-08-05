@@ -25,6 +25,10 @@
     wallY: 232,               // where wall meets floor
     door: { x: 28, y: 130, w: 52, h: 102 },   // 1.7 CH
     doorSpot: { x: 54, y: 252 },     // where people appear
+    // coir mat across the threshold, centred on doorSpot so an arrival lands
+    // on it; walkable floor decor (no footprint, like the rugs) that darkens
+    // with world.rain so rainy arrivals have something to wipe their shoes on
+    doormat: { x: 54, y: 255, w: 46, h: 18 },
     bell: { x: 86, y: 132 },
     win: { x: 136, y: 98, w: 128, h: 80 },    // 1.35 CH tall
     win2: { x: 460, y: 98, w: 128, h: 80 },   // second window, hearth ↔ counter

@@ -293,6 +293,20 @@
     }
   });
 
+  SND.shoeWipe = guard(function () {
+    // two or three dull back-and-forth scuffs on the coir mat — softer and
+    // lower than a chair scrape, spaced like real foot passes
+    const scuffs = 2 + ((Math.random() * 2) | 0);
+    for (let i = 0; i < scuffs; i++) {
+      setTimeout(function () {
+        if (!ctx || S.muted) return;
+        hiss({ dur: 0.11 + Math.random() * 0.05, gain: 0.013 + Math.random() * 0.006,
+          lp: 640, bp: 300 + Math.random() * 150, q: 1.1,
+          attack: 0.012, release: 0.06 });
+      }, i * (150 + Math.random() * 60));
+    }
+  });
+
   SND.keys = guard(function () {
     const ticks = 2 + ((Math.random() * 3) | 0);
     for (let i = 0; i < ticks; i++) {

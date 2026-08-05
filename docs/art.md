@@ -77,6 +77,7 @@ architecture textures, retuned atmosphere and real typography.
 | Nook wing chairs | `#4a7a5a` (highlights/fronts derived via `shade()`) |
 | Book spines | reuse clothing/accent hexes (`BOOKCOLS` in `scene-furniture.js`) |
 | Rugs | `#a34d3b` / `#8f5a3a` |
+| Doormat (coir) | `#8a6142` (border `#4a3222`); darkened via `shade(·, −0.32·rain)` when damp, rain-blue sheen `#cfe0ec` |
 | Crockery | `#e8e0d0`, saucers `#d9d2c0` |
 | Matcha service | tea `#8a9a4a`; hot bowl uses the crockery pair; iced glass reuses tip-jar `rgba(200,220,230,0.7)`, milk `#e8dfc9`, pastry pink `#d9738a` |
 | Cat | `#d98d4a`, stripes `#b5702e`, chest `#f0e0c8` |
@@ -133,7 +134,9 @@ y=368 ── the walking lane (L.lane — all pathing routes through this corrid
           fire"); each seats two at ±L.stoolDX facing inward — chair (with
           back) on the left, stool on the right; a candle jar on every
           table; coat stand and slatted umbrella crock by the door
-          (L.coatStand / L.umbrellaStand), plants at the
+          (L.coatStand / L.umbrellaStand), a woven coir doormat across the
+          threshold (L.doormat, centred on doorSpot — damp arrivals wipe their
+          shoes on it; darkens with world.rain), plants at the
           counter's ends (L.plants), rugs
           reading nook, bottom right (L.library): bookshelf (2 CH + crown;
           browse spot in front, loanable spines vanish while borrowed), two

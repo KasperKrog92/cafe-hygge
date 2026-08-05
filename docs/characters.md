@@ -131,7 +131,7 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
 ### Patron lifecycle (states)
 
 ```
-(enterDelay) → (shake → parkUmbrella) → enter → queueing → ordering
+(enterDelay) → (wipeFeet) → (shake → parkUmbrella) → enter → queueing → ordering
   → waitDrink → pickup → (browse) → toSeat → seated
   ⇄ (fetchBook → backToSeat) → (closeLaptop) → (returnBook)
   → (return) → (collectUmbrella) → exit
@@ -139,9 +139,13 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
 
 1. **enter** — appears at the door (bell jingle, door swings, thud ~1.1 s
    later), walks to the back of the queue. Queue slots fan out diagonally from
-   the till (`L.orderSpot` 696, 316). In rain, 75% carry a furled umbrella:
-   **shake** holds at the door for 1.1 s with five falling drops and a soft
-   flap, then **parkUmbrella** follows the declared door-to-stand route and
+   the till (`L.orderSpot` 696, 316). Coming in from the rain
+   (`world.rain > SIM._.WIPE_RAIN`, 0.3): **wipeFeet** holds ~1.3 s on the
+   coir doormat (`L.doormat`), scuffing the wet off with a soft double scuff
+   (`SND.shoeWipe`) and a few water flecks kicked low off the shoes — every
+   wet arrival wipes, umbrella or not. In rain, 75% also carry a furled
+   umbrella: **shake** follows for 1.1 s with five falling drops and a soft
+   flap, then **parkUmbrella** takes the declared door-to-stand route and
    adds the umbrella to `world.umbrellaStand` before queueing.
 2. **ordering** — when at slot 0 and Nora is free: 2 s with a speech bubble
    showing their order icon; caption fires ("Freja orders a cappuccino.").

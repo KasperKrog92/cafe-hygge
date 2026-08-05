@@ -4,7 +4,7 @@
 
   const SIM = window.SIM;
   const R = SIM._;
-  const L = R.L, LB = R.LB;
+  const L = R.L, LB = R.LB, WIPE_RAIN = R.WIPE_RAIN;
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
   const caption = R.caption, makePath = R.makePath, walker = R.walker;
   const ringDoor = R.ringDoor, queueSlot = R.queueSlot, waitSpot = R.waitSpot;
@@ -182,6 +182,31 @@
     switch (p.state) {
       case 'enterDelay': {
         if (p.stateT >= 0) {
+          if (world.rain > WIPE_RAIN) { p.state = 'wipeFeet'; p.stateT = 0; }
+          else if (p.umbrella) { p.state = 'shake'; p.stateT = 0; }
+          else joinQueue(p);
+        }
+        break;
+      }
+      case 'wipeFeet': {
+        // arrived from the rain: a beat on the mat to scuff the wet off, water
+        // flecks kicked low off the shoes. Umbrella folk shake theirs after.
+        p.pose = 'stand'; p.facing = 1;
+        if (!p.wipePlayed) { p.wipePlayed = true; SND.shoeWipe(); }
+        p.wipeDropT -= dt;
+        if (p.wipeDropT <= 0 && p.wipeDrops < 4) {
+          p.wipeDropT = rnd(0.18, 0.3); p.wipeDrops++;
+          world.particles.push({ type: 'drop', x: p.x + rnd(-6, 8), y: p.y - rnd(1, 6),
+            vx: rnd(-12, 12), vy: rnd(6, 14), age: 0, life: rnd(0.3, 0.5), seed: 0 });
+        }
+        if (p.stateT > 1.3) {
+          if (Math.random() < 0.28) {
+            caption(world, pick([
+              p.name + ' wipes the rain off their shoes.',
+              p.name + ' scuffs the wet off on the doormat.',
+              p.name + ' stamps the rain off at the door.'
+            ]));
+          }
           if (p.umbrella) { p.state = 'shake'; p.stateT = 0; }
           else joinQueue(p);
         }
