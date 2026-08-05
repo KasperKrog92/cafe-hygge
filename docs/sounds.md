@@ -24,7 +24,7 @@ This app plays beside someone reading a real book. Rules:
 ```
 one-shots ─────────────► sfx ───┐
 window taps + storm ───► amb ───┤
-rumble + crackles ─────► fire ──┼─► master ─► compressor ─► speakers
+crackles + log catch ──► fire ──┼─► master ─► compressor ─► speakers
 music box + night pad ─► music ─┤
 corner felt piano ─────► music ─┤
       └─ send ─► delay "room" (0.31 s, feedback 0.34, damped 1700 Hz, wet 0.2) ─┘
@@ -40,8 +40,7 @@ music notes) take the delay send — it makes the room sound like a room.
 | --- | --- |
 | **Rain (window taps)** | The entire voice of normal rain: individual droplets on the glass. 22–36 ms noise ticks → bandpass 2.3–4.6 kHz (Q 7), peak 0.008–0.022; 18% are fatter frame/sill drops (bandpass 0.8–1.3 kHz, Q 3.5, 50 ms, peak ≤0.018). Next tap in `(0.05–0.55 s) ÷ (0.2 + rain × 1.4)` — denser as it pours — but 25% of taps are followed by another within 30–100 ms, so drops spatter in little wind-thrown clusters instead of a metronome. Skipped entirely below `rain` 0.03. Normal rain deliberately has **no continuous wash**. |
 | **Storm wash** | Storm-only looping noise → highpass 360 Hz → lowpass 2.3 kHz → lowpass 1.4 kHz → ambience bus. Base gain follows storm rain to 0.022; two wandering LFOs add at most 0.007, and all three gains ease over ~4 s. It is dark rain heard through glass, beneath the discrete taps. |
-| **Fire rumble** | Noise loop → lowpass 240 → gain 0.05 on the fire bus. |
-| **Fire crackles** | Scheduled every 50–450 ms (72% fire): noise burst → bandpass 700–3500 Hz (Q 2.2) → 15–65 ms exponential decay, peak 0.02–0.10. 6% chance of a deep pop (70–110 Hz sine, 90 ms). |
+| **Fire crackles** | The hearth has **no constant rumble** — its whole voice is discrete crackles, paced and gained by the live burn `world.fire.level`. Each: noise burst → bandpass 700–3500 Hz (Q 2.2) → 15–65 ms exponential decay, peak `(0.008–0.038) × (0.5 + level·0.6)` — roughly half the old crackle, and quieter still at embers. Next crackle in `(0.08–0.58 s) ÷ (0.3 + level)`, played at `(0.32 + level·0.45)` odds: a blaze snaps busily, embers only tick now and then. `level·0.05` chance of a deep 70–110 Hz pop (rare at embers). A fresh log adds `fireCatch()` (one-shots). |
 
 ## The music box
 
@@ -100,6 +99,7 @@ toggle mutes all three layers without changing their visual behavior.
 | `waterPour(dur)` | Nora watering a plant | dark bandpassed/lowpassed noise sweeping 520→980 Hz, 1.2 s, peak 0.03 |
 | `matchStrike()` | first stop of Nora's candle round | 100 ms scratch around 1.8 kHz followed by a 200 ms high fizz, combined peak ~0.03 |
 | `candlePop()` | each candle stop | soft 90 ms airy filtered-noise fwip, peak 0.018 |
+| `fireCatch()` | a fresh log laid on the fire (Nora or a fireside regular) | an 84→54 Hz settle thump + a soft low whoomph (lowpass-440 noise swelling to 0.05 over 0.2 s, ~1.1 s tail) + 5 fresh crackles scattered over ~0.7 s; on the fire bus |
 | `pageTurn()` | readers | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
 | `needle()` | Gerda knitting (scarf arc) | soft wooden tick: 540–650 Hz tone under a 2.6 kHz lowpass (peak 0.013) + a fainter harmonic, with a half-chance second tap — quieter than the fire, on purpose |
 | `sip()` | sip animation peak | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |

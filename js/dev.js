@@ -26,8 +26,9 @@
      __dev.reset()     wipe the save and reload into a fresh café
      __dev.doze()      put the first eligible reader to sleep
      __dev.piano(on)   force/stop the corner-piano sound engine
+     __dev.fire(level) read/set the hearth's live burn 0..1 (low → tend loop)
      __dev.send(n,x,y) path an entity through the real makePath
-     __dev.noraDo(name) force a Nora ritual on her next idle task
+     __dev.noraDo(name) force a Nora ritual on her next idle task ('fire' too)
      __dev.catDo(name) force a cat ritual on the next simulation tick
      __dev.bowls(f,w)  set the cat's food and water bowl levels
      __dev.overlay(b)  toggle the layout overlay
@@ -241,7 +242,7 @@
   };
 
   D.noraDo = function (action) {
-    const allowed = ['stretch', 'chalk', 'water', 'candles', 'piano'];
+    const allowed = ['stretch', 'chalk', 'water', 'candles', 'fire', 'piano'];
     if (allowed.indexOf(action) < 0) {
       console.warn('[dev] unknown Nora behavior "' + action + '"');
       return null;
@@ -251,6 +252,7 @@
     b.idleT = 0;
     if (action === 'chalk') b.chalkT = 0;
     else if (action === 'water') b.wateringPending = true;
+    else if (action === 'fire') { w.fire.wantsLog = true; w.fire.claimed = false; }
     else if (action === 'candles') {
       SIM._.candleTables(w).forEach(function (tb) { tb.candle = 0; tb.candleTarget = 0; });
       w.candles.mantel = 0; w.candles.mantelTarget = 0;
@@ -258,6 +260,18 @@
       b.candlePending = true; b.matchStruck = false; b.candleCaptioned = false;
     }
     return b;
+  };
+
+  /* Read or set the hearth's live burn (0..1). Setting it low is the quickest
+     way to watch the tend loop: `__dev.fire(0.2)` drops it near embers, then a
+     fireside regular or Nora lays a fresh log after the usual patient grace. */
+  D.fire = function (level) {
+    const w = world();
+    if (level == null) return w.fire.level;
+    level = Math.max(0, Math.min(1, Number(level)));
+    w.fire.level = level; w.fire.target = level;
+    w.fire.wantsLog = false; w.fire.claimed = false; w.fire.graceT = 0;
+    return w.fire.level;
   };
 
   D.bowls = function (food, water) {
@@ -565,6 +579,9 @@
     const piano = SIM._.pianoRoute();
     const pianoEnd = piano[piano.length - 1];
     routeProblems(piano, pianoEnd, 'Nora piano route', ['counter'], true, problems);
+    const fire = SIM._.fireRoute();
+    const fireEnd = fire[fire.length - 1];
+    routeProblems(fire, fireEnd, 'Nora fire-tending route', ['counter'], true, problems);
 
     // Cat floor stops obey floor collision rules; aerial anchors are checked
     // against their declared surface instead. The cushion is deliberately
@@ -804,6 +821,10 @@
     if (w.candles.mantel < 0 || w.candles.mantel > 1 ||
         w.candles.mantelTarget < 0 || w.candles.mantelTarget > 1) {
       problems.push('mantel candle state must stay between 0 and 1');
+    }
+    if (!w.fire || w.fire.level < 0 || w.fire.level > 1 ||
+        w.fire.target < 0 || w.fire.target > 1) {
+      problems.push('fire level/target must stay between 0 and 1');
     }
     if (w.rain < 0 || w.rain > 1 || w.rainTarget < 0 || w.rainTarget > 1) {
       problems.push('rain levels must stay between 0 and 1');

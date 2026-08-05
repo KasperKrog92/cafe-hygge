@@ -84,7 +84,6 @@
 
     noiseBuf = makeNoiseBuffer();
     startStormWash();
-    startFireRumble();
   };
 
   SND.applyVolume = function () {
@@ -122,32 +121,28 @@
     stormLfo2.start();
   }
 
-  function startFireRumble() {
-    const src = noiseSrc(true);
-    const lp = filt('lowpass', 240);
-    const g = gainNode(0.05);
-    src.connect(lp); lp.connect(g); g.connect(fireBus);
-    src.start();
-  }
-
-  function playCrackle() {
+  /* A single fire crackle — the fireplace's whole voice now that the constant
+     rumble is gone. `level` (0..1, the live burn) scales its loudness and the
+     odds of a deep pop, so a blaze snaps and embers only tick softly. */
+  function playCrackle(level) {
+    level = level == null ? 1 : level;
     const t = ctx.currentTime;
     const src = noiseSrc(false);
     const bp = filt('bandpass', 700 + Math.random() * 2800, 2.2);
     const g = gainNode(0);
     src.connect(bp); bp.connect(g); g.connect(fireBus);
-    const peak = 0.02 + Math.random() * 0.08;
+    const peak = (0.008 + Math.random() * 0.03) * (0.5 + level * 0.6);
     const dur = 0.015 + Math.random() * 0.05;
     g.gain.setValueAtTime(0, t);
     g.gain.linearRampToValueAtTime(peak, t + 0.004);
     g.gain.exponentialRampToValueAtTime(0.0004, t + dur);
     src.start(t, Math.random() * 1.5, dur + 0.05);
-    if (Math.random() < 0.06) { // occasional deep pop
+    if (Math.random() < 0.05 * level) { // occasional deep pop, rare at embers
       const o = ctx.createOscillator();
       o.frequency.value = 70 + Math.random() * 40;
       const og = gainNode(0);
       o.connect(og); og.connect(fireBus);
-      og.gain.setValueAtTime(0.09, t);
+      og.gain.setValueAtTime(0.05, t);
       og.gain.exponentialRampToValueAtTime(0.0005, t + 0.09);
       o.start(t); o.stop(t + 0.1);
     }
@@ -444,6 +439,27 @@
   SND.candlePop = guard(function () {
     hiss({ dur: 0.09, gain: 0.018, bp: 1250, q: 0.7, lp: 2200,
       attack: 0.015, release: 0.06 });
+  });
+
+  /* A fresh log going on the fire: the dull settle of the wood, a soft low
+     whoomph as it catches, and a scatter of new crackles as it takes. Routed
+     through the fire bus so the 🔥 toggle owns it too. */
+  SND.fireCatch = guard(function () {
+    const t = ctx.currentTime;
+    tone(84, { gain: 0.03, dur: 0.13, sweepTo: 54, sweepDur: 0.11, dest: fireBus });
+    const src = noiseSrc(false);
+    const lp = filt('lowpass', 440);
+    const g = gainNode(0);
+    src.connect(lp); lp.connect(g); g.connect(fireBus);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.05, t + 0.2);
+    g.gain.exponentialRampToValueAtTime(0.0004, t + 1.1);
+    src.start(t, Math.random() * 1.0, 1.2);
+    for (let i = 0; i < 5; i++) {
+      setTimeout(function () {
+        if (ctx && !S.muted) playCrackle(1);
+      }, 130 + i * (90 + Math.random() * 130));
+    }
   });
 
   SND.pageTurn = guard(function () {
@@ -774,12 +790,15 @@
       stormLfo2.frequency.setTargetAtTime(0.095 + Math.random() * 0.06, ctx.currentTime, 3);
     }
 
-    // fire crackles
+    // Fire crackles are the fireplace's whole voice now (no constant rumble):
+    // paced and gained by the live burn, so a blaze snaps busily and embers
+    // only tick now and then.
     if (S.fire && !S.muted) {
+      const fl = world.fire ? world.fire.level : 1;
       crackleT -= dt;
       if (crackleT <= 0) {
-        crackleT = 0.05 + Math.random() * 0.4;
-        if (Math.random() < 0.72) playCrackle();
+        crackleT = (0.08 + Math.random() * 0.5) / (0.3 + fl);
+        if (Math.random() < 0.32 + fl * 0.45) playCrackle(fl);
       }
     }
 

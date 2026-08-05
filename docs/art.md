@@ -318,6 +318,11 @@ See world.md for the lighting pass. When adding art, remember: warm glows are
 scaled by `pal.lamp`. Table and mantel candles are the exception: their visible
 flame and additive glow share the same 0–1 live state, blooming when Nora
 lights them and fading after dawn; each keeps its slow phase-offset flicker.
+The **fire** is the other such live-state prop: its flame heights
+(`drawFireDynamic`), spark rate, glow-pool radius/alpha, and crackle audio all
+scale off `world.fire.level`, so the whole hearth dims to embers together and
+climbs together when a log goes on — but the coal bed and glow never reach zero
+(the ember floor). See the hearth burn cycle in world.md.
 Speech bubbles/captions draw after lighting on purpose.
 Open laptops are the single cool exception: dark 16×3 base, 14×10 screen,
 blue-grey one-pixel text, and a faint radius-18 glow scaled by darkness.

@@ -8,6 +8,7 @@
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
   const caption = R.caption, makePath = R.makePath, walker = R.walker;
   const ringDoor = R.ringDoor, queueSlot = R.queueSlot, waitSpot = R.waitSpot;
+  const addLog = R.addLog;
   const SEAT_PREFS = R.SEAT_PREFS;
 
   /* ---------- patron behaviour ---------- */
@@ -398,6 +399,32 @@
         }
         break;
       }
+      case 'toFire': {
+        // a fireside regular has stepped away from their seat (still theirs) to
+        // lay a log; empty-handed on the walk over, they pick one up at the hearth
+        if (walker(p, dt)) {
+          p.state = 'atFire'; p.stateT = 0; p.firePlaced = false;
+          p.holding = 'log'; p.pose = 'stand'; p.facing = 1;
+        }
+        break;
+      }
+      case 'atFire': {
+        p.facing = 1;
+        if (p.stateT < 0.5) { p.holding = 'log'; p.pose = 'stand'; }
+        else {
+          if (!p.firePlaced) {
+            p.firePlaced = true; p.holding = null; p.pose = 'reach';
+            addLog(world);
+            if (Math.random() < 0.6) caption(world, R.specLine(p.spec, 'fire',
+              p.name + ' sets a fresh log on the fire; it catches and climbs.'));
+          }
+          if (p.stateT >= 1.2) {
+            p.pose = 'stand'; p.state = 'backToSeat'; p.stateT = 0;
+            seatPath(p, p.seat);
+          }
+        }
+        break;
+      }
       case 'returnBook': {
         // a moment at the shelf to slide the book home, then on their way
         if (!walker(p, dt)) { p.stateT = 0; break; }
@@ -707,6 +734,25 @@
         p.bubble = { icon: 'dots', until: world.t + 1.4 };
         SND.murmur(p.murmurPitch);
       }
+    }
+
+    // A fireside regular who tends the hearth (spec trait `tendsFire`) gets up
+    // now and then to lay a fresh log once the fire has burned low — the seat
+    // stays theirs, exactly like slipping off to the bookshelf. They get first
+    // refusal over Nora, who only reaches the fire on an idle roll.
+    if (world.fire && world.fire.wantsLog && !world.fire.claimed &&
+        p.spec && p.spec.traits && p.spec.traits.tendsFire &&
+        p.seat.armchair && p.sipPhase <= 0 && !p.holding && !p.dozing &&
+        Math.random() < dt * 0.3) {
+      world.fire.claimed = true;
+      p.reading = false; p.resumeReading = false;
+      p.pose = 'stand';
+      stepDown(p, p.seat);
+      p.state = 'toFire'; p.stateT = 0; p.firePlaced = false;
+      pathFrom(p, p.seat, L.fire.stand.x, L.fire.stand.y);
+      if (Math.random() < 0.7) caption(world, R.specLine(p.spec, 'fireUp',
+        p.name + ' sets down the book and gets up to tend the fire.'));
+      return;
     }
 
     // now and then the bookshelf calls (drink stays on the table, seat stays theirs)

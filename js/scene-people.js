@@ -480,6 +480,16 @@
       px(g, bkx, y - 25, 10, 2, shade('#a94f3f', -0.2));
       px(g, bkx + (facing > 0 ? 8 : 0), y - 24, 2, 6, '#f5efdf');   // page edges
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 22, 4, 4, c.skin);
+    } else if (held === 'log') {
+      // a split billet carried in the crook of the arm, off to the hearth
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 12, c.top);
+      const lgx = x + facing * 11 - (facing > 0 ? 0 : 15);
+      px(g, lgx, y - 30, 15, 6, '#6b4429');                          // the billet
+      px(g, lgx, y - 30, 15, 2, '#7a5233');                          // lit top edge
+      px(g, lgx + 3, y - 29, 2, 4, '#57371f');                       // bark tick
+      px(g, lgx + 9, y - 29, 2, 4, '#57371f');
+      px(g, lgx + (facing > 0 ? 13 : 0), y - 29, 2, 4, '#8a6142');   // end grain
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 23, 4, 4, c.skin);  // hand under
     } else {
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3) + swing, y - 34, 5, 16, c.top);
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2) + swing, y - 20, 4, 4, c.skin);

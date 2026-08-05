@@ -129,7 +129,13 @@
       wasLampOn: false,
       steamAcc: 0,
       wateredDay: -1,
-      candles: { mantel: 0, mantelTarget: 0, wasDark: false, forceRound: false }
+      candles: { mantel: 0, mantelTarget: 0, wasDark: false, forceRound: false },
+      // The hearth as a slow, living thing: a log burns down to embers over
+      // minutes (never fully out), then — after a patient grace — Nora or a
+      // fireside regular lays a fresh one and it climbs again. `level` is the
+      // live burn 0..1 (read by art, glow, and crackle audio); `target` is
+      // what it eases toward (a log sets it to 1). See updateFire / addLog.
+      fire: { level: 0.85, target: 0.85, wantsLog: false, claimed: false, graceT: 0 }
     };
 
     // seats: two stools per table + the fireside armchairs + the nook chairs
@@ -301,6 +307,7 @@
       dozing: false, dozeT: rnd(50, 120), dozeRemain: 0, zzzT: rnd(7, 14),
       isRegular: false, regularId: null, usualSeat: false, regularSeatNoted: false,
       knitting: false, knitT: rnd(1.5, 4), knitProgress: 0, knitColor: null,
+      firePlaced: false,
       gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
       lapCat: false, catLeaveT: 0,
       bubble: null, queueIdx: -1, waitIdx: -1, doorCloseT: 0
@@ -677,6 +684,58 @@
     c.wasDark = dark;
   }
 
+  /* ---------- the hearth ---------- */
+
+  const FIRE_EMBER = 0.16;    // the coals never die below this — always a glow
+  const FIRE_LOW = 0.34;      // under this the hearth wants a fresh log — eventually
+  const FIRE_BURN = 0.0038;   // target decay/s: a full log settles to embers in ~3 min
+  const FIRE_EASE = 0.55;     // level eases toward target/s (a fresh log catches over ~2 s)
+
+  /* The fire lives on its own slow clock (docs/world.md): the burn eases toward
+     a target that decays as the log spends itself, bottoming out at a warm
+     ember floor rather than going dark. Once it has sat low a patient random
+     grace, `wantsLog` goes up — the signal Nora's idle care and a fireside
+     regular both watch. It is fine for the fire to rest at embers a while
+     first; nothing here nags. */
+  function updateFire(world, dt) {
+    const f = world.fire;
+    if (!f) return;
+    f.target = Math.max(FIRE_EMBER, f.target - dt * FIRE_BURN);
+    f.level += (f.target - f.level) * Math.min(1, dt * FIRE_EASE);
+    if (f.level < FIRE_LOW && !f.wantsLog && !f.claimed) {
+      if (f.graceT <= 0) f.graceT = rnd(20, 110);
+      else {
+        f.graceT -= dt;
+        if (f.graceT <= 0) f.wantsLog = true;
+      }
+    } else if (f.level >= FIRE_LOW) {
+      f.graceT = 0;   // it climbed back up — reset the patience clock
+    }
+  }
+
+  /* A fresh log lands: the burn target jumps to full so the fire climbs over a
+     couple of seconds, a shower of sparks flies as it catches, and the soft
+     whoomph plays. Shared by Nora's fire-tending and Holger's (sim-characters /
+     sim-patrons), so who lays the log never changes what it does. */
+  function addLog(world) {
+    const f = world.fire;
+    if (!f) return;
+    f.target = 1;
+    f.level = Math.min(1, f.level + 0.15);   // a small immediate catch, then the climb
+    f.wantsLog = false;
+    f.claimed = false;
+    f.graceT = 0;
+    for (let i = 0; i < 12; i++) {
+      world.particles.push({
+        type: 'spark',
+        x: L.fire.boxX + 6 + Math.random() * (L.fire.boxW - 12),
+        y: L.fire.boxBot - (10 + Math.random() * 16),
+        vy: -(30 + Math.random() * 40), age: 0, life: rnd(0.35, 0.8), seed: 0
+      });
+    }
+    if (window.SND) SND.fireCatch();
+  }
+
   /* ---------- spawning ---------- */
 
   function spawnCap(world) {
@@ -907,13 +966,14 @@
     world.tables.forEach(function (tb) {
       tb.items.forEach(function (it) { if (it.hot > 0) it.hot -= dt; });
     });
-    // fire sparks
-    if (Math.random() < dt * 2.2) {
+    // fire sparks — a blaze throws more and higher; embers only spit now and then
+    const fireLvl = world.fire ? world.fire.level : 1;
+    if (Math.random() < dt * (0.3 + fireLvl * 2.2)) {
       world.particles.push({
         type: 'spark',
         x: L.fire.boxX + 8 + Math.random() * (L.fire.boxW - 16),
-        y: L.fire.boxBot - 20,
-        vy: -(24 + Math.random() * 20), age: 0, life: rnd(0.25, 0.6), seed: 0
+        y: L.fire.boxBot - (6 + fireLvl * 14),
+        vy: -(14 + fireLvl * 24 + Math.random() * 16), age: 0, life: rnd(0.25, 0.6), seed: 0
       });
     }
     for (let i = world.particles.length - 1; i >= 0; i--) {
@@ -992,6 +1052,7 @@
     updatePassersby: updatePassersby, spawnPasser: spawnPasser,
     dayIndex: dayIndex, candleTables: candleTables,
     snapCandles: snapCandles, updateCandles: updateCandles,
+    updateFire: updateFire, addLog: addLog,
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };

@@ -11,6 +11,7 @@
   const updateClock = R.updateClock, updateWeather = R.updateWeather;
   const updatePassersby = R.updatePassersby;
   const updateCandles = R.updateCandles, dayIndex = R.dayIndex;
+  const updateFire = R.updateFire, addLog = R.addLog;
   const updateDoor = R.updateDoor, updateSpawning = R.updateSpawning;
   const updatePatron = R.updatePatron, updateParticles = R.updateParticles;
   const updateCaptions = R.updateCaptions;
@@ -354,6 +355,36 @@
         }
         break;
       }
+      case 'fireOut': {
+        if (walker(b, dt)) {
+          b.state = 'fireTend'; b.stateT = 0; b.firePlaced = false;
+          b.holding = 'log'; b.pose = 'stand'; b.facing = 1;
+        }
+        break;
+      }
+      case 'fireTend': {
+        b.facing = 1;
+        if (b.stateT < 0.5) { b.holding = 'log'; b.pose = 'stand'; }
+        else {
+          if (!b.firePlaced) {
+            b.firePlaced = true; b.holding = null; b.pose = 'reach';
+            addLog(world);
+            if (Math.random() < 0.6) caption(world, pick([
+              'Nora lays a fresh log on the fire; it catches and climbs.',
+              'Nora feeds the fire a new log — the flames wake up.'
+            ]));
+          }
+          if (b.stateT >= 1.2) {
+            b.pose = 'stand'; b.state = 'fireHome'; b.stateT = 0;
+            b.path = fireHomeRoute();
+          }
+        }
+        break;
+      }
+      case 'fireHome': {
+        if (walker(b, dt)) { b.holding = null; b.state = 'idle'; b.idleT = rnd(7, 14); }
+        break;
+      }
       case 'busOut': {
         if (walker(b, dt)) {
           b.state = 'busCollect'; b.stateT = 0;
@@ -486,6 +517,30 @@
       { x: L.catCorner.noraSpot.x, y: L.lane },
       { x: L.catCorner.noraSpot.x, y: L.catCorner.noraSpot.y }
     ];
+  }
+
+  /* Nora's out-and-back to the hearth to lay a log: slip out at baristaExitX,
+     along the lane, up the fire's clear column (the same one the mantel candle
+     uses). Both legs axis-aligned; fireRoute() stitches them into the full
+     circuit __dev.audit() walks. */
+  function fireTendRoute() {
+    return [
+      { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
+      { x: L.fire.stand.x, y: L.lane }, { x: L.fire.stand.x, y: L.fire.stand.y }
+    ];
+  }
+
+  function fireHomeRoute() {
+    return [
+      { x: L.fire.stand.x, y: L.lane },
+      { x: L.baristaExitX, y: L.lane }, { x: L.baristaExitX, y: L.baristaHome.y },
+      { x: L.baristaHome.x, y: L.baristaHome.y }
+    ];
+  }
+
+  function fireRoute() {
+    return [{ x: L.baristaHome.x, y: L.baristaHome.y }]
+      .concat(fireTendRoute()).concat(fireHomeRoute());
   }
 
   const WATER_STOPS = L.noraCare.water;
@@ -655,6 +710,13 @@
     }
   }
 
+  function startFireTend(world, b) {
+    world.fire.claimed = true;
+    b.state = 'fireOut'; b.stateT = 0; b.holding = null; b.pose = 'stand';
+    b.path = fireTendRoute();
+    if (Math.random() < 0.4) caption(world, 'Nora crosses to feed the fire.');
+  }
+
   function startPiano(world, b) {
     b.state = 'pianoOut'; b.stateT = 0; b.pose = 'stand'; b.playing = false;
     b.pianoDur = rnd(60, 120); b.path = pianoRoute();
@@ -669,6 +731,7 @@
       else if (forced === 'chalk') startChalk(b);
       else if (forced === 'water') startWater(world, b);
       else if (forced === 'candles') startCandleRound(world, b);
+      else if (forced === 'fire') startFireTend(world, b);
       else if (forced === 'piano') startPiano(world, b);
       return;
     }
@@ -696,6 +759,9 @@
     }
     if (b.candlePending) { startCandleRound(world, b); return; }
     if (b.wateringPending) { startWater(world, b); return; }
+    // Feed the fire when it has burned low and no one else is already on it
+    // (a fireside regular gets first refusal — see sim-patrons). Never urgent.
+    if (world.fire.wantsLog && !world.fire.claimed) { startFireTend(world, b); return; }
     if (!world.patrons.length && world.daylight < 0.35 && b.emptyT > 30 &&
         world.t >= world.noraPianoNextT && Math.random() < 0.25) {
       startPiano(world, b); return;
@@ -1356,6 +1422,7 @@
     world.t += dt;
     updateClock(world, dt);
     updateCandles(world, dt);
+    updateFire(world, dt);
     updateWeather(world, dt);
     updatePassersby(world, dt);
     updateDoor(world, dt);
@@ -1397,6 +1464,7 @@
   R.refillRoute = refillRoute;
   R.waterRoute = waterRoute;
   R.candleRoute = candleRoute;
+  R.fireRoute = fireRoute;
   R.catRoute = catRoute;
   R.catSpots = CAT_SPOTS;
   R.catPerches = WINDOW_SPOTS.concat([BOOK_SPOT, PIANO_SPOT]);

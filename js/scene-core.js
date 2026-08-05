@@ -32,7 +32,10 @@
     bell: { x: 86, y: 132 },
     win: { x: 136, y: 98, w: 128, h: 80 },    // 1.35 CH tall
     win2: { x: 460, y: 98, w: 128, h: 80 },   // second window, hearth ↔ counter
-    fire: { x: 344, w: 88, boxX: 364, boxW: 48, boxTop: 180, boxBot: 228 },
+    // fire: the chimney breast + firebox; `stand` is the floor spot a tender
+    // (Nora or a fireside regular) takes to lay a fresh log, just left of the
+    // firebox centre so the reach carries into the coals
+    fire: { x: 344, w: 88, boxX: 364, boxW: 48, boxTop: 180, boxBot: 228, stand: { x: 384, y: 302 } },
     lane: 368,                // main walking corridor
     lamp1: { x: 318, y: 84 },
     lamp2: { x: 614, y: 84 },

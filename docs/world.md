@@ -95,8 +95,9 @@ Applied after all sprites, in `SCENE.drawLighting`:
    third hangs over the counter, with two spill pools across the back bar —
    machine + pass, pastry case — so the counter stays warm after dark), the
    two reading lamps in the nook; the piano lamp's tight pool over the score,
-   keys, and bench; the fireplace (always on,
-   flickering via layered sines); a candle jar on every dining and nook side
+   keys, and bench; the fireplace (never out — its glow pool grows and
+   brightens with the live burn `world.fire.level` and shrinks to a small
+   flickering ember glow when low); a candle jar on every dining and nook side
    table plus the mantel pair (each glow scaled by its live 0–1 flame state;
    window poseur tables carry no candle, cups only); a soft daylight pool
    below each window; and one deliberately tiny cool-blue radius-18 pool for
@@ -116,6 +117,23 @@ queue. At dawn the targets drop to zero and the flames fade over about 60 s.
 Clock jumps (`?hour=` / `__dev.hour`) snap all flames to the destination band,
 so a jump to night does not replay a dusk that never elapsed.
 
+### Hearth burn cycle
+
+The fire is a slow living thing (`world.fire`, `updateFire` in sim-core). Its
+live burn `level` (0..1) eases toward a `target` that decays as the log spends
+itself (`FIRE_BURN` ≈ a full log to embers in ~3 min), bottoming out at a warm
+ember floor (`FIRE_EMBER` 0.16) rather than going dark — the flames, the glow
+pool, the spark rate, and the crackle audio all read `level`, so the whole
+hearth dims together. Once it has sat below `FIRE_LOW` (0.34) a patient random
+grace (20–110 s), `wantsLog` goes up: it is fine for the fire to rest low a
+while, and nothing nags. A fireside regular who carries the `tendsFire` trait
+(Holger) gets first refusal, rising from the armchair to lay a log; otherwise
+Nora reaches it on an idle roll (see characters.md). `addLog` sets the target to
+full so the fire climbs over ~2 s, throws a burst of sparks, and plays
+`fireCatch()`. `claimed` keeps the two tenders from both going. `__dev.fire(0.2)`
+drops it near embers to watch the loop; the burn is independent of the clock, so
+jumps neither snap nor replay it.
+
 ## Particles
 
 - **Steam** (`type: 'steam'`): 1–2 px wisps with sinusoidal drift, rising from
@@ -123,7 +141,9 @@ so a jump to night does not replay a dusk that never elapsed.
   hot drinks mid-sip, and the espresso machine during pull/steam/kettle
   stages. Matcha whisking adds a sparser wisp above the chawan. Plates
   (pastries) and iced-matcha glasses never steam.
-- **Sparks** (`type: 'spark'`): rare 1-px embers rising inside the firebox.
+- **Sparks** (`type: 'spark'`): 1-px embers rising inside the firebox, scaled
+  by the live burn — a blaze throws more and higher, embers only spit now and
+  then, and a fresh log sends up a burst of a dozen as it catches.
 - **Dust mote** (`type: 'mote'`): a single 2-px cream fleck with slow drift,
   spawned for the cat's daylight pounce ritual and removed with that beat.
 - **Water drop** (`type: 'drop'`): tiny blue-grey pixels arc from Nora's

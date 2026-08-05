@@ -481,24 +481,27 @@
 
   function drawFireDynamic(g, world) {
     const f = L.fire, t = world.t;
-    // flames in three layers over a bed of glowing coals
+    // The live burn (0..1) scales the flames: a full log throws tall tongues,
+    // embers leave only the glowing coal bed. `flame` is 0 at the ember floor.
+    const lvl = world.fire ? world.fire.level : 1;
+    const flame = Math.max(0, (lvl - 0.16) / 0.84);
     for (let i = 0; i < 3; i++) {                       // back layer: broad, slow, deep
       const fx = f.boxX + 5 + i * 14;
-      const h = 20 + 8 * Math.sin(t * 3.3 + i * 2.2);
-      const hh = Math.max(8, Math.round(h));
-      px(g, fx, f.boxBot - 13 - hh, 12, hh, '#b5481c');
+      const hh = Math.round((20 + 8 * Math.sin(t * 3.3 + i * 2.2)) * flame);
+      if (hh >= 3) px(g, fx, f.boxBot - 13 - hh, 12, hh, '#b5481c');
     }
     for (let i = 0; i < 5; i++) {                       // mid tongues + bright core
       const fx = f.boxX + 4 + i * 8.2;
-      const h = 15 + 8 * Math.sin(t * 6.2 + i * 1.9) + 4 * Math.sin(t * 13 + i * 5.1);
-      const hh = Math.max(5, Math.round(h));
-      px(g, fx, f.boxBot - 15 - hh, 8, hh, '#e06a1e');
-      px(g, fx + 2, f.boxBot - 15 - Math.round(hh * 0.62), 5, Math.round(hh * 0.62), '#f5a83c');
-      px(g, fx + 3, f.boxBot - 15 - Math.round(hh * 0.3), 3, Math.round(hh * 0.3), '#f8dc8a');
+      const hh = Math.round((15 + 8 * Math.sin(t * 6.2 + i * 1.9) + 4 * Math.sin(t * 13 + i * 5.1)) * flame);
+      if (hh >= 3) {
+        px(g, fx, f.boxBot - 15 - hh, 8, hh, '#e06a1e');
+        px(g, fx + 2, f.boxBot - 15 - Math.round(hh * 0.62), 5, Math.round(hh * 0.62), '#f5a83c');
+        px(g, fx + 3, f.boxBot - 15 - Math.round(hh * 0.3), 3, Math.round(hh * 0.3), '#f8dc8a');
+      }
     }
-    for (let i = 0; i < 8; i++) {                       // coals under the logs
+    for (let i = 0; i < 8; i++) {                       // coals under the logs — never dark
       const gl = 0.4 + 0.4 * Math.sin(t * 3.1 + i * 2.7);
-      g.globalAlpha = Math.max(0.15, gl);
+      g.globalAlpha = Math.max(0.15, gl) * (0.55 + 0.45 * lvl);
       px(g, f.boxX + 4 + i * 5, f.boxBot - 4, 4, 3, i % 2 ? '#e06a1e' : '#f5a83c');
       g.globalAlpha = 1;
     }

@@ -61,7 +61,9 @@
           scarf: '#a94f3f', longHair: false, hairStyle: 1, beard: true
         },
         drink: 'espresso',
-        traits: { wantsBook: true, ownBook: true, chatty: false, laptop: false, pianist: false },
+        // tendsFire: an old habit — he keeps the hearth he sits by fed, getting
+        // up to lay a log when it burns low (sim-patrons updateSeated)
+        traits: { wantsBook: true, ownBook: true, chatty: false, laptop: false, pianist: false, tendsFire: true },
         murmurPitch: 130, speed: 46,
         umbrella: '#3d4a5c',
         arrival: { from: 9, to: 9 + 2 / 3 },
@@ -73,6 +75,16 @@
           arrivalReturn: ['Holger takes his corner as though he never left it.'],
           settle: ['Holger lowers himself into the usual armchair and opens his book.'],
           usualTaken: ['His chair is taken; Holger waits by the fire, patient as the tide.'],
+          // fireUp: rising to tend the hearth; fire: the log going on. Solo, in
+          // his register — a sailor keeping his fire the way he kept a stove.
+          fireUp: [
+            'Holger marks his page and rises to see to the fire.',
+            'Holger notices the fire sinking and gets up, unhurried.'
+          ],
+          fire: [
+            'Holger sets a log on the fire with a sailor\'s care; it catches and climbs.',
+            'Holger banks the fire up again, the way he once kept a stove at sea.'
+          ],
           // chatty: false — his story is solo, so no overheard pool by design
           overheard: [],
           musing: [

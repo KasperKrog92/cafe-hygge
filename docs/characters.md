@@ -75,6 +75,13 @@ daily care, then small counter-life:
   09:00 and 16:00, carries a copper can to the counter plant and both floor
   plants. A queue arrival parks the round after the current plant. The three
   cumulative `waterRoute` paths are shared with `__dev.audit()`.
+- **Feed the fire** (after plant care): when the hearth has burned low and no
+  fireside regular is already tending it (`world.fire.wantsLog && !claimed`),
+  she crosses via the fire's clear column, takes a log in hand for a beat, and
+  lays it on — the fire catches and climbs (`addLog`; see the hearth burn cycle
+  in world.md). Never urgent: a fireside regular gets first refusal, and she
+  only reaches the fire on an idle roll. The `fireRoute` is shared with
+  `__dev.audit()`; `__dev.noraDo('fire')` forces it.
 - **Play the piano** (below plant care): after at least 30 truly empty seconds
   with daylight below 0.35, a 25% candidate roll may send her out through the
   lane and the piano's clear descent column. She sits and plays sparsely for
@@ -139,7 +146,8 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
 ```
 (enterDelay) → (wipeFeet) → (shake → parkUmbrella) → enter → queueing → ordering
   → waitDrink → pickup → (browse) → toSeat → seated
-  ⇄ (fetchBook → backToSeat) → (closeLaptop) → (returnBook)
+  ⇄ (fetchBook → backToSeat) ⇄ (toFire → atFire → backToSeat)
+  → (closeLaptop) → (returnBook)
   → (return) → (collectUmbrella) → exit
 ```
 
@@ -298,6 +306,17 @@ reading, and marks his schedule done-for-today so `updateRegulars` never brings
 a second Holger the same café day. It is set-dressing — no arrival caption, no
 bond bump (recognition accrues on the arrivals the reader actually watches). If
 his armchair is somehow taken at boot the seed is skipped gracefully.
+
+**Tending the fire.** Holger carries the `tendsFire` trait: an old sailor's
+habit of keeping the fire he sits by fed. While seated in a fireside armchair,
+when the hearth has burned low (`world.fire.wantsLog`) and no one else is on it,
+he sets down the book, rises, walks to the hearth via the fire's clear column,
+lays a log (`addLog` — the same catch Nora's tending triggers), and returns to
+his chair to read on — the seat stays his throughout, exactly like slipping off
+to the bookshelf (`toFire → atFire → backToSeat`). He gets first refusal over
+Nora; his `fireUp`/`fire` line pools narrate the rising and the log going on. The
+trait is opt-in per roster row, so other fireside regulars can inherit the habit
+later.
 
 **Appearance & habits.** Holger: grey hair and beard, forest-green jumper,
 dark-red scarf, 130 Hz murmur, 46 px/s. Gerda: bun of grey hair, mauve top and
