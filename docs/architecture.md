@@ -34,7 +34,7 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `door` | `{open: 0–1, target, jiggle}` — door swing + bell animation |
 | `patrons[]` | live patron entities (see characters.md for the state machine) |
 | `umbrellaStand[]` | visible parked umbrellas `{owner, color}`; owner links are audited and removed on collection |
-| `regular` / `sleeper` | Holger's once-per-day schedule and the single active dozing-patron reference |
+| `regulars` / `sleeper` | per-id once-per-day arrival schedule for the roster (`CAST.regulars`, built by `buildRegulars`) and the single active dozing-patron reference |
 | `queue[]` | patrons currently in the order line (index 0 = at the till) |
 | `barista` | Nora's entity |
 | `cat` | the cat entity: core pose/path plus `surface`, `hopFrom/hopTo/hopT`, `hungerT`/`thirstT`, `gazeT/gazeFacing`, `lapPatron`, `sniffedPass`, and rare-event `counterT`/`ascentT`/`moteT` fields |
@@ -154,7 +154,7 @@ or console calls:
 | `__dev.hour(h)` | jump the in-world clock (no arg: read it) |
 | `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
 | `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`, `umbrella`, `laptop`, `pianist`); `couple: true` returns a linked pair |
-| `__dev.regular()` / `__dev.doze()` | force Holger's next arrival / put the first eligible seated reader to sleep |
+| `__dev.regular(id)` / `__dev.doze()` | force a named regular's next arrival (`'holger'`, `'gerda'`, `'kasper'`, `'freya'`; defaults to `'holger'`) / put the first eligible seated reader to sleep |
 | `__dev.piano(on)` | force or stop the dt-driven corner-piano sound engine |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
 | `__dev.noraDo(action)` | wake Nora's idle picker and force `stretch`, `chalk`, `water`, `candles`, or `piano`; candle forcing clears the current flames so the full round is visible |

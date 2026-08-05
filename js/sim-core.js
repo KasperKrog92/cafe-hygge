@@ -51,8 +51,8 @@
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
   function nameStyleFor(name) {
     if (PATRON_NAMES.feminine.indexOf(name) >= 0) return 'feminine';
-    if (PATRON_NAMES.masculine.indexOf(name) >= 0 || name === 'Holger') return 'masculine';
-    return 'custom';
+    if (PATRON_NAMES.masculine.indexOf(name) >= 0) return 'masculine';
+    return 'custom';   // every regular carries its own nameStyle via its spec
   }
   function holdingFor(kind) { return kind === 'plate' ? 'plate' : kind === 'glass' ? 'glass' : 'cup'; }
   function pickDrink() {
@@ -111,7 +111,7 @@
       activeCaption: null,
       lastCapT: -10,
       spawnT: rnd(4, 9),
-      regular: { lastDay: -1, day: 0, hour: rnd(9, 9 + 2 / 3), force: false },
+      regulars: buildRegulars(),
       sleeper: null,
       pianoNextT: 0,
       noraPianoNextT: rnd(600, 1200),
@@ -666,39 +666,69 @@
     return [a, b];
   }
 
-  function makeRegular(world) {
-    const p = makePatron('Holger');
-    p.colors = {
-      skin: '#d99c6b', hair: '#d9d2c0', top: '#4a7a5a', pants: '#4a3222',
-      scarf: '#a94f3f', longHair: false, hairStyle: 1, beard: true
-    };
-    p.drink = DRINKS.find(function (d) { return d.name === 'espresso'; });
-    p.wantsBook = true; p.ownBook = true; p.chatty = false;
-    p.murmurPitch = 130; p.speed = 46; p.isRegular = true; p.laptop = false; p.pianist = false;
-    // tag him to his roster row so schedule, line lookup, and continuity can
-    // find his spec (Phase 1 builds his construction from this spec too)
-    p.regularId = 'holger';
-    p.spec = CAST.regulars.find(function (r) { return r.id === 'holger'; });
-    if (world.rain > 0.4) p.umbrella = { color: '#3d4a5c' };
+  /* One schedule slot per roster row, keyed by id. Each carries the last day
+     that regular arrived, the day its arrival `hour` was rolled for, that
+     rolled hour (fresh in the spec's window each café day), and a dev force
+     flag. Built from CAST at world creation. */
+  function buildRegulars() {
+    const map = {};
+    CAST.regulars.forEach(function (spec) {
+      map[spec.id] = { lastDay: -1, day: 0, hour: rnd(spec.arrival.from, spec.arrival.to), force: false };
+    });
+    return map;
+  }
+
+  /* Build a regular from its roster spec: start from a plain patron (for the
+     name + all the default fields), then stamp the fixed look, drink, traits,
+     voice, and spec tag over it. Holger's row reproduces his old hardcoded
+     values byte-for-byte. */
+  function makeRegular(world, spec) {
+    const p = makePatron(spec.name);
+    p.nameStyle = spec.nameStyle;
+    p.colors = Object.assign({}, spec.colors);
+    const drink = DRINKS.find(function (d) { return d.name === spec.drink; });
+    if (drink) p.drink = drink;
+    p.wantsBook = !!spec.traits.wantsBook;
+    p.ownBook = !!spec.traits.ownBook;
+    p.chatty = !!spec.traits.chatty;
+    p.laptop = !!spec.traits.laptop;
+    p.pianist = !!spec.traits.pianist;
+    p.murmurPitch = spec.murmurPitch;
+    p.speed = spec.speed;
+    p.isRegular = true;
+    p.regularId = spec.id;
+    // stash the spec so schedule, seat preference, line lookup, and continuity
+    // can reach this regular's row directly
+    p.spec = spec;
+    if (world.rain > 0.4 && spec.umbrella) p.umbrella = { color: spec.umbrella };
     return p;
   }
 
-  function updateRegular(world) {
-    const r = world.regular;
+  function arrivalLine(spec) {
+    return spec.lines && spec.lines.arrival && spec.lines.arrival.length
+      ? pick(spec.lines.arrival)
+      : spec.name + ' steps inside.';
+  }
+
+  function updateRegulars(world) {
     const day = dayIndex(world);
-    if (day !== r.day) { r.day = day; r.hour = rnd(9, 9 + 2 / 3); }
-    if (world.patrons.some(function (p) { return p.isRegular; })) return;
-    const due = r.force || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
-    if (!due || world.patrons.length >= spawnCap(world)) return;
-    const p = makeRegular(world);
-    enqueueArrival(world, p, 0, true);
-    r.lastDay = day; r.force = false;
-    caption(world, 'Holger steps in, as steady as the clock.');
-    return p;
+    CAST.regulars.forEach(function (spec) {
+      const r = world.regulars[spec.id];
+      if (!r) return;
+      if (day !== r.day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
+      // one visit at a time per regular; never two of the same face
+      if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return;
+      const due = r.force || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
+      if (!due || world.patrons.length >= spawnCap(world)) return;   // force holds until the room has room
+      const p = makeRegular(world, spec);
+      enqueueArrival(world, p, 0, true);
+      r.lastDay = day; r.force = false;
+      caption(world, arrivalLine(spec));
+    });
   }
 
   function updateSpawning(world, dt) {
-    updateRegular(world);
+    updateRegulars(world);
     world.spawnT -= dt;
     if (world.spawnT > 0) return;
     world.spawnT = rnd(1, 1.4) * (26 + (1 - world.daylight) * 55);
@@ -783,7 +813,7 @@
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor,
     makePatron: makePatron, caption: caption, updateCaptions: updateCaptions,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
-    spawnCouple: spawnCouple, updateRegular: updateRegular,
+    spawnCouple: spawnCouple, updateRegulars: updateRegulars,
     makePath: makePath, walker: walker,
     ringDoor: ringDoor, updateDoor: updateDoor,
     updateWeather: updateWeather, updateClock: updateClock,

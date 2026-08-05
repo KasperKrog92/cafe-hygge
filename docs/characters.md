@@ -231,16 +231,48 @@ At the table they murmur every 12–26 s, with a rare heart bubble. Their stays
 share one 120–260 s roll with a small individual wobble; once both expire,
 they leave 0.8 s apart and share one cup-bussing decision.
 
-### Holger — the regular
+### The regulars
 
-Holger is the one fixed patron: grey hair and beard, forest-green jumper,
-brown trousers, dark-red scarf, espresso, his own book, 46 px/s walk, and a
-quiet 130 Hz murmur voice. Once each café day he arrives between 09:00 and
-09:40 (the fresh 08:24 boot reaches this within its first real minute) and
-stays 280–420 s. He prefers the left fireside chair, found by its flags rather
-than an index. If it is free he settles into his usual armchair; if occupied,
-he gives it one patient look and chooses by the normal reader rules. In rain
-he reliably brings the same blue-grey umbrella.
+The regulars are the fixed faces — a roster kept as pure data in
+`js/characters-roster.js` (`window.CAST.regulars`), read by the sim at world
+creation. Each row fixes a look, a drink, a set of habits, a usual seat, an
+arrival window, and (from Phase 2) the pools of lines they might overhear or
+muse aloud. `makeRegular(world, spec)` stamps a row over a plain patron;
+`world.regulars` holds one schedule slot per id (`{ lastDay, day, hour,
+force }`), and `updateRegulars` brings each in once per café day within its
+window. Every regular is chosen to ride a behavior that already exists, so the
+roster is almost entirely data — no new behavior code.
+
+| Regular | Arrives | Drink | Usual seat | Rides | Character |
+| --- | --- | --- | --- | --- | --- |
+| **Holger** | ~09:00 | espresso, own book | left fireside armchair | reading | stoic; never chats |
+| **Gerda** | ~10:00 | chamomile tea | window perch | window-gazing, chatty | warm, older; watches the street |
+| **Kasper** | ~13:30 | iced matcha | dining table | laptop typing | young writer; mutters at the screen |
+| **Freya** | ~18:30 | matcha latte, own book | right fireside armchair | reading, dozing | evening reader; drifts off by the fire |
+
+Deliberate contrasts keep them from blurring together: morning versus dusk
+(only Freya sits late enough that the after-dark doze can take her), silent
+versus chatty (Holger's story will arrive as solo musings, Gerda's as overheard
+talk), and one of each existing behavior.
+
+**Usual seats.** Each row's `seat` names a `SEAT_PREFS` predicate in
+`sim-core.js` (`firesideLeft`, `firesideRight`, `windowPerch`, `nook`,
+`diningTable`). `freeSeat` steers a regular to a free preferred seat and marks
+`usualSeat`; on arrival they settle into it with a per-name line ("Holger
+settles into the usual armchair"). If every preferred seat is taken, one
+patient-look line fires and they fall back to the normal seating rules.
+Readers settle in with a book, the writer keeps typing, the window-watcher
+keeps her eyes on the street.
+
+**Appearance & habits.** Holger: grey hair and beard, forest-green jumper,
+dark-red scarf, 130 Hz murmur, 46 px/s. Gerda: bun of grey hair, mauve top and
+warm-red scarf, a slower 40 px/s. Kasper: long brown hair, muted-blue top,
+brisk 52 px/s. Freya: long red hair, mossy-green top. Each carries a fixed umbrella
+colour brought reliably in rain, a fixed stay range, and its own `nameStyle`
+(no name special-case remains in `nameStyleFor`; the roster names live outside
+the random `PATRON_NAMES` pools so no walk-in ever shares one). The fresh 08:24
+boot reaches Holger's window within its first real minute; `__dev.ff()` walks a
+full day of arrivals quickly, and `__dev.regular(id)` forces any one in.
 
 ---
 

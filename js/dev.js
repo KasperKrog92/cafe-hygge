@@ -146,11 +146,10 @@
     const w = world();
     const present = w.patrons.find(function (p) { return p.regularId === id; });
     if (present) return present;
-    // Phase 0: only Holger has a schedule slot (world.regular); Phase 1 adds
-    // the rest of the roster and its per-id force flags.
-    if (id !== 'holger') { console.warn('[dev] "' + id + '" has no schedule yet (Phase 1)'); return null; }
-    w.regular.force = true;
-    return SIM._.updateRegular(w) || null;
+    if (!w.regulars[id]) { console.warn('[dev] "' + id + '" has no schedule slot'); return null; }
+    w.regulars[id].force = true;
+    SIM._.updateRegulars(w);
+    return w.patrons.find(function (p) { return p.regularId === id; }) || null;
   };
 
   D.doze = function () {

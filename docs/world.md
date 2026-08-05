@@ -14,6 +14,12 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   mantel clock gives one soft two-note chime at 09:00, 15:00, 18:00, and
   21:00. A back-room kettle whistles once per day at a slot rolled between
   19:00 and 21:30.
+- The **regulars** each keep their own once-per-day schedule (`world.regulars`,
+  one slot per roster id). Every café day their arrival hour is rolled fresh
+  inside that regular's window — Holger ~09:00, Gerda ~10:00, Kasper ~13:30,
+  Freya ~18:30 — and `updateRegulars` brings each in once, never two of the same
+  face at once. Spread across the day, they rarely all overlap; only Freya sits
+  late enough for the after-dark doze. See characters.md for the roster.
 - The palette comes from `SCENE.dayPalette(hour)`, interpolating these
   keyframes (`DAYKEYS` in `scene-core.js`):
 

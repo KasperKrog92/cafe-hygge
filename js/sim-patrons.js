@@ -8,8 +8,15 @@
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
   const caption = R.caption, makePath = R.makePath, walker = R.walker;
   const ringDoor = R.ringDoor, queueSlot = R.queueSlot, waitSpot = R.waitSpot;
+  const SEAT_PREFS = R.SEAT_PREFS;
 
   /* ---------- patron behaviour ---------- */
+
+  /* how a seat reads in a caption ("settles into the usual armchair") */
+  function seatNoun(seat) {
+    return seat.armchair ? 'armchair' : seat.window ? 'window seat'
+      : seat.nook ? 'nook chair' : 'seat';
+  }
 
   function freeSeat(world, patron) {
     let free = world.seats.filter(function (s) { return !s.taken; });
@@ -32,12 +39,14 @@
       });
     });
     if (clean.length) free = clean;
-    if (patron.isRegular) {
-      const usual = world.seats.find(function (s) { return s.armchair && s.facing === 1; });
-      if (usual && !usual.taken) { patron.usualSeat = true; return usual; }
-      if (usual && !patron.regularSeatNoted) {
+    if (patron.isRegular && patron.spec && SEAT_PREFS[patron.spec.seat]) {
+      const pref = SEAT_PREFS[patron.spec.seat];
+      const preferred = free.filter(function (s) { return pref(s); });
+      if (preferred.length) { patron.usualSeat = true; return pick(preferred); }
+      // the usual spot is taken — one patient look, then the normal fallback
+      if (!patron.regularSeatNoted) {
         patron.regularSeatNoted = true;
-        if (Math.random() < 0.7) caption(world, 'Holger\'s chair is taken; he gives it a patient look.');
+        if (Math.random() < 0.7) caption(world, 'The usual spot is taken; ' + patron.name + ' gives it a patient look.');
       }
     }
     if (patron.laptop) {
@@ -340,7 +349,8 @@
           perchUp(p);
           p.facing = p.seat.facing;
           p.state = 'seated'; p.stateT = 0;
-          p.stay = p.isRegular ? rnd(280, 420) : (p.coupleStay || rnd(100, 260));
+          p.stay = (p.isRegular && p.spec) ? rnd(p.spec.stay[0], p.spec.stay[1])
+            : (p.coupleStay || rnd(100, 260));
           if (p.seat.table >= 0) {
             world.tables[p.seat.table].items.push({ side: p.seat.side, kind: p.drink.kind, owner: p.id,
               hot: p.drink.kind === 'glass' ? 0 : 45, hidden: false });
@@ -358,8 +368,10 @@
             p.reading = false;
             if (Math.random() < 0.7) caption(world, p.name + ' settles at the piano.');
           } else if (p.isRegular && p.usualSeat) {
-            p.reading = true;
-            caption(world, 'Holger settles into his usual armchair.');
+            // readers settle in with a book; the writer keeps typing, the
+            // window-watcher keeps her eyes on the street
+            if (!p.laptopActive && (p.wantsBook || p.seat.armchair || p.seat.nook)) p.reading = true;
+            caption(world, p.name + ' settles into the usual ' + seatNoun(p.seat) + '.');
           } else if (p.partner && !p.pairCaptioned) {
             p.pairCaptioned = true; p.partner.pairCaptioned = true;
             if (p.seat.window) caption(world, 'Two mugs on one window sill.');
