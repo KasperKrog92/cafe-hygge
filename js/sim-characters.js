@@ -116,6 +116,9 @@
         break;
       }
       case 'prepping': {
+        // making the drink: she works the machine and back counter (all above
+        // her standing line), so she's seen from behind — apron ties and all
+        b.heading = 'up';
         const s = b.steps[b.stepIdx];
         world.brew.active = true;
         world.brew.stage = s.act;

@@ -32,7 +32,11 @@ station and works through timed steps (each with its own sound):
 | `matcha_iced` (iced matcha) | `L.matchaBar.x` scoop 0.8 s → 700 kettle pour 1.0 s → `L.matchaBar.x` whisk 2.2 s → ice 1.0 s |
 | `food` (bun, croissant) | 858 fetch from pastry case 1.4 s |
 
-Then she carries the cup/glass/plate to the pass (`L.serveSpot` = 744, 266),
+The prep stations (machine, kettle, matcha bar, pastry case) all sit above her
+standing line, so while a step is running she's shown from **behind** (`heading:
+'up'` — apron ties and bow to the room); she walks between stations in profile,
+and turns her **front** to the room to set the finished order on the pass. Then
+she carries the cup/glass/plate to the pass (`L.serveSpot` = 744, 266),
 sets it down (clink), and rings the counter bell (*ding*). During machine-stage
 steps the machine light blinks and steam particles rise (`world.brew`). Matcha
 whisking instead animates the chasen and a pale-green surface in the chawan,
@@ -202,8 +206,9 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
      Two window sitters share a table, so a window pair can murmur across
      the glass.
    - **Watching the window** (window sitters): every 20–50 s the street pulls
-     their gaze for 3.5–8 s — the head turns toward the glass while the body
-     keeps leaning on its cushion (`gazeFacing`); a sip turns the head back.
+     their gaze for 3.5–8 s — the head turns toward the glass (the window is on
+     the wall behind the seat, so this shows the **back** of the head) while the
+     body keeps leaning on its cushion (`gazeFacing`); a sip turns the head back.
      Occasional caption, weather- and hour-aware (rain on the glass /
      streetlamps / the street drifting by).
 6. **leaving** — 40% carry their cup back to the counter ("returns the cup —

@@ -190,10 +190,14 @@
         px(g, kx, y - 25, 4, 7, c.scarf);                       // tail
         px(g, kx, y - 19, 2, 2, shade(c.scarf, -0.15));         // fringe
       }
-      // gazeFacing (window sitters looking out) turns the head only —
-      // the body keeps leaning on its cushion
+      // gazeFacing (window sitters looking out) turns the head — the body keeps
+      // leaning on its cushion. The window is on the wall behind the seat, so a
+      // real glance out shows the back of the head; a doze keeps its slumped
+      // profile (eyes closed, chin down).
       const dozeDrop = p.dozing ? 2 + (Math.sin(p.animT * 1.15) > 0 ? 1 : 0) : 0;
-      drawHead(g, x, y - 48 + breathe + dozeDrop, p.gazeFacing || facing, c, p.dozing);
+      const hy = y - 48 + breathe + dozeDrop;
+      if (p.gazeFacing && !p.dozing) drawHeadBack(g, x, hy, facing, c);
+      else drawHead(g, x, hy, p.gazeFacing || facing, c, p.dozing);
       // arms + what they hold
       if (p.reading || p.dozing) {
         px(g, x + facing * 3 - 2, y - 24, 5, 8, c.top);

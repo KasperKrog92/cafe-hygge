@@ -253,9 +253,16 @@ than 24 px heading down the room (door → lane, lane → seat, Nora's exit
 column and candle/water descents) and `'up'` on the same legs heading up it
 (walking out to the door, returning a cup, Nora walking home); horizontal
 legs and arrival clear it, and short vertical hops keep the current view so
-nothing flashes mid-journey. Nora faces the room this way while idle at the
-till, and an ordering patron turns heading-up to meet her across the
-counter.
+nothing flashes mid-journey. State code sets `heading` directly too: Nora
+faces the room (`'down'`) while idle at the till, but works with her back to it
+(`'up'`) while prepping a drink, since the machine and back counter sit above
+her standing line — she turns her front to the pass only to serve. An ordering
+patron turns heading-up to meet her across the counter.
+
+The **back head is reused on a seated sitter** as well: a window-watcher's gaze
+turns toward the glass, which is on the wall behind the seat, so it draws the
+back of the head (`gazeFacing`) while the body keeps its seated lean — a doze
+keeps the slumped profile instead.
 
 Both views share a step-in-place walk (trailing shoe lifts 2 px on stride
 frames, same 4-frame clock), arms hanging at both sides with a 1 px
