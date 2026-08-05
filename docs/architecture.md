@@ -10,7 +10,7 @@ js/scene-core.js        → window.SCENE   (layout, palette, shared renderer hel
 js/scene-bg.js          → extends SCENE  (background cache + dynamic wall layer)
 js/scene-furniture.js   → extends SCENE  (depth-sorted furniture)
 js/scene-people.js      → extends SCENE  (people, cat, bubbles, icons)
-js/scene-fx.js          → extends SCENE  (lighting, particles, captions)
+js/scene-fx.js          → extends SCENE  (lighting, particles, captions, composeFrame)
 js/characters-roster.js → window.CAST    (regulars roster + story arcs, pure data)
 js/memory.js            → window.MEMORY  (persistent cross-visit save; versioned)
 js/sim-core.js          → window.SIM     (world + shared simulation systems)
@@ -61,19 +61,23 @@ requestAnimationFrame:
                                // → patrons → cat → particles → captions
   SND.update(dt, world)        // rain/fire, music box + night pad + piano notes
   render():                    // all drawing targets the 960×600 master canvas
-    SCENE.drawScene(g, world)          // blit static-background cache, then the
-                                       // dynamic layer: window/door/wall frame/
-                                       // lamps/flames/clock hands/candles/machine
-    drawables = SCENE.furnitureDrawables(world)  // tables, stools, wing chairs,
-                 ++ SIM.entityDrawables(world)   // bookshelf, lamps, counter,
-                                                 // plants + people, cat
-    sort by baseline y, draw           // painter's algorithm (see art.md)
-    SCENE.drawParticles(g, world)
-    SCENE.drawLighting(g, world)       // multiply tint + additive glows + vignette
-    bubbles, caption                   // drawn after lighting so they stay legible
-                                       // (captions are thresholded to a bitmap
-                                       // once per text and blitted ×2 — see art.md)
+    SCENE.composeFrame(g, world)       // the whole frame, in one shared call:
+      SCENE.drawScene(g, world)        //   blit static-background cache, then the
+                                       //   dynamic layer: window/door/wall frame/
+                                       //   lamps/flames/clock hands/candles/machine
+      drawables = SCENE.furnitureDrawables(world)  // tables, stools, wing chairs,
+                   ++ SIM.entityDrawables(world)   // bookshelf, lamps, counter,
+                                                   // plants + people, cat
+      sort by baseline y, draw         //   painter's algorithm (see art.md)
+      SCENE.drawParticles(g, world)
+      SCENE.drawLighting(g, world)     //   multiply tint + additive glows + vignette
+      bubbles, caption                 //   drawn after lighting so they stay legible
+                                       //   (captions are thresholded to a bitmap
+                                       //   once per text and blitted ×2 — see art.md)
     blit view rect of master → visible canvas   // see Rendering contracts
+    // SCENE.composeFrame is the single source of the draw list: js/dev.js's
+    // __dev.shot() calls it into an offscreen canvas for a headless PNG, so a
+    // shot can never drift from what render() ships.
 ```
 
 The **static-background cache** is an offscreen 960×600 canvas holding
@@ -198,6 +202,7 @@ or console calls:
 | `__dev.catDo(action)` | reset the cat to a safe floor spot and force `eat`, `window`, `bookshelf`, `counter`, `topShelf`, `piano`, `lap`, `mote`, or `knead` on the next tick |
 | `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Nora's idle picker |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
+| `__dev.shot(target?, {scale}?)` | headless render → PNG data URL via `SCENE.composeFrame` (same draw list `render()` ships), independent of the rAF loop / tab visibility / preview pane. `target`: a named region from `__dev.regions` (`fireside`, `nook`, `counter`, `window0`, `window1`, `door`, `hearth`, `bookshelf`, `piano`, all derived from `SCENE.L`), an entity name (`nora`, `cat`, a patron by name/regularId), a `{x,y,w,h,scale}` crop, or nothing for the whole 960×600 scene. Nearest-neighbour integer upscale |
 | `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — umbrella, Nora and cat routes included — seat↔table wiring, anchors, barista y=286 / lane 368, plus live-world checks for seats, pairs, umbrellas, sleeper, queue, props, bowls/candles, and spawn cap) |
 
 Three contracts support it: `SIM._` (the private seam shared by the sim

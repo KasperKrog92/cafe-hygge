@@ -171,4 +171,25 @@
     g.drawImage(capCache.fill, 16, 540, capCache.w * 2, capCache.h * 2);
     g.globalAlpha = 1;
   };
+
+  /* Compose one full frame of the world into `g` (a 960×600 master context):
+     background, the baseline-sorted furniture+entity draw list, particles,
+     lighting, bubbles, caption. The single source of the depth-sort render
+     pass — main.js's render() calls this then blits the view rect to the
+     visible canvas, and __dev.shot() calls it into an offscreen canvas, so a
+     headless shot can never drift from what actually ships. Property-accesses
+     SIM.entityDrawables / SCENE.drawCaption at call time, so the dev overlay's
+     drawCaption wrap (js/dev.js) rides along on shots too. */
+  SCENE.composeFrame = function (g, world) {
+    SCENE.drawScene(g, world);
+    const furniture = SCENE.furnitureDrawables(world);
+    const ents = SIM.entityDrawables(world);
+    const all = furniture.concat(ents.draws);
+    all.sort(function (a, b) { return a.y - b.y; });
+    all.forEach(function (d) { d.draw(g); });
+    SCENE.drawParticles(g, world);
+    SCENE.drawLighting(g, world);
+    ents.bubbles.forEach(function (b) { SCENE.drawBubble(g, b.x, b.y, b.icon); });
+    SCENE.drawCaption(g, world);
+  };
 })();

@@ -32,6 +32,13 @@
      __dev.catDo(name) force a cat ritual on the next simulation tick
      __dev.bowls(f,w)  set the cat's food and water bowl levels
      __dev.overlay(b)  toggle the layout overlay
+     __dev.shot(t,o)   headless render → PNG data URL, independent of the rAF
+                       loop / tab visibility / preview pane. t: a region name
+                       ('fireside','nook','counter','window0','window1','door',
+                       'hearth','bookshelf','piano'), an entity name ('nora',
+                       'cat', a patron), or a {x,y,w,h,scale} crop; no arg = the
+                       whole 960×600 scene. o: {scale}
+     __dev.regions     the named crop boxes shot(name) understands
      __dev.audit()     invariant sweep; returns (and warns) violations */
 (function () {
   'use strict';
@@ -427,6 +434,110 @@
   SCENE.drawCaption = function (g, w) {
     origDrawCaption(g, w);
     if (state.overlay) drawOverlay(g, w);
+  };
+
+  /* ---------- headless render-to-image (docs/plans/llm-dev-ergonomics.md) ---------- */
+
+  /* clamp {x0,y0}→{x1,y1} to the master and snap to whole pixels → {x,y,w,h} */
+  function span(x0, y0, x1, y1) {
+    x0 = Math.max(0, Math.round(x0)); y0 = Math.max(0, Math.round(y0));
+    x1 = Math.min(SCENE.W, Math.round(x1)); y1 = Math.min(SCENE.H, Math.round(y1));
+    return { x: x0, y: y0, w: Math.max(0, x1 - x0), h: Math.max(0, y1 - y0) };
+  }
+
+  /* Named crop boxes in master coordinates — one source of truth for
+     __dev.shot(name), derived from SCENE.L so they can't drift from the art.
+     Every box is clamped in-bounds (Phase 2). */
+  const regions = (function () {
+    const axs = L.armchairs.map(function (a) { return a.x; });
+    const lib = L.library;
+    const nxs = lib.chairs.map(function (c) { return c.x; })
+      .concat(lib.sideTables.map(function (s) { return s.x; }), lib.lamps.map(function (p) { return p.x; }));
+    const nys = lib.chairs.map(function (c) { return c.y; })
+      .concat(lib.sideTables.map(function (s) { return s.y; }), lib.lamps.map(function (p) { return p.y; }));
+    const c = L.counter, f = L.fire, sh = lib.shelf, pn = L.piano, d = L.door;
+    function winRegion(wn) { return span(wn.x - 24, wn.y - 16, wn.x + wn.w + 24, 268); }
+    return {
+      fireside: span(Math.min.apply(null, axs) - 52, 232, Math.max.apply(null, axs) + 52, 340),
+      nook: span(Math.min.apply(null, nxs) - 40, Math.min.apply(null, nys) - 72,
+                 Math.max.apply(null, nxs) + 40, Math.max.apply(null, nys) + 28),
+      counter: span(c.x - 20, 90, c.x + c.w + 12, c.baseY + 20),
+      window0: winRegion(L.win),
+      window1: winRegion(L.win2),
+      door: span(d.x - 20, d.y - 16, d.x + d.w + 60, 336),
+      hearth: span(f.x - 12, 96, f.x + f.w + 40, f.stand.y + 20),
+      bookshelf: span(sh.x - sh.w / 2 - 12, sh.y - sh.h - 12, sh.x + sh.w / 2 + 12, sh.y + 16),
+      piano: span(pn.x - 10, pn.lamp.y - 24, pn.bench.x + 20, pn.baseline + 16)
+    };
+  })();
+  D.regions = regions;
+
+  /* A crop box around a named entity's sprite (feet at e.y, ~1 CH tall):
+     'nora'/'barista', 'cat', or any patron by name or regularId. */
+  function entityBox(w, name) {
+    const lc = String(name).toLowerCase();
+    let e = null;
+    if (lc === 'nora' || lc === 'barista') e = w.barista;
+    else if (lc === 'cat') e = w.cat;
+    else e = w.patrons.find(function (p) {
+      return (p.name && p.name.toLowerCase() === lc) || p.regularId === name;
+    });
+    return e ? span(e.x - 48, e.y - 76, e.x + 48, e.y + 20) : null;
+  }
+
+  /* Render the live world to a fresh offscreen 960×600 canvas exactly as
+     main.js does (SCENE.composeFrame — same draw list, so no drift), crop it,
+     and upscale by an integer with nearest-neighbour (pixel art). Returns a
+     `data:image/png` URL and logs its length. Works with the tab hidden and
+     the preview pane closed — this is the supported headless capture.
+       __dev.shot()                  whole 960×600 scene
+       __dev.shot('fireside')        a named region (D.regions)
+       __dev.shot('nora')            cropped around a named entity
+       __dev.shot({x,y,w,h,scale})   an arbitrary crop
+     opts (2nd arg): { scale } — integer upscale; default keeps the crop
+     readable. */
+  D.shot = function (target, opts) {
+    opts = opts || {};
+    const w = world();
+    if (!w) { console.warn('[dev] no world yet — load ?dev first'); return null; }
+
+    let box, name;
+    if (target == null) {
+      box = { x: 0, y: 0, w: SCENE.W, h: SCENE.H }; name = 'scene';
+    } else if (typeof target === 'string') {
+      name = target;
+      box = regions[target] || entityBox(w, target);
+      if (!box) {
+        console.warn('[dev] unknown shot target "' + target + '" — regions: ' +
+          Object.keys(regions).join(', ') + '; or an entity (nora, cat, a patron)');
+        return null;
+      }
+    } else {
+      box = span(target.x || 0, target.y || 0,
+                 (target.x || 0) + (target.w || SCENE.W), (target.y || 0) + (target.h || SCENE.H));
+      name = 'crop'; if (target.scale) opts.scale = target.scale;
+    }
+    if (box.w <= 0 || box.h <= 0) { console.warn('[dev] shot crop is empty'); return null; }
+
+    const scale = opts.scale ? Math.max(1, opts.scale | 0)
+      : Math.max(1, Math.min(8, Math.floor(640 / Math.max(box.w, box.h)) || 1));
+
+    const master = document.createElement('canvas');
+    master.width = SCENE.W; master.height = SCENE.H;
+    const mg = master.getContext('2d');
+    mg.imageSmoothingEnabled = false;
+    SCENE.composeFrame(mg, w);
+
+    const out = document.createElement('canvas');
+    out.width = box.w * scale; out.height = box.h * scale;
+    const og = out.getContext('2d');
+    og.imageSmoothingEnabled = false;
+    og.drawImage(master, box.x, box.y, box.w, box.h, 0, 0, out.width, out.height);
+
+    const url = out.toDataURL('image/png');
+    console.log('[dev] shot ' + name + ' ' + box.w + '×' + box.h + ' ×' + scale +
+      ' → ' + out.width + '×' + out.height + ' png (' + url.length + ' chars)');
+    return url;
   };
 
   /* ---------- invariant audit ---------- */

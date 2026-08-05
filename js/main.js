@@ -155,16 +155,9 @@
   /* ---------- render ---------- */
 
   function render() {
-    SCENE.drawScene(g, world);
-    const furniture = SCENE.furnitureDrawables(world);
-    const ents = SIM.entityDrawables(world);
-    const all = furniture.concat(ents.draws);
-    all.sort(function (a, b) { return a.y - b.y; });
-    all.forEach(function (d) { d.draw(g); });
-    SCENE.drawParticles(g, world);
-    SCENE.drawLighting(g, world);
-    ents.bubbles.forEach(function (b) { SCENE.drawBubble(g, b.x, b.y, b.icon); });
-    SCENE.drawCaption(g, world);
+    // the whole depth-sorted frame — shared with __dev.shot so a headless
+    // capture renders the exact same list (js/scene-fx.js)
+    SCENE.composeFrame(g, world);
     // present: blit the chosen view of the master at an integer scale
     out.drawImage(master, view.x, view.y, view.w, view.h, 0, 0, canvas.width, canvas.height);
   }

@@ -53,7 +53,7 @@ Each phase lands in `js/dev.js` (the harness), stays inert for the reader-owner,
 and ends the standard way: `__dev.audit()` → 0, AGENTS.md dev-harness list and
 this plan updated in the same change.
 
-### Phase 1 — `__dev.shot(target?, opts?)` · headless render-to-image  ⭐ build first
+### Phase 1 — `__dev.shot(target?, opts?)` · headless render-to-image  ✅ done
 
 The core fix. Render the live world to a fresh offscreen 960×600 canvas exactly
 as `main.js` `render()` does — `SCENE.drawScene(g, world)`, then
@@ -75,12 +75,17 @@ __dev.shot({x,y,w,h, scale:4})     // arbitrary crop, integer upscale
   `imageSmoothingEnabled=false` — pixel art).
 - **Acceptance:** returns a valid `data:image/png` string with the tab hidden
   and the preview pane closed; `__dev.audit()` still 0; nothing runs without
-  `?dev`/`__dev`.
-- **Follow-on (optional):** a dev-only "download last shot" button so a human
-  can eyeball it too. Agents can pass the data URL straight into their own
-  image-inspection path, so this is convenience, not core.
+  `?dev`/`__dev`. ✅ **Met** — the render list is factored into
+  `SCENE.composeFrame(g, world)` (`js/scene-fx.js`), called by both `main.js`
+  `render()` and `__dev.shot()`. Verified the full scene, a named region, a
+  named entity, and a `{x,y,w,h}` crop all return valid PNGs while the preview
+  pane was *not* compositing (the built-in `computer screenshot` failed for
+  that exact reason and `__dev.shot()` rendered anyway); audit stayed at 0.
+- **Follow-on (optional, not built):** a dev-only "download last shot" button so
+  a human can eyeball it too. Agents can pass the data URL straight into their
+  own image-inspection path, so this is convenience, not core.
 
-### Phase 2 — named scene regions
+### Phase 2 — named scene regions  ✅ done
 
 A small region map of master-coord boxes so `__dev.shot(name)` and the layout
 overlay share one source of truth: `fireside`, `nook`, `counter`, `window0`,
@@ -90,7 +95,11 @@ hardcoding. Put it in `L.regions` if the overlay wants it too; otherwise keep it
 local to `dev.js`.
 
 - **Acceptance:** every region name resolves to an in-bounds box; `__dev.shot`
-  accepts any of them.
+  accepts any of them. ✅ **Met** — all nine regions live in `dev.js`, exposed
+  as `__dev.regions`, each derived from `SCENE.L` and clamped in-bounds by the
+  shared `span()` helper (the overlay didn't need them, so they stayed local per
+  the plan). `__dev.shot('<name>')` resolves any of them, and also an entity
+  name (`nora`, `cat`, a patron).
 
 ### Phase 3 — deterministic occupancy for art review
 
@@ -125,5 +134,7 @@ into "read the number."
 ## Build order
 
 **Phase 1 + Phase 2 first** — together they turn "show me the chair" from a
-~six-step hand-rolled pipeline into `__dev.shot('fireside')`. Phases 3–5 are
-independent niceties; pick them up when a task needs them.
+~six-step hand-rolled pipeline into `__dev.shot('fireside')`. ✅ **Both landed**
+(`SCENE.composeFrame` + `__dev.shot` + `__dev.regions`; AGENTS.md and
+architecture.md updated). Phases 3–5 are independent niceties; pick them up when
+a task needs them.

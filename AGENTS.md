@@ -49,11 +49,12 @@ for the full design ethos.
   The bare URL sits on the splash: the canvas is an unsized 300×150 and none of
   the globals exist yet, which is a dead end for inspection. If the in-app
   preview pane is not *visibly displayed*, `computer screenshot` cannot
-  composite it — render off-screen instead: build a 960×600 canvas, call
-  `SCENE.drawScene(g, world)` then `SCENE.furnitureDrawables(world)` +
-  `SIM.entityDrawables(world).draws`, sort by `y`, draw each, and crop the
-  region you care about. (A one-call `__dev.shot()` for this is proposed in
-  [docs/plans/llm-dev-ergonomics.md](docs/plans/llm-dev-ergonomics.md).)
+  composite it — call **`__dev.shot()`** instead: it renders the live world to
+  an offscreen 960×600 canvas via the exact same draw list `render()` ships
+  (`SCENE.composeFrame`) and returns a PNG data URL, independent of the rAF
+  loop, tab visibility, or the pane. Pass a named region
+  (`__dev.shot('fireside')`), an entity (`__dev.shot('nora')`), or a
+  `{x,y,w,h,scale}` crop; regions live in `__dev.regions`.
 
 - Live at <https://hygge.kasper-krog.dk> (GitHub Pages, `main` + `CNAME`) —
   pushes to `main` publish there.
@@ -89,6 +90,10 @@ for the full design ethos.
   `__dev.passer({dir, umbrella, pair, pause})` (a street silhouette),
   `__dev.catDo('eat'|'window'|'bookshelf'|'counter'|'topShelf'|'piano'|'lap'|'mote'|'knead')`,
   `__dev.bowls(food, water)`, `__dev.overlay()`,
+  `__dev.shot(target, {scale})` (headless render → PNG data URL; `target` is a
+  region name from `__dev.regions` — `fireside`, `nook`, `counter`, `window0`,
+  `window1`, `door`, `hearth`, `bookshelf`, `piano` — an entity name (`nora`,
+  `cat`, a patron), a `{x,y,w,h,scale}` crop, or nothing for the whole scene),
   `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus
   live-world consistency checks — run it after any layout or sim change).
 
@@ -106,14 +111,14 @@ for the full design ethos.
 | `js/scene-bg.js` | `SCENE` | Static background cache and the dynamic wall layer: window, door, fireplace, shelves, lamps, and espresso machine. |
 | `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, and plants. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
-| `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering. |
+| `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering, plus `SCENE.composeFrame` — the shared depth-sorted frame composition that both `main.js` `render()` and `__dev.shot()` call. |
 | `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, real-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
 | `js/memory.js` | `MEMORY` | The persistent, cross-visit save (`cafe-hygge-save`): versioned JSON blob (arcs, bonds, flags, `lastSeen`), a migration ladder, and a graceful fresh-café fallback. Mirrors `SND.save()`. Loaded before sim-core so world creation reconciles against it. |
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
-| `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock jumps, fast-forward, scenario forcing, layout overlay, invariant audit. Inert unless invoked. |
-| `js/main.js` | — | Boot, rAF loop, depth-sort render pass, UI controls. |
+| `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock jumps, fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
+| `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
 Load order matters: audio → scene-core → scene-bg → scene-furniture →
 scene-people → scene-fx → characters-roster → memory → sim-core → sim-patrons →
