@@ -10,9 +10,11 @@ cup clinks, page turns, murmured conversation, fire crackle, rain, and a sparse
 music box — is synthesized live with the Web Audio API. There are no image or
 audio files, no dependencies, no build step.
 
+**Play it live:** <https://hygge.kasper-krog.dk>
+
 ## Running it
 
-Open `index.html` in any modern browser — that's it.
+Or run it yourself — open `index.html` in any modern browser, that's it.
 
 Or serve it (nicer for some browsers):
 

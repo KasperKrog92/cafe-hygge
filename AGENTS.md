@@ -16,6 +16,8 @@ belong. See [docs/overview.md](docs/overview.md) for the full design ethos.
 
 ## Running & testing
 
+- Live at <https://hygge.kasper-krog.dk> (GitHub Pages, `main` + `CNAME`) —
+  pushes to `main` publish there.
 - No build step, no dependencies, no TypeScript, no modules. Plain script tags.
 - Open `index.html` directly (file:// works — this is why there are no ES
   modules), or serve: `python -m http.server 8137` (there is a `.claude/launch.json`
