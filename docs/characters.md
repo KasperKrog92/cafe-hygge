@@ -303,11 +303,42 @@ caption. Keep the pools un-plot-heavy and unurgent, and — here — narrated
 fragments, not quoted dialogue. (Quoted back-and-forth is reserved for the
 opt-in conversation beats; see [narrative.md](narrative.md) §6.)
 
+### Gerda's scarf — the reference story arc
+
+Gerda carries the café's first end-to-end **story arc** (`gerda-scarf` in
+`CAST.arcs`; the loop is [narrative.md](narrative.md) §8). It is the worked
+example of the whole soft-narrative pattern, and it realises the roadmap's older
+"a knitter… a slowly growing scarf" idea with a payoff that waits for you.
+
+- **Knitting (passive, glanceable).** While the arc is unfinished (`stage 0`),
+  Gerda knits whenever she is seated and not sipping/gazing: crossing needles and
+  a small scarf growing in her lap, its length reading the arc's saved
+  `progress`. A soft wooden `SND.needle()` tick (quieter than the fire) and the
+  occasional `knitLines` musing carry it. Purely ambient — ignore it forever and
+  nothing is lost.
+- **Progress (idle, real-day).** The scarf grows only in `reconcileNarrative`,
+  one row per real calendar day away, never in frame code. What you *see* is what
+  is *saved*.
+- **The invitation (waits forever).** At `progress ≥ rows` the arc raises a soft
+  **yarn-ball bubble** over Gerda whenever she is present. It never pulses, never
+  counts down, never expires — the invitation-waits rule.
+- **The beat (chosen).** Tapping it plays a short caption run: Gerda casts off,
+  holds the scarf up, and loops it around the cat. A heart blooms over both, the
+  `cat-wore-scarf` flag is set for good, and Gerda's bond warms. Afterward she
+  stops knitting and simply visits as a familiar face.
+
+A companion reader who never taps the bubble loses nothing; the café is still
+whole. Dev: `__dev.regular('gerda')`, then `__dev.age(5)` to ripen the scarf and
+`__dev.arc('gerda-scarf', {ready:true})` to raise the invitation at once.
+
 ---
 
 ## The cat
 
-Orange tabby, no name (it has not told anyone yet). The café's true owner.
+Orange tabby, no name (it has not told anyone yet). The café's true owner. Once
+Gerda's scarf arc completes it wears a small warm-red scarf for good — a neck
+band `drawCat` carries across its poses, driven by the persisted
+`cat-wore-scarf` flag (see Gerda's scarf, above).
 
 **Places and weights:** floor choices are the fireplace rug, the window-side
 spot, the big rug, the armchair side, the reading-nook rug, and its own cushion

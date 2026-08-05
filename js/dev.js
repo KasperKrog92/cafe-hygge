@@ -20,6 +20,10 @@
      __dev.ff(sec)     fast-forward the sim in 0.25 s ticks, muted
      __dev.spawn(o)    real patron with chosen traits, via the front door
      __dev.regular(id) force a named regular's next arrival (default 'holger')
+     __dev.arc(id,o)   inspect/nudge a story arc ({ready:true} → invitation now)
+     __dev.age(days)   simulate days away; arcs advance via the boot reconcile
+     __dev.memory()    read the persisted MEMORY save
+     __dev.reset()     wipe the save and reload into a fresh café
      __dev.doze()      put the first eligible reader to sleep
      __dev.piano(on)   force/stop the corner-piano sound engine
      __dev.send(n,x,y) path an entity through the real makePath
@@ -150,6 +154,45 @@
     w.regulars[id].force = true;
     SIM._.updateRegulars(w);
     return w.patrons.find(function (p) { return p.regularId === id; }) || null;
+  };
+
+  /* Inspect or nudge a story arc's saved state (docs/narrative.md §2). No opts
+     → return the record. { ready:true } → jump it to a waiting invitation now
+     (progress at threshold, beat pending). Also takes { progress, stage,
+     pendingBeat }. Persists via MEMORY. */
+  D.arc = function (id, opts) {
+    const w = world();
+    if (!w.memory) { console.warn('[dev] no MEMORY bound to the world'); return null; }
+    const def = ((window.CAST && CAST.arcs) || []).find(function (a) { return a.id === id; });
+    if (id && !def && !w.memory.arcs[id]) { console.warn('[dev] unknown arc "' + id + '"'); return null; }
+    let rec = w.memory.arcs[id];
+    if (!rec) { rec = { stage: 0, progress: 0, pendingBeat: null }; w.memory.arcs[id] = rec; }
+    if (!opts) return rec;
+    if (opts.ready) { rec.stage = 0; if (def) rec.progress = def.rows; rec.pendingBeat = 'finished'; }
+    if ('progress' in opts) rec.progress = opts.progress;
+    if ('stage' in opts) rec.stage = opts.stage;
+    if ('pendingBeat' in opts) rec.pendingBeat = opts.pendingBeat;
+    if (window.MEMORY) MEMORY.saveNow();
+    return rec;
+  };
+
+  /* Simulate real days away: rewind lastSeen and re-run the boot reconcile, so
+     arcs advance by `days` exactly as a returning reader would find them. */
+  D.age = function (days) {
+    const w = world();
+    if (!window.MEMORY) { console.warn('[dev] MEMORY not loaded'); return null; }
+    MEMORY.state.lastSeen -= (days || 1) * SIM._.DAY_MS;
+    SIM._.reconcileNarrative(w);
+    return w.memory.arcs;
+  };
+
+  D.memory = function () { return window.MEMORY ? MEMORY.state : null; };
+
+  /* Wipe the save and reload into a fresh café — the same graceful-fallback
+     path a cleared or expired save takes on its own. */
+  D.reset = function () {
+    if (window.MEMORY) MEMORY.reset();
+    try { location.reload(); } catch (e) {}
   };
 
   D.doze = function () {
@@ -653,6 +696,45 @@
       });
     }
 
+    // narrative arcs (CAST.arcs) + the loaded MEMORY save (docs/narrative.md
+    // §7.3): no arc names a missing regular, no stage exceeds its definition,
+    // the save matches version, and no completion flag is set without its beat.
+    const arcDefs = (window.CAST && Array.isArray(CAST.arcs)) ? CAST.arcs : [];
+    const regularIds = {};
+    if (window.CAST && Array.isArray(CAST.regulars)) CAST.regulars.forEach(function (r) { regularIds[r.id] = true; });
+    const seenArc = {};
+    arcDefs.forEach(function (arc, i) {
+      const who = 'CAST.arcs[' + i + ']' + (arc.id ? ' (' + arc.id + ')' : '');
+      if (!arc.id) problems.push(who + ' has no id');
+      else if (seenArc[arc.id]) problems.push('duplicate arc id "' + arc.id + '"');
+      seenArc[arc.id] = true;
+      if (!regularIds[arc.owner]) problems.push(who + ' names a missing regular "' + arc.owner + '"');
+      if (!Number.isInteger(arc.rows) || arc.rows <= 0) problems.push(who + ' rows must be a positive integer');
+      if (!arc.glyph) problems.push(who + ' has no invitation glyph');
+      if (!Array.isArray(arc.beat) || !arc.beat.length) problems.push(who + ' beat must be a non-empty array');
+      if (!arc.flag) problems.push(who + ' has no completion flag');
+    });
+    if (window.MEMORY) {
+      const mem = MEMORY.state;
+      if (!mem || typeof mem !== 'object') {
+        problems.push('MEMORY.state is missing');
+      } else {
+        if (mem.version !== MEMORY.VERSION) problems.push('MEMORY save version ' + mem.version + ' != current ' + MEMORY.VERSION + ' (the migration ladder should have upgraded it)');
+        ['arcs', 'bonds', 'flags'].forEach(function (k) {
+          if (!mem[k] || typeof mem[k] !== 'object') problems.push('MEMORY.state.' + k + ' is not an object');
+        });
+        if (typeof mem.lastSeen !== 'number') problems.push('MEMORY.state.lastSeen is not a number');
+        arcDefs.forEach(function (arc) {
+          const rec = mem.arcs && mem.arcs[arc.id];
+          if (!rec) return;
+          if (rec.stage < 0 || rec.stage > 1) problems.push('arc "' + arc.id + '" stage ' + rec.stage + ' out of range');
+          if (rec.progress < 0 || rec.progress > arc.rows) problems.push('arc "' + arc.id + '" progress ' + rec.progress + ' out of 0..' + arc.rows);
+          if (rec.pendingBeat && rec.stage !== 0) problems.push('arc "' + arc.id + '" has a pending beat but stage ' + rec.stage + ' (a played beat clears it)');
+          if (mem.flags[arc.flag] && rec.stage < 1) problems.push('arc "' + arc.id + '" flag set but stage < 1 (a beat cannot complete unplayed)');
+        });
+      }
+    }
+
     // live-world invariants (the soak-test set — cheap enough to keep forever)
     const live = {};
     w.patrons.forEach(function (p) { live[p.id] = true; });
@@ -699,6 +781,13 @@
     }
     if (w.catBowls.food < 0 || w.catBowls.food > 1 || w.catBowls.water < 0 || w.catBowls.water > 1) {
       problems.push('cat bowl levels must stay between 0 and 1');
+    }
+    // the cat's scarf tracks the completed arc's flag, both ways
+    const scarfArc = arcDefs.find(function (a) { return a.flag === 'cat-wore-scarf'; });
+    if (scarfArc) {
+      const worn = !!(w.memory && w.memory.flags['cat-wore-scarf']);
+      if (worn && w.cat.scarf !== scarfArc.scarfColor) problems.push('cat wears the scarf in memory but cat.scarf is not its colour');
+      if (!worn && w.cat.scarf) problems.push('cat.scarf is set but the cat-wore-scarf flag is not');
     }
     w.tables.forEach(function (tb, i) {
       if (tb.candle < 0 || tb.candle > 1 || tb.candleTarget < 0 || tb.candleTarget > 1) {

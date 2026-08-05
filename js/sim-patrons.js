@@ -45,6 +45,24 @@
     return true;
   }
 
+  /* The scarf arc's knitting behaviour: a regular whose knitting arc is still
+     unfinished (MEMORY stage 0) works the needles while seated. Returns the arc
+     def — carrying its wool colour, real-day threshold, and line pool — or null.
+     Reads the same saved progress the invitation and the lap visual do, so what
+     you see, hear, and can tap always agree (docs/narrative.md §8). */
+  function knittingArc(world, p) {
+    if (!p.regularId || !world.memory) return null;
+    const arcs = (window.CAST && CAST.arcs) || [];
+    for (var i = 0; i < arcs.length; i++) {
+      var arc = arcs[i];
+      if (arc.knits && arc.owner === p.regularId) {
+        var rec = world.memory.arcs[arc.id];
+        if (rec && rec.stage === 0) return arc;   // knits until the beat plays
+      }
+    }
+    return null;
+  }
+
   function freeSeat(world, patron) {
     let free = world.seats.filter(function (s) { return !s.taken; });
     if (!free.length) return null;
@@ -617,6 +635,29 @@
         SND.pageTurn();
         if (!regularLine(world, p, 'musing') && Math.random() < 0.12) caption(world, p.name + ' turns a page.');
       }
+    }
+
+    // knitting — a scarf-arc owner works the needles between sips and glances.
+    // The lap visual reads knitProgress; the render's holding branch takes over
+    // for a sip, so hands never do two things at once.
+    const knitArc = knittingArc(world, p);
+    if (knitArc && !p.reading && !p.typing && !p.playing) {
+      p.knitting = true;
+      const krec = world.memory.arcs[knitArc.id];
+      p.knitProgress = krec ? Math.min(1, krec.progress / knitArc.rows) : 0;
+      p.knitColor = knitArc.scarfColor;
+      if (p.sipPhase <= 0) {
+        p.knitT -= dt;
+        if (p.knitT <= 0) {
+          p.knitT = rnd(2.2, 4.6);
+          SND.needle();
+          if (knitArc.knitLines && knitArc.knitLines.length && Math.random() < 0.04) {
+            caption(world, pick(knitArc.knitLines));
+          }
+        }
+      }
+    } else {
+      p.knitting = false;
     }
 
     // Laptop work comes in short, soft bouts. The timer continues through a

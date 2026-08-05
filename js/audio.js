@@ -282,6 +282,15 @@
     SND.clink(0.62, 0.04);
   });
 
+  // knitting needles — a soft wooden tick, quieter than the fire crackle, with
+  // an occasional second tap as the next stitch lands (Gerda's scarf arc)
+  SND.needle = guard(function () {
+    const f = 540 + Math.random() * 110;
+    tone(f, { gain: 0.013, dur: 0.045, lp: 2600 });
+    tone(f * 1.72, { gain: 0.006, dur: 0.03, lp: 3200, delay: 0.008 });
+    if (Math.random() < 0.5) tone(f * 0.95, { gain: 0.009, dur: 0.04, lp: 2400, delay: 0.1 + Math.random() * 0.05 });
+  });
+
   SND.umbrellaShake = guard(function () {
     const flaps = 3 + ((Math.random() * 2) | 0);
     for (let i = 0; i < flaps; i++) {

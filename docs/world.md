@@ -176,6 +176,15 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   rarer `backstory` fragment instead — a life leaking out across many visits.
   Narrated fragments only, never quoted dialogue. Non-regulars are untouched;
   see characters.md for the pools and voice rules.
+- **Story beats** use a second caption track, `captionScript` (fed by
+  `captionRun`): the few deliberate lines a chosen beat plays queue in order,
+  drain **ahead of** the ambient queue, and are never dropped by its 2-line cap
+  — still paced by the same 6 s limiter so a beat reads as an unhurried run. Only
+  the opt-in narrative beats use it (today Gerda's finished-scarf run); ambient
+  captions keep to `caption()`. The soft-narrative layer also adds one always-on
+  visual: a **pending invitation** draws a persistent bubble (e.g. a yarn ball)
+  over its owner via the ordinary bubble system — the only new standing UI it
+  introduces. See [narrative.md](narrative.md) and characters.md (Gerda's scarf).
 - Matcha adds three limiter-paced lines: the whisk step may note the bamboo
   patter and pale-green foam (30%); the ice step may note ice singing against
   glass (25%); and only the first matcha sip of a visit checks for a slow,

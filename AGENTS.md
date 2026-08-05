@@ -48,8 +48,11 @@ for the full design ethos.
   muted), `__dev.spawn({wantsBook, ownBook, drink, chatty, umbrella, laptop,
   pianist, couple})` (a real patron, or linked pair, with chosen traits),
   `__dev.regular(id)` (force a named regular's next arrival; defaults to
-  `'holger'`), `__dev.doze()` (sleep the
-  first eligible reader), `__dev.send(name, x, y)`,
+  `'holger'`), `__dev.arc(id, o)` (inspect/nudge a story arc — `{ready:true}`
+  raises its invitation now), `__dev.age(days)` (simulate days away; arcs
+  advance via the boot reconcile), `__dev.memory()` (read the persisted save),
+  `__dev.reset()` (wipe the save and reload into a fresh café), `__dev.doze()`
+  (sleep the first eligible reader), `__dev.send(name, x, y)`,
   `__dev.noraDo('stretch'|'chalk'|'water'|'candles'|'piano')`,
   `__dev.piano(on)`,
   `__dev.kettle()`, `__dev.storm(on)`,
@@ -64,7 +67,7 @@ for the full design ethos.
 - Commit and push directly to `main` unless the owner explicitly asks for a
   different branch or a pull request.
 
-## Architecture (12 scripts, deliberate order)
+## Architecture (13 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -74,7 +77,8 @@ for the full design ethos.
 | `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, and plants. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
 | `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering. |
-| `js/characters-roster.js` | `CAST` | The regulars roster as pure data: each regular's fixed look, drink, habits, usual seat, and line pools. Read by the sim and the audit. |
+| `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, real-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
+| `js/memory.js` | `MEMORY` | The persistent, cross-visit save (`cafe-hygge-save`): versioned JSON blob (arcs, bonds, flags, `lastSeen`), a migration ladder, and a graceful fresh-café fallback. Mirrors `SND.save()`. Loaded before sim-core so world creation reconciles against it. |
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
@@ -82,12 +86,13 @@ for the full design ethos.
 | `js/main.js` | — | Boot, rAF loop, depth-sort render pass, UI controls. |
 
 Load order matters: audio → scene-core → scene-bg → scene-furniture →
-scene-people → scene-fx → characters-roster → sim-core → sim-patrons →
+scene-people → scene-fx → characters-roster → memory → sim-core → sim-patrons →
 sim-characters → dev → main. Scene-core creates `SCENE`; the four renderer
 siblings extend it. `characters-roster` then defines `CAST` (the regulars
-roster) as pure data. The three sim scripts then build `SIM`, reading `CAST`
-for its regulars; dev consumes its `SIM._` debug contract and decorates the
-boot, and main reads all.
+roster + story arcs) as pure data, and `memory` loads the `MEMORY` save. The
+three sim scripts then build `SIM`, reading `CAST` for its regulars and
+reconciling `MEMORY` on boot (`SIM.create` → `reconcileNarrative`); dev consumes
+its `SIM._` debug contract and decorates the boot, and main reads all.
 
 Full detail: [docs/architecture.md](docs/architecture.md).
 
@@ -133,6 +138,15 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   alive when the tab isn't rendering. New periodic logic must live in
   `SIM.update`/`SND.update` (dt-driven), never in rAF-only code.
 - Settings persist in `localStorage` under `cafe-hygge-audio` via `SND.save()`.
+- **The narrative save is separate** (`cafe-hygge-save` via `MEMORY.save()`) and
+  **must migrate, never reset**: growing the save shape is only safe if
+  `MEMORY.VERSION` bumps and a migration step lands (see `js/memory.js`). Any
+  bad/missing/wrong-version save opens a **fresh café** — never an error. Arc
+  *state* lives in the save; arc *definitions* live in `CAST.arcs`. **Arcs
+  advance only in `reconcileNarrative` (real-day idle), never in frame code**,
+  and a ready beat never plays itself — it waits as an invitation until tapped
+  (the invitation-waits rule, [docs/narrative.md](docs/narrative.md)). The audit
+  guards all of this.
 
 ## Change playbooks
 

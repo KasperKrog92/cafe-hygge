@@ -141,11 +141,13 @@
   }
   document.addEventListener('mousemove', pokeControls);
 
-  // click the cat to say hello (client coords → master-canvas coords)
+  // a click (client coords → master-canvas coords): a waiting story invitation
+  // takes it first, otherwise say hello to the cat. Both are optional and soft.
   canvas.addEventListener('click', function (e) {
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
+    if (SIM.beatAt(world, x, y)) return;
     const cat = world.cat;
     if (Math.hypot(x - cat.x, y - (cat.y - 10)) < 36) SIM.petCat(world);
   });

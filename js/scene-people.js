@@ -241,6 +241,22 @@
           px(g, hx + (facing > 0 ? 7 : -6), hy + 3, 3, 4, '#e8e0d0');
           px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
         }
+      } else if (p.knitting) {
+        // hands working in the lap, two needles crossing, the scarf growing by
+        // row — its length reads the arc's saved progress (docs/narrative.md §8)
+        px(g, x - 8, y - 28, 6, 9, c.top);                 // forearms into the lap
+        px(g, x + 2, y - 28, 6, 9, c.top);
+        px(g, x - 6, y - 20, 5, 3, c.skin);                // hands meeting
+        px(g, x + 1, y - 20, 5, 3, c.skin);
+        const scol = p.knitColor || '#a94f3f';
+        const sw = 3 + Math.round(Math.max(0, Math.min(1, p.knitProgress)) * 11);
+        px(g, x - sw, y - 16, sw * 2, 4, scol);            // the scarf across her lap
+        px(g, x - sw, y - 16, sw * 2, 1, shade(scol, 0.16));
+        px(g, x - sw, y - 13, sw * 2, 1, shade(scol, -0.16));
+        px(g, x - 8, y - 24, 8, 1, '#d9c9a0');             // needles
+        px(g, x, y - 25, 8, 1, '#d9c9a0');
+        px(g, x - 9, y - 25, 2, 2, '#c9b28a');             // needle tips
+        px(g, x + 7, y - 26, 2, 2, '#c9b28a');
       } else {
         px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
         px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
@@ -598,7 +614,26 @@
       px(g, tx + drape, y + 12, 4, 7, dark);
       px(g, tx + drape, y + 18, 4, 3, cream);
     }
+
+    if (cat.scarf) catScarf(g, cat.scarf, x, y, f, pose);
   };
+
+  /* A small band of wool around the cat's neck once Gerda's scarf arc has
+     completed (docs/narrative.md §8) — the payoff, worn for good. Pose-aware
+     anchors keep it near the neck across the poses the cat rests and moves in;
+     a short tail hangs where the pose allows. */
+  function catScarf(g, col, x, y, f, pose) {
+    const hi = shade(col, 0.16), lo = shade(col, -0.16);
+    function band(bx, by, bw) { px(g, bx, by, bw, 3, col); px(g, bx, by, bw, 1, hi); }
+    function tail(tx, ty) { px(g, tx, ty, 3, 5, col); px(g, tx, ty + 4, 3, 1, lo); }
+    if (pose === 'sleep' || pose === 'lap') { band(x, y - 12, 8); tail(x + 4, y - 10); }
+    else if (pose === 'sit' || pose === 'groom') { band(x - 6, y - 18, 12); tail(f > 0 ? x + 3 : x - 6, y - 15); }
+    else if (pose === 'eat' || pose === 'drink') { band(x - 12, y - 10, 8); tail(x - 11, y - 7); }
+    else if (pose === 'knead') { band(x + 1, y - 13, 9); tail(x + 8, y - 10); }
+    else if (pose === 'stretch') { band(x + 2, y - 10, 8); }
+    else if (pose === 'perch') { band(x - 8, y - 16, 16); }
+    else { const nx = f > 0 ? x + 3 : x - 12; band(nx, y - 13, 9); tail(f > 0 ? x + 5 : x - 6, y - 10); }
+  }
 
   /* ---------- speech bubbles ---------- */
   SCENE.drawBubble = function (g, x, y, icon) {
@@ -675,6 +710,18 @@
         px(g, x + 8, y, 2, 10, '#7a6ab5');
         px(g, x + 10, y, 4, 2, '#7a6ab5'); px(g, x + 12, y + 2, 2, 2, '#7a6ab5');
         px(g, x + 4, y + 8, 4, 4, '#7a6ab5');
+        break;
+      case 'yarn':
+        // a soft ball of wool with a loose strand — the scarf arc's invitation
+        px(g, x + 2, y + 4, 12, 10, '#a94f3f');
+        px(g, x + 4, y + 2, 8, 2, '#a94f3f');
+        px(g, x + 4, y + 14, 8, 2, '#a94f3f');
+        px(g, x + 3, y + 6, 10, 1, '#e0b7a6');           // wrap lines, catching the light
+        px(g, x + 5, y + 9, 8, 1, '#e0b7a6');
+        px(g, x + 4, y + 12, 9, 1, '#e0b7a6');
+        px(g, x + 3, y + 5, 2, 8, '#8a3f33');            // shaded left edge
+        px(g, x + 13, y + 8, 3, 1, '#a94f3f');           // the strand trailing off
+        px(g, x + 15, y + 9, 1, 4, '#a94f3f');
         break;
     }
   }

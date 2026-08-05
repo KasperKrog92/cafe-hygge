@@ -7,6 +7,7 @@
   const LB = L.library;
 
   const DAY_SECONDS = 1440;          // one full day passes in 24 real minutes
+  const DAY_MS = 86400000;           // a real calendar day — the ruler for arc progress
   const START_HOUR = 8.4;
   const WIPE_RAIN = 0.3;             // above this, arrivals wipe wet shoes on the mat
 
@@ -109,8 +110,10 @@
       cat: makeCat(),
       brew: { active: false, stage: '', progress: 0 },
       captionQueue: [],
+      captionScript: [],       // a story beat's caption run (priority over ambient)
       activeCaption: null,
       lastCapT: -10,
+      memory: null,            // the MEMORY save, bound by reconcileNarrative at boot
       spawnT: rnd(4, 9),
       regulars: buildRegulars(),
       sleeper: null,
@@ -170,6 +173,9 @@
 
     // the street is never quite empty at boot
     spawnPasser(world, { x: rnd(STREET.x0 + 40, STREET.x1 - 40) });
+
+    // bind persistent memory and fold in any idle progress before the first frame
+    reconcileNarrative(world);
 
     return world;
   };
@@ -243,6 +249,7 @@
       orderCaptioned: false, pairCaptioned: false,
       dozing: false, dozeT: rnd(50, 120), dozeRemain: 0, zzzT: rnd(7, 14),
       isRegular: false, regularId: null, usualSeat: false, regularSeatNoted: false,
+      knitting: false, knitT: rnd(1.5, 4), knitProgress: 0, knitColor: null,
       gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
       lapCat: false, catLeaveT: 0,
       bubble: null, queueIdx: -1, waitIdx: -1, doorCloseT: 0
@@ -275,6 +282,7 @@
       gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
       lapPatron: null, sniffedPass: false, foodComaT: 0,
       doorGlanceT: 0, doorFacing: 0, forced: '',
+      scarf: null,                       // set for good once Gerda's scarf arc completes
       bubble: null, purrT: rnd(6, 15), spotName: 'fire rug'
     };
   }
@@ -285,11 +293,27 @@
     if (world.captionQueue.length < 2) world.captionQueue.push(text);
   }
 
+  /* A story beat's caption run (docs/narrative.md §2). Unlike ambient captions
+     — soft, capped at 2, first-come — these are the few deliberate lines a
+     chosen beat plays, so they queue in order on a separate track that drains
+     ahead of ambience and is never dropped by the 2-line cap. Still paced by
+     the shared limiter, so a beat reads as an unhurried run, not a dump. */
+  function captionRun(world, lines) {
+    if (!lines || !lines.length) return;
+    lines.forEach(function (line) { world.captionScript.push(line); });
+  }
+
   function updateCaptions(world, dt) {
     if (world.activeCaption && world.t - world.activeCaption.born > 4.4) world.activeCaption = null;
-    if (!world.activeCaption && world.captionQueue.length && world.t - world.lastCapT > 6) {
-      world.activeCaption = { text: world.captionQueue.shift(), born: world.t };
-      world.lastCapT = world.t;
+    if (!world.activeCaption && world.t - world.lastCapT > 6) {
+      // a beat run takes precedence over ambient chatter, then the queue
+      if (world.captionScript.length) {
+        world.activeCaption = { text: world.captionScript.shift(), born: world.t };
+        world.lastCapT = world.t;
+      } else if (world.captionQueue.length) {
+        world.activeCaption = { text: world.captionQueue.shift(), born: world.t };
+        world.lastCapT = world.t;
+      }
     }
   }
 
@@ -810,14 +834,65 @@
     }
   }
 
+  /* ---------- narrative: idle / real-day arc progression ---------- */
+
+  function arcDefs() { return (window.CAST && Array.isArray(CAST.arcs)) ? CAST.arcs : []; }
+
+  function arcRecord(mem, id) {
+    let rec = mem.arcs[id];
+    if (!rec || typeof rec !== 'object') { rec = { stage: 0, progress: 0, pendingBeat: null }; mem.arcs[id] = rec; }
+    return rec;
+  }
+
+  /* Bind the MEMORY save to the world and fold in idle progress in one
+     deterministic step (docs/narrative.md §3): each arc advances by the whole
+     real days elapsed since `lastSeen`, and any beat that came ready while the
+     reader was away is simply left waiting as an invitation (§1). This is the
+     ONLY place progress moves — a pure function of elapsed time, identical
+     whether the reader was gone a day or watched it tick past. Also reconciles
+     drift: an arc that names a vanished regular is skipped, a stage/progress
+     past its definition is clamped, and a completed arc's lasting mark (the cat
+     wearing the scarf) is re-applied for a returning reader. */
+  function reconcileNarrative(world) {
+    const mem = (window.MEMORY && MEMORY.state) ||
+      { version: 1, lastSeen: Date.now(), arcs: {}, bonds: {}, flags: {} };
+    world.memory = mem;
+    const now = window.MEMORY ? MEMORY.now() : Date.now();
+    const elapsedDays = Math.max(0, Math.floor((now - (mem.lastSeen || now)) / DAY_MS));
+    const regularIds = {};
+    CAST.regulars.forEach(function (r) { regularIds[r.id] = true; });
+
+    arcDefs().forEach(function (arc) {
+      if (!regularIds[arc.owner]) return;            // drift: names a regular that no longer exists
+      const rec = arcRecord(mem, arc.id);
+      // clamp a save that drifted from the current definition
+      if (typeof rec.stage !== 'number' || rec.stage < 0) rec.stage = 0;
+      if (rec.stage > 1) rec.stage = 1;
+      if (typeof rec.progress !== 'number' || rec.progress < 0) rec.progress = 0;
+      if (rec.progress > arc.rows) rec.progress = arc.rows;
+      // idle progression: only an unfinished, not-yet-ready arc grows
+      if (rec.stage === 0 && !rec.pendingBeat) {
+        if (elapsedDays > 0) rec.progress = Math.min(arc.rows, rec.progress + elapsedDays);
+        if (rec.progress >= arc.rows) rec.pendingBeat = 'finished';
+      }
+      // realise a completed arc's lasting mark (a returning reader's café)
+      if (arc.flag === 'cat-wore-scarf' && mem.flags[arc.flag]) world.cat.scarf = arc.scarfColor;
+    });
+
+    if (window.MEMORY) { MEMORY.stamp(); MEMORY.save(); MEMORY.requestPersist(); }
+    return mem;
+  }
+
   /* Private simulation contract shared by the sim siblings. The dev harness
      consumes a documented subset after every sibling has loaded. */
   SIM._ = {
     L: L, LB: LB,
     DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, WIPE_RAIN: WIPE_RAIN, DRINKS: DRINKS,
     PATRON_NAMES: PATRON_NAMES, SEAT_PREFS: SEAT_PREFS,
+    DAY_MS: DAY_MS,
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor,
-    makePatron: makePatron, caption: caption, updateCaptions: updateCaptions,
+    makePatron: makePatron, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
+    arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
     spawnCouple: spawnCouple, updateRegulars: updateRegulars,
     makePath: makePath, walker: walker,

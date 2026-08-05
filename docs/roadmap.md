@@ -138,26 +138,28 @@ Rough order (each slice ships something lovely on its own):
    rewarding the long reading sessions the app is built around.
 
 **New foundations the soft-narrative vision needs** (keystone for everything
-above the passive layers — see [narrative.md](narrative.md)):
+above the passive layers — see [narrative.md](narrative.md)). ✅ **All built** —
+the keystone is in; the remaining phases 3–6 above now build on it:
 
-- **Persistent memory (`MEMORY`).** A `js/memory.js` global mirroring
-  `SND.save()`: a versioned `cafe-hygge-save` JSON blob (arcs, bonds, flags,
-  `lastSeen`), a migration ladder so a growing save never bricks a returning
-  reader, and a reconcile-on-boot that tolerates drift. This is the single
-  unlock behind cross-visit continuity and every arc. Build it first.
-- **Idle / real-day progression.** A boot reconcile that advances each arc by
-  `elapsedDays` from `Date`, folding in quiet background progress in one
-  deterministic step, with any beats that came ready simply waiting.
-- **The invitation + trigger loop.** A `pendingBeat` bubble (reusing the bubble
-  renderer) and a general hit-test in the single canvas click handler
-  ([main.js](../js/main.js)) that today only pets the cat.
-- **Gerda's scarf — the reference arc.** The first end-to-end build of the
+- ✅ **Persistent memory (`MEMORY`).** `js/memory.js` mirrors `SND.save()`: a
+  versioned `cafe-hygge-save` JSON blob (arcs, bonds, flags, `lastSeen`), a
+  migration ladder so a growing save never bricks a returning reader, and a
+  boot reconcile that tolerates drift. The single unlock behind cross-visit
+  continuity and every arc.
+- ✅ **Idle / real-day progression.** `reconcileNarrative` (in
+  [sim-core.js](../js/sim-core.js)) advances each arc by `elapsedDays` from
+  `Date` in one deterministic boot step, with any beats that came ready simply
+  waiting.
+- ✅ **The invitation + trigger loop.** A `pendingBeat` yarn-ball bubble (reusing
+  the bubble renderer) and `SIM.beatAt`, a general hit-test the single canvas
+  click handler ([main.js](../js/main.js)) now runs before petting the cat.
+- ✅ **Gerda's scarf — the reference arc.** The first end-to-end build of the
   arc → progress → ready beat → invitation → trigger loop
   ([narrative.md](narrative.md) §8): knits across real days, waits as a soft
   yarn-ball bubble, and on tap loops the scarf onto the cat for good. Also
   realizes the roadmap's earlier "a knitter by the fire… a slowly growing
   scarf" idea, now with a payoff that waits for you.
-- **`__dev.audit()` grows narrative invariants.** No arc names a missing
+- ✅ **`__dev.audit()` grows narrative invariants.** No arc names a missing
   regular, no `stage` exceeds its definition, the loaded save matches
   `version`, no beat fires without an invitation.
 

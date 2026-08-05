@@ -1,9 +1,14 @@
-/* Café Hygge — the regulars roster, as pure data.
+/* Café Hygge — the regulars roster and story arcs, as pure data.
 
    `window.CAST.regulars` is the bible for established regulars: each entry
-   fixes a face, a drink, a set of habits, a usual seat, and (later) the pools
-   of lines they might overhear or muse aloud. Pure data, zero dependencies —
-   loaded before sim-core so the sim (and the dev audit) can read it.
+   fixes a face, a drink, a set of habits, a usual seat, and the pools of lines
+   they might overhear or muse aloud. `window.CAST.arcs` is the companion bible
+   for the soft-narrative layer: named story arcs owned by a regular, each with
+   a real-day progress threshold, an invitation glyph, a beat (the caption run
+   the reader taps to play), and the lasting flag it sets. Pure data, zero
+   dependencies — loaded before sim-core so the sim, the MEMORY reconcile, and
+   the dev audit can all read it. Arc *definitions* live here; arc *state*
+   (stage/progress/pendingBeat) lives in the MEMORY save (docs/narrative.md §4).
 
    Entry shape (see docs/plans/regulars-and-conversations.md):
      id         stable key — schedule + line lookup + continuity
@@ -166,6 +171,54 @@
             'Freya says the fire here is better than the one at home.'
           ]
         }
+      }
+    ],
+
+    /* Story arcs — the soft-narrative layer's content (docs/narrative.md §2, §8).
+       Each arc advances *idly* across real days (the boot reconcile in
+       sim-core), then waits: when progress reaches `rows` it raises a soft,
+       never-expiring invitation (a `glyph` bubble over its `owner`), and only
+       when the reader taps it does the `beat` caption run play and the arc
+       complete — setting `flag` for good. Nothing here fires on its own.
+
+       Entry shape:
+         id          stable key; the MEMORY save stores state under it
+         owner       a CAST.regulars id; the arc rides that regular's visits
+         knits       marks a knitting arc (drives the seated needle behaviour)
+         rows        real days of progress before the beat is ready (patient)
+         scarfColor  the wool's swatch (a docs/art.md hex)
+         glyph       the invitation bubble icon (drawIcon in scene-people.js)
+         flag        the lasting mark set when the beat plays
+         knitLines   musing-register fragments surfaced while she knits
+         beat        the caption run the tap plays — the only quoted-length
+                     narration reserved for a chosen moment; each line stands
+                     alone (glanceability holds even here)
+
+       Row one is Gerda's scarf — the reference arc that proves the whole loop
+       end to end (knits by her window across real days → a yarn-ball bubble
+       waits → tap loops the finished scarf onto the cat, who wears it for
+       good). It also realises the roadmap's "a knitter… a slowly growing
+       scarf", now with a payoff that waits for you. */
+    arcs: [
+      {
+        id: 'gerda-scarf',
+        owner: 'gerda',
+        knits: true,
+        rows: 5,
+        scarfColor: '#a94f3f',
+        glyph: 'yarn',
+        flag: 'cat-wore-scarf',
+        knitLines: [
+          'Gerda\'s needles click along, a scarf growing row by row.',
+          'Gerda measures the knitting against her arm and keeps going.',
+          'Gerda counts stitches under her breath, unhurried.',
+          'Gerda holds the wool to the light and chooses the next row.'
+        ],
+        beat: [
+          'Gerda casts off the last row and shakes the scarf loose.',
+          'she holds it up, then loops it gently around the cat, who allows it.',
+          'the cat wears Gerda\'s scarf now — a small warmth that stays.'
+        ]
       }
     ]
   };

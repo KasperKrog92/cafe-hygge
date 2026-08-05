@@ -6,11 +6,16 @@ principle that makes it work, the standard shape every story arc takes, the
 persistence and idle model underneath it, and the invariants that keep the whole
 thing hygge. Read it before adding any arc, beat, memory, or conversation.
 
-> **Status.** This is a design contract, written ahead of the build. The
-> ambient café described in [characters.md](characters.md) / [world.md](world.md)
-> exists today; the narrative layer here is being built on top of it in phases
-> (see [roadmap.md](roadmap.md) and `docs/plans/`). Where this doc names a global,
-> field, or function that does not exist yet, it is a *proposed* shape — match it
+> **Status.** A design contract, written ahead of the build — now partly built.
+> The **foundations are live**: `MEMORY` (`js/memory.js`), real-day idle
+> progression (`reconcileNarrative` in `js/sim-core.js`), the invitation +
+> trigger loop (`SIM.beatAt` + the yarn bubble), and **Gerda's scarf — the
+> reference arc (§8)** — knit across real days, waiting as a soft invitation,
+> looped onto the cat on tap and worn for good. `CAST.arcs` carries arc
+> definitions; the audit guards the save shape and the arc invariants (§7.3).
+> The passive roster layers (regulars, overheard lines) also exist; the
+> conversation and continuity phases (roadmap §3–6) are still ahead. Where this
+> doc still names a shape that does not exist yet, it is *proposed* — match it
 > when you build, or update this doc if you diverge.
 
 ---

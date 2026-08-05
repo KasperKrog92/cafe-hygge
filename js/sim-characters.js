@@ -6,7 +6,8 @@
   const R = SIM._;
   const L = R.L;
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
-  const caption = R.caption, walker = R.walker, spawnSteam = R.spawnSteam;
+  const caption = R.caption, captionRun = R.captionRun, walker = R.walker, spawnSteam = R.spawnSteam;
+  const CAST = window.CAST;
   const updateClock = R.updateClock, updateWeather = R.updateWeather;
   const updatePassersby = R.updatePassersby;
   const updateCandles = R.updateCandles, dayIndex = R.dayIndex;
@@ -1246,6 +1247,81 @@
     }
   }
 
+  /* ---------- narrative: the invitation + trigger loop ---------- */
+
+  /* Which present, seated arc-owners currently carry a pending invitation, as
+     { patronId: glyph }. Shared by the renderer (which bubble to draw) and the
+     tap hit-test (what a click can consume). Seated-only so a yarn-ball never
+     bobs along on someone walking in. */
+  function pendingInvites(world) {
+    const out = {};
+    if (!world.memory) return out;
+    ((CAST && CAST.arcs) || []).forEach(function (arc) {
+      const rec = world.memory.arcs[arc.id];
+      if (!rec || !rec.pendingBeat) return;
+      const owner = world.patrons.find(function (p) {
+        return p.regularId === arc.owner && p.state === 'seated';
+      });
+      if (owner) out[owner.id] = arc.glyph;
+    });
+    return out;
+  }
+
+  /* bonds are Nora's memory of a person, deepened only by being present for a
+     shared moment (narrative.md §5). A played beat warms the owner's bond. */
+  function bumpBond(world, id) {
+    const b = world.memory.bonds;
+    if (!b[id]) b[id] = { known: true, warmth: 0 };
+    b[id].known = true;
+    b[id].warmth = (b[id].warmth || 0) + 1;
+  }
+
+  /* Play a ready beat: a caption run carries the moment, a heart blooms over
+     its owner, the arc completes and sets its lasting flag, and — for the scarf
+     — the cat wears it from now on. Reuses the caption pipeline and the bubble
+     system: almost no new runtime muscle (narrative.md §7). */
+  function playBeat(world, arc, owner) {
+    const rec = world.memory.arcs[arc.id];
+    if (!rec || !rec.pendingBeat) return;
+    captionRun(world, arc.beat);
+    owner.bubble = { icon: 'heart', until: world.t + 3.4 };
+    if (arc.flag === 'cat-wore-scarf') {
+      world.cat.scarf = arc.scarfColor;
+      world.cat.bubble = { icon: 'heart', until: world.t + 3.4 };
+      SND.purr(3);
+    }
+    rec.pendingBeat = null;
+    rec.stage = 1;
+    world.memory.flags[arc.flag] = true;
+    bumpBond(world, arc.owner);
+    if (window.MEMORY) MEMORY.save();
+  }
+
+  /* The general tap hit-test the single canvas click handler grows
+     (narrative.md §2): did a click land on a waiting invitation? A forgiving
+     box covers the seated owner and the bubble above them, so a soft tap in the
+     neighbourhood counts. Returns the arc it played, or null; main.js calls
+     this before petCat so an invitation wins the click. */
+  SIM.beatAt = function (world, x, y) {
+    if (!world.memory) return null;
+    const arcs = (CAST && CAST.arcs) || [];
+    for (let i = 0; i < arcs.length; i++) {
+      const arc = arcs[i];
+      const rec = world.memory.arcs[arc.id];
+      if (!rec || !rec.pendingBeat) continue;
+      const owner = world.patrons.find(function (p) {
+        return p.regularId === arc.owner && p.state === 'seated';
+      });
+      if (!owner) continue;
+      const ay = owner.pose === 'sit' ? owner.y + 6 : owner.y;
+      if (x > owner.x - 26 && x < owner.x + 26 && y > ay - 108 && y < owner.y + 8) {
+        playBeat(world, arc, owner);
+        return arc;
+      }
+    }
+    return null;
+  };
+
   SIM.petCat = function (world) {
     const cat = world.cat;
     if (cat.state === 'walk' || cat.state === 'hop' || cat.state === 'pounce') return;
@@ -1287,9 +1363,14 @@
   SIM.entityDrawables = function (world) {
     const draws = [];
     const bubbles = [];
+    // A pending beat raises a soft, persistent invitation over its seated owner
+    // (docs/narrative.md §2) — it waits across sessions and never expires. It
+    // takes the owner's bubble slot so it never fights their ambient chatter.
+    const invited = pendingInvites(world);
     world.patrons.forEach(function (p) {
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, p); } });
-      if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
+      if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id] });
+      else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;
     draws.push({ y: b.y, draw: function (g) { SCENE.drawPerson(g, b); } });

@@ -36,9 +36,21 @@ are untouched.
   table-murmur seams; `overheard`/`musing`/`backstory` pools filled for all four;
   backstory drips as a rarer tier under musing; audit now checks the pools are
   arrays and that a chatty regular has an overheard pool.
-- ⏭️ **Phase 3 — habits & continuity**: next up. Not started.
-- Phases 4–6 remain sketches, to be split into their own plans when their turn
-  comes.
+- ✅ **Foundations — the soft-narrative keystone** (roadmap → *New foundations*):
+  `js/memory.js` (`MEMORY`, versioned `cafe-hygge-save` + migration ladder +
+  graceful fresh-café fallback), `reconcileNarrative` real-day idle progression
+  in `sim-core.js`, the invitation + trigger loop (`SIM.beatAt`, the yarn-ball
+  bubble, `captionRun` beat track), and **Gerda's scarf** as the reference arc
+  (`CAST.arcs`, knitting behaviour + lap visual + `SND.needle()`, the cat wears
+  the scarf for good). Audit grew the narrative invariants; harness grew
+  `__dev.arc/age/memory/reset`. Built ahead of Phase 3 because the passive
+  continuity phase depends on cross-visit memory.
+- ⏭️ **Phase 3 — habits & continuity**: next up, now unblocked by `MEMORY`
+  (visit counts / "back again" can persist). Not started.
+- ⏭️ **Phase 4 — focus a table**: the click handler now runs a general hit-test
+  (`SIM.beatAt`) before petting the cat — the seam a table-focus would extend.
+- Phases 5–6 remain sketches, to be split into their own plans when their turn
+  comes; the arc/beat/invitation loop they need now exists.
 
 ---
 

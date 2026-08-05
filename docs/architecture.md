@@ -1,7 +1,8 @@
 # Architecture
 
-Zero-dependency vanilla JS. Eleven IIFE scripts expose three production globals
-plus the optional dev harness, loaded in dependency order by `index.html`:
+Zero-dependency vanilla JS. Thirteen IIFE scripts expose the production globals
+(`SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
+in dependency order by `index.html`:
 
 ```
 js/audio.js             → window.SND     (sound engine; no DOM, no sim knowledge)
@@ -10,6 +11,8 @@ js/scene-bg.js          → extends SCENE  (background cache + dynamic wall laye
 js/scene-furniture.js   → extends SCENE  (depth-sorted furniture)
 js/scene-people.js      → extends SCENE  (people, cat, bubbles, icons)
 js/scene-fx.js          → extends SCENE  (lighting, particles, captions)
+js/characters-roster.js → window.CAST    (regulars roster + story arcs, pure data)
+js/memory.js            → window.MEMORY  (persistent cross-visit save; versioned)
 js/sim-core.js          → window.SIM     (world + shared simulation systems)
 js/sim-patrons.js       → extends SIM    (patron state machine)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
@@ -44,7 +47,10 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
 | `particles[]` | steam wisps, fire sparks, and one-off dust motes |
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
-| `captionQueue[]` / `activeCaption` | narration pipeline |
+| `captionQueue[]` / `activeCaption` | ambient narration pipeline (soft cap 2) |
+| `captionScript[]` | a story beat's caption run — drains ahead of `captionQueue`, never dropped by the cap (`captionRun`) |
+| `memory` | the bound `MEMORY.state` save: `{version, lastSeen, arcs, bonds, flags}`. Set by `reconcileNarrative` at the end of `SIM.create` |
+| `cat.scarf` | the scarf's hex once Gerda's arc completes (`cat-wore-scarf` flag), else `null`; read by `drawCat` |
 
 ## Frame flow (main.js)
 
@@ -134,11 +140,42 @@ surface anchors instead of using `walker`.
 - Settings live in `SND.settings`, persisted to localStorage key
   `cafe-hygge-audio` by `SND.save()`.
 
+## Narrative layer (MEMORY + arcs)
+
+The soft-narrative loop (design contract: [narrative.md](narrative.md)) is
+almost pure **data + state** riding existing primitives — the caption pipeline,
+the bubble system, and the one click handler.
+
+- **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
+  `{version, lastSeen, arcs, bonds, flags}`. `MEMORY.load()` parses + migrates +
+  back-fills; a bad/missing/wrong-version save falls back to a **fresh café**.
+  `MEMORY.save()` is a debounced write (flushed on `pagehide`/hidden);
+  `MEMORY.reset()`, `MEMORY.stamp()`, and `MEMORY.requestPersist()` round it out.
+  Bump `MEMORY.VERSION` **and** add a migration step when the shape changes.
+- **Arc definitions** are pure data in `CAST.arcs` (owner, `rows` real-day
+  threshold, `glyph`, `beat`, `flag`, plus knitting fields). Arc *state* lives in
+  the save under `arcs[id]` as `{stage, progress, pendingBeat}`.
+- **`reconcileNarrative(world)`** (end of `SIM.create`) binds `world.memory`,
+  advances each arc by `floor((now − lastSeen) / DAY)` days in one deterministic
+  step, sets `pendingBeat` when progress crosses `rows`, clamps drift, re-applies
+  completed marks (the cat's scarf), then stamps + saves. **This is the only
+  place progress moves.**
+- **The invitation** is a persistent bubble over a pending arc's seated owner
+  (`pendingInvites` → `entityDrawables`); it takes the owner's bubble slot and
+  never expires. **The trigger** is `SIM.beatAt(world, x, y)`, which main.js's
+  click handler calls before `petCat`; a hit plays the beat (`captionRun` + a
+  heart + the flag + a bond bump) and advances the arc's `stage`.
+
+The audit (`__dev.audit()`) guards the whole thing: arc definitions resolve,
+the loaded save matches `version`, no stage/progress exceeds its arc, and no
+completion flag is set without its beat having played.
+
 ## UI
 
 One overlay (start gate for audio), one auto-fading control bar (volume, rain,
-fire, music, fullscreen), keyboard `m` (mute) and `f` (fullscreen), and a
-canvas click handler whose only job is petting the cat. Resist adding more UI.
+fire, music, fullscreen), keyboard `m` (mute) and `f` (fullscreen), and one
+canvas click handler: a waiting story invitation takes the tap first
+(`SIM.beatAt`), otherwise it pets the cat. Resist adding more UI.
 
 ## Dev harness (js/dev.js)
 

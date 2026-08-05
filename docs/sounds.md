@@ -101,6 +101,7 @@ toggle mutes all three layers without changing their visual behavior.
 | `matchStrike()` | first stop of Nora's candle round | 100 ms scratch around 1.8 kHz followed by a 200 ms high fizz, combined peak ~0.03 |
 | `candlePop()` | each candle stop | soft 90 ms airy filtered-noise fwip, peak 0.018 |
 | `pageTurn()` | readers | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
+| `needle()` | Gerda knitting (scarf arc) | soft wooden tick: 540–650 Hz tone under a 2.6 kHz lowpass (peak 0.013) + a fainter harmonic, with a half-chance second tap — quieter than the fire, on purpose |
 | `sip()` | sip animation peak | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |
 | `murmur(pitch)` | chatting patrons | triangle osc walking around the patron's 125–235 Hz voice pitch, 5.5 Hz vibrato, lowpass 480 — speech-shaped, wordless |
