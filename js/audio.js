@@ -654,7 +654,7 @@
      envelope, so the stated peak is the whole note rather than three stacked
      peaks. This is also the single swap point for a future felt-piano sample. */
   function pianoNote(f, vel, delay) {
-    if (!ctx) return;
+    if (!ctx || !isFinite(f)) return;
     const t = ctx.currentTime + (delay || 0);
     const dur = 1.6 + Math.random() * 0.8;
     const lp = filt('lowpass', 1900);
@@ -829,6 +829,10 @@
         pianoChord = choices[(Math.random() * choices.length) | 0];
         pianoChordT = 8 + Math.random() * 8;
         pianoFigure = (Math.random() * PIANO_FIGURES.length) | 0;
+        // Figures differ in length; start the new one from the top so the step
+        // can't index past a shorter figure (that yields an undefined pitch →
+        // NaN frequency → a non-finite AudioParam throw that freezes the loop).
+        pianoFigureStep = 0;
       }
       pianoLeftT -= dt;
       if (pianoLeftT <= 0) {
