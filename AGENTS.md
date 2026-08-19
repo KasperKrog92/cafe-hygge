@@ -10,7 +10,7 @@ life. Autonomous characters (a barista, patrons, a cat) live their small lives;
 procedural ASMR-ish audio (rain, fire, espresso, page turns) plays underneath.
 Left alone it is pure ambience, whole if you never touch it. Attended to, it is
 a soft narrative: the regulars grow histories and small projects that advance in
-the background across real days, and turn to you — you keep the café as **Nora** —
+the background across café days, and turn to you — you keep the café as **Nora** —
 when they have something to share. There is **no score and no fail state**;
 progression is patient, never pressure.
 
@@ -80,8 +80,8 @@ for the full design ethos.
   pianist, couple})` (a real patron, or linked pair, with chosen traits),
   `__dev.regular(id)` (force a named regular's next arrival; defaults to
   `'holger'`), `__dev.arc(id, o)` (inspect/nudge a story arc — `{ready:true}`
-  raises its invitation now), `__dev.age(days)` (simulate days away; arcs
-  advance via the boot reconcile), `__dev.memory()` (read the persisted save),
+  raises its invitation now), `__dev.age(days)` (advance every active
+  arc by n café days), `__dev.memory()` (read the persisted save),
   `__dev.reset()` (wipe the save and reload into a fresh café), `__dev.doze()`
   (sleep the first eligible reader), `__dev.send(name, x, y)`,
   `__dev.noraDo('stretch'|'chalk'|'water'|'candles'|'piano')`,
@@ -112,7 +112,7 @@ for the full design ethos.
 | `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, and plants. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
 | `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering, plus `SCENE.composeFrame` — the shared depth-sorted frame composition that both `main.js` `render()` and `__dev.shot()` call. |
-| `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, real-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
+| `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, café-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
 | `js/memory.js` | `MEMORY` | The persistent, cross-visit save (`cafe-hygge-save`): versioned JSON blob (arcs, bonds, flags, `lastSeen`), a migration ladder, and a graceful fresh-café fallback. Mirrors `SND.save()`. Loaded before sim-core so world creation reconciles against it. |
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
@@ -177,9 +177,12 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   **must migrate, never reset**: growing the save shape is only safe if
   `MEMORY.VERSION` bumps and a migration step lands (see `js/memory.js`). Any
   bad/missing/wrong-version save opens a **fresh café** — never an error. Arc
-  *state* lives in the save; arc *definitions* live in `CAST.arcs`. **Arcs
-  advance only in `reconcileNarrative` (real-day idle), never in frame code**,
-  and a ready beat never plays itself — it waits as an invitation until tapped
+  *state* lives in the save; arc *definitions* live in `CAST.arcs`. **Arcs ride
+  the café's own clock: progress accrues only in `updateNarrative` (dt-driven,
+  one row per 24-minute café day while the café runs — hidden tabs included;
+  a closed café holds still), and `reconcileNarrative` at boot only rebinds,
+  clamps, and re-applies — it never adds time.** A ready beat never plays
+  itself — it waits as an invitation until tapped
   (the invitation-waits rule, [docs/narrative.md](docs/narrative.md)). The audit
   guards all of this.
 
@@ -259,7 +262,7 @@ matching doc updated in the same change.
 | Doc | Contents |
 | --- | --- |
 | [docs/overview.md](docs/overview.md) | Vision, design principles, what this is and isn't |
-| [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, idle/real-day progression, the `MEMORY` save model, conversations |
+| [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
 | [docs/characters.md](docs/characters.md) | Nora, patrons, the cat — identities and full behavior state machines |
 | [docs/world.md](docs/world.md) | Time, weather, lighting, spawning, captions/events |

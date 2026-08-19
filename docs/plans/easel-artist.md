@@ -1,9 +1,10 @@
 # Plan: the easel artist — a regular who paints the café into its own walls
 
 A fifth regular sets up an easel in the café and paints big canvases across
-many real days. The reader can glance at the canvas any visit and see it
-further along; patrons drift over to watch; and when a painting is finished it
-waits — as a soft invitation — to be unveiled and hung on the wall for good.
+many café days (24 real minutes of running café each). The reader can glance
+at the canvas any session and see it further along; patrons drift over to
+watch; and when a painting is finished it waits — as a soft invitation — to be
+unveiled and hung on the wall for good.
 Over months the café accrues a very small gallery of its own life: the cat on
 the sill, rain on the glass, the hearth.
 
@@ -14,14 +15,14 @@ seat precedent, the fetch-a-book mid-stay wander, the overheard/musing caption
 seams, and the lasting-flag wall art (the scarf-on-cat precedent).
 
 **Design bar check:** ignore her forever and the café is whole — she is simply
-a quiet painter in the corner, ambience like the knitting. Progress is idle
-and real-day; the unveiling never fires itself and never expires; the gallery
+a quiet painter in the corner, ambience like the knitting. Progress is idle,
+in café days; the unveiling never fires itself and never expires; the gallery
 only ever *adds* warmth to the room. No badge, no count, brush sounds quieter
 than the fire.
 
-**Depends on:** [street-painter.md](street-painter.md) **Phase 0** (calendar-day
-progression fix, `stages` clamp generalization; the anchored-arc support is not
-needed here — this arc has a proper owner).
+**Depends on:** [street-painter.md](street-painter.md) **Phase 0** — ✅ built
+(café-day progression via `updateNarrative`, `stages` + per-stage `rows`; the
+anchored-arc support is not needed here — this arc has a proper owner).
 
 **Shape:** four phases, each shipping something lovely alone. Standard close
 for every phase: smoke test, `?dev` + `__dev.audit()` → 0 problems, docs in the
@@ -76,8 +77,9 @@ same change.
   Whichever wins: footprint + (if it can hide a walker — the easel is tall)
   an `L.occluders` entry, and seat/watch targets clear of lane and occluder
   spans.
-- **Pacing: `rows: 10` real days per painting** — slower than the scarf; a
-  painting should feel like a season of glances. Painting 2 can differ.
+- **Pacing: `rows: [10, 12]` café days** — four-plus hours of open café per
+  painting, slower than the scarf; a painting should feel like many sessions
+  of glances. Retune by feel.
 - **The gallery is finite and that is fine.** Two honest wall piers exist in
   the back wall band: between window 1 and the fireplace (≈ x 240–340,
   y 100–180 — big canvas), and the narrow pier between fireplace and window 2
@@ -145,10 +147,10 @@ order cycle unaffected; `__dev.ff` a full day; audit → 0. Docs: characters.md
 ## Phase 3 — the canvas remembers (the arc)
 
 1. **Arc definition** (`CAST.arcs`): `{ id: 'agnes-paintings', owner: 'agnes',
-   stages: 2, rows: 10, rows2: 12, glyph: 'palette', flags:
-   ['painting-1-hung', 'painting-2-hung'], beats: […] }` — exact multi-stage
-   shape to match the `stages` generalization from street-painter Phase 0;
-   keep it data-only like the scarf.
+   stages: 2, rows: [10, 12], glyph: 'palette', … }`. The `stages`/`rows`
+   machinery exists (street-painter Phase 0); the one `playBeat` extension
+   this arc still needs is **per-stage** `beat` and `flag` selection (today a
+   definition carries one of each) — keep it data-shaped like everything else.
 2. **Canvas reads `progress`** (`js/scene-furniture.js` easel draw): stage
    bands — blank → charcoal sketch lines → underpaint blocks → color masses →
    details — as a pure function of `(stage, progress)`. The cat-with-scarf
@@ -167,7 +169,7 @@ order cycle unaffected; `__dev.ff` a full day; audit → 0. Docs: characters.md
 5. **Audit:** stage ≤ stages; canvas-state function total (no progress value
    without a defined band); flags re-apply; beats only via invitation.
 
-Verify: fresh boot → blank canvas; `__dev.age(4)` → reload → sketch;
+Verify: fresh boot → blank canvas; `__dev.age(4)` → sketch appears live;
 `__dev.arc('agnes-paintings', {ready:true})` → bubble → tap → unveiling run →
 reload → painting on the pier, easel primed for painting 2; night pass
 `__dev.hour(20)` for pier legibility. Docs: narrative.md (status: third arc,

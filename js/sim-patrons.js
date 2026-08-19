@@ -48,7 +48,7 @@
 
   /* The scarf arc's knitting behaviour: a regular whose knitting arc is still
      unfinished (MEMORY stage 0) works the needles while seated. Returns the arc
-     def — carrying its wool colour, real-day threshold, and line pool — or null.
+     def — carrying its wool colour, café-day threshold, and line pool — or null.
      Reads the same saved progress the invitation and the lap visual do, so what
      you see, hear, and can tap always agree (docs/narrative.md §8). */
   function knittingArc(world, p) {

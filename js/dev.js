@@ -21,7 +21,7 @@
      __dev.spawn(o)    real patron with chosen traits, via the front door
      __dev.regular(id) force a named regular's next arrival (default 'holger')
      __dev.arc(id,o)   inspect/nudge a story arc ({ready:true} → invitation now)
-     __dev.age(days)   simulate days away; arcs advance via the boot reconcile
+     __dev.age(days)   advance every active arc by n café days
      __dev.memory()    read the persisted MEMORY save
      __dev.reset()     wipe the save and reload into a fresh café
      __dev.doze()      put the first eligible reader to sleep
@@ -176,7 +176,12 @@
     let rec = w.memory.arcs[id];
     if (!rec) { rec = { stage: 0, progress: 0, pendingBeat: null }; w.memory.arcs[id] = rec; }
     if (!opts) return rec;
-    if (opts.ready) { rec.stage = 0; if (def) rec.progress = def.rows; rec.pendingBeat = 'finished'; }
+    if (opts.ready) {
+      const stages = def ? SIM._.arcStages(def) : 1;
+      if (rec.stage >= stages) rec.stage = stages - 1;   // re-open the last stage
+      if (def) rec.progress = SIM._.arcRows(def, rec.stage);
+      rec.pendingBeat = 'finished';
+    }
     if ('progress' in opts) rec.progress = opts.progress;
     if ('stage' in opts) rec.stage = opts.stage;
     if ('pendingBeat' in opts) rec.pendingBeat = opts.pendingBeat;
@@ -184,13 +189,14 @@
     return rec;
   };
 
-  /* Simulate real days away: rewind lastSeen and re-run the boot reconcile, so
-     arcs advance by `days` exactly as a returning reader would find them. */
+  /* Advance every active arc by `days` café days — the same growth path the
+     live narrative tick uses (arcs ride the café's own clock; a closed café
+     holds still, so there are no "days away" to simulate any more). */
   D.age = function (days) {
     const w = world();
-    if (!window.MEMORY) { console.warn('[dev] MEMORY not loaded'); return null; }
-    MEMORY.state.lastSeen -= (days || 1) * SIM._.DAY_MS;
-    SIM._.reconcileNarrative(w);
+    if (!w.memory) { console.warn('[dev] no MEMORY bound to the world'); return null; }
+    SIM._.advanceArcs(w, days || 1);
+    if (window.MEMORY) MEMORY.saveNow();
     return w.memory.arcs;
   };
 
@@ -843,8 +849,22 @@
       if (!arc.id) problems.push(who + ' has no id');
       else if (seenArc[arc.id]) problems.push('duplicate arc id "' + arc.id + '"');
       seenArc[arc.id] = true;
-      if (!regularIds[arc.owner]) problems.push(who + ' names a missing regular "' + arc.owner + '"');
-      if (!Number.isInteger(arc.rows) || arc.rows <= 0) problems.push(who + ' rows must be a positive integer');
+      // exactly one home: a regular owner, or a fixed café anchor
+      if (arc.anchor && arc.owner) problems.push(who + ' has both an owner and an anchor');
+      if (!arc.anchor && !regularIds[arc.owner]) problems.push(who + ' names a missing regular "' + arc.owner + '"');
+      if (arc.anchor) {
+        const a = arc.anchor;
+        // the whole drawn bubble (x ± 24, y .. y + 40) must stay inside the
+        // always-visible content box — never in the overscan strips
+        const ok = typeof a.x === 'number' && typeof a.y === 'number' &&
+          a.x >= 36 && a.x <= 924 && a.y >= 36 && a.y <= 536;
+        if (!ok) problems.push(who + ' anchor must keep its bubble inside the content box (x 36-924, y 36-536)');
+      }
+      const stages = arc.stages || 1;
+      if (!Number.isInteger(stages) || stages <= 0) problems.push(who + ' stages must be a positive integer');
+      const rowsList = Array.isArray(arc.rows) ? arc.rows : [arc.rows];
+      if (Array.isArray(arc.rows) && arc.rows.length !== stages) problems.push(who + ' rows array must carry one entry per stage');
+      if (rowsList.some(function (r) { return !Number.isInteger(r) || r <= 0; })) problems.push(who + ' rows must be positive integers');
       if (!arc.glyph) problems.push(who + ' has no invitation glyph');
       if (!Array.isArray(arc.beat) || !arc.beat.length) problems.push(who + ' beat must be a non-empty array');
       if (!arc.flag) problems.push(who + ' has no completion flag');
@@ -862,9 +882,11 @@
         arcDefs.forEach(function (arc) {
           const rec = mem.arcs && mem.arcs[arc.id];
           if (!rec) return;
-          if (rec.stage < 0 || rec.stage > 1) problems.push('arc "' + arc.id + '" stage ' + rec.stage + ' out of range');
-          if (rec.progress < 0 || rec.progress > arc.rows) problems.push('arc "' + arc.id + '" progress ' + rec.progress + ' out of 0..' + arc.rows);
-          if (rec.pendingBeat && rec.stage !== 0) problems.push('arc "' + arc.id + '" has a pending beat but stage ' + rec.stage + ' (a played beat clears it)');
+          const stages = SIM._.arcStages(arc);
+          if (rec.stage < 0 || rec.stage > stages) problems.push('arc "' + arc.id + '" stage ' + rec.stage + ' out of 0..' + stages);
+          const rows = SIM._.arcRows(arc, Math.min(rec.stage, stages - 1));
+          if (rec.progress < 0 || rec.progress > rows) problems.push('arc "' + arc.id + '" progress ' + rec.progress + ' out of 0..' + rows);
+          if (rec.pendingBeat && rec.stage >= stages) problems.push('arc "' + arc.id + '" has a pending beat but is already complete (stage ' + rec.stage + ')');
           if (mem.flags[arc.flag] && rec.stage < 1) problems.push('arc "' + arc.id + '" flag set but stage < 1 (a beat cannot complete unplayed)');
         });
       }

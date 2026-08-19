@@ -38,8 +38,8 @@ are untouched.
   arrays and that a chatty regular has an overheard pool.
 - ✅ **Foundations — the soft-narrative keystone** (roadmap → *New foundations*):
   `js/memory.js` (`MEMORY`, versioned `cafe-hygge-save` + migration ladder +
-  graceful fresh-café fallback), `reconcileNarrative` real-day idle progression
-  in `sim-core.js`, the invitation + trigger loop (`SIM.beatAt`, the yarn-ball
+  graceful fresh-café fallback), idle progression in `sim-core.js` (built
+  real-day, since moved to café days — `updateNarrative`), the invitation + trigger loop (`SIM.beatAt`, the yarn-ball
   bubble, `captionRun` beat track), and **Gerda's scarf** as the reference arc
   (`CAST.arcs`, knitting behaviour + lap visual + `SND.needle()`, the cat wears
   the scarf for good). Audit grew the narrative invariants; harness grew

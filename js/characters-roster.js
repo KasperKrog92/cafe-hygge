@@ -4,7 +4,7 @@
    fixes a face, a drink, a set of habits, a usual seat, and the pools of lines
    they might overhear or muse aloud. `window.CAST.arcs` is the companion bible
    for the soft-narrative layer: named story arcs owned by a regular, each with
-   a real-day progress threshold, an invitation glyph, a beat (the caption run
+   a café-day progress threshold, an invitation glyph, a beat (the caption run
    the reader taps to play), and the lasting flag it sets. Pure data, zero
    dependencies — loaded before sim-core so the sim, the MEMORY reconcile, and
    the dev audit can all read it. Arc *definitions* live here; arc *state*
@@ -208,17 +208,25 @@
     ],
 
     /* Story arcs — the soft-narrative layer's content (docs/narrative.md §2, §8).
-       Each arc advances *idly* across real days (the boot reconcile in
-       sim-core), then waits: when progress reaches `rows` it raises a soft,
-       never-expiring invitation (a `glyph` bubble over its `owner`), and only
-       when the reader taps it does the `beat` caption run play and the arc
-       complete — setting `flag` for good. Nothing here fires on its own.
+       Each arc advances quietly on the café's own clock (updateNarrative in
+       sim-core — one row per 24-minute café day while the café runs; a closed
+       café holds still), then waits: when progress reaches `rows` it raises a
+       soft, never-expiring invitation (a `glyph` bubble over its `owner`, or
+       at its fixed `anchor`), and only when the reader taps it does the `beat`
+       caption run play and the arc step onward — setting `flag` for good.
+       Nothing here fires on its own.
 
        Entry shape:
          id          stable key; the MEMORY save stores state under it
          owner       a CAST.regulars id; the arc rides that regular's visits
+         anchor      {x, y} instead of an owner: a café-owned arc pins its
+                     invitation to a fixed spot (the bubble's top edge sits at
+                     the anchor). Exactly one of owner/anchor per arc.
+         stages      how many beats the arc holds (default 1); a played beat
+                     steps stage forward, stage === stages means done
          knits       marks a knitting arc (drives the seated needle behaviour)
-         rows        real days of progress before the beat is ready (patient)
+         rows        café days of progress before a beat is ready (patient) —
+                     one number, or an array with one entry per stage
          scarfColor  the wool's swatch (a docs/art.md hex)
          glyph       the invitation bubble icon (drawIcon in scene-people.js)
          flag        the lasting mark set when the beat plays
@@ -228,7 +236,7 @@
                      alone (glanceability holds even here)
 
        Row one is Gerda's scarf — the reference arc that proves the whole loop
-       end to end (knits by her window across real days → a yarn-ball bubble
+       end to end (knits by her window across café days → a yarn-ball bubble
        waits → tap loops the finished scarf onto the cat, who wears it for
        good). It also realises the roadmap's "a knitter… a slowly growing
        scarf", now with a payoff that waits for you. */

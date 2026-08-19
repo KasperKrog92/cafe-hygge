@@ -366,9 +366,9 @@ example of the whole soft-narrative pattern, and it realises the roadmap's older
   `progress`. A soft wooden `SND.needle()` tick (quieter than the fire) and the
   occasional `knitLines` musing carry it. Purely ambient — ignore it forever and
   nothing is lost.
-- **Progress (idle, real-day).** The scarf grows only in `reconcileNarrative`,
-  one row per real calendar day away, never in frame code. What you *see* is what
-  is *saved*.
+- **Progress (idle, café days).** The scarf grows one row per café day (24 real
+  minutes of the café running — hidden tabs included) in `updateNarrative`'s
+  quiet tick; a closed café holds still. What you *see* is what is *saved*.
 - **The invitation (waits forever).** At `progress ≥ rows` the arc raises a soft
   **yarn-ball bubble** over Gerda whenever she is present. It never pulses, never
   counts down, never expires — the invitation-waits rule.

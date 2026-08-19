@@ -7,7 +7,7 @@
   const LB = L.library;
 
   const DAY_SECONDS = 1440;          // one full day passes in 24 real minutes
-  const DAY_MS = 86400000;           // a real calendar day — the ruler for arc progress
+  const DAY_MS = 86400000;           // a real calendar day — the ruler for bond continuity
   const START_HOUR = 8.4;
   const WIPE_RAIN = 0.3;             // above this, arrivals wipe wet shoes on the mat
 
@@ -186,7 +186,7 @@
     // the street is never quite empty at boot
     spawnPasser(world, { x: rnd(STREET.x0 + 40, STREET.x1 - 40) });
 
-    // bind persistent memory and fold in any idle progress before the first frame
+    // bind persistent memory and reconcile the save before the first frame
     reconcileNarrative(world);
 
     // and one familiar face already by the fire, so the café opens onto someone
@@ -985,7 +985,7 @@
     }
   }
 
-  /* ---------- narrative: idle / real-day arc progression ---------- */
+  /* ---------- narrative: café-day arc progression ---------- */
 
   function arcDefs() { return (window.CAST && Array.isArray(CAST.arcs)) ? CAST.arcs : []; }
 
@@ -995,36 +995,85 @@
     return rec;
   }
 
-  /* Bind the MEMORY save to the world and fold in idle progress in one
-     deterministic step (docs/narrative.md §3): each arc advances by the whole
-     real days elapsed since `lastSeen`, and any beat that came ready while the
-     reader was away is simply left waiting as an invitation (§1). This is the
-     ONLY place progress moves — a pure function of elapsed time, identical
-     whether the reader was gone a day or watched it tick past. Also reconciles
-     drift: an arc that names a vanished regular is skipped, a stage/progress
-     past its definition is clamped, and a completed arc's lasting mark (the cat
-     wearing the scarf) is re-applied for a returning reader. */
-  function reconcileNarrative(world) {
-    const mem = (window.MEMORY && MEMORY.state) ||
-      { version: 1, lastSeen: Date.now(), arcs: {}, bonds: {}, flags: {} };
-    world.memory = mem;
-    const now = window.MEMORY ? MEMORY.now() : Date.now();
-    const elapsedDays = Math.max(0, Math.floor((now - (mem.lastSeen || now)) / DAY_MS));
+  // an arc's total beat count (default 1); stage === stages means done
+  function arcStages(arc) { return arc.stages || 1; }
+
+  // the café-day threshold for a stage: `rows` is one number, or an array
+  // carrying one entry per stage
+  function arcRows(arc, stage) {
+    return Array.isArray(arc.rows) ? arc.rows[Math.min(stage, arc.rows.length - 1)] : arc.rows;
+  }
+
+  /* Advance every active arc by `days` café days (fractional welcome) and set
+     `pendingBeat` on any that reach their stage threshold. The ONE growth
+     path: updateNarrative feeds it dt while the café runs, __dev.age feeds it
+     whole days. An arc is active while its stage is short of its last and no
+     beat is already waiting — a ready beat stops growth until it is chosen
+     (the invitation-waits rule, docs/narrative.md §1). */
+  function advanceArcs(world, days) {
+    const out = { moved: false, readied: false };
+    const mem = world.memory;
+    if (!mem || !(days > 0)) return out;
     const regularIds = {};
     CAST.regulars.forEach(function (r) { regularIds[r.id] = true; });
 
     arcDefs().forEach(function (arc) {
-      if (!regularIds[arc.owner]) return;            // drift: names a regular that no longer exists
+      if (!arc.anchor && !regularIds[arc.owner]) return;   // drift: names a regular that no longer exists
+      const rec = arcRecord(mem, arc.id);
+      if (rec.stage >= arcStages(arc) || rec.pendingBeat) return;
+      const rows = arcRows(arc, rec.stage);
+      rec.progress = Math.min(rows, rec.progress + days);
+      out.moved = true;
+      if (rec.progress >= rows) { rec.pendingBeat = 'finished'; out.readied = true; }
+    });
+    return out;
+  }
+
+  /* The narrative tick: arcs ride the café's own day (24 real minutes,
+     DAY_SECONDS) while the café runs — dt-driven SIM.update code, so the
+     hidden-tab interval keeps a backgrounded café progressing too. A closed
+     café simply holds still: nothing accrues, nothing is missed, and any
+     raised invitation keeps waiting (docs/narrative.md §3). Saves are
+     quantized to the café hour (~once a real minute) plus every readied beat,
+     so localStorage stays quiet; at worst a hard close drops a sliver of a
+     row, never a beat. */
+  let narrSaveT = 0;
+  function updateNarrative(world, dt) {
+    const res = advanceArcs(world, dt / DAY_SECONDS);
+    if (!res.moved) return;
+    narrSaveT += dt;
+    if (res.readied || narrSaveT >= DAY_SECONDS / 24) {
+      narrSaveT = 0;
+      if (window.MEMORY) MEMORY.save();
+    }
+  }
+
+  /* Bind the MEMORY save to the world and reconcile it against the current
+     definitions. Arcs ride the café's own clock (docs/narrative.md §3), so
+     boot adds no elapsed time — a closed café simply holds still. This pass
+     clamps drift (an arc naming a vanished regular is skipped, a stage or
+     progress past its definition is pulled back), raises any invitation a
+     threshold-touching save is owed, and re-applies a completed arc's lasting
+     mark (the cat wearing the scarf) for a returning reader. */
+  function reconcileNarrative(world) {
+    const mem = (window.MEMORY && MEMORY.state) ||
+      { version: 1, lastSeen: Date.now(), arcs: {}, bonds: {}, flags: {} };
+    world.memory = mem;
+    const regularIds = {};
+    CAST.regulars.forEach(function (r) { regularIds[r.id] = true; });
+
+    arcDefs().forEach(function (arc) {
+      if (!arc.anchor && !regularIds[arc.owner]) return;   // drift: names a regular that no longer exists
       const rec = arcRecord(mem, arc.id);
       // clamp a save that drifted from the current definition
       if (typeof rec.stage !== 'number' || rec.stage < 0) rec.stage = 0;
-      if (rec.stage > 1) rec.stage = 1;
+      if (rec.stage > arcStages(arc)) rec.stage = arcStages(arc);
       if (typeof rec.progress !== 'number' || rec.progress < 0) rec.progress = 0;
-      if (rec.progress > arc.rows) rec.progress = arc.rows;
-      // idle progression: only an unfinished, not-yet-ready arc grows
-      if (rec.stage === 0 && !rec.pendingBeat) {
-        if (elapsedDays > 0) rec.progress = Math.min(arc.rows, rec.progress + elapsedDays);
-        if (rec.progress >= arc.rows) rec.pendingBeat = 'finished';
+      const rows = arcRows(arc, Math.min(rec.stage, arcStages(arc) - 1));
+      if (rec.progress > rows) rec.progress = rows;
+      // a save already at its threshold is owed its (patient) invitation
+      if (rec.stage < arcStages(arc) && !rec.pendingBeat && rec.progress >= rows) {
+        rec.pendingBeat = 'finished';
       }
       // realise a completed arc's lasting mark (a returning reader's café)
       if (arc.flag === 'cat-wore-scarf' && mem.flags[arc.flag]) world.cat.scarf = arc.scarfColor;
@@ -1044,6 +1093,8 @@
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor, specLine: specLine,
     makePatron: makePatron, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
     arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
+    arcStages: arcStages, arcRows: arcRows,
+    advanceArcs: advanceArcs, updateNarrative: updateNarrative,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
     spawnCouple: spawnCouple, updateRegulars: updateRegulars,
     makePath: makePath, walker: walker,

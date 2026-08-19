@@ -7,10 +7,10 @@ persistence and idle model underneath it, and the invariants that keep the whole
 thing hygge. Read it before adding any arc, beat, memory, or conversation.
 
 > **Status.** A design contract, written ahead of the build — now partly built.
-> The **foundations are live**: `MEMORY` (`js/memory.js`), real-day idle
-> progression (`reconcileNarrative` in `js/sim-core.js`), the invitation +
+> The **foundations are live**: `MEMORY` (`js/memory.js`), café-day
+> progression (`updateNarrative` in `js/sim-core.js`), the invitation +
 > trigger loop (`SIM.beatAt` + the yarn bubble), and **Gerda's scarf — the
-> reference arc (§8)** — knit across real days, waiting as a soft invitation,
+> reference arc (§8)** — knit across café days, waiting as a soft invitation,
 > looped onto the cat on tap and worn for good. `CAST.arcs` carries arc
 > definitions; the audit guards the save shape and the arc invariants (§7.3).
 > The passive roster layers (regulars, overheard lines) also exist; the
@@ -28,14 +28,14 @@ who checks in daily must feel their attention is rewarded. The single idea that
 reconciles them:
 
 > **Arcs advance on their own; their payoffs never fire on their own.**
-> Progress accrues quietly in the background — across real days, whether or not
-> anyone is watching. But when an arc reaches a *beat* (a moment meant to be
-> seen), it does not play automatically and it does not expire. It raises a
-> soft, ignorable **invitation** and then waits — indefinitely — until the
-> player chooses to take it.
+> Progress accrues quietly in the background — across café days, while the
+> café runs, whether or not anyone is watching it. But when an arc reaches a
+> *beat* (a moment meant to be seen), it does not play automatically and it
+> does not expire. It raises a soft, ignorable **invitation** and then waits —
+> indefinitely — until the player chooses to take it.
 
-So Gerda knits a little more each real day with nobody watching (idle
-progression), but the scarf-goes-on-the-cat *moment* sits as a gentle bubble
+So Gerda knits a little more with each café day that passes, nobody needing to
+watch (idle progression), but the scarf-goes-on-the-cat *moment* sits as a gentle bubble
 over her, patient, until the reader taps it (never missed). The background is
 autonomous; the foreground is consented-to. Every narrative feature in this
 project is an application of that one rule.
@@ -45,9 +45,8 @@ project is an application of that one rule.
 - Beats that fire while unattended and are then gone. If it matters, it waits.
 - Invitations that expire, decay, or are penalized for being ignored.
 - Any badge, count, timer, or streak that turns waiting into pressure.
-- A story state you can *lose* by being absent. Absence only pauses the
-  foreground; the background either keeps drifting forward or holds — never
-  slides back.
+- A story state you can *lose* by being absent. Absence pauses the café —
+  background and foreground alike; nothing ever slides back or expires.
 
 **What this permits, newly:**
 
@@ -72,10 +71,10 @@ arc  →  progresses (idle, real-time)  →  reaches a ready beat
 - **Arc** — a named, persisted bit of story with a `stage` and whatever progress
   it needs (`{ id, stage, progress, pendingBeat }`). Owned by a character or the
   café. Lives in the save (§4).
-- **Progress** — advanced by the idle tick (§3), never by frame code. Most arcs
-  progress *only* between real days; some may inch forward within a session.
-  Progress with no one watching is the whole point — it must be a pure function
-  of elapsed real time, so it can be caught up in one step on return.
+- **Progress** — advanced by the narrative tick (§3): a steady drip measured in
+  café days while the café runs, never by ad-hoc frame logic. Progress with no
+  one watching it is still the point — the café quietly lives — and a closed
+  café simply holds still, so there is never anything to catch up on.
 - **Ready beat** — when progress crosses a threshold, the arc sets
   `pendingBeat` and stops advancing until the beat is consumed. It never plays
   itself.
@@ -97,39 +96,40 @@ One narrator, one click handler, one bubble system, one caption pipeline — the
 whole loop reuses primitives the café already has. That is deliberate: the story
 layer is mostly **data and state**, almost no new runtime muscle (§7).
 
-## 3. Time and idle progression
+## 3. Time and progression
 
-The café already has two clocks; the narrative layer adds a third.
+The café has two clocks; arcs ride the second.
 
 | Clock | Unit | Drives |
 | --- | --- | --- |
 | `world.t` | real seconds since boot | the frame sim (movement, sipping, brew) |
-| `world.hour` / `dayIndex` | 24-min in-world day | light, weather, spawn rate, daily regular arrivals |
-| **real calendar time** | actual days (`Date`) | **arc progression across sessions** |
+| `world.hour` / `dayIndex` | 24-min in-world day | light, weather, spawn rate, daily regular arrivals — **and arc progression** |
 
-The in-world day (24 real minutes) is the wrong ruler for "Gerda knits a bit
-each day" — nobody leaves the app running for the hours that would take, and it
-resets to `dayIndex` 0 every reload. Long arcs instead progress against the
-**real** calendar, so "every day" means a day of the reader's life.
+**Arcs ride the café's own day.** An arc's `progress` is measured in **café
+days** — 24 real minutes of the café running — and accrues continuously in
+`updateNarrative` (`js/sim-core.js`), a dt-driven part of `SIM.update`. A
+hidden tab still progresses (the 250 ms hidden-tab interval keeps the sim
+ticking), so leaving the café open beside a book — its whole design posture —
+is exactly what advances the stories. Gerda's five-row scarf is about two
+hours of open café.
 
-**Offline / catch-up progression.** On boot, the save (§4) holds a
-`lastSeen` real timestamp. Compute `elapsedDays = floor(now - lastSeen)` and
-advance every arc by that many steps in one reconcile pass, *before* the first
-frame. A reader who returns after a week finds a week of quiet progress already
-folded in — and any beats that came ready while they were away are simply
-waiting as invitations (§1). Progression is a pure function of elapsed real
-time, so catching up is a single deterministic step, identical whether they were
-gone one day or watched it tick past live.
+**A closed café holds still.** Nothing accrues while the app is closed, and
+nothing is missed: absence pauses the background entirely (§1 permits holding —
+what it forbids is sliding back or expiring). A reader returns to the café
+exactly as they left it, plus any invitation that came ready still waiting.
+Boot (`reconcileNarrative`) adds no elapsed time; it only rebinds the save,
+clamps drift against the current definitions, and re-applies lasting marks.
 
-**Live progression (optional, secondary).** An arc *may* also inch forward
-within a long session (e.g. the scarf grows a stitch on a slow timer while you
-watch). Keep it subordinate to the real-day step — live progress is flavor;
-real-day progress is the spine — and keep the two consistent so a session that
-straddles midnight never double-counts.
+**Progress is what you see.** The visible state (the scarf's length, a
+canvas's stage) reads the same saved `progress` the invitation logic does, so
+what you see, hear, and can tap always agree. Saves are quantized to the café
+hour (~once a real minute) plus every readied beat, so localStorage stays
+quiet; at worst a hard close drops a sliver of a row, never a beat.
 
 `Date` / `Date.now()` are available in the app (the ban on them is a *Workflow
-scripting* constraint, not an app one). Use real time only for arc pacing; the
-frame sim stays on `world.t` as today.
+scripting* constraint, not an app one). Real time still stamps `lastSeen` and
+dates bond continuity (`bonds[id].lastDay`); arc pacing does not read the
+calendar.
 
 ## 4. Persistence — the `MEMORY` global
 
@@ -223,7 +223,7 @@ for this kind of growth, because everything above is *data and state*, not new
 runtime capability:
 
 - **Persistence** is `localStorage` + `JSON` — already proven by `SND.save()`.
-- **Idle progression** is arithmetic on `Date` at boot — a few lines.
+- **Idle progression** is one dt-driven accumulator in the sim tick — a few lines.
 - **Invitations** reuse the bubble renderer and the one click handler.
 - **Beats / conversations** are the existing caption pipeline plus data.
 - **Arcs, bonds, dialogue** are pure-data tables, exactly like
@@ -265,9 +265,9 @@ data, a growing audit), not new technology.
 The reference implementation of the whole loop, end to end:
 
 1. **Arc** `gerda-scarf` starts at `{ stage: 0, progress: 0 }` in the save.
-2. **Progress:** the boot reconcile adds `elapsedDays` to `progress` (and,
-   optionally, a slow live stitch while she sits by the fire on rainy evenings —
-   the roadmap's original "slowly growing scarf"). Her knitting animation and
+2. **Progress:** `updateNarrative` drips café days into `progress` while the
+   café runs — about two hours of open café for the five rows, exactly the
+   roadmap's original "slowly growing scarf". Her knitting animation and
    needle-click sound read the same `progress` so the scarf you *see* is the
    scarf that's saved.
 3. **Ready beat:** at `progress ≥ N`, the arc sets `pendingBeat: 'finished'` and

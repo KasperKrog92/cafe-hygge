@@ -73,7 +73,7 @@ machines, rain, café room tone…). Plan for when clips arrive:
   opinions (one caption, no drama).
 - A knitter by the fire on rainy evenings — needle clicks quieter than the
   crackles, a slowly growing scarf. (Now elevated into **Gerda's scarf arc** —
-  the growing scarf becomes a real, persisted, real-day arc with a waiting
+  the growing scarf becomes a real, persisted, café-day arc with a waiting
   payoff; see the narrative foundations below and [narrative.md](narrative.md) §8.)
 - Someone writing postcards at a window table: pen scratches, a pause to
   look out, one careful stamp.
@@ -100,7 +100,7 @@ can choose to have or simply overhear. The full design of this layer now lives
 in **[narrative.md](narrative.md)**; this section is its roadmap.
 
 **Guiding rule (see narrative.md §1):** progression is *patient*. Arcs advance
-on their own, across real days — but a payoff never fires unattended and never
+on their own, across café days — but a payoff never fires unattended and never
 expires. It raises a soft, ignorable invitation (a bubble over a character) and
 waits until the reader chooses it, or never does. The café is complete if the
 reader never touches it, and nothing is ever lost by being away. This is the
@@ -154,16 +154,16 @@ the keystone is in; the remaining phases 3–6 above now build on it:
   migration ladder so a growing save never bricks a returning reader, and a
   boot reconcile that tolerates drift. The single unlock behind cross-visit
   continuity and every arc.
-- ✅ **Idle / real-day progression.** `reconcileNarrative` (in
-  [sim-core.js](../js/sim-core.js)) advances each arc by `elapsedDays` from
-  `Date` in one deterministic boot step, with any beats that came ready simply
-  waiting.
+- ✅ **Idle / café-day progression.** `updateNarrative` (in
+  [sim-core.js](../js/sim-core.js)) drips café days (24 real minutes each,
+  hidden tabs included) into every active arc while the café runs; a closed
+  café holds still, and any beat that comes ready simply waits.
 - ✅ **The invitation + trigger loop.** A `pendingBeat` yarn-ball bubble (reusing
   the bubble renderer) and `SIM.beatAt`, a general hit-test the single canvas
   click handler ([main.js](../js/main.js)) now runs before petting the cat.
 - ✅ **Gerda's scarf — the reference arc.** The first end-to-end build of the
   arc → progress → ready beat → invitation → trigger loop
-  ([narrative.md](narrative.md) §8): knits across real days, waits as a soft
+  ([narrative.md](narrative.md) §8): knits across café days, waits as a soft
   yarn-ball bubble, and on tap loops the scarf onto the cat for good. Also
   realizes the roadmap's earlier "a knitter by the fire… a slowly growing
   scarf" idea, now with a payoff that waits for you.

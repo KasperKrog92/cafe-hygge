@@ -2,9 +2,10 @@
 
    The narrative layer's keystone (docs/narrative.md §4). Mirrors SND.save()'s
    proven localStorage pattern: a single versioned JSON blob under
-   `cafe-hygge-save` holding story arcs, bonds, and flags, plus the real-time
-   `lastSeen` stamp that idle progression reads on boot. Zero dependencies,
-   loaded before sim-core so world creation can reconcile against it.
+   `cafe-hygge-save` holding story arcs, bonds, and flags, plus a real-time
+   `lastSeen` visit stamp (metadata — arcs ride the café's own clock, not the
+   calendar; docs/narrative.md §3). Zero dependencies, loaded before sim-core
+   so world creation can reconcile against it.
 
    Non-negotiables (docs/narrative.md §4):
    - Versioned, with a forward migration ladder — an old save is upgraded
@@ -17,9 +18,9 @@
      with site data, ~7-day purge on Safari/iOS). A lost save is a fresh café.
 
    This file guards the save's *shape*; the *semantic* reconcile against the arc
-   and regular definitions (advancing progress by elapsed days, clamping a stage
-   past its arc, dropping an arc that names a renamed regular) happens at world
-   creation in sim-core. The dev audit checks both. */
+   and regular definitions (clamping a stage past its arc, dropping an arc that
+   names a renamed regular, raising an invitation a threshold-touching save is
+   owed) happens at world creation in sim-core. The dev audit checks both. */
 (function () {
   'use strict';
 
@@ -29,8 +30,9 @@
   MEMORY.VERSION = VERSION;
 
   /* Date is available in the app — the ban on Date.now() is a Workflow-
-     scripting constraint, not an app one (narrative.md §3). Real calendar time
-     is exactly what arc pacing is measured against. */
+     scripting constraint, not an app one. Real calendar time stamps `lastSeen`
+     and dates bond continuity; arc pacing rides the café's in-world day
+     (updateNarrative in sim-core — narrative.md §3). */
   function nowMs() { return Date.now(); }
   MEMORY.now = nowMs;
 

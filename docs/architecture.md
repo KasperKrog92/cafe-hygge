@@ -156,19 +156,27 @@ the bubble system, and the one click handler.
   `MEMORY.save()` is a debounced write (flushed on `pagehide`/hidden);
   `MEMORY.reset()`, `MEMORY.stamp()`, and `MEMORY.requestPersist()` round it out.
   Bump `MEMORY.VERSION` **and** add a migration step when the shape changes.
-- **Arc definitions** are pure data in `CAST.arcs` (owner, `rows` real-day
-  threshold, `glyph`, `beat`, `flag`, plus knitting fields). Arc *state* lives in
-  the save under `arcs[id]` as `{stage, progress, pendingBeat}`.
+- **Arc definitions** are pure data in `CAST.arcs` (an `owner` or a fixed
+  `anchor`, `rows` café-day threshold — one number or one per `stages` —
+  `glyph`, `beat`, `flag`, plus knitting fields). Arc *state* lives in the save
+  under `arcs[id]` as `{stage, progress, pendingBeat}`; progress accrues in
+  `updateNarrative` (dt-driven, one row per 24-minute café day of running café).
+- **`updateNarrative(world, dt)`** (in `SIM.update`) drips `dt / DAY_SECONDS`
+  café days into every active arc via `advanceArcs` — **the only growth path**
+  (`__dev.age` feeds the same function whole days) — and sets `pendingBeat`
+  when progress crosses the stage's `rows`. Saves are quantized to the café
+  hour plus every readied beat.
 - **`reconcileNarrative(world)`** (end of `SIM.create`) binds `world.memory`,
-  advances each arc by `floor((now − lastSeen) / DAY)` days in one deterministic
-  step, sets `pendingBeat` when progress crosses `rows`, clamps drift, re-applies
-  completed marks (the cat's scarf), then stamps + saves. **This is the only
-  place progress moves.**
+  clamps drift against the current definitions, raises any invitation a
+  threshold-touching save is owed, re-applies completed marks (the cat's
+  scarf), then stamps + saves. It adds no elapsed time — a closed café holds
+  still.
 - **The invitation** is a persistent bubble over a pending arc's seated owner
-  (`pendingInvites` → `entityDrawables`); it takes the owner's bubble slot and
-  never expires. **The trigger** is `SIM.beatAt(world, x, y)`, which main.js's
+  (`pendingInvites` → `entityDrawables`), or at a café-owned arc's fixed
+  `anchor` (`anchoredInvites`); it takes the owner's bubble slot and never
+  expires. **The trigger** is `SIM.beatAt(world, x, y)`, which main.js's
   click handler calls before `petCat`; a hit plays the beat (`captionRun` + a
-  heart + the flag + a bond bump) and advances the arc's `stage`.
+  heart + the flag + a bond bump for owned arcs) and advances the arc's `stage`.
 
 The audit (`__dev.audit()`) guards the whole thing: arc definitions resolve,
 the loaded save matches `version`, no stage/progress exceeds its arc, and no

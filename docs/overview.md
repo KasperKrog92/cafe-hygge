@@ -23,8 +23,8 @@ Café Hygge is built to be enjoyed at two depths at once, with no mode to switch
   its own, exactly as it always was.
 - **As a soft narrative.** Get invested and the café rewards attention: the
   regulars have habits, then histories; small projects and friendships advance
-  quietly in the background across real days; and when something is finally
-  ready to happen, it waits for you to be there for it.
+  quietly in the background as the café's own days pass; and when something is
+  finally ready to happen, it waits for you to be there for it.
 
 The whole design rests on reconciling those two — progression a companion user
 never trips over, and an invested user never misses. The mechanism that makes
@@ -60,9 +60,10 @@ that possible has its own home: the **[narrative design contract](narrative.md)*
    readable files with zero dependencies, and it stays that way.
 6. **Time really passes — now across days, too.** A full day cycles every 24
    real minutes: morning light, dusk, lamplit night with stars, drifting
-   weather. And between sessions, real days pass in the café as well: a returning
-   reader finds the regulars a little further along than they left them, never
-   reset to zero. See [narrative.md](narrative.md).
+   weather. And those café days accumulate: the longer the café keeps you
+   company, the further along its small stories get — carried across sessions,
+   never reset to zero, and holding still while the café is closed. See
+   [narrative.md](narrative.md).
 
 ## What it is not
 

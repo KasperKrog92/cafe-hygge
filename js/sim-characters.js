@@ -15,6 +15,8 @@
   const updateDoor = R.updateDoor, updateSpawning = R.updateSpawning;
   const updatePatron = R.updatePatron, updateParticles = R.updateParticles;
   const updateCaptions = R.updateCaptions;
+  const updateNarrative = R.updateNarrative;
+  const arcStages = R.arcStages;
 
   /* ---------- barista ---------- */
 
@@ -1343,6 +1345,22 @@
     return out;
   }
 
+  /* A café-owned arc pins its invitation to a fixed spot in the room instead
+     of a person (`anchor: {x, y}` on the definition — the bubble's top edge
+     sits at the anchor). Same bubble art, same patience: it waits across
+     sessions until tapped. Returned in drawBubble's coordinate convention
+     (which draws 100 px above the y it is given). */
+  function anchoredInvites(world) {
+    const out = [];
+    if (!world.memory) return out;
+    ((CAST && CAST.arcs) || []).forEach(function (arc) {
+      if (!arc.anchor) return;
+      const rec = world.memory.arcs[arc.id];
+      if (rec && rec.pendingBeat) out.push({ x: arc.anchor.x, y: arc.anchor.y + 100, icon: arc.glyph });
+    });
+    return out;
+  }
+
   /* bonds are Nora's memory of a person, deepened only by being present for a
      shared moment (narrative.md §5). A played beat warms the owner's bond. */
   function bumpBond(world, id) {
@@ -1353,23 +1371,25 @@
   }
 
   /* Play a ready beat: a caption run carries the moment, a heart blooms over
-     its owner, the arc completes and sets its lasting flag, and — for the scarf
-     — the cat wears it from now on. Reuses the caption pipeline and the bubble
+     its owner (a café-owned, anchored arc has none), the arc steps to its next
+     stage — or completes — and sets its lasting flag, and — for the scarf —
+     the cat wears it from now on. Reuses the caption pipeline and the bubble
      system: almost no new runtime muscle (narrative.md §7). */
   function playBeat(world, arc, owner) {
     const rec = world.memory.arcs[arc.id];
     if (!rec || !rec.pendingBeat) return;
     captionRun(world, arc.beat);
-    owner.bubble = { icon: 'heart', until: world.t + 3.4 };
+    if (owner) owner.bubble = { icon: 'heart', until: world.t + 3.4 };
     if (arc.flag === 'cat-wore-scarf') {
       world.cat.scarf = arc.scarfColor;
       world.cat.bubble = { icon: 'heart', until: world.t + 3.4 };
       SND.purr(3);
     }
     rec.pendingBeat = null;
-    rec.stage = 1;
+    rec.stage = Math.min(arcStages(arc), rec.stage + 1);
+    if (rec.stage < arcStages(arc)) rec.progress = 0;   // the next stage starts fresh
     world.memory.flags[arc.flag] = true;
-    bumpBond(world, arc.owner);
+    if (arc.owner) bumpBond(world, arc.owner);
     if (window.MEMORY) MEMORY.save();
   }
 
@@ -1385,6 +1405,15 @@
       const arc = arcs[i];
       const rec = world.memory.arcs[arc.id];
       if (!rec || !rec.pendingBeat) continue;
+      if (arc.anchor) {
+        // a fixed invitation: a forgiving box around the drawn bubble
+        const a = arc.anchor;
+        if (x > a.x - 26 && x < a.x + 26 && y > a.y - 6 && y < a.y + 46) {
+          playBeat(world, arc, null);
+          return arc;
+        }
+        continue;
+      }
       const owner = world.patrons.find(function (p) {
         return p.regularId === arc.owner && p.state === 'seated';
       });
@@ -1421,6 +1450,7 @@
   SIM.update = function (world, dt) {
     world.t += dt;
     updateClock(world, dt);
+    updateNarrative(world, dt);
     updateCandles(world, dt);
     updateFire(world, dt);
     updateWeather(world, dt);
@@ -1454,6 +1484,7 @@
     const cat = world.cat;
     draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
     if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
+    anchoredInvites(world).forEach(function (b) { bubbles.push(b); });
     return { draws: draws, bubbles: bubbles };
   };
 
