@@ -22,15 +22,23 @@
     // and upright share that baseline; insertion order keeps the bench behind
     // the piano, and entity drawables place a sitter in front of both.
     const pianoTable = world.tables.find(function (tb) { return tb.piano; });
+    const artistTable = world.tables.find(function (tb) { return tb.artist; });
     out.push({ y: L.piano.catAnchor.y - 1, draw: function (g) { drawPianoLamp(g, world); } });
     out.push({ y: L.piano.baseline, draw: function (g) { drawPianoBench(g); } });
     out.push({ y: L.piano.baseline, draw: function (g) { drawPiano(g, pianoTable, world); } });
+
+    // Lunafreya's studio is a permanent part of the piano corner. The easel
+    // sits behind her baseline; the little table lands just in front so a cup
+    // can be shared with the normal service/bussing pipeline.
+    out.push({ y: L.artist.easel.baseline, draw: function (g) { drawArtistEasel(g, world); } });
+    out.push({ y: L.artist.stool.y, draw: function (g) { drawArtistStool(g); } });
+    out.push({ y: L.artist.table.base, draw: function (g) { drawArtistTable(g, artistTable); } });
 
     // tables + their seats (chair with a back on the left, stool on the right);
     // the nook's small side tables carry items but seat no one themselves
     world.tables.forEach(function (tb, i) {
       const cx = tb.x, cy = tb.y;
-      if (tb.piano) return;
+      if (tb.piano || tb.artist) return;
       if (tb.small) {
         out.push({ y: cy + 12, draw: function (g) { drawSideTable(g, cx, cy, tb, world); } });
         return;
@@ -182,6 +190,118 @@
     px(g, B.x - 7, B.y - 7, 14, 2, '#4a3222');            // stretcher
     px(g, B.x - 11, B.y - 18, 22, 5, '#6b4529');          // rectangular seat — a bench, not a stool
     px(g, B.x - 11, B.y - 18, 22, 2, shade('#6b4529', 0.16));
+  }
+
+  function artistArc(world) {
+    if (!world.memory || !world.memory.arcs) return null;
+    const def = ((window.CAST && CAST.arcs) || []).find(function (a) { return a.id === 'lunafreya-paintings'; });
+    const rec = world.memory.arcs['lunafreya-paintings'];
+    if (!def || !rec) return null;
+    const rows = Array.isArray(def.rows) ? def.rows[Math.min(rec.stage, def.rows.length - 1)] : def.rows;
+    return { def: def, rec: rec, amount: rec.pendingBeat ? 1 : Math.max(0, Math.min(1, rec.progress / rows)) };
+  }
+
+  function drawCanvasSubject(g, c, stage, amount, world) {
+    // Each band only adds pixels. The image is therefore a pure, deterministic
+    // reading of the persisted (stage, progress), with no per-frame randomness.
+    if (amount >= 0.12) {
+      const ink = '#8b8070';
+      if (stage === 0) {
+        px(g, c.x + 5, c.y + 10, 30, 2, ink);
+        px(g, c.x + 7, c.y + 33, 27, 2, ink);
+        px(g, c.x + 16, c.y + 19, 12, 14, ink);
+        px(g, c.x + 17, c.y + 16, 3, 4, ink); px(g, c.x + 25, c.y + 16, 3, 4, ink);
+      } else {
+        px(g, c.x + 6, c.y + 8, 28, 2, ink);
+        px(g, c.x + 8, c.y + 12, 2, 29, ink); px(g, c.x + 31, c.y + 12, 2, 29, ink);
+        px(g, c.x + 10, c.y + 39, 21, 2, ink);
+      }
+    }
+    if (amount >= 0.34) {
+      if (stage === 0) {
+        px(g, c.x + 5, c.y + 8, 30, 22, '#8fb5bf');
+        px(g, c.x + 5, c.y + 28, 30, 8, '#6e4a33');
+        px(g, c.x + 5, c.y + 35, 30, 10, '#c9b28a');
+      } else {
+        px(g, c.x + 5, c.y + 7, 30, 37, '#7d4437');
+        px(g, c.x + 10, c.y + 16, 20, 25, '#33231d');
+      }
+    }
+    if (amount >= 0.58) {
+      if (stage === 0) {
+        px(g, c.x + 15, c.y + 19, 14, 15, '#c98f4a');
+        px(g, c.x + 17, c.y + 16, 4, 5, '#c98f4a'); px(g, c.x + 25, c.y + 16, 4, 5, '#c98f4a');
+        px(g, c.x + 12, c.y + 29, 5, 4, '#c98f4a');
+      } else {
+        px(g, c.x + 12, c.y + 27, 16, 12, '#b5481c');
+        px(g, c.x + 15, c.y + 20, 5, 14, '#e06a1e');
+        px(g, c.x + 21, c.y + 23, 5, 13, '#f5a83c');
+      }
+    }
+    if (amount >= 0.82) {
+      if (stage === 0) {
+        px(g, c.x + 18, c.y + 22, 2, 3, '#2a1a12'); px(g, c.x + 25, c.y + 22, 2, 3, '#2a1a12');
+        px(g, c.x + 20, c.y + 28, 6, 2, '#e0b06a');
+        px(g, c.x + 27, c.y + 31, 6, 2, '#b57c38');
+        if (world.memory.flags['cat-wore-scarf']) px(g, c.x + 15, c.y + 26, 14, 3, '#a94f3f');
+        px(g, c.x + 8, c.y + 13, 2, 12, '#e8dfc9');
+        px(g, c.x + 32, c.y + 13, 2, 12, '#e8dfc9');
+      } else {
+        px(g, c.x + 13, c.y + 31, 14, 5, '#f8dc8a');
+        px(g, c.x + 7, c.y + 11, 26, 2, '#8a4d3d');
+        px(g, c.x + 7, c.y + 20, 26, 2, '#744033');
+        px(g, c.x + 7, c.y + 42, 26, 2, '#5a3d28');
+      }
+    }
+  }
+
+  function drawArtistEasel(g, world) {
+    const E = L.artist.easel, c = E.canvas;
+    ell(g, E.x, E.baseline + 1, 27, 5, 'rgba(20,12,8,0.2)');
+    px(g, E.x - 3, c.y - 6, 6, E.baseline - c.y + 5, '#6b4529');
+    px(g, E.x - 20, E.trayY, 42, 5, '#5a3d28');
+    px(g, E.x - 18, E.trayY, 38, 2, '#8a6142');
+    px(g, E.x - 23, E.trayY + 4, 5, E.baseline - E.trayY - 1, '#5a3d28');
+    px(g, E.x + 18, E.trayY + 4, 5, E.baseline - E.trayY - 1, '#5a3d28');
+    px(g, c.x - 3, c.y - 3, c.w + 6, c.h + 6, '#5a3d28');
+    px(g, c.x, c.y, c.w, c.h, '#e8e0cf');
+    px(g, c.x + c.w, c.y + 3, 3, c.h, '#c9bfa8');
+    const arc = artistArc(world);
+    if (arc && arc.rec.stage < 2) drawCanvasSubject(g, c, arc.rec.stage, arc.amount, world);
+    else {
+      px(g, c.x + 6, c.y + 8, c.w - 12, 2, '#d9d0bc');
+      px(g, c.x + 8, c.y + 14, 15, 2, '#d9d0bc');
+    }
+    // paint daubs and the water jar remain even after the gallery is complete
+    ['#a94f3f', '#c9a04a', '#4a7a5a', '#5a7a8a'].forEach(function (col, i) {
+      px(g, E.x - 14 + i * 8, E.trayY - 3, 5, 3, col);
+    });
+    px(g, E.x + 14, E.trayY - 11, 7, 11, 'rgba(170,196,202,0.72)');
+    px(g, E.x + 16, E.trayY - 13, 2, 10, '#8b7158');
+  }
+
+  function drawArtistStool(g) {
+    const s = L.artist.stool;
+    ell(g, s.x, s.y + 3, 13, 4, 'rgba(20,12,8,0.2)');
+    px(g, s.x - 8, s.y - 13, 3, 14, '#4a3222');
+    px(g, s.x + 5, s.y - 13, 3, 14, '#4a3222');
+    px(g, s.x - 8, s.y - 7, 16, 2, '#5a3d28');
+    ell(g, s.x, s.y - 15, 13, 5, '#8a6142');
+    px(g, s.x - 8, s.y - 18, 16, 2, '#a5764f');
+  }
+
+  function drawArtistTable(g, tb) {
+    const t = L.artist.table;
+    ell(g, t.x, t.base, 16, 4, 'rgba(20,12,8,0.2)');
+    px(g, t.x - 3, t.y, 6, t.base - t.y - 3, '#5a3d28');
+    px(g, t.x - 10, t.base - 5, 20, 4, '#4a3222');
+    ell(g, t.x, t.y, 16, 6, '#6e4c30');
+    ell(g, t.x, t.y - 3, 16, 6, '#8a6142');
+    px(g, t.x - 12, t.y - 6, 18, 2, 'rgba(90,58,34,0.3)');
+    if (tb) tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, t.saucer.x, t.saucer.y - 2, it, 0); });
+    px(g, t.x + 7, t.y - 18, 7, 14, '#b5654a');
+    px(g, t.x + 9, t.y - 25, 2, 10, '#8b7158');
+    px(g, t.x + 12, t.y - 23, 2, 8, '#8b7158');
   }
 
   /* The brass piano lamp is its own drawable, one baseline above the cat's

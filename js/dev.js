@@ -11,6 +11,7 @@
      ?overlay      layout overlay on from the first frame
      ?audit        run the invariant sweep after boot and expose its count on
                    documentElement.dataset.auditProblems
+     ?arc=id&stage=n&progress=n[&ready]  boot a saved arc state for screenshots
 
    Console API:
      __dev.hour(h)     jump the in-world clock (no arg: read it)
@@ -341,6 +342,7 @@
     t.push({ x: L.orderSpot.x, y: L.orderSpot.y, name: 'orderSpot' });
     t.push({ x: L.pickupSpot.x, y: L.pickupSpot.y, name: 'pickupSpot' });
     t.push({ x: L.returnSpot.x, y: L.returnSpot.y, name: 'returnSpot' });
+    t.push({ x: L.artist.watch.x, y: L.artist.watch.y, name: 'artistWatch' });
     return t;
   }
 
@@ -461,7 +463,7 @@
       .concat(lib.sideTables.map(function (s) { return s.x; }), lib.lamps.map(function (p) { return p.x; }));
     const nys = lib.chairs.map(function (c) { return c.y; })
       .concat(lib.sideTables.map(function (s) { return s.y; }), lib.lamps.map(function (p) { return p.y; }));
-    const c = L.counter, f = L.fire, sh = lib.shelf, pn = L.piano, d = L.door;
+    const c = L.counter, f = L.fire, sh = lib.shelf, pn = L.piano, d = L.door, ar = L.artist;
     function winRegion(wn) { return span(wn.x - 24, wn.y - 16, wn.x + wn.w + 24, 268); }
     return {
       fireside: span(Math.min.apply(null, axs) - 52, 232, Math.max.apply(null, axs) + 52, 340),
@@ -473,7 +475,8 @@
       door: span(d.x - 20, d.y - 16, d.x + d.w + 60, 336),
       hearth: span(f.x - 12, 96, f.x + f.w + 40, f.stand.y + 20),
       bookshelf: span(sh.x - sh.w / 2 - 12, sh.y - sh.h - 12, sh.x + sh.w / 2 + 12, sh.y + 16),
-      piano: span(pn.x - 10, pn.lamp.y - 24, pn.bench.x + 20, pn.baseline + 16)
+      piano: span(pn.x - 10, pn.lamp.y - 24, pn.bench.x + 20, pn.baseline + 16),
+      artist: span(ar.easel.canvas.x - 18, ar.easel.canvas.y - 16, ar.watch.x + 28, ar.watch.y + 20)
     };
   })();
   D.regions = regions;
@@ -771,6 +774,8 @@
         if (!tb) problems.push('seat[' + i + '] references missing table ' + s.table);
         else if (s.piano && !tb.piano) problems.push('seat[' + i + '] is a piano seat but table ' + s.table + ' is not the piano lid');
         else if (!s.piano && tb.piano) problems.push('seat[' + i + '] points at the piano lid but is not the piano bench');
+        else if (s.artist && !tb.artist) problems.push('seat[' + i + '] is an artist seat but table ' + s.table + ' is not the paint table');
+        else if (!s.artist && tb.artist) problems.push('seat[' + i + '] points at the paint table but is not the artist stool');
         else if (s.nook && !tb.small) problems.push('seat[' + i + '] is a nook seat but table ' + s.table + ' is not a small side table');
         else if (!s.nook && tb.small) problems.push('seat[' + i + '] points at small side table ' + s.table + ' but is not a nook seat');
         else if (s.window && !tb.tall) problems.push('seat[' + i + '] is a window seat but table ' + s.table + ' is not a tall window table');
@@ -867,7 +872,13 @@
       if (rowsList.some(function (r) { return !Number.isInteger(r) || r <= 0; })) problems.push(who + ' rows must be positive integers');
       if (!arc.glyph) problems.push(who + ' has no invitation glyph');
       if (!Array.isArray(arc.beat) || !arc.beat.length) problems.push(who + ' beat must be a non-empty array');
-      if (!arc.flag) problems.push(who + ' has no completion flag');
+      else if (Array.isArray(arc.beat[0])) {
+        if (arc.beat.length !== stages) problems.push(who + ' beat array must carry one caption run per stage');
+        if (arc.beat.some(function (run) { return !Array.isArray(run) || !run.length; })) problems.push(who + ' has an empty per-stage beat');
+      }
+      const flags = Array.isArray(arc.flag) ? arc.flag : [arc.flag];
+      if (Array.isArray(arc.flag) && arc.flag.length !== stages) problems.push(who + ' flag array must carry one key per stage');
+      if (flags.some(function (flag) { return typeof flag !== 'string' || !flag; })) problems.push(who + ' has an invalid completion flag');
       if (arc.presenceBeat) {
         const pb = arc.presenceBeat;
         if (!regularIds[pb.owner]) problems.push(who + ' presenceBeat names a missing regular "' + pb.owner + '"');
@@ -895,7 +906,10 @@
           const rows = SIM._.arcRows(arc, Math.min(rec.stage, stages - 1));
           if (rec.progress < 0 || rec.progress > rows) problems.push('arc "' + arc.id + '" progress ' + rec.progress + ' out of 0..' + rows);
           if (rec.pendingBeat && rec.stage >= stages) problems.push('arc "' + arc.id + '" has a pending beat but is already complete (stage ' + rec.stage + ')');
-          if (mem.flags[arc.flag] && rec.stage < 1) problems.push('arc "' + arc.id + '" flag set but stage < 1 (a beat cannot complete unplayed)');
+          const flags = Array.isArray(arc.flag) ? arc.flag : [arc.flag];
+          flags.forEach(function (flag, stage) {
+            if (mem.flags[flag] && rec.stage < stage + 1) problems.push('arc "' + arc.id + '" flag "' + flag + '" set before stage ' + (stage + 1));
+          });
         });
       }
     }
@@ -937,6 +951,9 @@
     });
     if (w.sleeper && (!live[w.sleeper.id] || !w.sleeper.dozing)) problems.push('world.sleeper is stale');
     if (w.patrons.filter(function (p) { return p.dozing; }).length > 1) problems.push('more than one patron is dozing');
+    if (w.patrons.filter(function (p) { return p.state === 'toEasel' || p.state === 'watchingArtist' || p.state === 'backFromEasel'; }).length > 1) {
+      problems.push('more than one patron is visiting the artist station');
+    }
     if (w.cat.surface === 'lap' && (!w.cat.lapPatron || !w.cat.lapPatron.lapCat)) {
       problems.push('cat is on a lap without a matching patron link');
     } else if (w.cat.surface === 'lap') {
@@ -997,6 +1014,31 @@
       setHour(w, hourParam);
       return w;
     };
+  }
+
+  // URL-shaped arc forcing makes exact saved stages screenshotable even when
+  // a browser console is unavailable. It is the boot equivalent of __dev.arc:
+  // inert without ?arc, dev-only, and it keeps prior-stage lasting flags in
+  // step with the requested stage so the wall and canvas tell one story.
+  if (params.has('arc')) {
+    window.addEventListener('load', function () {
+      const id = params.get('arc');
+      const def = ((window.CAST && CAST.arcs) || []).find(function (a) { return a.id === id; });
+      const w = world();
+      const rec = def && w && w.memory && w.memory.arcs[id];
+      if (!def || !rec) return;
+      const stages = SIM._.arcStages(def);
+      const requestedStage = params.has('stage') ? parseInt(params.get('stage'), 10) : rec.stage;
+      if (!isNaN(requestedStage)) rec.stage = Math.max(0, Math.min(stages, requestedStage));
+      const rows = SIM._.arcRows(def, Math.min(rec.stage, stages - 1));
+      const requestedProgress = params.has('progress') ? parseFloat(params.get('progress')) : rec.progress;
+      if (!isNaN(requestedProgress)) rec.progress = Math.max(0, Math.min(rows, requestedProgress));
+      rec.pendingBeat = params.has('ready') && rec.stage < stages ? 'finished' : null;
+      for (let i = 0; i < stages; i++) {
+        w.memory.flags[SIM._.arcFlag(def, i)] = i < rec.stage;
+      }
+      if (window.MEMORY) MEMORY.save();
+    }, { once: true });
   }
 
   // ?dev — straight into the scene: overlay dismissed, audio untouched until

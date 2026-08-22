@@ -11,7 +11,8 @@ thing hygge. Read it before adding any arc, beat, memory, or conversation.
 > progression (`updateNarrative` in `js/sim-core.js`), the invitation +
 > trigger loop (`SIM.beatAt` + owner and scene-anchored bubbles), **Gerda's
 > scarf — the reference arc (§8)**, and **the street painter — the first
-> café-owned anchored arc**. The painter's facade advances across seven café
+> café-owned anchored arc**, plus **Lunafreya's gallery — the first multi-stage
+> owned arc (§9)**. The painter's facade advances across seven café
 > days, its brush invitation waits in the window, and the finished warm house
 > persists after the chosen beat. `CAST.arcs` carries arc
 > definitions; the audit guards the save shape and the arc invariants (§7.3).
@@ -286,3 +287,21 @@ The reference implementation of the whole loop, end to end:
 A companion user who never taps the bubble loses nothing; the café is still
 lovely. An invested user gets a small, earned, unmissable moment, exactly when
 they chose to be there for it. That is the entire design, in one scarf.
+
+## 9. Multi-stage example — Lunafreya's gallery
+
+`lunafreya-paintings` proves that the same loop can repeat without becoming a
+quest log. It carries `stages: 2`, `rows: [10, 12]`, and per-stage `beat` and
+`flag` arrays. `arcBeat(def, stage)` and `arcFlag(def, stage)` select the active
+caption run and lasting mark; the save shape stays the ordinary
+`{stage, progress, pendingBeat}`.
+
+During stage 0 the easel deterministically paints the cat on the sill from
+saved progress. Its ready palette bubble waits for Lunafreya; the chosen beat
+sets `lunafreya-cat-painting`, advances to stage 1, clears progress, and the
+finished canvas appears above the fireplace. Stage 1 repeats with the hearth;
+its chosen beat sets `lunafreya-hearth-painting`, advances to the done stage,
+and hangs the study above the door. On reload, the two flags restore the wall
+gallery and the completed stage leaves a quiet primed easel where Lunafreya
+sketches. Neither unveiling can occur without the reader, neither invitation
+expires, and completed art only adds to the room.

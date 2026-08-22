@@ -38,6 +38,7 @@
     drawWindow(g, world, L.win, 0);
     drawWindow(g, world, L.win2, 1);
     drawDoor(g, world);
+    drawLunafreyaGallery(g, world);
     drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
     drawWallFrame(g, 100, 120); // sits beside the window frame edge → paints after it
     drawHangingLamp(g, L.lamp1.x, world);
@@ -46,6 +47,43 @@
     drawFireDynamic(g, world);
     drawMachine(g, world);
   };
+
+  /* Two honest wall spaces, and only two: Lunafreya's cat painting settles
+     above the fireplace; her hearth study becomes the small warmth above the
+     door. Both are lasting MEMORY flags, so a returning café redraws them
+     before its first presented frame. */
+  function drawLunafreyaGallery(g, world) {
+    if (!world.memory || !world.memory.flags) return;
+    const flags = world.memory.flags;
+    if (flags['lunafreya-cat-painting']) {
+      const x = 360, y = 70, w = 56, h = 34;
+      px(g, x - 4, y - 4, w + 8, h + 8, '#4a3222');
+      px(g, x - 2, y - 2, w + 4, h + 4, '#c9a04a');
+      px(g, x, y, w, h, '#8fb5bf');
+      px(g, x, y + 23, w, 5, '#6e4a33');
+      px(g, x, y + 28, w, 6, '#c9b28a');
+      // the café's own cat, curled on the sill
+      px(g, x + 20, y + 12, 20, 14, '#c98f4a');
+      px(g, x + 22, y + 8, 5, 6, '#c98f4a'); px(g, x + 35, y + 8, 5, 6, '#c98f4a');
+      px(g, x + 25, y + 14, 3, 3, '#2a1a12'); px(g, x + 34, y + 14, 3, 3, '#2a1a12');
+      px(g, x + 14, y + 22, 8, 4, '#b57c38'); px(g, x + 39, y + 24, 10, 3, '#b57c38');
+      px(g, x + 4, y + 5, 3, 16, '#e8dfc9'); px(g, x + 49, y + 5, 3, 16, '#e8dfc9');
+      if (flags['cat-wore-scarf']) px(g, x + 20, y + 18, 20, 4, '#a94f3f');
+      px(g, x + 2, y + 2, w - 4, 2, 'rgba(255,244,220,0.22)');
+    }
+    if (flags['lunafreya-hearth-painting']) {
+      const x = 36, y = 94, w = 40, h = 26;
+      px(g, x - 4, y - 4, w + 8, h + 8, '#4a3222');
+      px(g, x - 2, y - 2, w + 4, h + 4, '#c9a04a');
+      px(g, x, y, w, h, '#7d4437');
+      px(g, x + 7, y + 5, 26, 18, '#2a1a12');
+      px(g, x + 10, y + 15, 20, 7, '#b5481c');
+      px(g, x + 13, y + 8, 6, 12, '#e06a1e');
+      px(g, x + 20, y + 11, 7, 10, '#f5a83c');
+      px(g, x + 15, y + 16, 12, 5, '#f8dc8a');
+      px(g, x + 3, y + 3, 34, 2, '#8a4d3d');
+    }
+  }
 
   function drawStaticBG(g) {
     // wall + wainscot + floor (wall runs to y=0: the top 36 px are overscan)

@@ -149,8 +149,8 @@
       bookshelfEscape: [{ x: 848, y: 368 }],
       counterStand: [{ x: 840, y: 314 }, { x: 840, y: 368 }],
       topShelfStand: [{ x: 700, y: 368 }],
-      pianoStand: [{ x: 112, y: 532 }, { x: 112, y: 368 }],
-      pianoDismount: [{ x: 112, y: 532 }, { x: 112, y: 368 }],
+      pianoStand: [{ x: 170, y: 532 }, { x: 170, y: 368 }],
+      pianoDismount: [{ x: 170, y: 532 }, { x: 170, y: 368 }],
       eat: [{ x: 160, y: 300 }, { x: 160, y: 368 }]
     },
     // An upright seen in profile, back to the room's left edge: the keyboard
@@ -168,7 +168,20 @@
       catAnchor: { x: 26, y: 476 },
       keysStep: { x: 46, y: 500 },
       dismount: { x: 48, y: 532 },
-      via: 112
+      via: 170
+    },
+    // Lunafreya's permanent studio lives just above the upright piano in the
+    // room: an easel turned toward her stool, a paint table for her cortado,
+    // and one clear watch spot where another patron may linger.
+    artist: {
+      easel: {
+        x: 70, baseline: 452,
+        canvas: { x: 50, y: 370, w: 40, h: 54 },
+        trayY: 430
+      },
+      stool: { x: 110, y: 458, facing: -1, via: 170 },
+      table: { x: 142, y: 448, base: 466, saucer: { x: 142, y: 443 }, busVia: 170 },
+      watch: { x: 178, y: 478 }
     },
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
@@ -209,6 +222,13 @@
      One declaration shared by the art, the dev overlay, and __dev.audit() —
      walk targets must never land in these boxes (the bookshelf lesson). */
   L.occluders = [
+    {
+      name: 'artist easel',
+      x0: L.artist.easel.canvas.x - 6,
+      x1: L.artist.easel.canvas.x + L.artist.easel.canvas.w + 6,
+      top: L.artist.easel.canvas.y,
+      baseline: L.artist.easel.baseline
+    },
     {
       name: 'bookshelf',
       x0: L.library.shelf.x - L.library.shelf.w / 2,
@@ -267,6 +287,9 @@
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
   L.footprints.push({ name: 'piano', x0: 12, x1: 50, y0: 502, y1: 526 });
   L.footprints.push({ name: 'piano bench', x0: 51, x1: 77, y0: 516, y1: 528 });
+  L.footprints.push({ name: 'artist easel', x0: 46, x1: 94, y0: 438, y1: 454 });
+  L.footprints.push({ name: 'artist stool', x0: 97, x1: 123, y0: 448, y1: 466 });
+  L.footprints.push({ name: 'artist table', x0: 126, x1: 158, y0: 462, y1: 478, passable: true });
 
   /* ---------- helpers ---------- */
   function px(g, x, y, w, h, c) { g.fillStyle = c; g.fillRect(x | 0, y | 0, w, h); }

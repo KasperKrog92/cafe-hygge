@@ -160,12 +160,17 @@ y=368 ── the walking lane (L.lane — all pathing routes through this corrid
           edge, the cat's anchor between — draw order (lamp behind cat, cat
           behind drink) keeps the overlaps honest. Its whole shadow stays
           above the caption strip
+          Lunafreya's permanent studio directly above/right of that piano
+          (L.artist): a 40×54 canvas on a tall A-frame easel, a backless
+          artist stool, a small serviced paint table, and one declared watch
+          spot. The easel faces into the room; the canvas grows from saved arc
+          progress and rests primed after both works are hung
 y=576 ── 16:9 crop bottom
 y=600 ── master bottom: 24 px overscan strip (plus 12 px per side)
 ```
 
 Tall furniture that can fully hide a walker is declared once in
-`L.occluders` (bookshelf, counter) — the layout overlay, `__dev.audit()`,
+`L.occluders` (artist easel, bookshelf, counter) — the layout overlay, `__dev.audit()`,
 and the sim all read that one list. Walk targets must never land inside an
 occluder's box (see the depth model below for the bookshelf lesson).
 
@@ -188,7 +193,8 @@ Rules that keep it looking right:
 - **Background layer** (drawScene) = anything wall-mounted or behind
   everything: wall, windows, door, fireplace, menu, shelves, machine, rugs.
   Static parts render once into an offscreen cache; the two windows, door,
-  wall frame, hanging lamps, flames, clock hands, candle flames and machine
+  wall frame, Lunafreya's two flag-keyed paintings (above fireplace / above
+  door), hanging lamps, flames, clock hands, candle flames and machine
   are painted over it every frame (in that order — it preserves the old
   one-pass overlap behavior; the wall frame must paint after the window
   frame edge).
@@ -248,9 +254,10 @@ characters get a slow 1 px idle breathe (head bob).
 
 Faces: hair-colored brow + 3×4 eye, mouth, soft blush (or a beard, 15% of
 patrons). Hands are drawn wherever an arm ends or an item is held (cup grip,
-palm under plate, hands on book covers). Hair comes in **four styles** —
-0 classic cap, 1 side-part fringe, 2 curly, 3 bun — plus the long-hair back
-fall (suppressed by the bun); cap gets a `shade()` shine streak. Clothing:
+palm under plate, hands on book covers). Hair comes in **five styles** —
+0 classic cap, 1 side-part fringe, 2 curly, 3 bun, 4 Lunafreya's large wrapped
+bun with face-framing strands — plus the long-hair back fall (suppressed by
+either bun); cap gets a `shade()` shine streak. Clothing:
 shoulder light + centre fold + hem on tops, creases on trousers, scarf knot
 with hanging tail and fringe, and Nora's apron has neck straps, waistband,
 pocket and a tie bow at the back. Options per character: scarf, long hair,
@@ -259,7 +266,9 @@ pocket and a tie bow at the back. Options per character: scarf, long hair,
 book replaces held items while seated), `typing` (forearms alternate toward
 the table), `playing` (the same alternating forearm language turned sideways
 toward the piano keys, with a 1 px sway), and `dozing` (head and book lower,
-eye closes). A furled umbrella
+eye closes). Lunafreya adds `painting` (brush arm reaching toward the canvas or
+mixing at the tray), `sketching` (open pad in the lap), and a paint-flecked
+smock overlay. A furled umbrella
 or closed laptop tucks under the mirror-side arm so it can coexist with a
 cup. Facing is ±1 (side profile both
 ways); the face details and hair-back column flip with it.
@@ -288,7 +297,7 @@ counter-swing, and held items riding at the hip in the near hand (cup,
 matcha bowl, iced glass, plate, cloth, book, level watering can, upright
 taper — the can's spout only shows from the front); umbrella and packed
 laptop draw unchanged. The **front** head is symmetric: two brows/eyes,
-centred mouth, blush on both cheeks, front variants of all four hair
+centred mouth, blush on both cheeks, front variants of all five hair
 styles, long hair falling both sides; the scarf knot centres and the apron
 loses its back-tie bow. The **back** head is hair down to a narrow neck
 between two nape tapers — the bun a darker mid-head blob, curls bumping

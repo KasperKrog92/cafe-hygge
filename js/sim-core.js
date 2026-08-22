@@ -45,7 +45,8 @@
     firesideRight: function (s) { return s.armchair && s.facing === -1; },
     windowPerch:   function (s) { return !!s.window; },
     nook:          function (s) { return !!s.nook; },
-    diningTable:   function (s) { return !s.armchair && !s.nook && !s.window && !s.piano && s.table >= 0; }
+    artistStool:   function (s) { return !!s.artist; },
+    diningTable:   function (s) { return !s.armchair && !s.nook && !s.window && !s.piano && !s.artist && s.table >= 0; }
   };
 
   function rnd(a, b) { return a + Math.random() * (b - a); }
@@ -108,6 +109,10 @@
             tall: true, reach: 12, items: [], candle: 0, candleTarget: 0 };
         }))
         .concat([{
+          x: L.artist.table.saucer.x, y: L.artist.table.saucer.y, base: L.artist.table.base,
+          tag: 'at the easel', artist: true, busVia: L.artist.table.busVia, reach: 0,
+          items: [], candle: 0, candleTarget: 0
+        }, {
           x: L.piano.saucer.x, y: L.piano.saucer.y, base: L.piano.baseline,
           tag: 'at the piano', piano: true, busVia: L.piano.via, reach: 0,
           items: [], candle: 0, candleTarget: 0
@@ -142,7 +147,7 @@
     // (each nook chair pairs with its own side table for the sitter's drink);
     // small side tables and tall window tables seat no one themselves
     world.tables.forEach(function (tb, ti) {
-      if (tb.small || tb.tall || tb.piano) return;
+      if (tb.small || tb.tall || tb.piano || tb.artist) return;
       [-1, 1].forEach(function (side) {
         world.seats.push({
           x: tb.x + side * L.stoolDX, y: tb.y + L.stoolDY + 4,
@@ -170,6 +175,12 @@
     });
     // Append: boot-seeded regulars intentionally keep their historical seat
     // indices (10 and 12).
+    world.seats.push({
+      x: L.artist.stool.x, y: L.artist.stool.y, facing: L.artist.stool.facing,
+      via: L.artist.stool.via,
+      table: world.tables.length - 2, side: 0, armchair: false,
+      artist: true, taken: false
+    });
     world.seats.push({
       x: L.piano.bench.x, y: L.piano.bench.y, facing: -1,
       via: L.piano.via,
@@ -249,7 +260,7 @@
     if (seat.table >= 0) {
       world.tables[seat.table].items.push({ side: seat.side, kind: p.drink.kind, owner: p.id,
         hot: p.drink.kind === 'glass' ? 0 : 30, hidden: false });
-      p.laptopActive = p.laptop && !seat.armchair && !seat.nook && !seat.window && !seat.piano;
+      p.laptopActive = p.laptop && !seat.armchair && !seat.nook && !seat.window && !seat.piano && !seat.artist;
       if (p.laptopActive) {
         world.tables[seat.table].items.push({ side: seat.side, kind: 'laptop', owner: p.id, open: true, hot: 0, hidden: false });
       }
@@ -307,6 +318,8 @@
       dozing: false, dozeT: rnd(50, 120), dozeRemain: 0, zzzT: rnd(7, 14),
       isRegular: false, regularId: null, usualSeat: false, regularSeatNoted: false,
       knitting: false, knitT: rnd(1.5, 4), knitProgress: 0, knitColor: null,
+      artist: false, painting: false, paintMixing: false,
+      paintT: rnd(5, 12), paintRemain: 0, brushT: 0, sketching: false,
       firePlaced: false,
       gazeT: rnd(15, 40), gazeDur: 0, gazeFacing: 0,
       lapCat: false, catLeaveT: 0,
@@ -632,7 +645,7 @@
   }
 
   function candleTables(world) {
-    return world.tables.filter(function (tb) { return !tb.tall && !tb.piano; });
+    return world.tables.filter(function (tb) { return !tb.tall && !tb.piano && !tb.artist; });
   }
 
   function snapCandles(world) {
@@ -833,6 +846,7 @@
     p.chatty = !!spec.traits.chatty;
     p.laptop = !!spec.traits.laptop;
     p.pianist = !!spec.traits.pianist;
+    p.artist = !!spec.traits.artist;
     p.murmurPitch = spec.murmurPitch;
     p.speed = spec.speed;
     p.isRegular = true;
@@ -1004,6 +1018,16 @@
     return Array.isArray(arc.rows) ? arc.rows[Math.min(stage, arc.rows.length - 1)] : arc.rows;
   }
 
+  // Multi-stage arcs may carry one caption run and lasting flag per stage.
+  // Single-stage definitions keep their historical flat arrays/strings.
+  function arcBeat(arc, stage) {
+    return Array.isArray(arc.beat[0]) ? arc.beat[Math.min(stage, arc.beat.length - 1)] : arc.beat;
+  }
+
+  function arcFlag(arc, stage) {
+    return Array.isArray(arc.flag) ? arc.flag[Math.min(stage, arc.flag.length - 1)] : arc.flag;
+  }
+
   /* Advance every active arc by `days` café days (fractional welcome) and set
      `pendingBeat` on any that reach their stage threshold. The ONE growth
      path: updateNarrative feeds it dt while the café runs, __dev.age feeds it
@@ -1076,7 +1100,7 @@
         rec.pendingBeat = 'finished';
       }
       // realise a completed arc's lasting mark (a returning reader's café)
-      if (arc.flag === 'cat-wore-scarf' && mem.flags[arc.flag]) world.cat.scarf = arc.scarfColor;
+      if (arcFlag(arc, 0) === 'cat-wore-scarf' && mem.flags[arcFlag(arc, 0)]) world.cat.scarf = arc.scarfColor;
     });
 
     if (window.MEMORY) { MEMORY.stamp(); MEMORY.save(); MEMORY.requestPersist(); }
@@ -1093,7 +1117,7 @@
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor, specLine: specLine,
     makePatron: makePatron, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
     arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
-    arcStages: arcStages, arcRows: arcRows,
+    arcStages: arcStages, arcRows: arcRows, arcBeat: arcBeat, arcFlag: arcFlag,
     advanceArcs: advanceArcs, updateNarrative: updateNarrative,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
     spawnCouple: spawnCouple, updateRegulars: updateRegulars,

@@ -42,8 +42,8 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `barista` | Nora's entity |
 | `cat` | the cat entity: core pose/path plus `surface`, `hopFrom/hopTo/hopT`, `hungerT`/`thirstT`, `gazeT/gazeFacing`, `lapPatron`, `sniffedPass`, and rare-event `counterT`/`ascentT`/`moteT` fields |
 | `catBowls` | `{food, water}` levels (0–1); visible world state consumed by cat needs and restored by Nora |
-| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates and optional owner-linked laptops. The four dining tables come first, then the reading nook's two side tables (`small: true`), the two tall window tables (`tall: true`), and the piano lid (`piano: true`, its single saucer and bus surface) |
-| `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table. Window seats add `window: true` and perch geometry; the final appended seat is the `piano: true` bench, preserving seeded seat indices |
+| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates and optional owner-linked laptops. The four dining tables come first, then the reading nook's two side tables (`small: true`), two tall window tables (`tall: true`), Lunafreya's paint table (`artist: true`), and the piano lid (`piano: true`) |
+| `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table. Window seats add perch geometry; the appended `artist: true` stool and `piano: true` bench each point at their dedicated service surface while preserving historical seeded indices |
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
 | `particles[]` | steam wisps, fire sparks, and one-off dust motes |
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
@@ -158,7 +158,9 @@ the bubble system, and the one click handler.
   Bump `MEMORY.VERSION` **and** add a migration step when the shape changes.
 - **Arc definitions** are pure data in `CAST.arcs` (an `owner` or a fixed
   `anchor`, `rows` café-day threshold — one number or one per `stages` —
-  `glyph`, `beat`, `flag`, plus knitting fields). Arc *state* lives in the save
+  `glyph`, `beat`, `flag`, plus behavior fields). Multi-stage `beat`/`flag`
+  values may be arrays with one caption run / lasting key per stage; `arcBeat`
+  and `arcFlag` select the active row. Arc *state* lives in the save
   under `arcs[id]` as `{stage, progress, pendingBeat}`; progress accrues in
   `updateNarrative` (dt-driven, one row per 24-minute café day of running café).
 - **`updateNarrative(world, dt)`** (in `SIM.update`) drips `dt / DAY_SECONDS`
@@ -195,7 +197,8 @@ Agent/debug tooling behind `window.__dev` — **inert in normal use** and never
 user-visible. It activates only via URL params (`?dev` boots past the start
 overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
 `?overlay` turns the layout overlay on from frame one; `?audit` runs the sweep
-after load and exposes its count/details as document-element data attributes)
+after load and exposes its count/details as document-element data attributes;
+`?arc=id&stage=n&progress=n&ready` boots an exact saved arc state for screenshots)
 or console calls:
 
 | Call | Does |
@@ -203,14 +206,14 @@ or console calls:
 | `__dev.hour(h)` | jump the in-world clock (no arg: read it) |
 | `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
 | `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`, `umbrella`, `laptop`, `pianist`); `couple: true` returns a linked pair |
-| `__dev.regular(id)` / `__dev.doze()` | force a named regular's next arrival (`'holger'`, `'gerda'`, `'kasper'`, `'freya'`; defaults to `'holger'`) / put the first eligible seated reader to sleep |
+| `__dev.regular(id)` / `__dev.doze()` | force a named regular's next arrival (`'holger'`, `'gerda'`, `'lunafreya'`, `'kasper'`, `'freya'`; defaults to `'holger'`) / put the first eligible seated reader to sleep |
 | `__dev.piano(on)` | force or stop the dt-driven corner-piano sound engine |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
 | `__dev.noraDo(action)` | wake Nora's idle picker and force `stretch`, `chalk`, `water`, `candles`, or `piano`; candle forcing clears the current flames so the full round is visible |
 | `__dev.catDo(action)` | reset the cat to a safe floor spot and force `eat`, `window`, `bookshelf`, `counter`, `topShelf`, `piano`, `lap`, `mote`, or `knead` on the next tick |
 | `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Nora's idle picker |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
-| `__dev.shot(target?, {scale}?)` | headless render → PNG data URL via `SCENE.composeFrame` (same draw list `render()` ships), independent of the rAF loop / tab visibility / preview pane. `target`: a named region from `__dev.regions` (`fireside`, `nook`, `counter`, `window0`, `window1`, `door`, `hearth`, `bookshelf`, `piano`, all derived from `SCENE.L`), an entity name (`nora`, `cat`, a patron by name/regularId), a `{x,y,w,h,scale}` crop, or nothing for the whole 960×600 scene. Nearest-neighbour integer upscale |
+| `__dev.shot(target?, {scale}?)` | headless render → PNG data URL via `SCENE.composeFrame` (same draw list `render()` ships), independent of the rAF loop / tab visibility / preview pane. `target`: a named region from `__dev.regions` (`fireside`, `nook`, `counter`, `window0`, `window1`, `door`, `hearth`, `bookshelf`, `piano`, `artist`, all derived from `SCENE.L`), an entity name (`nora`, `cat`, a patron by name/regularId), a `{x,y,w,h,scale}` crop, or nothing for the whole 960×600 scene. Nearest-neighbour integer upscale |
 | `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — umbrella, Nora and cat routes included — seat↔table wiring, anchors, barista y=286 / lane 368, plus live-world checks for seats, pairs, umbrellas, sleeper, queue, props, bowls/candles, and spawn cap) |
 
 Three contracts support it: `SIM._` (the private seam shared by the sim

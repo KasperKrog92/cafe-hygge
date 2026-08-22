@@ -74,7 +74,8 @@ for the full design ethos.
 - **Dev harness** (`js/dev.js`, inert for the reader-owner): `?dev` boots past
   the start overlay (screenshot-ready, audio still off until a real click),
   `?dev&hour=20` starts at 20:00, `?dev&overlay` boots with the layout
-  overlay, `?dev&audit` runs the invariant sweep after load. Console:
+  overlay, `?dev&audit` runs the invariant sweep after load, and
+  `?dev&arc=id&stage=n&progress=n&ready` boots an exact saved arc state. Console:
   `__dev.hour(h)`, `__dev.ff(seconds)` (fast-forward,
   muted), `__dev.spawn({wantsBook, ownBook, drink, chatty, umbrella, laptop,
   pianist, couple})` (a real patron, or linked pair, with chosen traits),
@@ -92,7 +93,7 @@ for the full design ethos.
   `__dev.bowls(food, water)`, `__dev.overlay()`,
   `__dev.shot(target, {scale})` (headless render → PNG data URL; `target` is a
   region name from `__dev.regions` — `fireside`, `nook`, `counter`, `window0`,
-  `window1`, `door`, `hearth`, `bookshelf`, `piano` — an entity name (`nora`,
+  `window1`, `door`, `hearth`, `bookshelf`, `piano`, `artist` — an entity name (`nora`,
   `cat`, a patron), a `{x,y,w,h,scale}` crop, or nothing for the whole scene),
   `__dev.audit()` (bounds/occlusion/journey/seat/constant invariants plus
   live-world consistency checks — run it after any layout or sim change).
@@ -109,7 +110,7 @@ for the full design ethos.
 | `js/audio.js` | `SND` | Web Audio synthesis. Buses, ambience loops, one-shot sounds, music box. No samples (yet — see roadmap). |
 | `js/scene-core.js` | `SCENE` | Creates the renderer global; owns `SCENE.L`, palette interpolation, and shared drawing helpers. |
 | `js/scene-bg.js` | `SCENE` | Static background cache and the dynamic wall layer: window, door, fireplace, shelves, lamps, and espresso machine. |
-| `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, and plants. |
+| `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, plants, and Lunafreya's easel station/canvas. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
 | `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering, plus `SCENE.composeFrame` — the shared depth-sorted frame composition that both `main.js` `render()` and `__dev.shot()` call. |
 | `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, café-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
@@ -117,7 +118,7 @@ for the full design ethos.
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
-| `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock jumps, fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
+| `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
 Load order matters: audio → scene-core → scene-bg → scene-furniture →

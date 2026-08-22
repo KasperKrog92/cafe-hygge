@@ -260,13 +260,14 @@ arrival window, and the pools of lines they might overhear or muse aloud.
 `makeRegular(world, spec)` stamps a row over a plain patron;
 `world.regulars` holds one schedule slot per id (`{ lastDay, day, hour,
 force }`), and `updateRegulars` brings each in once per café day within its
-window. Every regular is chosen to ride a behavior that already exists, so the
-roster is almost entirely data — no new behavior code.
+window. Most regulars ride an existing behavior; Lunafreya adds the dedicated
+painting/sketching habit described below.
 
 | Regular | Arrives | Drink | Usual seat | Rides | Character |
 | --- | --- | --- | --- | --- | --- |
 | **Holger** | ~09:00 | espresso, own book | left fireside armchair | reading | stoic; never chats |
 | **Gerda** | ~10:00 | chamomile tea | window perch | window-gazing, chatty | warm, older; watches the street |
+| **Lunafreya** | ~11:00 | flat white | artist stool above the piano | painting, later sketching | deliberate; paints the café into its walls |
 | **Kasper** | ~13:30 | iced matcha | dining table | laptop typing | young writer; mutters at the screen |
 | **Freya** | ~18:30 | matcha latte, own book | right fireside armchair | reading, dozing | evening reader; drifts off by the fire |
 
@@ -277,7 +278,7 @@ talk), and one of each existing behavior.
 
 **Usual seats.** Each row's `seat` names a `SEAT_PREFS` predicate in
 `sim-core.js` (`firesideLeft`, `firesideRight`, `windowPerch`, `nook`,
-`diningTable`). `freeSeat` steers a regular to a free preferred seat and marks
+`diningTable`, `artistStool`). `freeSeat` steers a regular to a free preferred seat and marks
 `usualSeat`; on arrival they settle into it with their own `settle` line
 ("Holger lowers himself into the usual armchair and opens his book"). If every
 preferred seat is taken, one `usualTaken` patient-look line fires and they fall
@@ -320,7 +321,9 @@ later.
 
 **Appearance & habits.** Holger: grey hair and beard, forest-green jumper,
 dark-red scarf, 130 Hz murmur, 46 px/s. Gerda: bun of grey hair, mauve top and
-warm-red scarf, a slower 40 px/s. Kasper: long brown hair, muted-blue top,
+warm-red scarf, a slower 40 px/s. Lunafreya: long golden-blonde hair wound into
+a large high bun with loose face-framing strands, warm-red top under a
+paint-flecked cream smock, deliberate 42 px/s. Kasper: long brown hair, muted-blue top,
 brisk 52 px/s. Freya: long red hair, mossy-green top. Each carries a fixed umbrella
 colour brought reliably in rain, a fixed stay range, and its own `nameStyle`
 (no name special-case remains in `nameStyleFor`; the roster names live outside
@@ -388,6 +391,33 @@ example of the whole soft-narrative pattern, and it realises the roadmap's older
 A companion reader who never taps the bubble loses nothing; the café is still
 whole. Dev: `__dev.regular('gerda')`, then `__dev.age(5)` to ripen the scarf and
 `__dev.arc('gerda-scarf', {ready:true})` to raise the invitation at once.
+
+### Lunafreya's gallery — the first multi-stage owned arc
+
+Lunafreya keeps a permanent studio above the corner piano (`L.artist`): a tall
+easel, backless stool, paint table with its own serviced saucer, and a nearby
+watch spot. Her flat white follows the normal order, sip, steam, bussing, and
+abandoned-cup rules. While `lunafreya-paintings` is active she paints in 2–4 s
+bouts separated by 8–18 s rests; a sip pauses both hands and sound. The profile
+pose reaches left to the canvas (or down to mix a palette), and `SND.brush()`
+keeps the bristle whisper below the fire. After both paintings she uses the
+same stool with a small sketchbook instead.
+
+The canvas deterministically reads saved `(stage, progress)`: charcoal lines,
+underpaint, colour masses, then detail. Stage 0 is the cat on the sill
+(including Gerda's scarf if that flag exists); after 10 café days its palette
+bubble waits over Lunafreya until tapped, then the finished work hangs above
+the fireplace. Stage 1 is the hearth; after 12 more café days its chosen beat
+hangs the smaller study above the door. Each stage owns its own caption run and
+lasting flag, so reloads restore exactly the right canvas and wall gallery.
+
+While Lunafreya is present and actively painting, one non-couple patron at a
+time may leave their drink and reserved seat, walk to `L.artist.watch`, look for
+6–12 s, and return (`toEasel → watchingArtist → backFromEasel`). A single soft
+exchange may use Lunafreya's `overheard` pool; it never stacks watchers or
+interrupts service. Dev: `__dev.regular('lunafreya')`,
+`__dev.arc('lunafreya-paintings', {ready:true})`, or boot an exact screenshot
+state with `?dev&arc=lunafreya-paintings&stage=1&progress=7`.
 
 ---
 

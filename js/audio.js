@@ -286,6 +286,15 @@
     if (Math.random() < 0.5) tone(f * 0.95, { gain: 0.009, dur: 0.04, lp: 2400, delay: 0.1 + Math.random() * 0.05 });
   });
 
+  // Bristles over primed canvas: a short, filtered whisper below the fire's
+  // foreground. The rare jar tap is intentionally smaller than a cup clink.
+  SND.brush = guard(function (jar) {
+    hiss({ dur: 0.09 + Math.random() * 0.08, gain: 0.012 + Math.random() * 0.006,
+      lp: 1500, bp: 620 + Math.random() * 420, q: 0.8,
+      attack: 0.012, release: 0.07 });
+    if (jar) SND.clink(1.18, 0.014);
+  });
+
   SND.umbrellaShake = guard(function () {
     const flaps = 3 + ((Math.random() * 2) | 0);
     for (let i = 0; i < flaps; i++) {

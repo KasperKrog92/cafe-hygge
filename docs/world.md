@@ -16,8 +16,8 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   19:00 and 21:30.
 - The **regulars** each keep their own once-per-day schedule (`world.regulars`,
   one slot per roster id). Every café day their arrival hour is rolled fresh
-  inside that regular's window — Holger ~09:00, Gerda ~10:00, Kasper ~13:30,
-  Freya ~18:30 — and `updateRegulars` brings each in once, never two of the same
+  inside that regular's window — Holger ~09:00, Gerda ~10:00, Lunafreya
+  ~11:00, Kasper ~13:30, Freya ~18:30 — and `updateRegulars` brings each in once, never two of the same
   face at once. Spread across the day, they rarely all overlap; only Freya sits
   late enough for the after-dark doze. See characters.md for the roster.
 - The palette comes from `SCENE.dayPalette(hour)`, interpolating these
@@ -226,14 +226,14 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   `captionRun`): the few deliberate lines a chosen beat plays queue in order,
   drain **ahead of** the ambient queue, and are never dropped by its 2-line cap
   — still paced by the same 6 s limiter so a beat reads as an unhurried run. Only
-  the opt-in narrative beats use it (today Gerda's scarf and the painter's
-  finished facade); ambient
+  the opt-in narrative beats use it (today Gerda's scarf, Lunafreya's two
+  gallery unveilings, and the street painter's finished facade); ambient
   captions keep to `caption()`. The soft-narrative layer also adds one always-on
   visual: a **pending invitation** draws a persistent bubble (e.g. a yarn ball)
   over its owner or a brush at a fixed scene anchor via the ordinary bubble
   system — the only new standing UI it introduces. See
-  [narrative.md](narrative.md), characters.md (Gerda's scarf), and *The street*
-  above (the painter).
+  [narrative.md](narrative.md), characters.md (Gerda's scarf and Lunafreya's
+  gallery), and *The street* above (the painter).
 - Matcha adds three limiter-paced lines: the whisk step may note the bamboo
   patter and pale-green foam (30%); the ice step may note ice singing against
   glass (25%); and only the first matcha sip of a visit checks for a slow,

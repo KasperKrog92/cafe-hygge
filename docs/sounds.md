@@ -102,6 +102,7 @@ toggle mutes all three layers without changing their visual behavior.
 | `fireCatch()` | a fresh log laid on the fire (Nora or a fireside regular) | an 84→54 Hz settle thump + a soft low whoomph (lowpass-440 noise swelling to 0.05 over 0.2 s, ~1.1 s tail) + 5 fresh crackles scattered over ~0.7 s; on the fire bus |
 | `pageTurn()` | readers | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
 | `needle()` | Gerda knitting (scarf arc) | soft wooden tick: 540–650 Hz tone under a 2.6 kHz lowpass (peak 0.013) + a fainter harmonic, with a half-chance second tap — quieter than the fire, on purpose |
+| `brush(jar?)` | Lunafreya's short painting bouts | 90–170 ms filtered bristle hiss, peak 0.012–0.018, lowpass 1.5 kHz / bandpass 620–1040 Hz; rare palette-mixing calls may add a brush-jar clink at 0.014 |
 | `sip()` | sip animation peak | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |
 | `murmur(pitch)` | chatting patrons | triangle osc walking around the patron's 125–235 Hz voice pitch, 5.5 Hz vibrato, lowpass 480 — speech-shaped, wordless |

@@ -16,7 +16,7 @@
   const updatePatron = R.updatePatron, updateParticles = R.updateParticles;
   const updateCaptions = R.updateCaptions;
   const updateNarrative = R.updateNarrative;
-  const arcStages = R.arcStages;
+  const arcStages = R.arcStages, arcBeat = R.arcBeat, arcFlag = R.arcFlag;
 
   /* ---------- barista ---------- */
 
@@ -487,8 +487,8 @@
     const tb = world.tables[ti];
     const busX = tb.piano ? L.piano.bench.x : tb.x + (tb.small ? -28 : 24);
     // tall window tables live on the wall; Nora stands at their floor line
-    const busY = tb.piano ? L.piano.bench.y : tb.tall ? tb.base + 2 : tb.y + 20;
-    const dropX = tb.piano ? tb.busVia : tb.small ? tb.busVia : busX;
+    const busY = tb.piano ? L.piano.bench.y : (tb.tall || tb.artist) ? tb.base + 2 : tb.y + 20;
+    const dropX = (tb.piano || tb.small || tb.artist) ? tb.busVia : busX;
     const route = [
       { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
       { x: dropX, y: L.lane }, { x: dropX, y: busY }
@@ -594,7 +594,7 @@
 
   function candleTableIndices(world) {
     return world.tables.map(function (tb, i) { return { tb: tb, i: i }; })
-      .filter(function (v) { return !v.tb.tall && !v.tb.piano; })
+      .filter(function (v) { return !v.tb.tall && !v.tb.piano && !v.tb.artist; })
       .sort(function (a, b) { return a.tb.x - b.tb.x; })
       .map(function (v) { return v.i; });
   }
@@ -1378,7 +1378,9 @@
   function playBeat(world, arc, owner) {
     const rec = world.memory.arcs[arc.id];
     if (!rec || !rec.pendingBeat) return;
-    let lines = arc.beat.slice();
+    const playedStage = rec.stage;
+    const lastingFlag = arcFlag(arc, playedStage);
+    let lines = arcBeat(arc, playedStage).slice();
     if (arc.presenceBeat) {
       const pb = arc.presenceBeat;
       const table = pb.window == null ? -1 : L.tables.length + L.library.sideTables.length + pb.window;
@@ -1392,7 +1394,7 @@
     }
     captionRun(world, lines);
     if (owner) owner.bubble = { icon: 'heart', until: world.t + 3.4 };
-    if (arc.flag === 'cat-wore-scarf') {
+    if (lastingFlag === 'cat-wore-scarf') {
       world.cat.scarf = arc.scarfColor;
       world.cat.bubble = { icon: 'heart', until: world.t + 3.4 };
       SND.purr(3);
@@ -1400,7 +1402,7 @@
     rec.pendingBeat = null;
     rec.stage = Math.min(arcStages(arc), rec.stage + 1);
     if (rec.stage < arcStages(arc)) rec.progress = 0;   // the next stage starts fresh
-    world.memory.flags[arc.flag] = true;
+    world.memory.flags[lastingFlag] = true;
     if (arc.owner) bumpBond(world, arc.owner);
     if (window.MEMORY) MEMORY.save();
   }

@@ -16,7 +16,7 @@
   /* how a seat reads in a caption ("settles into the usual armchair") */
   function seatNoun(seat) {
     return seat.armchair ? 'armchair' : seat.window ? 'window seat'
-      : seat.nook ? 'nook chair' : 'seat';
+      : seat.nook ? 'nook chair' : seat.artist ? 'artist stool' : 'seat';
   }
 
   /* how often a regular's own words displace the generic caption at a seam,
@@ -85,6 +85,22 @@
     return null;
   }
 
+  function paintingArc(world, p) {
+    if (!p.artist || !p.regularId || !world.memory) return null;
+    const def = ((window.CAST && CAST.arcs) || []).find(function (a) {
+      return a.paints && a.owner === p.regularId;
+    });
+    const rec = def && world.memory.arcs[def.id];
+    return def && rec && rec.stage < R.arcStages(def) ? { def: def, rec: rec } : null;
+  }
+
+  function lunafreyaAtEasel(world, requireStroke) {
+    return world.patrons.find(function (q) {
+      return q.regularId === 'lunafreya' && q.state === 'seated' && q.seat && q.seat.artist &&
+        (!requireStroke || q.painting);
+    });
+  }
+
   function freeSeat(world, patron) {
     let free = world.seats.filter(function (s) { return !s.taken; });
     if (!free.length) return null;
@@ -96,7 +112,11 @@
       if (piano && cleanSeat(world, piano) && world.t >= world.pianoNextT &&
           noraAway && !SND.pianoActive()) return piano;
     }
-    free = free.filter(function (s) { return !s.piano; });
+    if (patron.isRegular && patron.spec && patron.spec.seat === 'artistStool') {
+      const studio = free.find(function (s) { return s.artist && cleanSeat(world, s); });
+      if (studio) { patron.usualSeat = true; return studio; }
+    }
+    free = free.filter(function (s) { return !s.piano && !s.artist; });
     if (!free.length) return null;
     // skip spots where an abandoned drink still waits for Nora — a newcomer's
     // cup would land on the very same saucer spot (soak-test find)
@@ -146,7 +166,7 @@
     if (!mate || p.seat || mate.seat) return !!p.seat;
     let pair = null;
     world.tables.forEach(function (tb, ti) {
-      if (pair || tb.small || tb.tall || tb.piano) return;
+      if (pair || tb.small || tb.tall || tb.piano || tb.artist) return;
       const seats = world.seats.filter(function (s) { return s.table === ti && cleanSeat(world, s); });
       if (seats.length >= 2) pair = seats.slice(0, 2);
     });
@@ -420,6 +440,42 @@
         }
         break;
       }
+      case 'toEasel': {
+        if (!walker(p, dt)) { p.stateT = 0; break; }
+        p.pose = 'stand'; p.facing = -1;
+        p.state = 'watchingArtist'; p.stateT = 0;
+        p.watchDur = rnd(6, 12); p.artistChatDone = false;
+        break;
+      }
+      case 'watchingArtist': {
+        p.pose = 'stand'; p.facing = -1;
+        const artist = lunafreyaAtEasel(world, false);
+        if (artist && !p.artistChatDone && p.stateT > 2 && Math.random() < dt * 0.12) {
+          p.artistChatDone = true;
+          p.bubble = { icon: 'dots', until: world.t + 1.6 };
+          artist.bubble = { icon: Math.random() < 0.18 ? 'heart' : 'dots', until: world.t + 1.8 };
+          SND.murmur(p.murmurPitch);
+          const pool = artist.spec && artist.spec.lines && artist.spec.lines.overheard;
+          if (pool && pool.length && Math.random() < 0.7) caption(world, pick(pool));
+        }
+        if (!artist || p.stateT >= p.watchDur) {
+          p.state = 'backFromEasel'; p.stateT = 0;
+          seatPath(p, p.seat);
+        }
+        break;
+      }
+      case 'backFromEasel': {
+        if (walker(p, dt)) {
+          p.pose = 'sit';
+          chairScrape(p, false);
+          perchUp(p);
+          p.facing = p.seat.facing;
+          p.reading = !!p.watchResumeReading;
+          p.watchResumeReading = false;
+          p.state = 'seated'; p.stateT = 0;
+        }
+        break;
+      }
       case 'toFire': {
         // a fireside regular has stepped away from their seat (still theirs) to
         // lay a log; empty-handed on the walk over, they pick one up at the hearth
@@ -477,7 +533,7 @@
               hot: p.drink.kind === 'glass' ? 0 : 45, hidden: false });
             p.holding = null;
             SND.cupDown();
-            p.laptopActive = p.laptop && !p.seat.armchair && !p.seat.nook && !p.seat.window && !p.seat.piano;
+            p.laptopActive = p.laptop && !p.seat.armchair && !p.seat.nook && !p.seat.window && !p.seat.piano && !p.seat.artist;
             if (p.laptopActive) {
               world.tables[p.seat.table].items.push({ side: p.seat.side, kind: 'laptop', owner: p.id, open: true, hot: 0, hidden: false });
               p.typingT = rnd(6, 14);
@@ -488,6 +544,9 @@
             p.pianoRestT = rnd(2, 6);
             p.reading = false;
             if (Math.random() < 0.7) caption(world, p.name + ' settles at the piano.');
+          } else if (p.seat.artist) {
+            p.reading = false; p.paintT = rnd(3, 8);
+            caption(world, R.specLine(p.spec, 'settle', p.name + ' settles at the easel.'));
           } else if (p.isRegular && p.usualSeat) {
             // readers settle in with a book; the writer keeps typing, the
             // window-watcher keeps her eyes on the street
@@ -691,6 +750,41 @@
       }
     }
 
+    // Lunafreya works in brief, unhurried bouts. The active canvas itself is
+    // driven by saved café-day progress; these hands and whispers are ambience
+    // around that truth. A ready painting waits untouched for its invitation,
+    // and after both hangs she keeps the permanent station as a sketching nook.
+    if (p.seat.artist) {
+      const paint = paintingArc(world, p);
+      p.sketching = false;
+      if (!paint) {
+        p.painting = false; p.paintMixing = false;
+        p.sketching = p.sipPhase <= 0;
+      } else if (paint.rec.pendingBeat || p.sipPhase > 0) {
+        p.painting = false; p.paintMixing = false;
+      } else if (p.paintRemain > 0) {
+        p.painting = true;
+        p.paintRemain -= dt; p.brushT -= dt;
+        if (p.brushT <= 0) {
+          p.brushT = p.paintMixing ? rnd(1.2, 2.1) : rnd(0.65, 1.15);
+          SND.brush(p.paintMixing && Math.random() < 0.18);
+        }
+        if (p.paintRemain <= 0) {
+          p.painting = false; p.paintMixing = false; p.paintT = rnd(8, 18);
+        }
+      } else {
+        p.painting = false; p.paintT -= dt;
+        if (p.paintT <= 0) {
+          p.paintRemain = rnd(2, 4); p.paintMixing = Math.random() < 0.18; p.brushT = 0;
+          if (paint.def.paintLines && paint.def.paintLines.length && Math.random() < 0.08) {
+            caption(world, pick(paint.def.paintLines));
+          } else if (Math.random() < 0.04) {
+            regularLine(world, p, 'musing');
+          }
+        }
+      }
+    }
+
     // knitting — a scarf-arc owner works the needles between sips and glances.
     // The lap visual reads knitProgress; the render's holding branch takes over
     // for a sip, so hands never do two things at once.
@@ -776,6 +870,22 @@
       pathFrom(p, p.seat, L.fire.stand.x, L.fire.stand.y);
       if (Math.random() < 0.7) caption(world, R.specLine(p.spec, 'fireUp',
         p.name + ' sets down the book and gets up to tend the fire.'));
+      return;
+    }
+
+    // One quiet observer at a time may leave their seat and stand by the
+    // studio. The seat and drink wait for them exactly as during a book-fetch.
+    if (!p.seat.artist && !p.seat.piano && !p.partner && !p.holding && !p.dozing &&
+        p.sipPhase <= 0 && p.stay > 70 && !p.laptopActive &&
+        lunafreyaAtEasel(world, true) &&
+        !world.patrons.some(function (q) { return q !== p && (q.state === 'toEasel' || q.state === 'watchingArtist' || q.state === 'backFromEasel'); }) &&
+        Math.random() < dt * 0.004) {
+      p.watchResumeReading = p.reading;
+      p.reading = false; p.pose = 'stand';
+      chairScrape(p, true); stepDown(p, p.seat);
+      p.state = 'toEasel'; p.stateT = 0;
+      pathFrom(p, p.seat, L.artist.watch.x, L.artist.watch.y);
+      if (Math.random() < 0.45) caption(world, p.name + ' drifts over to see what Lunafreya is painting.');
       return;
     }
 

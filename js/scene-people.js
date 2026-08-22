@@ -10,8 +10,8 @@
 
   /* A standing character is 60 px tall (the café ruler CH): legs 16,
      torso 24, head 16 + hair. Seated reads slightly hunched at ~52.
-     Detail pass: brows + 3×4 eyes, actual hands, four hair styles
-     (0 classic / 1 side-part / 2 curly / 3 bun), clothing folds, scarf
+     Detail pass: brows + 3×4 eyes, actual hands, five hair styles
+     (0 classic / 1 side-part / 2 curly / 3 bun / 4 wrapped long-hair bun), clothing folds, scarf
      knots, apron strings, a 4-frame walk and a subtle idle breathe.
      Standing/walking bodies come in three views: the classic side profile
      (facing ±1), a front view when `heading` is 'down' — walking toward
@@ -39,8 +39,18 @@
     } else if (st === 3) {                                 // hair tied up in a bun
       px(g, bx + (facing > 0 ? -4 : 3), hy - 7, 7, 7, c.hair);
       px(g, bx + (facing > 0 ? -3 : 4), hy - 6, 3, 2, hairL);
+    } else if (st === 4) {                                 // Lunafreya's long hair, wound into a generous bun
+      const bunX = bx + (facing > 0 ? -7 : 3);
+      px(g, bunX, hy - 10, 10, 10, c.hair);
+      px(g, bunX - 2, hy - 7, 14, 6, c.hair);
+      px(g, bunX + 2, hy - 8, 5, 2, hairL);
+      px(g, bunX, hy - 3, 4, 2, shade(c.hair, -0.12));
+      // two deliberate loose strands frame the face without reading as a bob
+      const frontX = facing > 0 ? x + 7 : x - 9;
+      px(g, frontX, hy + 1, 2, 12, c.hair);
+      px(g, frontX + facing, hy + 10, 2, 6, hairL);
     }
-    if (c.longHair && st !== 3) {
+    if (c.longHair && st !== 3 && st !== 4) {
       px(g, facing > 0 ? x - 11 : x + 8, hy + 2, 5, 18, c.hair);
     }
     // brow + eye
@@ -59,7 +69,7 @@
 
   /* The front head is symmetric about the face centre (x+1): two brows and
      eyes, a centred mouth, blush on both cheeks, and front variants of the
-     four hair styles. `facing` only picks which brow the side-part fringe
+     five hair styles. `facing` only picks which brow the side-part fringe
      sweeps across, so the view stays consistent with the profile. */
   function drawHeadFront(g, x, hy, facing, c) {
     const hairL = shade(c.hair, 0.18);
@@ -81,8 +91,16 @@
     } else if (st === 3) {                                 // bun peeking over the crown
       px(g, x - 2, hy - 9, 7, 5, c.hair);
       px(g, x - 1, hy - 8, 3, 2, hairL);
+    } else if (st === 4) {                                 // high wrapped bun + face-framing strands
+      px(g, x - 6, hy - 12, 14, 8, c.hair);
+      px(g, x - 3, hy - 14, 8, 4, c.hair);
+      px(g, x - 3, hy - 11, 7, 2, hairL);
+      px(g, x - 9, hy + 3, 2, 13, c.hair);
+      px(g, x + 9, hy + 3, 2, 13, c.hair);
+      px(g, x - 8, hy + 13, 3, 4, hairL);
+      px(g, x + 8, hy + 13, 3, 4, hairL);
     }
-    if (c.longHair && st !== 3) {
+    if (c.longHair && st !== 3 && st !== 4) {
       px(g, x - 11, hy + 2, 4, 18, c.hair);
       px(g, x + 10, hy + 2, 4, 18, c.hair);
     }
@@ -124,8 +142,14 @@
     } else if (st === 3) {                                 // the bun, seen properly
       px(g, x - 2, hy, 7, 7, shade(c.hair, -0.15));
       px(g, x - 1, hy + 1, 3, 2, hairL);
+    } else if (st === 4) {                                 // the full coil of Lunafreya's pinned-up hair
+      px(g, x - 7, hy - 11, 16, 11, c.hair);
+      px(g, x - 9, hy - 7, 20, 7, c.hair);
+      px(g, x - 4, hy - 9, 9, 2, hairL);
+      px(g, x - 6, hy - 4, 5, 2, shade(c.hair, -0.12));
+      px(g, x + 2, hy - 1, 6, 2, hairL);
     }
-    if (c.longHair && st !== 3) {
+    if (c.longHair && st !== 3 && st !== 4) {
       px(g, x - 7, hy + 12, 16, 12, c.hair);               // one sheet over the neck
     }
   }
@@ -183,6 +207,13 @@
       px(g, x - 10, y - 32, 20, 22, c.top);
       px(g, x - 1, y - 28, 2, 12, topD);                        // fold
       px(g, x - 10, y - 12, 20, 2, topD);                       // hem
+      if (c.smock) {
+        px(g, x - 7, y - 31, 14, 19, c.smock);
+        px(g, x - 6, y - 18, 12, 5, shade(c.smock, -0.08));
+        px(g, x - 4, y - 17, 8, 2, shade(c.smock, 0.1));
+        px(g, x - 5, y - 27, 2, 2, '#5a7a8a');
+        px(g, x + 4, y - 22, 2, 2, '#a94f3f');
+      }
       if (c.scarf) {
         px(g, x - 10, y - 32, 20, 5, c.scarf);
         const kx = facing > 0 ? x + 5 : x - 9;
@@ -208,6 +239,27 @@
         px(g, bx, by - 2, 18, 2, '#c9b28a');
         px(g, bx - 2, by + 3, 3, 4, c.skin);                    // hands on the covers
         px(g, bx + 17, by + 3, 3, 4, c.skin);
+      } else if (p.painting) {
+        const stroke = Math.floor(p.animT * 5) % 2;
+        if (p.paintMixing) {
+          px(g, x - 10, y - 29, 7, 11, c.top);
+          px(g, x - 13, y - 20 + stroke, 8, 3, c.skin);
+          px(g, x - 20, y - 21 + stroke, 9, 1, '#8b7158');
+        } else {
+          px(g, x - 10, y - 30, 7, 12, c.top);
+          px(g, x - 16, y - 27 + stroke, 9, 4, c.skin);
+          px(g, x - 29, y - 30 + stroke, 14, 2, '#8b7158');
+          px(g, x - 30, y - 31 + stroke, 3, 3, '#5a7a8a');
+          px(g, x + 2, y - 27, 6, 9, c.top);
+          px(g, x + 2, y - 20, 5, 3, c.skin);
+        }
+      } else if (p.sketching) {
+        px(g, x - 8, y - 28, 6, 10, c.top);
+        px(g, x + 2, y - 28, 6, 10, c.top);
+        px(g, x - 9, y - 20, 18, 9, '#e8e0cf');
+        px(g, x, y - 20, 2, 9, '#b5a888');
+        px(g, x - 5, y - 18, 10, 1, '#8b8070');
+        px(g, x + 2, y - 24, 1, 10, '#8b7158');
       } else if (p.playing) {
         const keyBob = Math.floor(p.animT * 5) % 2;
         // A sideways version of the typing forearms: both hands reach left
@@ -309,6 +361,12 @@
     px(g, x - 10, y - 40, 20, 2, shade(c.top, 0.12));
     px(g, x - 1, y - 34, 2, 14, topD);
     px(g, x - 10, y - 18, 20, 2, topD);
+    if (c.smock) {
+      px(g, x - 7, y - 39, 14, 22, c.smock);
+      px(g, x - 6, y - 21, 12, 4, shade(c.smock, -0.08));
+      px(g, x - 5, y - 31, 2, 2, '#5a7a8a');
+      px(g, x + 3, y - 25, 2, 2, '#a94f3f');
+    }
     if (c.scarf && back) {
       // from behind: just the wrap band, one tail tossed down the back
       px(g, x - 10, y - 40, 20, 5, c.scarf);
@@ -743,6 +801,14 @@
         px(g, x + 11, y + 10, 3, 5, '#c9b28a');
         px(g, x + 13, y + 7, 3, 6, '#4a3038');
         px(g, x + 14, y + 5, 2, 2, '#4a3038');
+        break;
+      case 'palette':
+        px(g, x + 2, y + 4, 12, 10, '#b78355');
+        px(g, x + 4, y + 2, 7, 3, '#b78355');
+        px(g, x + 5, y + 6, 3, 3, '#e8dfc9');
+        px(g, x + 10, y + 4, 3, 3, '#a94f3f');
+        px(g, x + 12, y + 9, 3, 3, '#5a7a8a');
+        px(g, x + 6, y + 12, 3, 3, '#c9a04a');
         break;
     }
   }
