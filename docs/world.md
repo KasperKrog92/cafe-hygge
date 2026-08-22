@@ -65,7 +65,7 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   ends in a low thunder rumble. The flash decays at 4/s and adds only faint
   cool pools below the windows after dark—never a full-screen strobe.
 
-## The street (passers-by)
+## The street (passers-by + the painter)
 
 - `world.passersby` holds the silhouettes crossing outside the glass. They
   walk in master-canvas x along the whole facade (`STREET` in `sim-core.js`),
@@ -84,6 +84,21 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   always at a pane still ahead of them, never behind the wall — and 18% of
   those pauses earn a caption. `__dev.passer({dir, umbrella, pair, pause})`
   forces one for testing.
+- **The street painter** is the first persistent story told entirely beyond
+  the glass. A weathered house in the door-side window is repainted from the
+  top down over seven café days (`street-house` in `CAST.arcs`). Its warm,
+  muted-brick band and the painter's ladder position are pure views of saved
+  progress, so a glance after a few chapters simply finds the work further
+  along. The painter figure works only in fair daylight (`daylight > 0.45`,
+  `rain < 0.3`); at night or in wet weather the ladder waits by itself, while
+  progress continues at the café's patient pace. The street remains silent.
+- When the facade is complete, a brush invitation waits in the glass. Choosing
+  it plays the short finishing beat and sets `street-house-painted`; thereafter
+  the ladder and painter retire, the muted-brick facade remains on every boot,
+  and one extra window glows there after dark. Gerda may add one line if she is
+  sitting at that window when the beat is chosen, but her presence never gates
+  it. Dev: `__dev.age(3)`, `__dev.arc('street-house', {ready:true})`, and
+  `__dev.shot('window0')` expose the work states directly.
 
 ## Lighting (the pass that sells the coziness)
 
@@ -196,7 +211,10 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   replace rather than double it. A solo musing has a 3.5% chance of surfacing a
   rarer `backstory` fragment instead — a life leaking out across many visits.
   Narrated fragments only, never quoted dialogue. Non-regulars are untouched;
-  see characters.md for the pools and voice rules.
+  see characters.md for the pools and voice rules. While the street-house arc
+  is unfinished, fair-daylight window gazes may instead follow the painter's
+  brush; Gerda has three guarded painter musings of her own. They retire with
+  the completed arc.
 - **Regular continuity (Phase 3).** Two more seams carry a regular's continuity,
   driven by the persisted `bonds` count in the save (Nora's memory of them):
   `regularArrivalLine` chooses the **opener** — a wet-weather line, a
@@ -208,11 +226,14 @@ The single line of text, bottom-left, that makes a glance feel like a story.
   `captionRun`): the few deliberate lines a chosen beat plays queue in order,
   drain **ahead of** the ambient queue, and are never dropped by its 2-line cap
   — still paced by the same 6 s limiter so a beat reads as an unhurried run. Only
-  the opt-in narrative beats use it (today Gerda's finished-scarf run); ambient
+  the opt-in narrative beats use it (today Gerda's scarf and the painter's
+  finished facade); ambient
   captions keep to `caption()`. The soft-narrative layer also adds one always-on
   visual: a **pending invitation** draws a persistent bubble (e.g. a yarn ball)
-  over its owner via the ordinary bubble system — the only new standing UI it
-  introduces. See [narrative.md](narrative.md) and characters.md (Gerda's scarf).
+  over its owner or a brush at a fixed scene anchor via the ordinary bubble
+  system — the only new standing UI it introduces. See
+  [narrative.md](narrative.md), characters.md (Gerda's scarf), and *The street*
+  above (the painter).
 - Matcha adds three limiter-paced lines: the whisk step may note the bamboo
   patter and pale-green foam (30%); the ice step may note ice singing against
   glass (25%); and only the first matcha sip of a visit checks for a slow,

@@ -353,6 +353,14 @@ caption. Keep the pools un-plot-heavy and unurgent, and — here — narrated
 fragments, not quoted dialogue. (Quoted back-and-forth is reserved for the
 opt-in conversation beats; see [narrative.md](narrative.md) §6.)
 
+Gerda's `arcMusings` add one guarded exception without turning ambient lines
+into plot delivery: while the `street-house` arc is unfinished and the painter
+is actually visible in fair daylight, a window-gaze musing may notice his
+rhythm, the brush line, or how far the warm colour has travelled. The pool
+retires when the finishing beat is chosen. If Gerda is perched at the first
+window at that exact chosen moment, her optional `presenceBeat` line joins the
+caption run; she colours the moment but never gates it.
+
 ### Gerda's scarf — the reference story arc
 
 Gerda carries the café's first end-to-end **story arc** (`gerda-scarf` in

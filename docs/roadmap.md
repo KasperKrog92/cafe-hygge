@@ -13,7 +13,9 @@ Nothing here is committed; the owner picks what sounds lovely next.
 > (watering, chalkboard doodles, dusk candles, quiet stretches), patron life
 > (umbrellas, laptops, Holger, couples, night dozing), and the synthesized
 > sound pass (chair and coin foley, town time, thunderstorms, and the night
-> music layer) were specced here, executed, and their plan docs
+> music layer), and the **street painter** (a weather-honest silhouette
+> repainting one facade across seven café days, with an anchored finishing beat
+> and a permanent warm house) were specced here, executed, and their plan docs
 > retired (git history has them).
 
 ## 🎨 Art consistency
@@ -87,7 +89,8 @@ machines, rain, café room tone…). Plan for when clips arrive:
   date.
 - Holiday touches (subtle): a string of lights in December, a pumpkin on the
   mantel in October.
-- Passers-by outside the window: silhouettes with umbrellas.
+- Passers-by outside the window: silhouettes with umbrellas. **Built**, now
+  joined by the persistent street-painter arc.
 - A real "closing hour" mood at 02:00: Nora stacks chairs, lights low, only
   the fire and the cat — never actually closed, just quieter.
 

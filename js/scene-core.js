@@ -30,15 +30,18 @@
     // with world.rain so rainy arrivals have something to wipe their shoes on
     doormat: { x: 54, y: 255, w: 46, h: 18 },
     bell: { x: 86, y: 132 },
-    win: { x: 136, y: 98, w: 128, h: 80 },    // 1.35 CH tall
-    win2: { x: 460, y: 98, w: 128, h: 80 },   // second window, hearth ↔ counter
+    // Broad, low-silled windows make the street a real second layer of the
+    // room. Their deep sills finish just above wallY, so the outside view is
+    // generous without stealing any floor-space from the café's life layer.
+    win: { x: 128, y: 64, w: 176, h: 140 },
+    win2: { x: 448, y: 64, w: 176, h: 140 },   // second window, hearth ↔ counter
     // fire: the chimney breast + firebox; `stand` is the floor spot a tender
     // (Nora or a fireside regular) takes to lay a fresh log, just left of the
     // firebox centre so the reach carries into the coals
     fire: { x: 344, w: 88, boxX: 364, boxW: 48, boxTop: 180, boxBot: 228, stand: { x: 384, y: 302 } },
     lane: 368,                // main walking corridor
     lamp1: { x: 318, y: 84 },
-    lamp2: { x: 614, y: 84 },
+    lamp2: { x: 628, y: 84 },
     lamp3: { x: 810, y: 84 },  // over the counter, threading the wall gap between shelves and menu
     // the reading nook (bottom right): a 2 CH bookshelf patrons borrow from,
     // green wing chairs each with a side table + reading lamp, on their own rug
@@ -71,16 +74,16 @@
     // descent column where an armchair blocks the straight drop from the
     // lane (the winSeats twin of the side tables' busVia).
     winSeats: [
-      { win: 0, side: -1, x: 158, y: 250, perchX: 158, perchY: 198 },
-      { win: 0, side: 1, x: 242, y: 250, perchX: 242, perchY: 198 },
-      { win: 1, side: -1, x: 482, y: 250, perchX: 482, perchY: 198, via: 540 },
-      { win: 1, side: 1, x: 566, y: 250, perchX: 566, perchY: 198 }
+      { win: 0, side: -1, x: 156, y: 252, perchX: 156, perchY: 224 },
+      { win: 0, side: 1, x: 276, y: 252, perchX: 276, perchY: 224, via: 240 },
+      { win: 1, side: -1, x: 476, y: 252, perchX: 476, perchY: 224, via: 540 },
+      { win: 1, side: 1, x: 596, y: 252, perchX: 596, perchY: 224 }
     ],
     // slim poseur tables under the windows: y = tabletop (meets the sill so
     // perched sitters can reach their drink), base = floor line for depth
     winTables: [
-      { x: 200, y: 196, base: 248 },
-      { x: 524, y: 196, base: 248 }
+      { x: 216, y: 222, base: 274 },
+      { x: 536, y: 222, base: 274 }
     ],
     coatStand: { x: 96, y: 298 },
     umbrellaStand: { x: 74, y: 296 },
@@ -102,7 +105,7 @@
     // furniture; the dev audit applies surface rules instead of floor rules.
     catSpots: [
       { id: 'fire', x: 390, y: 294, name: 'the fireplace rug', kind: 'floor' },
-      { id: 'windowFloor', x: 168, y: 378, name: 'the spot by the window', kind: 'floor' },
+      { id: 'windowFloor', x: 184, y: 378, name: 'the spot by the window', kind: 'floor' },
       { id: 'bigRug', x: 340, y: 468, name: 'the big rug', kind: 'floor' },
       { id: 'armchair', x: 252, y: 312, name: 'the armchair\'s side', kind: 'floor' },
       { id: 'nookRug', x: 768, y: 550, name: 'the reading nook rug', kind: 'floor' },
@@ -110,8 +113,8 @@
     ],
     catPerches: {
       windows: [
-        { id: 'window1', stand: { x: 224, y: 252 }, anchor: { x: 200, y: 190 }, surface: 'sill' },
-        { id: 'window2', stand: { x: 548, y: 252 }, anchor: { x: 524, y: 190 }, surface: 'sill' }
+        { id: 'window1', stand: { x: 248, y: 252 }, anchor: { x: 216, y: 216 }, surface: 'sill' },
+        { id: 'window2', stand: { x: 572, y: 252 }, anchor: { x: 536, y: 216 }, surface: 'sill' }
       ],
       bookshelf: {
         id: 'bookshelf', stand: { x: 770, y: 500 },
@@ -135,13 +138,13 @@
     // line would clip furniture. Values end on the shared walking lane.
     catRoutes: {
       fire: [{ x: 390, y: 340 }, { x: 390, y: 368 }],
-      windowFloor: [{ x: 168, y: 368 }],
+      windowFloor: [{ x: 184, y: 368 }],
       bigRug: [{ x: 320, y: 468 }, { x: 320, y: 368 }],
       armchair: [{ x: 236, y: 330 }, { x: 236, y: 368 }],
       nookRug: [{ x: 760, y: 368 }],
       cushion: [{ x: 160, y: 300 }, { x: 160, y: 368 }],
-      window1Stand: [{ x: 224, y: 368 }],
-      window2Stand: [{ x: 548, y: 368 }],
+      window1Stand: [{ x: 248, y: 368 }],
+      window2Stand: [{ x: 572, y: 368 }],
       bookshelfStand: [{ x: 770, y: 368 }],
       bookshelfEscape: [{ x: 848, y: 368 }],
       counterStand: [{ x: 840, y: 314 }, { x: 840, y: 368 }],

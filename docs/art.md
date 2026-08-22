@@ -32,7 +32,7 @@ architecture textures, retuned atmosphere and real typography.
   People are ~24 px wide × 60 tall; seated ~52 (drawn a touch hunched — cozy).
   The cat is ~28×21.
 - **The café ruler** (tuned values; ratios between neighbors matter more than
-  absolutes): door 102 h (1.7 CH), window 80 h, fireplace breast 120 h
+  absolutes): door 102 h (1.7 CH), window glass 176×140, fireplace breast 120 h
   (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×80,
   floor lamp 68, coat stand ~70, table top at ~32 above the floor (Ø 64),
   stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
@@ -98,13 +98,20 @@ everything else says "see `SCENE.L.<key>`". The room's shape, top to bottom:
 y=0   ── master top: 36 px overscan strip (texture only — croppable)
           picture rail, hanging-lamp cords (L.lamp1/lamp2/lamp3)
 y=36  ── 16:9 crop top
-          wall band: door + bell (L.door, L.bell), window (L.win), fireplace
+          wall band: door + bell (L.door, L.bell), broad low-silled window
+          (L.win), fireplace
           breast with mantel clock/candles + firewood basket (L.fire), second
-          window (L.win2 — same glass, its own stretch of town; the moon hangs
+          broad low-silled window (L.win2 — same glass, its own stretch of town; the moon hangs
           in L.win only); passers-by cross both panes as trouser-swatch
           silhouettes on the near pavement, feet cropped by the sill,
           umbrellas up in rain (drawPassersby in scene-bg.js; behavior in
-          world.md); short rust-red drapes frame both views, held open by
+          world.md). Both panes are deliberately much wider and taller than
+          one character-height, and their deep sills finish just above the
+          wall/floor line: the street is a second living layer, not a narrow
+          wall decoration. The door-side window sits close to the fireplace
+          bay and carries the persistent street-painter facade (weathered blue
+          to muted brick, filled top-down from saved arc progress), ladder, and
+          tiny working silhouette. Short rust-red drapes frame both views, held open by
           brass tiebacks so weather and seated silhouettes stay glanceable;
           both deep sills are window perches (L.winSeats):
           a back cushion against each side frame (red pair by the door, green
@@ -208,7 +215,8 @@ Rules that keep it looking right:
   hops between the floor spot and the perch in one frame (the same instant
   pose flip every chair uses). Poseur-table footprints are `passable`.
 - **Cat aerial perches use their surface baseline** rather than the floor:
-  mid-window anchors sort at y=190 so the poseur tabletop overlaps the paw
+  mid-window anchors sort at the lowered sill line (currently y=216) so the
+  poseur tabletop overlaps the paw
   line; the bookshelf anchor sits 4 px above its crown; the counter anchor is
   2 px below the slab top so the slab hides the paws; the back-bar anchor
   sits on shelf 1; the piano path touches the keybed stub, then the lid

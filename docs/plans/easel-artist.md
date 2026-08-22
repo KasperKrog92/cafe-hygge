@@ -20,7 +20,7 @@ in café days; the unveiling never fires itself and never expires; the gallery
 only ever *adds* warmth to the room. No badge, no count, brush sounds quieter
 than the fire.
 
-**Depends on:** [street-painter.md](street-painter.md) **Phase 0** — ✅ built
+**Depends on:** the scene-anchored, multi-stage arc groundwork — ✅ built
 (café-day progression via `updateNarrative`, `stages` + per-stage `rows`; the
 anchored-arc support is not needed here — this arc has a proper owner).
 
@@ -148,7 +148,7 @@ order cycle unaffected; `__dev.ff` a full day; audit → 0. Docs: characters.md
 
 1. **Arc definition** (`CAST.arcs`): `{ id: 'agnes-paintings', owner: 'agnes',
    stages: 2, rows: [10, 12], glyph: 'palette', … }`. The `stages`/`rows`
-   machinery exists (street-painter Phase 0); the one `playBeat` extension
+   machinery exists (the anchored-arc groundwork); the one `playBeat` extension
    this arc still needs is **per-stage** `beat` and `flag` selection (today a
    definition carries one of each) — keep it data-shaped like everything else.
 2. **Canvas reads `progress`** (`js/scene-furniture.js` easel draw): stage

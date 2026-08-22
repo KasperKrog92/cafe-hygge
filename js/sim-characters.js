@@ -806,12 +806,12 @@
     'fire>bigRug', 'fire>armchair', 'fire>nookRug', 'fire>cushion', 'fire>window1Stand',
     'fire>window2Stand', 'fire>counterStand', 'fire>topShelfStand', 'fire>eat',
     'windowFloor>bigRug', 'windowFloor>nookRug', 'windowFloor>window2Stand', 'windowFloor>bookshelfStand',
-    'bigRug>fire', 'bigRug>windowFloor', 'bigRug>window2Stand', 'bigRug>bookshelfStand',
+    'bigRug>fire', 'bigRug>windowFloor', 'bigRug>window1Stand', 'bigRug>window2Stand', 'bigRug>bookshelfStand',
     'bigRug>counterStand', 'bigRug>topShelfStand', 'armchair>fire', 'armchair>nookRug',
     'armchair>window2Stand', 'nookRug>fire', 'nookRug>windowFloor', 'nookRug>armchair',
     'nookRug>cushion', 'nookRug>window1Stand', 'nookRug>window2Stand', 'nookRug>counterStand',
     'nookRug>eat', 'cushion>fire', 'cushion>nookRug', 'cushion>window2Stand',
-    'cushion>counterStand', 'cushion>topShelfStand', 'window1Stand>fire', 'window1Stand>nookRug',
+    'cushion>counterStand', 'cushion>topShelfStand', 'window1Stand>fire', 'window1Stand>bigRug', 'window1Stand>nookRug',
     'window1Stand>window2Stand', 'window1Stand>bookshelfStand', 'window1Stand>counterStand',
     'window1Stand>topShelfStand', 'window2Stand>fire', 'window2Stand>windowFloor',
     'window2Stand>bigRug', 'window2Stand>armchair', 'window2Stand>nookRug', 'window2Stand>cushion',
@@ -1378,7 +1378,19 @@
   function playBeat(world, arc, owner) {
     const rec = world.memory.arcs[arc.id];
     if (!rec || !rec.pendingBeat) return;
-    captionRun(world, arc.beat);
+    let lines = arc.beat.slice();
+    if (arc.presenceBeat) {
+      const pb = arc.presenceBeat;
+      const table = pb.window == null ? -1 : L.tables.length + L.library.sideTables.length + pb.window;
+      const witness = world.patrons.find(function (p) {
+        return p.regularId === pb.owner && p.state === 'seated' &&
+          (pb.window == null || (p.seat && p.seat.window && p.seat.table === table));
+      });
+      if (witness && pb.lines && pb.lines.length) {
+        lines.splice(Math.max(0, lines.length - 1), 0, pick(pb.lines));
+      }
+    }
+    captionRun(world, lines);
     if (owner) owner.bubble = { icon: 'heart', until: world.t + 3.4 };
     if (arc.flag === 'cat-wore-scarf') {
       world.cat.scarf = arc.scarfColor;

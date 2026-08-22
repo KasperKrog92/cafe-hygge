@@ -9,12 +9,14 @@ thing hygge. Read it before adding any arc, beat, memory, or conversation.
 > **Status.** A design contract, written ahead of the build — now partly built.
 > The **foundations are live**: `MEMORY` (`js/memory.js`), café-day
 > progression (`updateNarrative` in `js/sim-core.js`), the invitation +
-> trigger loop (`SIM.beatAt` + the yarn bubble), and **Gerda's scarf — the
-> reference arc (§8)** — knit across café days, waiting as a soft invitation,
-> looped onto the cat on tap and worn for good. `CAST.arcs` carries arc
+> trigger loop (`SIM.beatAt` + owner and scene-anchored bubbles), **Gerda's
+> scarf — the reference arc (§8)**, and **the street painter — the first
+> café-owned anchored arc**. The painter's facade advances across seven café
+> days, its brush invitation waits in the window, and the finished warm house
+> persists after the chosen beat. `CAST.arcs` carries arc
 > definitions; the audit guards the save shape and the arc invariants (§7.3).
 > The passive roster layers (regulars, overheard lines) also exist; the
-> conversation and continuity phases (roadmap §3–6) are still ahead. Where this
+> conversation phases (roadmap §4–5) are still ahead. Where this
 > doc still names a shape that does not exist yet, it is *proposed* — match it
 > when you build, or update this doc if you diverge.
 

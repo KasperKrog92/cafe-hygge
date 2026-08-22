@@ -25,6 +25,26 @@
   const LINE_GATE = { overheard: 0.22, musing: 0.18 };
   const BACKSTORY_GATE = 0.035;
 
+  function unfinishedArc(world, id) {
+    if (!world.memory) return null;
+    const def = ((window.CAST && CAST.arcs) || []).find(function (a) { return a.id === id; });
+    const rec = world.memory.arcs[id];
+    return def && rec && rec.stage < R.arcStages(def) ? { def: def, rec: rec } : null;
+  }
+
+  function arcMusing(world, spec) {
+    const groups = spec.lines.arcMusings || [];
+    const available = groups.filter(function (group) {
+      if (!unfinishedArc(world, group.arc)) return false;
+      return !group.fairDaylight || (world.daylight > 0.45 && world.rain < 0.3);
+    });
+    if (!available.length || Math.random() >= 0.34) return false;
+    const group = pick(available);
+    if (!group.lines || !group.lines.length) return false;
+    caption(world, pick(group.lines));
+    return true;
+  }
+
   /* A regular's voice, in the narrator's register. Where a caption already
      fires around a regular, this sometimes lets it carry that regular's words
      instead — pulled from their spec's pool for `context` ('overheard' at a
@@ -37,6 +57,7 @@
     const spec = p.spec;
     if (!spec || !spec.lines) return false;
     if (context === 'musing') {
+      if (arcMusing(world, spec)) return true;
       const back = spec.lines.backstory;
       if (back && back.length && Math.random() < BACKSTORY_GATE) { caption(world, pick(back)); return true; }
     }
@@ -649,9 +670,12 @@
           p.gazeDur = rnd(3.5, 8);
           p.gazeFacing = -p.seat.facing;
           if (!regularLine(world, p, 'musing') && Math.random() < 0.2) {
-            caption(world, p.name + (world.rain > 0.4 ? ' watches the rain run down the glass.'
-              : world.daylight < 0.3 ? ' watches the streetlamps glow outside.'
-              : ' watches the street drift by for a while.'));
+            const painter = unfinishedArc(world, 'street-house') && world.daylight > 0.45 && world.rain < 0.3;
+            caption(world, painter && Math.random() < 0.45
+              ? p.name + ' follows the painter\'s brush across the road.'
+              : p.name + (world.rain > 0.4 ? ' watches the rain run down the glass.'
+                : world.daylight < 0.3 ? ' watches the streetlamps glow outside.'
+                : ' watches the street drift by for a while.'));
           }
         }
       }

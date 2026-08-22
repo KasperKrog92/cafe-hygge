@@ -131,6 +131,16 @@
             'Gerda hums something old under her breath.',
             'Gerda warms her hands on the tea and watches the light change.'
           ],
+          arcMusings: [
+            {
+              arc: 'street-house', fairDaylight: true,
+              lines: [
+                'Gerda watches the painter across the road find his rhythm.',
+                'Gerda follows the brush down the weathered wall.',
+                'Gerda looks up again; the warm colour has crept a little lower.'
+              ]
+            }
+          ],
           backstory: [
             'Gerda says mornings like this were Erik\'s favourite.',
             'Gerda talks about Erik in the present tense, then gently corrects herself.'
@@ -259,6 +269,23 @@
           'Gerda casts off the last row and shakes the scarf loose.',
           'she holds it up, then loops it gently around the cat, who allows it.',
           'the cat wears Gerda\'s scarf now — a small warmth that stays.'
+        ]
+      },
+      {
+        id: 'street-house',
+        anchor: { x: 186, y: 76 },
+        rows: 7,
+        stages: 1,
+        glyph: 'brush',
+        flag: 'street-house-painted',
+        presenceBeat: {
+          owner: 'gerda', window: 0,
+          lines: ['Gerda is at the glass too; she gives the finished colour a quiet nod.']
+        },
+        beat: [
+          'Across the road, the painter steps back the width of the street and looks for a long moment.',
+          'He folds the ladder down; the old facade holds its new warmth.',
+          'For a while, you have both kept company with someone else\'s patient work.'
         ]
       }
     ]

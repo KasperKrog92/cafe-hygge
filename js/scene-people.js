@@ -737,6 +737,13 @@
         px(g, x + 13, y + 8, 3, 1, '#a94f3f');           // the strand trailing off
         px(g, x + 15, y + 9, 1, 4, '#a94f3f');
         break;
+      case 'brush':
+        // a little loaded brush: muted, tool-like, and legible at bubble scale
+        px(g, x + 1, y + 12, 12, 3, '#8b7158');
+        px(g, x + 11, y + 10, 3, 5, '#c9b28a');
+        px(g, x + 13, y + 7, 3, 6, '#4a3038');
+        px(g, x + 14, y + 5, 2, 2, '#4a3038');
+        break;
     }
   }
 

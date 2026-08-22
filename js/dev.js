@@ -736,7 +736,7 @@
 
     L.catPerches.windows.forEach(function (p, i) {
       const win = i ? L.win2 : L.win;
-      if (p.anchor.y !== 190 || p.anchor.x < win.x || p.anchor.x > win.x + win.w) {
+      if (p.anchor.y !== win.y + win.h + 12 || p.anchor.x < win.x || p.anchor.x > win.x + win.w) {
         problems.push('cat window perch ' + i + ' is not anchored on its sill');
       }
     });
@@ -868,6 +868,14 @@
       if (!arc.glyph) problems.push(who + ' has no invitation glyph');
       if (!Array.isArray(arc.beat) || !arc.beat.length) problems.push(who + ' beat must be a non-empty array');
       if (!arc.flag) problems.push(who + ' has no completion flag');
+      if (arc.presenceBeat) {
+        const pb = arc.presenceBeat;
+        if (!regularIds[pb.owner]) problems.push(who + ' presenceBeat names a missing regular "' + pb.owner + '"');
+        if (!Array.isArray(pb.lines) || !pb.lines.length) problems.push(who + ' presenceBeat must carry lines');
+        if (pb.window != null && (!Number.isInteger(pb.window) || pb.window < 0 || pb.window >= L.winTables.length)) {
+          problems.push(who + ' presenceBeat window is out of range');
+        }
+      }
     });
     if (window.MEMORY) {
       const mem = MEMORY.state;
