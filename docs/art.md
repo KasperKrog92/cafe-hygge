@@ -111,8 +111,10 @@ y=36  ── 16:9 crop top
           wall decoration. The door-side window sits close to the fireplace
           bay and carries the persistent street-painter facade (weathered blue
           to muted brick, filled top-down from saved arc progress), ladder, and
-          tiny working silhouette. Short rust-red drapes frame both views, held open by
-          brass tiebacks so weather and seated silhouettes stay glanceable;
+          tiny working silhouette. Full rust-red drapes frame both views, with
+          broad pleated crowns and long lower folds gathered at mid-window by
+          brass tiebacks; enough glass stays open for weather, the street, and
+          seated silhouettes to remain glanceable;
           both deep sills are window perches (L.winSeats):
           a back cushion against each side frame (red pair by the door, green
           near the counter — the wing-chair swatches) with one plant between,

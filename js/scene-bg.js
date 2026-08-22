@@ -338,8 +338,8 @@
     drawCurtainPanel(g, w.x - 6, w.y - 7, 1);
     drawCurtainPanel(g, w.x + w.w + 6, w.y - 7, -1);
 
-    // small loops over the rod and warm brass tiebacks
-    [0, 7, 14].forEach(function (dx) {
+    // four broad loops give the fuller panels enough weight on the rod
+    [0, 8, 16, 24].forEach(function (dx) {
       px(g, w.x - 2 + dx, rodY + 2, 2, 5, CURTAIN.deep);
       px(g, w.x + w.w - dx, rodY + 2, 2, 5, CURTAIN.deep);
     });
@@ -351,12 +351,12 @@
     g.fillStyle = CURTAIN.shadow;
     g.beginPath();
     g.moveTo(p(0), top);
-    g.lineTo(p(28), top);
-    g.lineTo(p(25), top + 16);
-    g.lineTo(p(20), top + 31);
-    g.lineTo(p(14), top + 42);
-    g.lineTo(p(21), top + 58);
-    g.lineTo(p(2), top + 58);
+    g.lineTo(p(40), top);
+    g.lineTo(p(37), top + 24);
+    g.lineTo(p(31), top + 48);
+    g.lineTo(p(20), top + 66);
+    g.lineTo(p(31), top + 100);
+    g.lineTo(p(2), top + 100);
     g.closePath();
     g.fill();
 
@@ -364,19 +364,20 @@
     g.fillStyle = CURTAIN.body;
     g.beginPath();
     g.moveTo(p(3), top + 2);
-    g.lineTo(p(24), top + 2);
-    g.lineTo(p(21), top + 16);
-    g.lineTo(p(16), top + 31);
-    g.lineTo(p(11), top + 41);
-    g.lineTo(p(17), top + 55);
-    g.lineTo(p(5), top + 55);
+    g.lineTo(p(36), top + 2);
+    g.lineTo(p(33), top + 24);
+    g.lineTo(p(27), top + 47);
+    g.lineTo(p(16), top + 65);
+    g.lineTo(p(27), top + 96);
+    g.lineTo(p(5), top + 96);
     g.closePath();
     g.fill();
-    px(g, Math.min(p(7), p(9)), top + 4, 2, 32, CURTAIN.light);
-    px(g, Math.min(p(15), p(17)), top + 4, 2, 23, CURTAIN.deep);
-    px(g, Math.min(p(11), p(17)), top + 38, 6, 4, CURTAIN.tie);
-    px(g, Math.min(p(13), p(19)), top + 42, 6, 2, '#9c6b36');
-    px(g, Math.min(p(7), p(9)), top + 46, 2, 8, CURTAIN.light);
+    px(g, Math.min(p(8), p(10)), top + 4, 2, 54, CURTAIN.light);
+    px(g, Math.min(p(19), p(21)), top + 4, 2, 42, CURTAIN.deep);
+    px(g, Math.min(p(16), p(22)), top + 61, 6, 5, CURTAIN.tie);
+    px(g, Math.min(p(18), p(24)), top + 66, 6, 2, '#9c6b36');
+    px(g, Math.min(p(9), p(11)), top + 72, 2, 20, CURTAIN.light);
+    px(g, Math.min(p(21), p(23)), top + 73, 2, 17, CURTAIN.deep);
   }
 
   function drawSillCushion(g, x, top, C) {
