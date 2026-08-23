@@ -47,6 +47,14 @@ reflex cooking game and not a punishing business simulator. It may have money,
 ingredients, upgrades, and choices, but no debt spiral, customer anger, romance
 penalties, or missable story events.
 
+The finished game must support two seamlessly connected control styles. In
+**manual mode**, the player walks the owner through serving, clearing, washing,
+and other routine work. In **Auto-mode**, the same owner visibly handles those
+tasks autonomously so the player can watch, focus on decorating and stories, or
+step away trusting that the café remains cared for. Full Auto-mode is not
+required in the feel prototype, but the task architecture must allow it from the
+start.
+
 ## 3. Product thesis
 
 ### One-sentence pitch
@@ -81,6 +89,8 @@ Carry these ideas forward:
   punish absence.
 - Quiet writing; emotionally specific rather than loud or gag-driven.
 - A world that remains pleasant during idle moments.
+- A café that can keep tending to routine life while the player watches or steps
+  away, with meaningful story moments still waiting for consent.
 - Versioned saves, migration discipline, deterministic developer controls, and
   visual verification as first-class production tools.
 
@@ -91,7 +101,8 @@ Deliberately leave these constraints behind:
 - The ban on money, upgrades, menu progression, or explicit accumulation.
 - The fixed protagonist Nora. The new owner is player-created.
 - Programmatic code-drawn final art. The new game needs an asset pipeline.
-- The assumption that the café must run indefinitely without player direction.
+- The requirement that autonomous ambience be the *entire* experience. In the
+  new game it becomes an explicit Auto-mode alongside direct control.
 
 The old code may inspire algorithms and content. Do not copy it mechanically.
 
@@ -105,6 +116,8 @@ These defaults let development begin without blocking on a large design survey:
 - Desktop first: keyboard/mouse, with controller support before public demo.
 - A playable character who walks around the café and interacts with people and
   stations. This is not a detached management cursor.
+- The player can eventually toggle Auto-mode, causing that same character to
+  perform routine service and care tasks through the same world simulation.
 - One café is the heart of the game. A tiny adjoining street can come later;
   do not begin with a whole town.
 - One save profile in the prototype; three profiles plus autosaves are a later
@@ -153,6 +166,15 @@ or a relationship threshold. Once ready, it waits for the player to choose an
 appropriate conversation or close-of-day scene. Calendar dates and absence do
 not destroy it.
 
+### 6.6 Play actively or let the café carry itself
+
+Manual play and Auto-mode are equally legitimate ways to inhabit the café, not
+an easy mode and a punished mode. The player may take over or step back without
+resetting an order, duplicating rewards, or confusing the character. Automation
+handles routine care; it never spends money, redecorates, chooses dialogue,
+starts romance, or consumes a waiting story beat. Returning should reveal a
+café in good order, not an emergency backlog.
+
 ## 7. Non-goals
 
 Do not design these into the first release:
@@ -185,6 +207,10 @@ Use a day as a readable sequence of phases, not a real-time deadline.
 - Patrons settle and wait without anger or visible countdowns.
 - The player greets, takes orders, uses stations, delivers items, clears tables,
   and chooses when to talk.
+- Once implemented, Auto-mode may be toggled during the open phase. It claims
+  and completes the same routine task queue—orders, delivery, clearing, and
+  washing—while the owner follows visible routes and animations. Manual takeover
+  returns control cleanly at a safe task boundary.
 - Drink preparation uses short contextual sequences: select recipe, walk to the
   correct stations, watch/hear the satisfying preparation, deliver. Avoid
   repetitive precision inputs.
@@ -348,7 +374,43 @@ the player's interaction makes it `playing`. Ready events persist in the save.
 If seasons are added later, seasonal dressing and new availability may rotate,
 but unique character payoffs must queue and wait rather than disappear.
 
-### 9.9 Save model
+### 9.9 Manual control and Auto-mode
+
+Auto-mode is a core eventual feature, not optional polish. Design it as another
+controller for the same player character and task system, never as a separate
+fake economy tick.
+
+- Represent routine work as explicit tasks: greet, take order, prepare recipe
+  step, deliver, clear table, carry dishes, wash dishes, restock, and tidy.
+- Tasks have stable IDs, preconditions, reservations/claims, progress, completion
+  effects, interruption rules, and priority. Domain effects happen exactly once.
+- Manual interactions and autonomous behavior call the same task commands and
+  completion APIs. They must not maintain parallel versions of service logic.
+- The autonomous controller selects reachable work, navigates the real avatar,
+  and plays the same animations and sounds a manual player would see.
+- A toggle requests takeover. If the current action is safely interruptible,
+  control returns immediately; otherwise it finishes the short atomic step and
+  returns. Never teleport or abandon held items unless recovering from a bug.
+- Auto-mode handles basic service, clearing, washing, and routine restocking. It
+  does not purchase gear, alter prices/menu, place furniture, select dialogue,
+  accept invitations, flirt, commit romance, or make irreversible story choices.
+- Anonymous customers remain calm under automation. Auto-mode must not generate
+  worse relationship outcomes than routine manual service.
+- While the process is running, Auto-mode should keep working in an unfocused or
+  background window as platform rules permit. Simulation belongs in a fixed-step
+  update path, not rendering callbacks.
+- Persist the mode, task ledger, held item, station reservations, and enough
+  avatar state to resume safely after a save/load.
+- On return, offer a small optional summary of service, earnings, and ordinary
+  events. No missed-story count, urgent backlog, or scolding.
+
+Closed-process offline catch-up is a separate product decision. Architect the
+task ledger and deterministic day simulation so it can be added, but do not
+silently award unbounded offline income. A safe future default is bounded,
+deterministic catch-up that resolves routine work and stops at a natural café-day
+boundary while all meaningful beats remain pending.
+
+### 9.10 Save model
 
 - Version the save schema from day one.
 - Use migrations for every shape change; never silently discard a valid old save.
@@ -374,6 +436,9 @@ but unique character payoffs must queue and wait rather than disappear.
 - One short optional conversation.
 - Save/load for layout, funds, avatar, and relationship flag.
 - Developer panel and headless checks.
+- Routine service actions represented through controller-independent tasks. The
+  prototype may expose these only to manual control; it must not bury order,
+  clearing, or washing effects directly in input handlers.
 
 This is successful when a new player can complete one compact loop without an
 explanation and says that buying/placing the first object feels meaningful.
@@ -388,6 +453,10 @@ explanation and says that buying/placing the first object feels meaningful.
 - Character creator with the constrained production set above.
 - Complete first-week progression and a meaningful room transformation.
 - Keyboard/mouse and controller.
+- A working Auto-mode toggle that visibly handles serving, clearing, and washing;
+  manual takeover preserves in-flight task state without duplicated effects.
+- Auto-mode continues safely when the game window is unfocused, subject to
+  platform suspension rules, and produces a gentle return summary.
 - Settings, save profiles, content validation, automated tests, and packaged
   Windows build.
 
@@ -402,6 +471,8 @@ playtesting will dominate.
 - 25–35 recipes.
 - 60–80 furnishings across several compatible style families.
 - One expandable café plus a very small exterior strip, not a whole town.
+- Trusted Auto-mode for the entire routine café loop; player-authored choices,
+  purchases, decoration, and meaningful narrative remain manual.
 - Approximately 8–12 hours for a first relationship-rich playthrough, with
   continued decorating afterward.
 
@@ -565,6 +636,8 @@ Store asset source, author, URL, license, edit notes, and in-game use in
   and content data own behavior.
 - Avoid a giant all-knowing GameManager autoload.
 - Deterministic simulation seeds make bugs and playtests reproducible.
+- Manual input and Auto-mode must drive the same task/domain commands. Never put
+  irreversible service effects directly in an input handler or behavior tree.
 - No system is complete without its debug controls and save migration path.
 
 ### Suggested repository layout
@@ -627,6 +700,7 @@ Scene routing may live in the root app scene rather than another autoload.
 Write these as typed, mostly scene-independent classes:
 
 - `DayPlan` / `DayRoster`
+- `TaskBoard` / `CafeTask` / `WorkerController`
 - `Order` / `RecipeResolver`
 - `InventoryLedger`
 - `EconomySimulator`
@@ -748,6 +822,9 @@ from the CLI. Test at least:
 - recipe affordability and ingredient deduction;
 - no-negative-funds invariant;
 - order lifecycle and duplicate completion prevention;
+- manual/Auto-mode equivalence for task completion and rewards;
+- task claiming, interruption, takeover, held-item recovery, and save/resume;
+- Auto-mode cannot spend funds or consume narrative/romance invitations;
 - furniture footprint/door/station access validation;
 - relationship thresholds and explicit romance commitment;
 - ready narrative beats never auto-consume or expire;
@@ -772,6 +849,8 @@ Hygge's `__dev` harness. It should support:
 - place/remove a furniture item;
 - save/load/reset a named fixture;
 - freeze or speed simulation;
+- toggle Auto-mode, inspect the task queue/claims, and request manual takeover;
+- simulate an unfocused/background interval deterministically;
 - set deterministic RNG seed;
 - capture whole-screen and named-region screenshots;
 - run live layout/content invariants.
@@ -825,7 +904,9 @@ The receiving LLM should begin with this sequence unless the owner redirects it.
 1. Make a 640×360 main scene with nearest-neighbor scaling.
 2. Greybox a one-screen 12×8-tile café, door, counter, station, and two tables.
 3. Add a player capsule/sprite with 4-direction movement and interaction prompt.
-4. Add one patron lifecycle: enter → sit → order → wait → receive → leave.
+4. Add a controller-independent task board, then one patron lifecycle: enter →
+   sit → order → wait → receive → leave. Manual interactions complete tasks
+   through domain commands; do not implement full autonomous selection yet.
 5. Add one coffee recipe with a two-station preparation sequence.
 6. Add funds and an end-of-day purchase of one lamp.
 7. Add placement preview, validity, rotate, confirm, cancel, and undo.
@@ -842,6 +923,8 @@ Before adding a second drink or character, demonstrate:
 - the scene runs without parser/runtime errors;
 - a save survives round-trip and one synthetic version migration;
 - a forced story invitation remains pending across save/load;
+- a service task can be completed by a test controller without simulated input,
+  proving that future Auto-mode will reuse the same domain path;
 - a screenshot shows correct sprite/furniture baseline sorting;
 - the owner has seen and approved the camera/perspective greybox.
 
@@ -856,8 +939,9 @@ lamp and the regular's changed greeting. No timer, anger, or fail state appears.
 These are important, but none must block the first greybox:
 
 1. **Primary platform:** Windows/Steam as assumed, or web-first?
-2. **Control feel:** walk the owner directly as assumed, or manage from an
-   overview/point-and-click view?
+2. **Away behavior:** should Auto-mode operate only while the game is running
+   (including an unfocused/background window), or should reopening the game also
+   resolve a bounded period of closed-app café activity?
 3. **Visual perspective:** three-quarter top-down as recommended, or the more
    side-on dollhouse composition of Café Hygge?
 4. **Art participation/budget:** will the owner draw, hire an artist, curate
@@ -879,6 +963,8 @@ Record answers in `docs/decisions/0001-product-baseline.md`.
 | Content scope explodes | Every regular multiplies writing, portraits, events, schedules, and testing | Vertical slice with 3 regulars; use a content budget before adding anyone |
 | Character customization explodes art | Four directions × actions × outfits × hair quickly becomes hundreds of frames | Layered paper-doll sprites, palette swaps, shared timings, automated contact sheets, limited launch set |
 | Service becomes repetitive | Walking station sequences can feel like chores without time pressure | Short recipes, strong sound/animation, batch gear, variable patron moments, playtest after one drink before adding ten |
+| Auto-mode feels fake or breaks state | A parallel income simulator would diverge from the visible café; takeover can duplicate tasks or strand held items | One shared task ledger and domain commands, atomic effects, reservations, interruption tests, visible autonomous routing |
+| Away progress becomes pressure or an exploit | Unbounded catch-up can trivialize progression or make players feel they should never turn Auto-mode off | Routine-only automation, no auto story choices/spending, bounded closed-app catch-up if adopted, gentle summary without missed counts |
 | Decorating becomes stat optimization | A single coziness number undermines personal expression | Use qualitative tags and behavior changes; support multiple viable style families |
 | Romance becomes transactional | Gift/heart grinding conflicts with familiarity fantasy | Gate on shared beats and choices; hide raw numbers; keep complete friendship routes |
 | LLM output creates inconsistent architecture | Agents can rapidly add parallel patterns and undocumented state | Small domain APIs, typed code, pinned versions, one-command checks, decision records, strict save/content schemas |
@@ -942,8 +1028,10 @@ it exists. Then implement Step A of "First implementation mission": create the
 repo contracts, pin versions, scaffold the Godot 4.7.2 standard project, and
 make run/check/test PowerShell commands work. Do not begin large art production
 or expand scope. Use typed GDScript, preserve a 640×360 pixel-art target, and
-show concrete verification output. If Café Hygge is available, read only its
-overview/narrative/art guidance for tone; do not copy its architecture.
+make all routine café effects controller-independent so later Auto-mode can drive
+the same task system as manual play. Full Auto-mode is not required in the first
+greybox. Show concrete verification output. If Café Hygge is available, read
+only its overview/narrative/art guidance for tone; do not copy its architecture.
 ```
 
 ---
