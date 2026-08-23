@@ -34,8 +34,15 @@ visual feature requires another renderer.
 Use hand-authored **2D pixel art in a three-quarter top-down view**, made in
 **Aseprite** (recommended) or Pixelorama (free/open-source alternative). Work at
 a 640×360 logical resolution, use 32 px floor tiles with a 16 px furniture
-placement grid, and begin with 32×48 character sprites. Keep the initial café
+placement grid, and begin the art spike with 48×64 character canvases so hands,
+props, posture, and task performance remain readable. Keep the initial café
 small enough to understand in one screen.
+
+Animation is a defining feature, not a finishing pass. Characters should reach,
+lift, carry, turn, pour, wipe, stack, wash, sit, sip, converse, fidget, and work
+with believable staging and object contact. The first prototype needs only a
+small animation set, but its character, station, prop, and task systems must be
+built for a large library of detailed performances from the beginning.
 
 Use LLM assistance for architecture, implementation, tests, content validation,
 writing drafts, production tooling, and documentation. Do **not** make runtime
@@ -81,7 +88,8 @@ life built there.
 
 Carry these ideas forward:
 
-- Cozy, legible pixel art with warm pools of light and small autonomous motion.
+- Cozy, legible pixel art with warm pools of light, abundant character acting,
+  and small autonomous motion throughout the room.
 - Sound as part of the room: rain, fire, grinder, steam, ceramic, pages, door.
 - Regulars with habits, favorite seats, projects, and lives beyond the player.
 - The **invitation-waits rule**: background conditions may become ready on their
@@ -118,6 +126,9 @@ These defaults let development begin without blocking on a large design survey:
   stations. This is not a detached management cursor.
 - The player can eventually toggle Auto-mode, causing that same character to
   perform routine service and care tasks through the same world simulation.
+- Detailed, immersive character and prop animation is one of the game's primary
+  production values. Animation breadth can grow after the prototype; animation
+  architecture and one target-quality representative sequence cannot wait.
 - One café is the heart of the game. A tiny adjoining street can come later;
   do not begin with a whole town.
 - One save profile in the prototype; three profiles plus autosaves are a later
@@ -175,6 +186,21 @@ handles routine care; it never spends money, redecorates, chooses dialogue,
 starts romance, or consumes a waiting story beat. Returning should reveal a
 café in good order, not an emergency backlog.
 
+### 6.7 Work is character acting
+
+Routine labor should be pleasurable to watch because it is specific and
+believable. A cup is picked up before it is carried; a chair shifts when someone
+sits; the owner's weight changes before lifting a dish tub; a regular's hands
+meet their book rather than gesturing near it. Animation communicates personality
+as well as function: two characters may perform the same broad action with
+different posture, tempo, and small habits. Favor grounded anticipation, contact,
+follow-through, and recovery over constant exaggerated motion.
+
+Animation density is part of the game's content promise. Every important task
+deserves a staged full-body performance, regulars need signature behaviors, and
+equipment should visibly operate. The room may still become quiet; detailed
+motion is most effective when it has rests and does not make every pixel compete.
+
 ## 7. Non-goals
 
 Do not design these into the first release:
@@ -212,8 +238,10 @@ Use a day as a readable sequence of phases, not a real-time deadline.
   washing—while the owner follows visible routes and animations. Manual takeover
   returns control cleanly at a safe task boundary.
 - Drink preparation uses short contextual sequences: select recipe, walk to the
-  correct stations, watch/hear the satisfying preparation, deliver. Avoid
-  repetitive precision inputs.
+  correct stations, align to the work surface, reach for tools, perform the
+  satisfying preparation, transfer the finished prop, and deliver. Avoid
+  repetitive precision inputs, but do not visually collapse these actions into
+  a generic progress bar.
 - Regulars can carry small ambient behaviors and one optional story invitation.
 - The player may close early without losing a unique event. Unserved anonymous
   traffic simply does not become revenue; no scolding recap.
@@ -410,7 +438,91 @@ silently award unbounded offline income. A safe future default is bounded,
 deterministic catch-up that resolves routine work and stops at a natural café-day
 boundary while all meaningful beats remain pending.
 
-### 9.10 Save model
+### 9.10 Animation and task choreography
+
+The animation system must serve manual play, Auto-mode, NPC life, and furniture
+interaction without duplicating logic.
+
+#### Performance model
+
+Model an interactive task as a choreography with explicit phases:
+
+```text
+approach → align/turn → anticipation → contact → work loop → result/prop transfer
+         → follow-through → recover/release
+```
+
+Not every tiny action needs every phase, but skipping them must be an artistic
+choice rather than an engine limitation. Task phases declare movement lock,
+facing, station/prop reservations, held items, logical event markers, and safe
+interruption points.
+
+- The fixed-step task runner is authoritative for state and exact-once effects.
+  Choreography data supplies the same named timing markers to headless logic and
+  visible animation; gameplay state must not depend on a rendered frame callback
+  that stops when the window is hidden.
+- `AnimationPlayer` coordinates character frames, props, station parts, particles,
+  and sounds. Use a small explicit locomotion/action state machine; add
+  `AnimationTree` only when it improves clarity. Pixel frames should switch
+  crisply—do not use interpolation that smears pixel art.
+- Each station exposes authored approach cells, facing, body alignment point,
+  hand/tool targets, prop placement targets, work height, and occlusion baseline.
+  The character aligns before acting so hands meet handles, cups, cloths, and
+  dishes instead of gesturing in empty space.
+- Props have ownership and sockets. A cup moves station → hand/tray → table; a
+  dish moves table → tub → sink. Never draw duplicate versions during a handoff.
+- Clips declare interruptible and atomic windows. Manual takeover and Auto-mode
+  use these markers so changing control never snaps poses, duplicates results,
+  or strands an object.
+- Locomotion includes explicit start, walk, turn, carry, stop, and short alignment
+  behavior. At minimum, use distinct empty-hand, cup/tray, and dish-tub carries.
+- Reuse body mechanics without making everyone identical. Shared task clips may
+  have timing/posture variants; authored regulars receive signature idle and
+  social performances layered on the common vocabulary.
+- Long loops need phase variation and rests. Avoid synchronized patrons, repeated
+  gestures every few seconds, and every character animating at maximum intensity.
+
+#### Production animation vocabulary
+
+Grow the library in families so each addition composes with the task system:
+
+- locomotion: idle/breathe, start, four-direction walk, turn, stop, carry cup,
+  carry tray, carry dish tub, push/pull chair;
+- owner service: greet, listen/take order, grind, dose/tamp, pull espresso, steam,
+  pour, whisk, plate pastry, garnish, deliver, collect payment, clear, stack,
+  wash, rinse, dry, shelve, wipe, sweep, restock;
+- patron table life: sit/stand, pull chair, receive cup, sip, eat, read/page turn,
+  write, use laptop, look outside, chat, listen, laugh softly, wave, wait, leave;
+- relationship acting: hesitant start, attentive listening, different smiles,
+  embarrassment, reassurance, gift exchange, close friendship, consensual romance
+  beats, all authored to fit the character rather than drawn from generic emotes;
+- ambient life: adjust apron, tuck hair, warm hands, stretch back, inspect pastry,
+  water plant, straighten frame, stoke fire, open/close window, respond to rain;
+- object/station animation: grinder hopper/burr, group head and cup, steam wand,
+  kettle, sink water/foam, towel, dishwasher if added, chair movement, doors,
+  drawers, pastry-case doors, record player, lights, and fireplace.
+
+This list is a production direction, not a demand that the first prototype draw
+every clip. Before expanding breadth, make one complete hero sequence—approach,
+prepare coffee, transfer cup, carry, deliver, and recover—at the intended final
+quality and prove the pipeline can reproduce that quality.
+
+#### Animation data and validation
+
+- Use stable clip and choreography IDs such as `owner.espresso.pull.side` and
+  `patron.table.sip.front`.
+- Aseprite frame tags define clips. Named slices/markers such as `feet`,
+  `hand_near`, `hand_far`, `carry`, and `interaction` export attachment metadata
+  per frame alongside the sprite sheet.
+- An animation manifest maps tasks, facings, held-item classes, variants,
+  durations, markers, and fallbacks. Validate it in `check.ps1`.
+- Missing art may deliberately use a labeled placeholder fallback in development;
+  production builds must report missing required clips before export.
+- Generate contact sheets and short motion previews for every animation family.
+  Review silhouettes, foot locking, hand contact, prop continuity, loop pops,
+  baseline drift, and behavior at normal game scale.
+
+### 9.11 Save model
 
 - Version the save schema from day one.
 - Use migrations for every shape change; never silently discard a valid old save.
@@ -439,9 +551,13 @@ boundary while all meaningful beats remain pending.
 - Routine service actions represented through controller-independent tasks. The
   prototype may expose these only to manual control; it must not bury order,
   clearing, or washing effects directly in input handlers.
+- Character/station animation contracts, attachment markers, and choreography
+  phases are in place. Only one service chain needs target-quality art, but that
+  chain must prove approach, contact, prop transfer, and recovery at game scale.
 
 This is successful when a new player can complete one compact loop without an
-explanation and says that buying/placing the first object feels meaningful.
+explanation, says that buying/placing the first object feels meaningful, and
+wants to watch the representative coffee performance again.
 
 ### Milestone 1 — vertical slice (roughly 3–6 months, depending on art capacity)
 
@@ -457,6 +573,11 @@ explanation and says that buying/placing the first object feels meaningful.
   manual takeover preserves in-flight task state without duplicated effects.
 - Auto-mode continues safely when the game window is unfocused, subject to
   platform suspension rules, and produces a gentle return summary.
+- A substantial service animation vocabulary, multiple carry states, believable
+  station/object interaction, patron table-life loops, and at least three
+  character-specific signature performances per regular.
+- No important task resolves through a generic standing progress pose when a
+  visible physical action should occur.
 - Settings, save profiles, content validation, automated tests, and packaged
   Windows build.
 
@@ -473,6 +594,9 @@ playtesting will dominate.
 - One expandable café plus a very small exterior strip, not a whole town.
 - Trusted Auto-mode for the entire routine café loop; player-authored choices,
   purchases, decoration, and meaningful narrative remain manual.
+- Animation-rich café life: every core service/care task has a full performance
+  and useful variants; each regular has a recognizable library of work, table,
+  social, and relationship acting rather than only shared generic emotes.
 - Approximately 8–12 hours for a first relationship-rich playthrough, with
   continued decorating afterward.
 
@@ -540,9 +664,13 @@ errors without materially helping the core fantasy.
   possible. It scales exactly 3× to 1920×1080.
 - Floor/wall tile: 32×32.
 - Furniture placement increment: 16 px.
-- Standing character: initial 32×48 canvas; revisit only after the art spike.
-- Character movement: four directions, 4-frame walk initially; reuse animation
-  timing and item overlays.
+- Standing character: begin the art spike at 48×64. Compare a smaller canvas only
+  if the café composition demonstrably suffers; hand/prop contact and readable
+  body mechanics take priority over fitting more empty floor on screen.
+- Character movement: four directions with explicit start/turn/stop poses and a
+  6-frame production walk target. A 4-frame placeholder is acceptable only for
+  the first greybox. Mirror left/right where it survives prop handedness; author
+  up/down separately.
 - Dialogue portrait: 96×96 or 128×128 for authored regulars.
 - Palette: one warm shared base palette plus controlled material ramps. Night
   lighting should tint a stable base rather than require duplicate assets.
@@ -556,6 +684,11 @@ tags, tilesets, sprite-sheet export, a CLI, and Lua automation. Its source files
 are binary, so store source and exports deliberately. Pixelorama is the
 free/open-source fallback and supports animation, tilemap layers, palettes, and
 sprite-sheet export.
+
+Treat animation source as structured production data. Standardize Aseprite frame
+tag names, layer names, per-frame attachment slices, pivots, and export settings.
+Export sprite sheets, clip metadata, and attachment markers deterministically;
+do not hand-enter prop offsets in scattered GDScript files.
 
 Repository layout should keep art sources outside Godot's import root:
 
@@ -604,11 +737,16 @@ Produce and review these at final intended scale:
 2. the same room at warm rainy evening;
 3. one build-mode screenshot with a placement ghost;
 4. one conversation layout with portrait and choices;
-5. one player walk cycle with two skin tones, two hairstyles, and two outfits.
+5. one production-quality player walk cycle with starts, turns, and stops across
+   two skin tones, two hairstyles, and two outfits;
+6. one complete coffee-service motion preview: approach, align, prepare, cup
+   handoff, carry, table delivery, and recovery;
+7. one patron table-life preview combining sit, sip, page turn or conversation,
+   and stand without visible snapping.
 
 Lock perspective, outline treatment, palette discipline, UI scale, and character
-proportions only after these are seen together. Do not manufacture a large asset
-catalog before this review.
+proportions only after these are seen together and moving at normal game speed.
+Do not manufacture a large asset catalog before this review.
 
 ## 13. Audio direction
 
@@ -638,6 +776,9 @@ Store asset source, author, URL, license, edit notes, and in-game use in
 - Deterministic simulation seeds make bugs and playtests reproducible.
 - Manual input and Auto-mode must drive the same task/domain commands. Never put
   irreversible service effects directly in an input handler or behavior tree.
+- Choreography phases and attachment markers are data. Domain timing and visual
+  timing share named markers so headless simulation, manual play, Auto-mode, and
+  rendered animation cannot drift into four different truths.
 - No system is complete without its debug controls and save migration path.
 
 ### Suggested repository layout
@@ -664,12 +805,14 @@ game/
     characters/
     dialogue/
     furniture/
+    animation/
     recipes/
   src/
     autoload/
     domain/
     cafe/
     characters/
+    animation/
     narrative/
     ui/
     dev/
@@ -680,6 +823,7 @@ tools/
   check.ps1
   test.ps1
   export_art.ps1
+  export_animation_previews.ps1
 ```
 
 ### Autoloads
@@ -701,6 +845,7 @@ Write these as typed, mostly scene-independent classes:
 
 - `DayPlan` / `DayRoster`
 - `TaskBoard` / `CafeTask` / `WorkerController`
+- `Choreography` / `AnimationContract` / `PropTransfer`
 - `Order` / `RecipeResolver`
 - `InventoryLedger`
 - `EconomySimulator`
@@ -781,9 +926,11 @@ Create an `AGENTS.md` in the new repo containing:
 - authoritative run, test, check, and screenshot commands;
 - save migration rules;
 - content schema locations;
-- art scale, placement grid, and import rules;
+- art scale, placement grid, import rules, animation tags, attachment markers,
+  station anchors, prop-transfer rules, and motion-review commands;
 - required docs to update by change type;
-- visual verification requirements;
+- visual verification requirements, including native-scale motion previews for
+  animation rather than still screenshots alone;
 - instruction to preserve owner art/layout directions exactly.
 
 Keep `README.md` for a human newcomer and `AGENTS.md` for implementation rules.
@@ -825,6 +972,11 @@ from the CLI. Test at least:
 - manual/Auto-mode equivalence for task completion and rewards;
 - task claiming, interruption, takeover, held-item recovery, and save/resume;
 - Auto-mode cannot spend funds or consume narrative/romance invitations;
+- every task/facing/held-item combination resolves to a valid choreography and
+  clip or an explicitly allowed development placeholder;
+- animation marker order and duration agree with the logical task phase data;
+- attachment markers exist, remain within frame bounds, and never transfer one
+  prop to two owners;
 - furniture footprint/door/station access validation;
 - relationship thresholds and explicit romance commitment;
 - ready narrative beats never auto-consume or expire;
@@ -851,6 +1003,11 @@ Hygge's `__dev` harness. It should support:
 - freeze or speed simulation;
 - toggle Auto-mode, inspect the task queue/claims, and request manual takeover;
 - simulate an unfocused/background interval deterministically;
+- force any animation/choreography by ID, facing, character, prop, and station;
+- show interaction anchors, hand/prop sockets, baselines, task phase, logical
+  markers, interruptible windows, and current animation frame;
+- pause, scrub frame-by-frame, slow motion, loop a phase, and export a motion
+  preview/contact sheet;
 - set deterministic RNG seed;
 - capture whole-screen and named-region screenshots;
 - run live layout/content invariants.
@@ -865,6 +1022,14 @@ or UI scale. For each visual change, capture at least one 640×360 screenshot at
 native logical resolution and one integer-scaled view. For lighting changes,
 capture morning and rainy evening. For furniture, show placement preview and a
 character walking behind/in front of it.
+
+For animation changes, a still image is not verification. Capture a short
+native-scale motion preview at normal speed and, when contact or transition is
+subtle, a slow version. Review foot sliding, weight/anticipation, silhouette,
+hand/prop contact, station alignment, carried-item continuity, loop seams,
+transition pops, baseline drift, and whether sound/particles land on the same
+logical markers. Show the result to the owner; animation taste cannot be reduced
+to an automated pass/fail check.
 
 ### LLM writing workflow
 
@@ -903,16 +1068,22 @@ The receiving LLM should begin with this sequence unless the owner redirects it.
 
 1. Make a 640×360 main scene with nearest-neighbor scaling.
 2. Greybox a one-screen 12×8-tile café, door, counter, station, and two tables.
-3. Add a player capsule/sprite with 4-direction movement and interaction prompt.
-4. Add a controller-independent task board, then one patron lifecycle: enter →
+3. Add a player capsule/sprite with 4-direction movement, explicit animation
+   state, held-prop socket, baseline, and interaction prompt.
+4. Add animation contracts, station approach/alignment/hand targets, and a
+   choreography runner with named logical markers before drawing a large clip set.
+5. Add a controller-independent task board, then one patron lifecycle: enter →
    sit → order → wait → receive → leave. Manual interactions complete tasks
    through domain commands; do not implement full autonomous selection yet.
-5. Add one coffee recipe with a two-station preparation sequence.
-6. Add funds and an end-of-day purchase of one lamp.
-7. Add placement preview, validity, rotate, confirm, cancel, and undo.
-8. Save and restore player appearance, funds, lamp placement, and one regular
+6. Add one coffee recipe with a two-station preparation sequence. Placeholder
+   clips may establish the system, then take this single chain through a focused
+   target-quality animation pass before adding a second recipe.
+7. Add funds and an end-of-day purchase of one lamp.
+8. Add placement preview, validity, rotate, confirm, cancel, and undo.
+9. Save and restore player appearance, funds, lamp placement, and one regular
    conversation flag.
-9. Add debug actions and screenshots for every state above.
+10. Add debug actions, screenshots, animation scrubbing, and motion-preview
+    export for every state above.
 
 ### Step C — prove the architecture
 
@@ -925,14 +1096,21 @@ Before adding a second drink or character, demonstrate:
 - a forced story invitation remains pending across save/load;
 - a service task can be completed by a test controller without simulated input,
   proving that future Auto-mode will reuse the same domain path;
+- the coffee choreography reaches the same logical result headlessly and visibly,
+  with one cup transferred exactly once across station, hand, and table;
+- a native-scale motion preview proves one service chain at the intended final
+  animation quality, including anticipation, contact, and recovery;
 - a screenshot shows correct sprite/furniture baseline sorting;
-- the owner has seen and approved the camera/perspective greybox.
+- the owner has seen and approved the camera/perspective greybox and representative
+  motion quality.
 
 ### Milestone 0 acceptance test
 
 A fresh player can create a simple owner, open the café, greet a regular, make
 and deliver coffee, close, buy a lamp, place it, save, reload, and see both the
-lamp and the regular's changed greeting. No timer, anger, or fail state appears.
+lamp and the regular's changed greeting. The coffee visibly travels through
+station, hand, and table with readable body mechanics and no snapping or duplicate
+props. No timer, anger, or fail state appears.
 
 ## 17. Decisions to ask the owner before the art spike
 
@@ -944,8 +1122,9 @@ These are important, but none must block the first greybox:
    resolve a bounded period of closed-app café activity?
 3. **Visual perspective:** three-quarter top-down as recommended, or the more
    side-on dollhouse composition of Café Hygge?
-4. **Art participation/budget:** will the owner draw, hire an artist, curate
-   assets, or rely mostly on generated concepts plus cleanup?
+4. **Art and animation capacity:** will the owner draw/animate, hire an animator,
+   curate assets, or rely mostly on generated concepts plus substantial manual
+   pixel and motion cleanup?
 5. **Romance tone:** sweet/low-heat, mature but non-explicit, or another target;
    and which age rating is desired?
 6. **Cultural setting:** explicitly Danish/contemporary, fictional Nordic town,
@@ -962,6 +1141,8 @@ Record answers in `docs/decisions/0001-product-baseline.md`.
 | --- | --- | --- |
 | Content scope explodes | Every regular multiplies writing, portraits, events, schedules, and testing | Vertical slice with 3 regulars; use a content budget before adding anyone |
 | Character customization explodes art | Four directions × actions × outfits × hair quickly becomes hundreds of frames | Layered paper-doll sprites, palette swaps, shared timings, automated contact sheets, limited launch set |
+| Animation ambition overwhelms production | Detailed four-direction tasks, transitions, prop contacts, variants, and NPC acting can dominate the schedule | Make animation a budgeted feature, standardize rigs/tags/anchors, build in families, reuse mechanics with character variants, approve one hero chain before scaling |
+| Animation looks busy but not believable | More frames do not help if feet slide, hands miss props, loops pop, or everyone moves constantly | Explicit choreography phases and contacts, motion review at game scale, slow-motion debug, rests and staggered ambient timing |
 | Service becomes repetitive | Walking station sequences can feel like chores without time pressure | Short recipes, strong sound/animation, batch gear, variable patron moments, playtest after one drink before adding ten |
 | Auto-mode feels fake or breaks state | A parallel income simulator would diverge from the visible café; takeover can duplicate tasks or strand held items | One shared task ledger and domain commands, atomic effects, reservations, interruption tests, visible autonomous routing |
 | Away progress becomes pressure or an exploit | Unbounded catch-up can trivialize progression or make players feel they should never turn Auto-mode off | Routine-only automation, no auto story choices/spending, bounded closed-app catch-up if adopted, gentle summary without missed counts |
@@ -1030,12 +1211,17 @@ make run/check/test PowerShell commands work. Do not begin large art production
 or expand scope. Use typed GDScript, preserve a 640×360 pixel-art target, and
 make all routine café effects controller-independent so later Auto-mode can drive
 the same task system as manual play. Full Auto-mode is not required in the first
-greybox. Show concrete verification output. If Café Hygge is available, read
-only its overview/narrative/art guidance for tone; do not copy its architecture.
+greybox. Treat detailed animation as a core feature: establish choreography,
+station anchors, prop sockets, attachment markers, and animation validation from
+the beginning, then bring one representative coffee-service chain to target
+motion quality before expanding breadth. Show concrete verification output. If
+Café Hygge is available, read only its overview/narrative/art guidance for tone;
+do not copy its architecture.
 ```
 
 ---
 
-The best first deliverable is a tiny playable loop with a warm lamp at the end,
-not a large design database. The project earns the right to grow when that loop
-already feels personal.
+The best first deliverable is a tiny playable loop with a warm lamp at the end
+and one lovely, believable service performance—not a large design database. The
+project earns the right to grow when that loop already feels personal and alive
+in motion.
