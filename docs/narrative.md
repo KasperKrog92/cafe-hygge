@@ -111,8 +111,9 @@ The café has two clocks; arcs ride the second.
 **Arcs ride the café's own day.** An arc's `progress` is measured in **café
 days** — 24 real minutes of the café running — and accrues continuously in
 `updateNarrative` (`js/sim-core.js`), a dt-driven part of `SIM.update`. A
-hidden tab still progresses (the 250 ms hidden-tab interval keeps the sim
-ticking), so leaving the café open beside a book — its whole design posture —
+hidden tab still progresses at full real-time pace (main.js's `advance` ticks
+the real elapsed time in chunks, so browser timer throttling can't slow the
+café), so leaving the café open beside a book — its whole design posture —
 is exactly what advances the stories. Gerda's five-row scarf is about two
 hours of open café.
 

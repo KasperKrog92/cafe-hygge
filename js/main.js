@@ -162,25 +162,55 @@
     out.drawImage(master, view.x, view.y, view.w, view.h, 0, 0, canvas.width, canvas.height);
   }
 
-  /* ---------- loop ---------- */
-
+  /* ---------- loop ----------
+     One clock, many drivers. `advance` ticks the sim by REAL elapsed time in
+     ≤0.25 s chunks (the step size the old hidden-tab path and __dev.ff already
+     sanctioned), so it does not matter which driver fires or how throttled it
+     is: the visible rAF loop, the hidden-tab interval (throttled to ≥1 s, down
+     to once a minute under Chrome's intensive throttling), a merely *slowed*
+     rAF (occluded window, energy saver — document.hidden can stay false), or
+     the refocus visibilitychange. The old fixed-dt hidden tick lost up to 96%
+     of backgrounded time, which starved slow arcs — Lunafreya's canvas never
+     visibly advanced for a reader who kept the café in a background tab.
+     A burst over a couple of seconds mutes its flood of one-shots (the
+     __dev.ff pattern); a gap beyond 90 s (a frozen tab, a sleeping laptop) is
+     dropped — that café simply held still, which the narrative allows. */
+  let hiddenMute = null;
+  function muteBurst() {
+    if (!SND.ready()) return;
+    if (hiddenMute) clearTimeout(hiddenMute.timer);
+    else {
+      hiddenMute = { muted: SND.settings.muted };
+      SND.settings.muted = true;
+      SND.applyVolume();
+    }
+    hiddenMute.timer = setTimeout(function () {
+      SND.settings.muted = hiddenMute.muted;
+      SND.applyVolume();
+      hiddenMute = null;
+    }, 1500);
+  }
   let last = performance.now();
+  function advance(nowMs) {
+    let elapsed = Math.min(90, (nowMs - last) / 1000);
+    last = nowMs;
+    if (elapsed <= 0) return;
+    if (elapsed > 2) muteBurst();
+    while (elapsed > 0) {
+      const step = Math.min(0.25, elapsed);
+      SIM.update(world, step);
+      if (SND.ready()) SND.update(step, world);
+      elapsed -= step;
+    }
+  }
   function frame(now) {
-    const dt = Math.min(0.1, (now - last) / 1000);
-    last = now;
-    SIM.update(world, dt);
-    if (SND.ready()) SND.update(dt, world);
+    advance(now);
     render();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-
-  // keep the café alive (and audible) if the tab is hidden
-  setInterval(function () {
-    if (document.hidden) {
-      SIM.update(world, 0.25);
-      if (SND.ready()) SND.update(0.25, world);
-      last = performance.now();
-    }
-  }, 250);
+  setInterval(function () { if (document.hidden) advance(performance.now()); }, 250);
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) advance(performance.now());
+  });
 })();

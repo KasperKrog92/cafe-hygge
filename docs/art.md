@@ -164,7 +164,9 @@ y=368 ── the walking lane (L.lane — all pathing routes through this corrid
           (L.artist): a 40×54 canvas on a tall A-frame easel, a backless
           artist stool, a small serviced paint table, and one declared watch
           spot. The easel faces into the room; the canvas grows from saved arc
-          progress and rests primed after both works are hung
+          progress and rests primed after both works are hung. A floor lamp
+          (L.artist.lamp, the library sprite) stands on the open floor left of
+          the easel, lighting the canvas after dark
 y=576 ── 16:9 crop bottom
 y=600 ── master bottom: 24 px overscan strip (plus 12 px per side)
 ```
@@ -266,9 +268,11 @@ pocket and a tie bow at the back. Options per character: scarf, long hair,
 book replaces held items while seated), `typing` (forearms alternate toward
 the table), `playing` (the same alternating forearm language turned sideways
 toward the piano keys, with a 1 px sway), and `dozing` (head and book lower,
-eye closes). Lunafreya adds `painting` (brush arm reaching toward the canvas or
-mixing at the tray), `sketching` (open pad in the lap), and a paint-flecked
-smock overlay. A furled umbrella
+eye closes). Lunafreya adds `painting` (the working arm lifts so the brush
+strokes ON the canvas panel — not the tray line, where it visually vanishes),
+`sketching` (a kraft-covered pad in the lap, dark cover so the pale pages read
+against the smock), and a paint-flecked smock overlay drawn as an APRON: a bib
+narrower than the shoulders, so it never reads as a held-open book. A furled umbrella
 or closed laptop tucks under the mirror-side arm so it can coexist with a
 cup. Facing is ±1 (side profile both
 ways); the face details and hair-back column flip with it.

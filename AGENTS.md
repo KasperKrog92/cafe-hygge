@@ -170,9 +170,12 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 - **Captions are rate-limited** (6 s minimum gap, queue cap 2, shown 4.4 s).
   Emit captions through `caption(world, text)` only; use `withArticle()` for
   drink names ("an espresso").
-- The **hidden-tab interval** (250 ms tick in main.js) keeps the sim and audio
-  alive when the tab isn't rendering. New periodic logic must live in
-  `SIM.update`/`SND.update` (dt-driven), never in rAF-only code.
+- **One clock, many drivers** (main.js): `advance(now)` ticks the sim by real
+  elapsed time in ≤0.25 s chunks, called from rAF, the hidden-tab interval,
+  and refocus — so browser throttling never slows the café (a fixed hidden
+  dt=0.25 once lost ~96% of backgrounded time and starved slow arcs). New
+  periodic logic must live in `SIM.update`/`SND.update` (dt-driven), never in
+  rAF-only code, and never assume a small dt ceiling below 0.25 s.
 - Settings persist in `localStorage` under `cafe-hygge-audio` via `SND.save()`.
 - **The narrative save is separate** (`cafe-hygge-save` via `MEMORY.save()`) and
   **must migrate, never reset**: growing the save shape is only safe if

@@ -208,10 +208,13 @@
       px(g, x - 1, y - 28, 2, 12, topD);                        // fold
       px(g, x - 10, y - 12, 20, 2, topD);                       // hem
       if (c.smock) {
-        px(g, x - 7, y - 31, 14, 19, c.smock);
+        // an apron, not a panel: narrow bib up top so the shoulders stay in
+        // her own colour — a full-width pale block reads as a held-open book
+        px(g, x - 3, y - 31, 6, 4, c.smock);
+        px(g, x - 7, y - 27, 14, 15, c.smock);
         px(g, x - 6, y - 18, 12, 5, shade(c.smock, -0.08));
         px(g, x - 4, y - 17, 8, 2, shade(c.smock, 0.1));
-        px(g, x - 5, y - 27, 2, 2, '#5a7a8a');
+        px(g, x - 5, y - 25, 2, 2, '#5a7a8a');
         px(g, x + 4, y - 22, 2, 2, '#a94f3f');
       }
       if (c.scarf) {
@@ -242,24 +245,29 @@
       } else if (p.painting) {
         const stroke = Math.floor(p.animT * 5) % 2;
         if (p.paintMixing) {
+          // mixing happens down at the tray
           px(g, x - 10, y - 29, 7, 11, c.top);
-          px(g, x - 13, y - 20 + stroke, 8, 3, c.skin);
-          px(g, x - 20, y - 21 + stroke, 9, 1, '#8b7158');
+          px(g, x - 14, y - 24 + stroke, 8, 3, c.skin);
+          px(g, x - 21, y - 25 + stroke, 9, 1, '#8b7158');
         } else {
-          px(g, x - 10, y - 30, 7, 12, c.top);
-          px(g, x - 16, y - 27 + stroke, 9, 4, c.skin);
-          px(g, x - 29, y - 30 + stroke, 14, 2, '#8b7158');
-          px(g, x - 30, y - 31 + stroke, 3, 3, '#5a7a8a');
+          // the working arm lifts so the brush meets the canvas itself
+          // (canvas panel bottoms out at y 424; the tray line is not a stroke)
+          px(g, x - 10, y - 32, 7, 12, c.top);
+          px(g, x - 17, y - 36 + stroke, 9, 4, c.skin);
+          px(g, x - 29, y - 39 + stroke, 13, 2, '#8b7158');
+          px(g, x - 31, y - 42 + stroke, 3, 3, '#5a7a8a');
           px(g, x + 2, y - 27, 6, 9, c.top);
           px(g, x + 2, y - 20, 5, 3, c.skin);
         }
       } else if (p.sketching) {
         px(g, x - 8, y - 28, 6, 10, c.top);
         px(g, x + 2, y - 28, 6, 10, c.top);
-        px(g, x - 9, y - 20, 18, 9, '#e8e0cf');
-        px(g, x, y - 20, 2, 9, '#b5a888');
-        px(g, x - 5, y - 18, 10, 1, '#8b8070');
-        px(g, x + 2, y - 24, 1, 10, '#8b7158');
+        // kraft cover round the pages so the sketchbook reads against the smock
+        px(g, x - 10, y - 21, 20, 11, '#8b7158');
+        px(g, x - 8, y - 20, 16, 9, '#f5efdf');
+        px(g, x - 1, y - 20, 2, 9, '#b5a888');
+        px(g, x - 5, y - 18, 8, 1, '#8b8070');
+        px(g, x + 2, y - 25, 1, 10, '#8b7158');
       } else if (p.playing) {
         const keyBob = Math.floor(p.animT * 5) % 2;
         // A sideways version of the typing forearms: both hands reach left
@@ -362,7 +370,9 @@
     px(g, x - 1, y - 34, 2, 14, topD);
     px(g, x - 10, y - 18, 20, 2, topD);
     if (c.smock) {
-      px(g, x - 7, y - 39, 14, 22, c.smock);
+      // matching apron read: bib narrower than the shoulders (see sit pose)
+      px(g, x - 3, y - 39, 6, 4, c.smock);
+      px(g, x - 7, y - 35, 14, 18, c.smock);
       px(g, x - 6, y - 21, 12, 4, shade(c.smock, -0.08));
       px(g, x - 5, y - 31, 2, 2, '#5a7a8a');
       px(g, x + 3, y - 25, 2, 2, '#a94f3f');

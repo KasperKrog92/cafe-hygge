@@ -87,9 +87,16 @@ pass, so the cache is render-once (call `SCENE.invalidateBG()` if a future
 change makes it state-dependent). Per-frame background cost is one
 `drawImage` — measured draw+present is ≈0.1 ms/frame at ×2 presentation.
 
-A 250 ms `setInterval` runs `SIM.update`/`SND.update` (dt = 0.25) **only when
-`document.hidden`** — the café keeps living and sounding when the tab is
-hidden; rAF resumes seamlessly on return.
+The sim runs on **one clock with many drivers**: `advance(now)` in main.js
+ticks `SIM.update`/`SND.update` by the real elapsed time since the last tick,
+chunked into ≤0.25 s steps. The rAF loop, a 250 ms `setInterval` (armed only
+when `document.hidden`), and a refocus `visibilitychange` handler all call it,
+so the café keeps real-time pace no matter how the browser throttles any one
+driver (hidden-tab timers slow to ≥1 s, once a minute under Chrome's intensive
+throttling; an occluded window can slow rAF without ever setting
+`document.hidden`). A catch-up burst longer than ~2 s mutes its flood of
+one-shots (the `__dev.ff` pattern); a gap past 90 s (a frozen tab, a sleeping
+laptop) is dropped — that café simply held still, which the narrative allows.
 
 ## Movement
 
