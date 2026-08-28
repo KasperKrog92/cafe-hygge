@@ -34,7 +34,8 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 
 - `daylight` scales the multiply-tint over the whole scene and patron spawn
   rates; `lamp` scales the electric warm glows (hanging lamps, the two
-  nook reading lamps, and the little brass piano lamp) and the star/moon alpha. Candle light has its own
+  nook reading lamps, the studio floor lamp by the easel, and the little brass
+  piano lamp) and the star/moon alpha. Candle light has its own
   per-flame state, tended by Nora.
 - Threshold captions: lamps crossing on → "The streetlamps flicker on, one by
   one."; off → "Morning light spills across the floorboards."
@@ -109,7 +110,8 @@ Applied after all sprites, in `SCENE.drawLighting`:
 2. **Additive glows** (`lighter` composite): the three hanging lamps (the
    third hangs over the counter, with two spill pools across the back bar —
    machine + pass, pastry case — so the counter stays warm after dark), the
-   two reading lamps in the nook; the piano lamp's tight pool over the score,
+   two reading lamps in the nook and the studio floor lamp beside the easel;
+   the piano lamp's tight pool over the score,
    keys, and bench; the fireplace (never out — its glow pool grows and
    brightens with the live burn `world.fire.level` and shrinks to a small
    flickering ember glow when low); a candle jar on every dining and nook side

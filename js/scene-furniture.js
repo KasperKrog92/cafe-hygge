@@ -30,6 +30,7 @@
     // Lunafreya's studio is a permanent part of the piano corner. The easel
     // sits behind her baseline; the little table lands just in front so a cup
     // can be shared with the normal service/bussing pipeline.
+    out.push({ y: L.artist.lamp.y, draw: function (g) { drawFloorLamp(g, L.artist.lamp.x, L.artist.lamp.y); } });
     out.push({ y: L.artist.easel.baseline, draw: function (g) { drawArtistEasel(g, world); } });
     out.push({ y: L.artist.stool.y, draw: function (g) { drawArtistStool(g); } });
     out.push({ y: L.artist.table.base, draw: function (g) { drawArtistTable(g, artistTable); } });

@@ -181,7 +181,10 @@
       },
       stool: { x: 110, y: 458, facing: -1, via: 170 },
       table: { x: 142, y: 448, base: 466, saucer: { x: 142, y: 443 }, busVia: 170 },
-      watch: { x: 178, y: 478 }
+      watch: { x: 178, y: 478 },
+      // a floor lamp on the open floor left of the easel, lighting the canvas;
+      // its shade clears the canvas frame and stays out of the left overscan
+      lamp: { x: 24, y: 452 }
     },
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
@@ -288,6 +291,7 @@
   L.footprints.push({ name: 'piano', x0: 12, x1: 50, y0: 502, y1: 526 });
   L.footprints.push({ name: 'piano bench', x0: 51, x1: 77, y0: 516, y1: 528 });
   L.footprints.push({ name: 'artist easel', x0: 46, x1: 94, y0: 438, y1: 454 });
+  L.footprints.push({ name: 'artist lamp', x0: L.artist.lamp.x - 9, x1: L.artist.lamp.x + 11, y0: L.artist.lamp.y - 7, y1: L.artist.lamp.y + 1 });
   L.footprints.push({ name: 'artist stool', x0: 97, x1: 123, y0: 448, y1: 466 });
   L.footprints.push({ name: 'artist table', x0: 126, x1: 158, y0: 462, y1: 478, passable: true });
 

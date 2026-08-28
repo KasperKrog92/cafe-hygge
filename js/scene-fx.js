@@ -38,6 +38,8 @@
       glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
     });
     glow(g, L.piano.lamp.x, L.piano.lamp.y, 22, 255, 190, 100, 0.03 + 0.28 * lampA);
+    // the studio floor lamp pools over the easel so the canvas stays readable after dark
+    glow(g, L.artist.lamp.x + 8, L.artist.lamp.y - 56, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
     // fire: its warm pool grows and brightens with the live burn, and shrinks
     // to a small ember glow when low — but never goes fully dark
     const fireLvl = world.fire ? world.fire.level : 1;
