@@ -5,6 +5,12 @@
 
 # Sounds
 
+The Fleur de Lune game reuses the existing quiet synthesis. Its Coffee & company
+chapter calls `doorBell` when opening a morning, `kettlePour` when brewing,
+`cupDown` on delivery and `chairScrape(false)` when sitting. Those calls originate
+in interaction/simulation transitions, never rendering. Rain and music continue
+during conversations; fireplace audio is disabled. See [game.md](game.md).
+
 Every sound in Café Hygge is synthesized live in `js/audio.js` with the Web
 Audio API — there are currently **no audio files**. This doc catalogs the
 signal chains so they can be tuned, replaced with real recordings (see

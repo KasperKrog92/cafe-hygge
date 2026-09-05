@@ -7,6 +7,14 @@ not a fixed plot, a roster of promised characters or an implementation checklist
 exists. Unless identified as part of the opening, scenes below are possibilities.
 The retained companion café's arcs are not automatically Lunafreya's history.
 
+**Implemented development, September 2026:** the Coffee & company chapter now
+explores repetition through Holger's return and changing drink order, Astrid's
+arrival, her offered pelargonium cutting, Holger's first shared book and a
+conversation about Lunafreya sitting down herself. The cutting has a chosen
+home; the book requires a shelf. These are ordinary new café objects, without
+an implied supernatural history. Their exact scope is in [game.md](game.md);
+the other story seeds below remain possibilities.
+
 At the center is an ordinary woman making an ordinary place matter. Lunafreya
 owns Fleur de Lune; her blonde hair is gathered in a bun, and she has opinions,
 appetites and a life beyond being useful. Nora belongs to the original companion

@@ -5,6 +5,13 @@
 
 # Art — pixel style guide & layout map
 
+For the game runtime, the **Coffee & company** additions live in `game.js`:
+a brass lamp on the sill, wall-mounted book shelf, woven terracotta rug, and
+Astrid's cutting on the sill or table. Their anchors live in
+`SCENE.L.restoration`. The shared person renderer supplies reading, page turns,
+carrying and sipping; the original renderer files are unchanged. Game screenshots
+and verification are documented in [game.md](game.md).
+
 All art is drawn programmatically in the `js/scene-*.js` renderer files — no image assets. The
 scene renders to a **960×600 (16:10) master canvas**; a 16:9 window shows the
 **960×540 crop starting at y=36**, and other aspects a variable crop (visible
