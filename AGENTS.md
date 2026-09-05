@@ -112,6 +112,9 @@ for the full design ethos.
 
 - Commit and push directly to `main` unless the owner explicitly asks for a
   different branch or a pull request.
+- When changing a shipped script, bump its `?v=` tag in `index.html`. The live
+  Cloudflare cache can retain the previous URL for four hours even after a
+  successful Pages deployment. Verify the live HTML and its exact script URLs.
 
 ## Architecture (13 scripts, deliberate order)
 
