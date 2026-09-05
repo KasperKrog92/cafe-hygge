@@ -27,13 +27,17 @@
     // warm pools of light
     g.globalCompositeOperation = 'lighter';
     const lampA = pal.lamp;
-    glow(g, L.lamp1.x, 96, 104, 255, 176, 84, 0.05 + 0.26 * lampA);
-    glow(g, L.lamp2.x, 96, 104, 255, 176, 84, 0.05 + 0.26 * lampA);
-    glow(g, L.lamp3.x, 96, 104, 255, 176, 84, 0.05 + 0.26 * lampA);
-    // the counter pendant's spill: one pool over the machine + pass, one over
-    // the pastry case, so the back bar stays warm after dark
-    glow(g, 724, 248, 120, 255, 190, 100, 0.04 + 0.22 * lampA);
-    glow(g, 866, 250, 120, 255, 190, 100, 0.04 + 0.22 * lampA);
+    L.pendants.forEach(function (lp) {
+      // Shade contains the source: modest bloom below its rim, with the
+      // useful light directly beneath it on the counter, not across the wall.
+      g.save();
+      g.beginPath();
+      g.rect(lp.x - 48, lp.y + 2, 96, 60);
+      g.clip();
+      glow(g, lp.x, lp.y + 4, 48, 255, 190, 100, 0.18 * lampA);
+      g.restore();
+      glow(g, lp.x, L.counter.slabY - 16, 112, 255, 190, 100, 0.26 * lampA);
+    });
     L.library.lamps.forEach(function (lp) {
       glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
     });

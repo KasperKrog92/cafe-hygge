@@ -41,9 +41,7 @@
     drawDoor(g, world);
     drawLunafreyaGallery(g, world);
     drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
-    drawHangingLamp(g, L.lamp1.x, world);
-    drawHangingLamp(g, L.lamp2.x, world);
-    drawHangingLamp(g, L.lamp3.x, world);
+    L.pendants.forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
     drawMachine(g, world);
   };
@@ -882,18 +880,26 @@
     px(g, 780, 136, 10, 12, '#4a7a5a');
   }
 
-  function drawHangingLamp(g, x, world) {
-    px(g, x, 0, 2, 68, '#3a2a1c');
-    px(g, x - 14, 68, 30, 6, '#c9803c');
-    px(g, x - 10, 74, 22, 8, '#b5702e');
-    px(g, x - 14, 80, 30, 4, '#9c5f24');
+  function drawHangingLamp(g, lp, world) {
+    const x = lp.x, y = lp.y;
+    px(g, x - 1, 0, 2, y - 22, '#3a2a1c');
+    px(g, x - 4, y - 22, 8, 6, '#9c5f24');
+    // A shallow copper dome widens DOWN to an opaque rim. The small top
+    // highlight and recessed cream underside give it volume without a bare bulb.
+    px(g, x - 10, y - 18, 20, 4, '#c9803c');
+    px(g, x - 16, y - 14, 32, 6, '#b5702e');
+    px(g, x - 22, y - 8, 44, 6, '#b5702e');
+    px(g, x - 14, y - 14, 12, 2, '#c9803c');
+    px(g, x + 12, y - 12, 4, 4, '#9c5f24');
+    px(g, x + 16, y - 8, 6, 6, '#9c5f24');
+    px(g, x - 24, y - 2, 48, 4, '#9c5f24');
+    px(g, x - 18, y + 2, 36, 2, '#d9cfb5');
     const on = world.pal.lamp;
     if (on > 0.03) {
-      g.globalAlpha = 0.4 + on * 0.6;
-      px(g, x - 4, 84, 10, 6, '#ffd98a');
+      g.globalAlpha = on;
+      px(g, x - 18, y + 2, 36, 2, '#ffd98a');
+      px(g, x - 12, y + 4, 24, 2, '#ffd98a');
       g.globalAlpha = 1;
-    } else {
-      px(g, x - 2, 84, 6, 4, '#d9cfb5');
     }
   }
 

@@ -126,7 +126,7 @@ everything else says "see `SCENE.L.<key>`". The room's shape, top to bottom:
 
 ```
 y=0   ── master top: 36 px overscan strip (texture only — croppable)
-          picture rail, hanging-lamp cords (L.lamp1/lamp2/lamp3)
+          picture rail, counter pendant cords (L.pendants)
 y=36  ── 16:9 crop top
           wall band: door + bell (L.door, L.bell), broad low-silled window
           (L.win), fireplace
@@ -152,8 +152,8 @@ y=36  ── 16:9 crop top
           meets the sill; then behind the counter: two short dish shelves with
           the menu chalkboard (L.menu) at their right; shelf 1 keeps a clear
           32+ px right-end cat gap, with its displaced books on shelf 2 and
-          tiny plant beside the pastry case — the third pendant
-          (L.lamp3) hangs in the wall gap between them — wainscot, espresso
+          tiny plant beside the pastry case — two matching counter pendants
+          (L.pendants) hang above the shelves and menu — wainscot, espresso
           machine (L.machine — drawn in the background layer)
 y=232 ── wall meets floor (L.wallY — kept high so the floor, the life layer,
           dominates the frame)
@@ -407,13 +407,23 @@ Lunafreya's cat painting still hangs in the clear space above them.
 
 Both rust-red curtains finish just above the sill, with long lower pleats.
 Brass casement catches and restrained glass reflections add detail; all exterior
-rendering, including rain, is clipped to each window opening. Pendants at
-L.lamp1 and L.lamp2 are centered over their respective window reading ledges;
-their existing glows follow the same anchors. The small print at L.wallFrame
+rendering, including rain, is clipped to each window opening. Window reading
+ledges stay clear of ceiling pendants, leaving the street views open.
+The small print at L.wallFrame
 is centered above the entrance, clear of the bell, window trim and later
 hearth painting. Back-bar shelf bevels, contact shadows and stepped brackets
 clarify how the dishes are supported while keeping the cat's upper perch clear.
 Static wall details remain cached.
+
+Ceiling lighting is concentrated at the counter: two matching shallow copper
+pendants at `L.pendants`, one above the machine/pass and one above the pastry
+case. Their cords continue to the unseen ceiling; equal rim heights and clear
+space above the shelves/menu make them read as a pair. Stepped domes widen
+downward to broad rims with recessed warm undersides, rather than exposed bulbs.
+Shade art and bloom share each pendant's x/y anchor, and each counter pool sits
+directly below its source at a height derived from `L.counter.slabY`. Compact
+source bloom is clipped below the rim; electric light fades with `pal.lamp`.
+The reading areas retain their floor lamps, candles and firelight.
 
 The back-bar menu now sits slightly left and lower at L.menu (808,112), sized
 116×100. A six-pixel wooden surround, recessed slate, and projecting chalk

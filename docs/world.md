@@ -115,9 +115,10 @@ Applied after all sprites, in `SCENE.drawLighting`:
 
 1. **Multiply tint** over the full canvas: night `rgb(112,120,172)` →
    day `rgb(255,250,242)`, lerped by `daylight`.
-2. **Additive glows** (`lighter` composite): the three hanging lamps (the
-   third hangs over the counter, with two spill pools across the back bar —
-   machine + pass, pastry case — so the counter stays warm after dark), the
+2. **Additive glows** (`lighter` composite): two counter pendants, each with
+   a compact bloom below its shade and a pool directly beneath it on the bar
+   (machine + pass, pastry case). Both use `L.pendants` and fade with `pal.lamp`;
+   there are no ceiling-light halos across the windows. Also lit are the
    two reading lamps in the nook and the studio floor lamp beside the easel;
    the piano lamp's tight pool over the score,
    keys, and bench; the fireplace (never out — its glow pool grows and
