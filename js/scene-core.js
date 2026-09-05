@@ -39,9 +39,10 @@
     // (Nora or a fireside regular) takes to lay a fresh log, just left of the
     // firebox centre so the reach carries into the coals
     fire: { x: 344, w: 88, boxX: 364, boxW: 48, boxTop: 180, boxBot: 228, stand: { x: 384, y: 302 } },
+    wallFrame: { x: 42, y: 48 }, // small print centered above the entrance gallery
     lane: 368,                // main walking corridor
-    lamp1: { x: 318, y: 84 },
-    lamp2: { x: 628, y: 84 },
+    lamp1: { x: 216, y: 84 },
+    lamp2: { x: 536, y: 84 },
     lamp3: { x: 810, y: 84 },  // over the counter, threading the wall gap between shelves and menu
     // the reading nook (bottom right): a 2 CH bookshelf patrons borrow from,
     // green wing chairs each with a side table + reading lamp, on their own rug

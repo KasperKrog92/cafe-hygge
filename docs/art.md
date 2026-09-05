@@ -32,8 +32,8 @@ architecture textures, retuned atmosphere and real typography.
   People are ~24 px wide × 60 tall; seated ~52 (drawn a touch hunched — cozy).
   The cat is ~28×21.
 - **The café ruler** (tuned values; ratios between neighbors matter more than
-  absolutes): door 102 h (1.7 CH), window glass 176×140, fireplace breast 120 h
-  (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×80,
+  absolutes): door 102 h (1.7 CH), window glass 176×140, fireplace brickwork 120 h
+  with a plastered chimney continuing to the ceiling (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×80,
   floor lamp 68, coat stand ~70, table top at ~32 above the floor (Ø 64),
   stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
   side-table top ~26, window-perch cushions 24, window poseur tables ~52 to
@@ -225,11 +225,10 @@ Rules that keep it looking right:
 - **Background layer** (drawScene) = anything wall-mounted or behind
   everything: wall, windows, door, fireplace, menu, shelves, machine, rugs.
   Static parts render once into an offscreen cache; the two windows, door,
-  wall frame, Lunafreya's two flag-keyed paintings (above fireplace / above
+  Lunafreya's two flag-keyed paintings (above fireplace / above
   door), hanging lamps, flames, clock hands, candle flames and machine
   are painted over it every frame (in that order — it preserves the old
-  one-pass overlap behavior; the wall frame must paint after the window
-  frame edge).
+  overlap behavior). The small entrance print is cached with the static wall.
 - **Stools** get baseline just *under* their sitter (stable sort + furniture-
   first push order breaks the tie), so sitters overlap the stool.
 - **Tables** get baseline `cy+32` so tabletops overlap a sitter's knees.
@@ -398,3 +397,20 @@ blue-grey one-pixel text, and a faint radius-18 glow scaled by darkness.
    they may be cropped on 16:9 displays.
 5. Check occlusion at dawn/day/dusk/night (`__dev.hour(h)` jumps) and with a
    patron seated nearby; finish with `__dev.audit()` → 0 problems.
+
+## Back-wall refinement — 5 September 2026
+
+The fireplace has a continuous plastered chimney breast with shallow side
+shadows, a soldier-course brick lintel, and a wider stone hearth with a visible
+front edge. The mantel clock, candles and plant retain their usable positions;
+Lunafreya's cat painting still hangs in the clear space above them.
+
+Both rust-red curtains finish just above the sill, with long lower pleats.
+Brass casement catches and restrained glass reflections add detail; all exterior
+rendering, including rain, is clipped to each window opening. Pendants at
+L.lamp1 and L.lamp2 are centered over their respective window reading ledges;
+their existing glows follow the same anchors. The small print at L.wallFrame
+is centered above the entrance, clear of the bell, window trim and later
+hearth painting. Back-bar shelf bevels, contact shadows and stepped brackets
+clarify how the dishes are supported while keeping the cat's upper perch clear.
+Static wall details remain cached.

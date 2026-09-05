@@ -41,7 +41,6 @@
     drawDoor(g, world);
     drawLunafreyaGallery(g, world);
     drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
-    drawWallFrame(g, 100, 120); // sits beside the window frame edge → paints after it
     drawHangingLamp(g, L.lamp1.x, world);
     drawHangingLamp(g, L.lamp2.x, world);
     drawHangingLamp(g, L.lamp3.x, world);
@@ -183,6 +182,7 @@
     rugWeave(g, 390, 450, 168, 74, '#c9a04a');
     rugWeave(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#c9b28a');
 
+    drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
     drawFireplaceStatic(g);
     drawMenuBoard(g);
     drawShelves(g);
@@ -221,6 +221,9 @@
      glass (and keeps the moon in one sky only). */
   function drawWindow(g, world, w, alt) {
     const pal = world.pal, t = world.t;
+    // Clip the entire exterior: rain and town silhouettes cannot spill onto the sill.
+    g.save();
+    g.beginPath(); g.rect(w.x, w.y, w.w, w.h); g.clip();
     // outside: sky
     px(g, w.x, w.y, w.w, Math.round(w.h * 0.55), pal.skyTop);
     px(g, w.x, w.y + Math.round(w.h * 0.55), w.w, Math.round(w.h * 0.45), pal.skyBot);
@@ -299,9 +302,13 @@
       g.fillStyle = 'rgba(214,229,255,' + (world.flash * 0.15).toFixed(3) + ')';
       g.fillRect(w.x, w.y, w.w, w.h);
     }
+    g.restore();
     // glass sits recessed: soft shadow under the top/left of the frame
     px(g, w.x, w.y, w.w, 3, 'rgba(15,10,6,0.3)');
     px(g, w.x, w.y, 3, w.h, 'rgba(15,10,6,0.22)');
+    // A quiet glass reflection, interrupted by the wooden glazing bars.
+    px(g, w.x + 42, w.y + 8, 2, 42, 'rgba(232,236,245,0.13)');
+    px(g, w.x + w.w - 48, w.y + 78, 2, 38, 'rgba(232,236,245,0.09)');
     // frame + mullions with a lit top bevel for depth
     g.fillStyle = '#5a3d28';
     g.fillRect(w.x - 8, w.y - 8, w.w + 16, 8);
@@ -314,6 +321,8 @@
     px(g, w.x + w.w / 2 - 2, w.y, 2, w.h, '#6e4a33');
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 4, '#5a3d28');
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 2, '#6e4a33');
+    // Small brass casement catch on the central stile.
+    px(g, w.x + w.w / 2 + 2, w.y + w.h / 2 + 8, 3, 8, '#c9a04a');
     drawCurtains(g, w);
     // deep sill: lit top, front face, shadow underneath
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 8, '#6e4a33');
@@ -437,7 +446,7 @@
     tie: '#d2a14f'
   };
 
-  /* Short tied-back drapes frame the weather without crowding the little
+  /* Sill-length tied-back drapes frame the weather without crowding the little
      window seats. Their stepped hems keep the folds crisp at native scale. */
   function drawCurtains(g, w) {
     const rodY = w.y - 13;
@@ -466,8 +475,8 @@
     g.lineTo(p(37), top + 24);
     g.lineTo(p(31), top + 48);
     g.lineTo(p(20), top + 66);
-    g.lineTo(p(31), top + 100);
-    g.lineTo(p(2), top + 100);
+    g.lineTo(p(31), top + 148);
+    g.lineTo(p(2), top + 148);
     g.closePath();
     g.fill();
 
@@ -479,16 +488,16 @@
     g.lineTo(p(33), top + 24);
     g.lineTo(p(27), top + 47);
     g.lineTo(p(16), top + 65);
-    g.lineTo(p(27), top + 96);
-    g.lineTo(p(5), top + 96);
+    g.lineTo(p(27), top + 144);
+    g.lineTo(p(5), top + 144);
     g.closePath();
     g.fill();
     px(g, Math.min(p(8), p(10)), top + 4, 2, 54, CURTAIN.light);
     px(g, Math.min(p(19), p(21)), top + 4, 2, 42, CURTAIN.deep);
     px(g, Math.min(p(16), p(22)), top + 61, 6, 5, CURTAIN.tie);
     px(g, Math.min(p(18), p(24)), top + 66, 6, 2, '#9c6b36');
-    px(g, Math.min(p(9), p(11)), top + 72, 2, 20, CURTAIN.light);
-    px(g, Math.min(p(21), p(23)), top + 73, 2, 17, CURTAIN.deep);
+    px(g, Math.min(p(9), p(11)), top + 76, 2, 62, CURTAIN.light);
+    px(g, Math.min(p(21), p(23)), top + 82, 2, 52, CURTAIN.deep);
   }
 
   function drawSillCushion(g, x, top, C) {
@@ -642,6 +651,13 @@
   /* ---------- fireplace ---------- */
   function drawFireplaceStatic(g) {
     const f = L.fire;
+    // Plastered flue continues to the ceiling; shallow side planes locate
+    // the masonry in front of the wall instead of ending behind the clock.
+    px(g, f.x + 3, 0, f.w, 232, 'rgba(50,30,20,0.14)');
+    px(g, f.x, 0, f.w, 132, '#c9b28a');
+    px(g, f.x + 3, 0, f.w - 9, 132, shade('#e3cfa7', -0.06));
+    px(g, f.x, 0, 3, 132, '#e3cfa7');
+    px(g, f.x + f.w - 6, 0, 6, 132, shade('#c9b28a', -0.08));
     // chimney breast: real coursing — 22×14 bricks on mortar, staggered, tint-varied
     px(g, f.x, 112, f.w, 120, '#5f3229');
     const BRICKS = ['#7d4437', '#86493c', '#744033', '#8a4d3d'];
@@ -654,6 +670,12 @@
         if (bw > 0 && bh > 0) px(g, bx, y, bw, bh, BRICKS[(h2(x, y) * BRICKS.length) | 0]);
       }
     }
+    // Recessed sides and a brick lintel give the opening a load-bearing surround.
+    px(g, f.x, 144, 3, 88, '#744033');
+    px(g, f.x + f.w - 4, 144, 4, 88, '#5f3229');
+    px(g, f.boxX - 6, f.boxTop - 12, f.boxW + 12, 8, '#86493c');
+    for (let x = f.boxX - 4; x < f.boxX + f.boxW + 6; x += 10)
+      px(g, x, f.boxTop - 12, 2, 8, '#5f3229');
     // mantel on little corbels, shadow beneath
     px(g, f.x - 10, 132, f.w + 20, 10, '#5a3d28');
     px(g, f.x - 10, 132, f.w + 20, 4, '#7a5238');
@@ -678,7 +700,9 @@
     ell(g, f.boxX + 38, f.boxBot - 15, 3, 2, '#8a6142');
     px(g, f.boxX + 37, f.boxBot - 16, 2, 2, '#57371f');
     // hearth stone with joints
-    px(g, f.boxX - 8, f.boxBot, f.boxW + 16, 6, '#8a8378');
+    px(g, f.x - 4, f.boxBot + 3, f.w + 8, 7, shade('#8a8378', -0.2));
+    px(g, f.x - 6, f.boxBot, f.w + 12, 5, '#8a8378');
+    px(g, f.x - 6, f.boxBot, f.w + 12, 2, '#a39c8f');
     px(g, f.boxX - 8, f.boxBot, f.boxW + 16, 2, '#a39c8f');
     px(g, f.boxX + 8, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
     px(g, f.boxX + 24, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
@@ -817,6 +841,17 @@
     px(g, 636, 148, 164, 8, '#7d5334');
     px(g, 644, 112, 4, 6, '#5f402c'); px(g, 788, 112, 4, 6, '#5f402c');
     px(g, 644, 156, 4, 6, '#5f402c'); px(g, 788, 156, 4, 6, '#5f402c');
+    // Bevelled boards and proper wall brackets; dishes touch the top plane.
+    [104, 148].forEach(function (y) {
+      px(g, 636, y, 164, 2, '#9c6b43');
+      px(g, 636, y + 6, 164, 2, '#5f402c');
+      px(g, 638, y + 8, 162, 2, 'rgba(30,18,10,0.16)');
+      [644, 788].forEach(function (x) {
+        px(g, x, y + 8, 3, 12, '#5f402c');
+        px(g, x + 3, y + 8, 5, 3, '#6e4a33');
+        px(g, x + 3, y + 11, 3, 3, '#6e4a33');
+      });
+    });
     // shelf 1: cups only; the clear right end is the cat's long-established
     // high perch (at least 32 px of uninterrupted board).
     const cupCols = ['#d9d2c0', '#a94f3f', '#4a7a5a', '#d9a05a', '#7a89a5'];
@@ -855,7 +890,9 @@
   }
 
   function drawWallFrame(g, x, y) {
+    px(g, x + 2, y + 3, 24, 30, 'rgba(50,30,20,0.18)');
     px(g, x, y, 24, 30, '#8a6142');
+    px(g, x, y, 24, 2, '#c9b28a');
     px(g, x + 2, y + 2, 20, 26, '#3d4a5c');
     px(g, x + 6, y + 16, 12, 8, '#5a7a8a');
     px(g, x + 8, y + 6, 8, 6, '#e8dfc9');
