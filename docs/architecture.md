@@ -109,8 +109,10 @@ front/back-view switch, cleared on horizontal legs and on arrival), and
 returns `true` on arrival. `makePath(e, tx, ty)` takes a direct line where clear,
 otherwise finds the shortest visible-corner route around `L.footprints` and
 `L.occluders`. Obstacles include low tables and have 10 px shoulder clearance
-and 2 px floor clearance. Start/end furniture is exempt so people can rise
-from and sit in their own chairs. The central lane (`L.lane = 368`) remains
+and 2 px floor clearance. Only a footprint marked `seat: true` can admit its
+own sitter, and only on the first or final leg. A destination in an obstacle's
+clearance margin relaxes just the nearest outside edge on that leg; the solid
+plant, lamp, or table remains blocked. The central lane (`L.lane = 368`) remains
 open, but short trips no longer have to return to it. On each new path,
 `walker` also removes clear detours from authored routes; shortcuts never
 cross any furniture, including endpoint furniture. The

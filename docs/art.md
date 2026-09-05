@@ -221,6 +221,9 @@ shortcuts, with 10 px shoulder and 2 px floor clearance. The `passable` audit
 exception remains for authored interaction routes. Run `tools/verify-pathing.js`
 in a disposable `?dev` browser for all seat/service pairs, sampled collision
 checks (including tables), arrival checks, and distance comparisons.
+Seat footprints declare `seat: true` so only an actual chair/bench/stool can
+admit its own sitter on an arrival or departure leg. Stops near a plant may
+relax the adjacent clearance margin, but never permit crossing its solid box.
 
 ## Depth model (painter's algorithm)
 

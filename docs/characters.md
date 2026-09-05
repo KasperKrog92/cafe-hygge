@@ -186,6 +186,8 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    around the fireside armchairs, both arriving and leaving; short trips can
    cross open floor directly. Both perches at a window share the
    tall table under the glass for their drinks.
+   The rightmost perch uses a floor approach 12 px left of the sill position,
+   leaving room beside the counter plant when stepping up or down.
    A pianist may instead take the appended piano bench; its drink goes to the
    dedicated saucer spot on the lid, so sipping, steam, cup return, abandoned
    cup avoidance, and Nora's normal bussing all use the shared table pipeline.

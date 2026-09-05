@@ -395,7 +395,7 @@
   const walkBoxes = L.occluders.map(function (o) {
     return { x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
   }).concat(L.footprints).map(function (b) {
-    return { x0: b.x0 - 10, x1: b.x1 + 10, y0: b.y0 - 2, y1: b.y1 + 2 };
+    return { x0: b.x0 - 10, x1: b.x1 + 10, y0: b.y0 - 2, y1: b.y1 + 2, core: b };
   });
 
   function insideWalkBox(p, b) {
@@ -419,8 +419,27 @@
     return hi > 0 && lo < 1;
   }
 
-  function walkClear(a, b, boxes) {
-    return !boxes.some(function (box) { return walkHits(a, b, box); });
+  function walkClear(a, b, boxes, start, end) {
+    return !boxes.some(function (box) {
+      let bounds = box;
+      for (const p of [start, end]) {
+        if (!p || (p !== a && p !== b) || !insideWalkBox(p, box)) continue;
+        // Only a seat's own arrival/departure leg may enter its solid box.
+        // Nearby plants, tables and lamps must never disappear from a route.
+        if (box.core.seat && insideWalkBox(p, box.core)) return false;
+        bounds = { x0: bounds.x0, x1: bounds.x1, y0: bounds.y0, y1: bounds.y1 };
+        // A stop can be in a clearance margin (the right window is beside a
+        // plant). Relax only the nearest outside edge, never the solid core.
+        const edges = ['x0', 'x1', 'y0', 'y1'].filter(function (edge) {
+          return edge[1] === '0' ? p[edge[0]] <= box.core[edge] : p[edge[0]] >= box.core[edge];
+        });
+        edges.sort(function (u, v) {
+          return Math.abs(p[u[0]] - box[u]) - Math.abs(p[v[0]] - box[v]);
+        });
+        if (edges.length) bounds[edges[0]] = p[edges[0][0]];
+      }
+      return walkHits(a, b, bounds);
+    });
   }
 
   const walkCorners = [];
@@ -436,12 +455,8 @@
 
   function makePath(e, tx, ty) {
     const start = { x: e.x, y: e.y }, end = { x: tx, y: ty };
-    // Sitting/standing up is allowed through one's own furniture. All other
-    // furniture stays solid. Authored counter work uses separate staff paths.
-    const boxes = walkBoxes.filter(function (b) {
-      return !insideWalkBox(start, b) && !insideWalkBox(end, b);
-    });
-    if (walkClear(start, end, boxes)) { e.path = [end]; return; }
+    const boxes = walkBoxes;
+    if (walkClear(start, end, boxes, start, end)) { e.path = [end]; return; }
     const nodes = [start, end].concat(walkCorners);
     const costs = nodes.map(function () { return Infinity; }), prev = [], done = [];
     costs[0] = 0;
@@ -455,7 +470,7 @@
       for (let j = 1; j < nodes.length; j++) {
         if (done[j]) continue;
         const cost = costs[at] + Math.hypot(nodes[j].x - nodes[at].x, nodes[j].y - nodes[at].y);
-        if (cost < costs[j] && walkClear(nodes[at], nodes[j], boxes)) {
+        if (cost < costs[j] && walkClear(nodes[at], nodes[j], boxes, start, end)) {
           costs[j] = cost; prev[j] = at;
         }
       }

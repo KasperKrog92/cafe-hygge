@@ -78,7 +78,8 @@
       { win: 0, side: -1, x: 156, y: 252, perchX: 156, perchY: 224 },
       { win: 0, side: 1, x: 276, y: 252, perchX: 276, perchY: 224, via: 240 },
       { win: 1, side: -1, x: 476, y: 252, perchX: 476, perchY: 224, via: 540 },
-      { win: 1, side: 1, x: 596, y: 252, perchX: 596, perchY: 224 }
+      // Step up from the clear side of the plant; the sill perch stays put.
+      { win: 1, side: 1, x: 584, y: 252, perchX: 596, perchY: 224 }
     ],
     // slim poseur tables under the windows: y = tabletop (meets the sill so
     // perched sitters can reach their drink), base = floor line for depth
@@ -264,13 +265,13 @@
     [-1, 1].forEach(function (side) {
       const sx = t.x + side * L.stoolDX;   // the left seat is a chair with a back
       L.footprints.push({
-        name: (side < 0 ? 'chair' : 'stool') + ' (table ' + i + ')',
+        name: (side < 0 ? 'chair' : 'stool') + ' (table ' + i + ')', seat: true,
         x0: sx - (side < 0 ? 17 : 13), x1: sx + 13, y0: t.y + 4, y1: t.y + 26
       });
     });
   });
   L.armchairs.concat(L.library.chairs).forEach(function (A, i) {
-    L.footprints.push({ name: 'wing chair ' + i, x0: A.x - 32, x1: A.x + 32, y0: A.y - 16, y1: A.y + 14 });
+    L.footprints.push({ name: 'wing chair ' + i, seat: true, x0: A.x - 32, x1: A.x + 32, y0: A.y - 16, y1: A.y + 14 });
   });
   L.library.sideTables.forEach(function (s, i) {
     L.footprints.push({ name: 'side table ' + i, x0: s.x - 16, x1: s.x + 16, y0: s.y - 4, y1: s.y + 12, passable: true });
@@ -290,10 +291,10 @@
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
   L.footprints.push({ name: 'piano', x0: 12, x1: 50, y0: 502, y1: 526 });
-  L.footprints.push({ name: 'piano bench', x0: 51, x1: 77, y0: 516, y1: 528 });
+  L.footprints.push({ name: 'piano bench', seat: true, x0: 51, x1: 77, y0: 516, y1: 528 });
   L.footprints.push({ name: 'artist easel', x0: 46, x1: 94, y0: 438, y1: 454 });
   L.footprints.push({ name: 'artist lamp', x0: L.artist.lamp.x - 9, x1: L.artist.lamp.x + 11, y0: L.artist.lamp.y - 7, y1: L.artist.lamp.y + 1 });
-  L.footprints.push({ name: 'artist stool', x0: 97, x1: 123, y0: 448, y1: 466 });
+  L.footprints.push({ name: 'artist stool', seat: true, x0: 97, x1: 123, y0: 448, y1: 466 });
   L.footprints.push({ name: 'artist table', x0: 126, x1: 158, y0: 462, y1: 478, passable: true });
 
   /* ---------- helpers ---------- */
