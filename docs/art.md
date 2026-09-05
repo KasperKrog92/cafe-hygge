@@ -462,3 +462,19 @@ Nora's chalk stop is (893, 238), close enough to touch the board; she returns
 to her normal y=286 service line afterwards. Cat hops have their own mirrored
 crouch/tuck/landing poses. See [animations.md](animations.md) for coverage and
 repeatable motion review commands.
+
+## Fleur de Lune: the first evening
+
+`game-restoration.js` draws the opening work bodies while reusing Lunafreya's
+actual head, bun and palette from `SCENE.drawPerson`. Kneeling compresses her
+stance, not the character sprite; connected arms place cloths, tools and broom
+at their contact surfaces. Two hands hold the broom and wring the cloth. The
+upper pane uses a two-step stool, with a slow ascent and descent. Work gestures
+follow work time, so the rest button freezes them without freezing breathing.
+
+`SCENE.L.restoration.workSites` and `workProps` own approaches and prop anchors.
+Rubble leaves in pieces; sweeping clears patches around successive approaches;
+grime reveals a circle of night glass and a moon. The paper on the sill, worn
+floor and old paint seam survive restoration. The room stays in full view while
+working; three reflections slowly center the camera on Lunafreya. Use the real
+game `__game.shot()` and `tools/review-opening.js`, not legacy art fixtures.

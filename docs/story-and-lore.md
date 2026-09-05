@@ -12,8 +12,17 @@ explores repetition through Holger's return and changing drink order, Astrid's
 arrival, her offered pelargonium cutting, Holger's first shared book and a
 conversation about Lunafreya sitting down herself. The cutting has a chosen
 home; the book requires a shelf. These are ordinary new café objects, without
-an implied supernatural history. Their exact scope is in [game.md](game.md);
-the other story seeds below remain possibilities.
+an implied supernatural history. Their exact scope is in [game.md](game.md).
+
+The opening now also includes three private reflections during slow cleanup:
+a folded shopping list with a window sketch recalls her hidden plans; worn
+floorboards let her admit that having the key has not made her certain; moonlit
+glass recalls the kitchen window where she used to sit after other lights went
+out. She nearly went home tonight, but stayed to see the light. These scenes
+establish habits and a little vulnerability, without specifying a tragedy,
+inheritance or the previous occupant. The sketch, floor wear and old paint seam
+remain visible, and the reflections leave later notebook entries.
+The other story seeds below remain possibilities.
 
 At the center is an ordinary woman making an ordinary place matter. Lunafreya
 owns Fleur de Lune; her blonde hair is gathered in a bun, and she has opinions,

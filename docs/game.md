@@ -8,6 +8,36 @@ it. The opening restores plaster, floorboards, window, walls and light, then
 places a second-hand table and two chairs, unpacks the kettle and coffee,
 opens the door and serves Holger. Every repair visibly persists.
 
+### The first evening: slow restoration
+
+The first four jobs contain **250 seconds of active work**, plus careful movement
+between patches and three player-paced reflections. Clearing takes 54 seconds,
+sweeping 64, the window 66 and the walls 66. Each has four authored phases:
+kneeling and sorting, lifting into a sack, slow broom passes and a dustpan,
+loosening the window brace, soaking/wiping/rinsing/polishing, then scraping,
+patching and washing the walls. A two-step stool brings the upper glass within
+reach. Strokes take 5.6 seconds with contact, travel, lift, return and settling;
+work uses its own elapsed clock, while breathing and rain remain ambient.
+
+Dust, rubble and window grime clear progressively. The opening takes place in
+evening light: a small moon emerges through the dirty glass and casts light and
+motes onto the boards. The first cup leads into the brighter neighborhood scene.
+A folded shopping list with a window sketch stays on the sill, a pale worn patch
+remains in the floor, and the wall repair preserves a seam of older green paint.
+
+Three reflections interrupt the work at exact boundaries. Lunafreya recognizes
+her habit of hiding plans in the sketch, admits uncertainty over the worn boards,
+and remembers late kitchen windows while looking at the moon. They do not assign
+her a bereavement or explain who owned the café. Continue advances each line;
+the last button resumes the interrupted job. The camera follows her and work,
+movement and progress wait indefinitely. Their notes appear in the later notebook.
+
+**Rest your hands** pauses any of these four jobs; **Continue the work** resumes
+at the same point. There are no repeated clicks, timed inputs or completion
+percentages. Completed jobs retain the existing save milestones. As before,
+reloading restarts an unfinished job (including an unfinished reflection);
+the in-session rest button preserves its exact progress.
+
 Lunafreya is the playable owner: blonde hair in a large bun, sage clothing,
 pale work apron, and her own observant, sometimes stubborn voice. Holger is
 the first guest. The original Nora and NPC Lunafreya are not spawned here.
@@ -65,6 +95,7 @@ Plain scripts load in this order:
 | `scene-people.js` | Shared character animation and poses |
 | `game-content.js` / `FLEUR` | Restoration tasks, guests, visits, stories and improvements as data |
 | `game-memory.js` / `FLEUR_MEMORY` | Save validation, migration and storage |
+| `game-restoration.js` / `FLEUR_WORK` | Work phases, grounded work poses, tools and environmental traces |
 | `game.js` | Movement, service state machine, interactions, camera, room renderer and UI |
 
 There is no build step, framework or runtime dependency. `file://` still works.
@@ -104,8 +135,11 @@ elapsed time capped at 0.25 seconds per browser frame. No idle-save keys change.
 
 Sound requires a real Enable sound click. The shared rain and music remain;
 there is no fireplace. Existing `doorBell`, `kettlePour`, `cupDown` and
-`chairScrape` provide arrival, service and sitting feedback. No synthesis or
-gain changes were made, and this runtime does not write audio settings.
+`chairScrape` provide arrival, service and sitting feedback. Those sounds are
+unchanged, and this runtime does not write audio settings. `workStroke(kind)`
+adds a quiet contact sound once per active cleaning stroke: dry grit, broom
+friction or damp cloth, at 0.012–0.016 peak. Rest, movement between patches and
+reflections trigger no work sounds.
 
 Native modal dialogs provide keyboard focus management for the notebook and
 recipes; Escape closes them. Story dialogue focuses Continue and contains Tab
@@ -121,10 +155,12 @@ Serve the checkout on port 8137 and use a **disposable** browser at `/?dev`.
 `audit()` and `shot()`. The audit checks player/guest overlap with the table,
 restoration and service prerequisites, funds and conversation/work exclusion.
 `inspect()` reports active work, dialogue, modal, arrival, rest and invitation.
+It also reports `workElapsed`, `workPhase`, `workPaused` and `reflection`.
 
 ```powershell
 node --check js/game.js
 node --check js/game-content.js
+node --check js/game-restoration.js
 node --check js/game-memory.js
 node tools/verify-game-memory.js
 git diff --check
@@ -164,3 +200,9 @@ exercised. Browser reloads retained a migrated v1 opening, an order, a carried
 cup and its single payment. Desktop and 390×844 layouts, conversation choices,
 notebook and mouse/keyboard movement were inspected. Audio initialization passed
 through a real click; the sound mix was not reviewed by listening.
+
+The expanded opening check additionally covers all three reflections, exact
+resume boundaries, 300 seconds waiting at each reflection, and a 60-second
+hand-rest pause in each cleanup job. Run `tools/review-opening.js` with browser
+eval for a detached 24-frame PNG contact sheet (returned as a data URL).
+Inspect it alongside actual room screenshots; it leaves the live save alone.

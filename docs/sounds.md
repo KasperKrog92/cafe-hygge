@@ -134,6 +134,14 @@ All one-shots are wrapped in `guard()`: they silently no-op before
 
 ## Adding a sound
 
+The Fleur de Lune opening also uses `workStroke(kind)` from its dt-driven work
+update, once at the contact portion of each 5.6-second stroke. Rubble uses a
+0.18-second filtered-noise touch at 0.012 peak; cloth uses 0.75 seconds at 0.016,
+620 Hz bandpass and 1.2 kHz lowpass; broom/tool friction uses 0.9 seconds at
+0.016, 940 Hz bandpass and 1.8 kHz lowpass. All route through the sfx bus and
+compressor with soft attacks/releases. Moving, resting and reflections do not
+trigger contacts. `guard()` keeps these silent before audio is enabled or muted.
+
 1. Build it in `audio.js` with the `tone()` / `hiss()` helpers where possible.
 2. Route: sfx for events, or its own bus if the user should be able to toggle it.
 3. Start at half the gain you think it needs; listen with the volume at 50%

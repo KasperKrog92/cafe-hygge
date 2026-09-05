@@ -426,6 +426,15 @@
     }
   });
 
+  // Opening restoration: a restrained, single contact sound per slow stroke.
+  SND.workStroke = guard(function (kind) {
+    var rubble = ['kneel','gather','sort'].indexOf(kind) >= 0;
+    var wet = ['wipe','polish','wash','rinse'].indexOf(kind) >= 0;
+    hiss({dur:rubble?0.18:wet?0.75:0.9,gain:rubble?0.012:0.016,
+      bp:wet?620:rubble?360:940,q:0.7,lp:wet?1200:1800,
+      attack:rubble?0.025:0.18,release:rubble?0.1:0.3});
+  });
+
   SND.chalkTick = guard(function () {
     hiss({ dur: 0.045 + Math.random() * 0.025, gain: 0.02 + Math.random() * 0.005,
       bp: 2200 + Math.random() * 900, q: 2.4, hp: 1200, attack: 0.003, release: 0.035 });
