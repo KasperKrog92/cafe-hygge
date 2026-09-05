@@ -362,14 +362,20 @@
     // A planted foot stays on the baseline while the other passes it.
     // Phase comes from travelled pixels, so slow walkers do not skate.
     if (walk) {
-      const phase = (p.walkDistance || 0) / 24 * Math.PI * 2;
       for (let leg = 0; leg < 2; leg++) {
-        const ph = phase + leg * Math.PI;
-        const stride = Math.round(Math.cos(ph) * 5);
-        const lift = Math.round(Math.max(0, Math.sin(ph)) * 3);
-        const lx = x + (front || back ? (leg ? 2 : -10) : (leg ? 1 : -8) + stride);
-        px(g, lx, y - 16, 7, 13 - lift, leg ? c.pants : shade(c.pants, -0.12));
-        px(g, lx + (front || back ? 0 : facing), y - 3 - lift, 8, 3, '#3a2a1c');
+        const phase = ((p.walkDistance || 0) / 24 + leg * 0.5) % 1;
+        const swingPhase = Math.max(0, (phase - 0.5) * 2);
+        // Twelve travelled pixels of stance: the foot moves exactly twelve
+        // pixels backward relative to the body, remaining fixed on the floor.
+        const stride = phase < 0.5 ? 6 - phase * 24
+          : -6 + 12 * swingPhase * swingPhase * (3 - 2 * swingPhase);
+        const lift = Math.round(Math.sin(swingPhase * Math.PI) * 4);
+        const vertical = front || back;
+        const legX = (leg ? 1 : -8) + Math.round(stride);
+        const lx = x + (vertical ? (leg ? 1 : -8) : facing > 0 ? legX : -legX - 7);
+        const footY = y + (vertical ? Math.round(stride * (front ? 1 : -1)) : 0) - lift;
+        px(g, lx, y - 16, 7, footY - y + 13, leg ? c.pants : shade(c.pants, -0.12));
+        px(g, lx + (vertical ? 0 : facing), footY - 3, 8, 3, '#3a2a1c');
       }
     } else {
       px(g, x - 10, y - 16, 8, 16, c.pants);

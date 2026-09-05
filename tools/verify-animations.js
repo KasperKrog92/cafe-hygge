@@ -18,6 +18,32 @@
   g.fillStyle='#c9b28a';g.fillRect(0,0,sheet.width,sheet.height);
   const rows=['walk right','walk left','walk toward','page turn','sip','knitting','cat jump left','cat groom'];
   const base=__dev.study({seats:[0]}).patrons[0];
+  // Inspect the shipping renderer's shoes while the body actually travels.
+  // This catches reversed swing/stance and missing facing, which an in-place
+  // animation contact sheet cannot establish.
+  ['right','left','down','up'].forEach(function(direction){
+    const dx=direction==='right'?1:direction==='left'?-1:0;
+    const dy=direction==='down'?1:direction==='up'?-1:0;
+    const c=document.createElement('canvas'), cg=c.getContext('2d');
+    const fill=cg.fillRect.bind(cg);let shoes=[];
+    cg.fillRect=function(x,y,w,h){
+      if(cg.fillStyle==='#3a2a1c'&&w===8&&h===3)shoes.push({x,y});
+      fill(x,y,w,h);
+    };
+    let contact=null, swingStart=null;
+    [0,3,6,9].forEach(function(distance){
+      shoes=[];
+      SCENE.drawPerson(cg,Object.assign({},base,{x:100+dx*distance,y:100+dy*distance,
+        pose:'walk',heading:dy?direction:'',facing:dx||1,walkDistance:distance,
+        animT:1,reading:false,holding:null}));
+      check(shoes.length===2,direction+' missing shoes');
+      if(shoes.length!==2)return;
+      if(!contact){contact=shoes[0];swingStart=shoes[1];}
+      check(shoes[0].x===contact.x&&shoes[0].y===contact.y,direction+' stance shoe slides');
+      if(distance===9)check((shoes[1].x-swingStart.x)*dx+(shoes[1].y-swingStart.y)*dy>9,
+        direction+' swing shoe fails to advance ahead of body');
+    });
+  });
   rows.forEach(function(label,row){
     g.fillStyle='#3a2a1c';g.font='14px monospace';g.fillText(label,12,row*105+20);
     const frames=new Set();

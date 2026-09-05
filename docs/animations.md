@@ -55,3 +55,14 @@ final strict repeatability checks pass. The live render context is unchanged.
 These checks cover the exercised states and this browser; they are not a claim
 that every randomized combination, device or audio mix was tested. No
 narrative save migration is required: new animation fields are transient.
+
+
+### Follow-up: walking direction
+
+The initial sine cycle lifted the backward-moving foot and did not mirror the
+stride for left-facing walkers. Replaced it with a linear 12 px stance and an
+eased forward swing over a 24 px cycle. The stance cancels body travel, keeping
+the shoe fixed on the floor. Front/back views apply stride along the vertical
+travel direction. Verification now checks rendered shoe positions against
+actual body movement in all four directions, rather than only checking that
+frames differ.
