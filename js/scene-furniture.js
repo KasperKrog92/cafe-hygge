@@ -74,6 +74,11 @@
         ell(g, cx, cy + 2, 32, 12, '#6e4c30');
         ell(g, cx, cy - 2, 32, 12, '#8a6142');
         ell(g, cx, cy - 4, 26, 9, '#96704c');
+        // Worn satin rim and a darker underside separate the solid top from
+        // its pedestal; the short highlights follow the foreshortened plane.
+        px(g, cx - 18, cy - 12, 32, 2, shade('#96704c', 0.18));
+        px(g, cx - 24, cy + 6, 46, 2, shade('#6e4c30', -0.12));
+        px(g, cx - 8, cy + 14, 16, 3, 'rgba(20,12,8,0.12)');
         px(g, cx - 18, cy - 8, 15, 2, 'rgba(90,58,34,0.3)');      // wood grain
         px(g, cx + 4, cy - 6, 16, 2, 'rgba(90,58,34,0.3)');
         px(g, cx - 8, cy - 2, 13, 2, 'rgba(90,58,34,0.22)');
@@ -329,9 +334,12 @@
     px(g, P.x + 6, P.y + 10, P.w - 12, 2, shade(panel, 0.16));
     px(g, P.x + 6, P.y + 30, P.w - 12, 2, shade(panel, -0.2));
     px(g, P.x + 1, P.baseline - 7, P.w - 2, 5, shade(body, -0.18));   // plinth
-    // lid, seen edge-on; the cat's paw line hides behind its light strip
+    // The lid's narrow top plane; keep the profile and cat's paw line.
     px(g, P.x - 2, P.y - 4, P.w + 6, 4, dark);
-    px(g, P.x - 1, P.y - 4, P.w + 4, 2, shade(body, 0.18));
+    px(g, P.x - 1, P.y - 4, P.w + 4, 3, shade(body, 0.24));
+    px(g, P.x + 2, P.y - 4, P.w - 2, 2, shade(panel, 0.26));
+    px(g, P.x + 7, P.y + 13, 2, 12, shade(panel, 0.1));
+    px(g, P.x + P.w - 7, P.y + 12, 2, 18, shade(panel, -0.14));
     // keybed stub toward the player — in profile the keys are a short shelf,
     // cream top peeking past the cheek, never a long row
     px(g, P.keyboardX, P.keyboardY - 4, P.keyboardW, 8, dark);
@@ -370,9 +378,17 @@
   function wingChairBack(g, A, C) {
     const m = function (off, w) { return A.x + (A.dir > 0 ? off : -off - w); };
     ell(g, A.x, A.y + 9, 32, 8, 'rgba(20,12,8,0.2)');           // floor shadow
-    px(g, m(-16, 14), A.y - 52, 14, 58, C.body);                // backrest — the only vertical
-    px(g, m(-16, 14), A.y - 52, 14, 4, C.light);                // rounded top roll
-    px(g, m(-13, 2), A.y - 46, 2, 42, C.seam);                  // back seam
+    // Stepped upholstery corners, a lit top plane and a recessed inner face.
+    // The backrest remains the ONLY vertical; both directions use m().
+    px(g, m(-16, 14), A.y - 48, 14, 54, C.body);
+    px(g, m(-14, 10), A.y - 52, 10, 4, C.light);
+    px(g, m(-16, 14), A.y - 48, 14, 3, C.light);
+    px(g, m(-16, 3), A.y - 44, 3, 48, C.front);
+    px(g, m(-10, 6), A.y - 42, 6, 28, C.cushion);
+    px(g, m(-5, 3), A.y - 42, 3, 30, C.seam);
+    px(g, m(-11, 2), A.y - 40, 2, 22, C.light);
+    px(g, m(-9, 3), A.y - 34, 3, 2, C.seam);
+    px(g, m(-9, 3), A.y - 24, 3, 2, C.seam);
   }
 
   function wingChairFront(g, A, C) {
@@ -380,14 +396,20 @@
     // seat the sitter sinks into — drawn over the legs
     px(g, m(-16, 42), A.y - 6, 42, 12, C.cushion);             // seat cushion
     px(g, m(-16, 42), A.y - 6, 42, 3, C.light);                // cushion top light
+    px(g, m(-12, 34), A.y - 3, 34, 5, C.body);
+    px(g, m(-12, 32), A.y + 3, 32, 2, C.piping);
     // near armrest: a horizontal roll protruding forward, passing in front
     // of the sitter so their lap and legs are hidden behind it
-    px(g, m(-8, 36), A.y - 18, 36, 12, C.body);                // arm roll
-    px(g, m(-8, 36), A.y - 18, 36, 4, C.light);                // arm top light
-    px(g, m(26, 3), A.y - 16, 3, 9, C.front);                  // rounded front cap
+    px(g, m(-8, 34), A.y - 18, 34, 12, C.body);                // horizontal arm roll
+    px(g, m(-6, 30), A.y - 20, 30, 4, C.light);                // soft top plane
+    px(g, m(-4, 25), A.y - 18, 25, 2, C.cushion);
+    px(g, m(24, 5), A.y - 16, 5, 8, C.front);                  // rounded front cap
+    px(g, m(24, 3), A.y - 15, 3, 4, C.light);
     px(g, m(-8, 36), A.y - 8, 36, 2, C.piping);                // seam under the arm
     // front skirt + feet
     px(g, m(-16, 45), A.y + 6, 45, 8, C.front);
+    px(g, m(-12, 35), A.y + 6, 35, 2, C.body);
+    px(g, m(-14, 41), A.y + 12, 41, 2, C.seam);
     px(g, m(-13, 7), A.y + 13, 7, 4, '#4a3222'); px(g, m(21, 7), A.y + 13, 7, 4, '#4a3222');
   }
 
@@ -395,9 +417,17 @@
     ell(g, x + 1, y - 2, 12, 4, 'rgba(20,12,8,0.2)');
     px(g, x - 8, y - 6, 18, 6, '#4a3222');
     px(g, x - 1, y - 48, 4, 42, '#4a3222');
-    px(g, x - 12, y - 68, 26, 8, '#d9a05a');
-    px(g, x - 10, y - 60, 22, 10, '#c98f4a');
+    px(g, x - 1, y - 46, 2, 38, '#8a6142');
+    // A tapered linen shade: broad lower rim, folded fabric, shaded far side.
+    px(g, x - 8, y - 68, 18, 4, '#d9a05a');
+    px(g, x - 10, y - 64, 22, 8, '#d9a05a');
+    px(g, x - 12, y - 56, 26, 8, '#d9a05a');
+    px(g, x - 6, y - 64, 5, 14, shade('#d9a05a', 0.2));
+    px(g, x + 4, y - 63, 2, 13, '#c98f4a');
+    px(g, x + 9, y - 55, 3, 7, '#b57c38');
     px(g, x - 12, y - 50, 26, 4, '#b57c38');
+    px(g, x - 9, y - 50, 20, 2, '#e8dfc9');
+    px(g, x - 6, y - 6, 12, 2, '#8a6142');
   }
 
   /* a low round table beside each nook chair — just big enough for a cup */
@@ -459,8 +489,12 @@
     px(g, left, top, w, S.h, '#5a3d28');
     px(g, left + 4, top + 4, w - 8, S.h - 12, '#2e1d12');   // interior
     px(g, left - 4, top - 8, w + 8, 10, '#6e4a33');         // crown
-    px(g, left - 4, top - 8, w + 8, 2, '#7d5334');
+    px(g, left - 4, top - 8, w + 8, 6, '#8a6142'); // visible top, same crown envelope
+    px(g, left, top - 8, w, 2, '#a8764a');
+    px(g, left + 16, top - 5, 36, 2, 'rgba(90,58,34,0.25)');
     px(g, left, top + 2, w, 2, 'rgba(20,10,6,0.35)');       // shadow under crown
+    px(g, left, top + 4, 3, S.h - 12, '#8a6142');          // lit stile
+    px(g, left + w - 4, top + 4, 4, S.h - 12, '#4a3222');
     px(g, left, S.y - 8, w, 8, '#4a3222');                  // plinth
     px(g, left, S.y - 8, w, 2, '#5a3d28');
     // shelf boards + four rows of spines
@@ -469,6 +503,8 @@
       if (r < 3) {
         px(g, left + 2, bot, w - 4, 4, '#7d5334');
         px(g, left + 2, bot + 4, w - 4, 2, '#5f402c');
+        px(g, left + 4, bot - 2, w - 8, 2, '#8a6142');
+        px(g, left + 4, bot + 6, w - 8, 3, 'rgba(12,8,6,0.22)');
       }
       const loan = LOAN_SLOTS.find(function (s) { return s.row === r; });
       let loanDone = false;
@@ -499,6 +535,9 @@
         const col = BOOKCOLS[(h2(cx, r * 11 + 4) * BOOKCOLS.length) | 0];
         px(g, cx, bot - bh, bw, bh, col);
         px(g, cx, bot - bh, bw, 2, shade(col, -0.2));
+        px(g, cx, bot - bh + 2, 2, bh - 3, shade(col, 0.18));
+        px(g, cx + bw - 2, bot - bh + 2, 2, bh - 2, shade(col, -0.22));
+        if (bw >= 7) px(g, cx + 2, bot - 4, bw - 4, 2, '#c9b28a');
         if (h2(cx, r + 9) > 0.5) px(g, cx + 1, bot - (bh >> 1), bw - 2, 2, 'rgba(240,232,213,0.5)');
         cx += bw + 1;
       }
@@ -510,13 +549,22 @@
   }
 
   function drawBigPlant(g, x, y) {
-    px(g, x - 10, y - 20, 20, 20, '#b5654a');
-    px(g, x - 12, y - 22, 24, 4, '#8f4a35');
-    px(g, x - 4, y - 44, 4, 24, '#4a7a4a');
-    px(g, x - 12, y - 38, 6, 12, '#5a8a52');
-    px(g, x + 6, y - 40, 6, 14, '#5a8a52');
-    px(g, x - 8, y - 48, 6, 10, '#4a7a4a');
-    px(g, x + 2, y - 52, 6, 12, '#5a8a52');
+    // Terracotta tapers toward its foot; the open rim reveals dark soil.
+    px(g, x - 9, y - 19, 18, 13, '#b5654a');
+    px(g, x - 7, y - 6, 14, 6, '#b5654a');
+    px(g, x + 5, y - 18, 4, 12, '#8f4a35');
+    px(g, x - 7, y - 17, 4, 12, shade('#b5654a', 0.2));
+    px(g, x - 6, y - 2, 12, 2, '#8f4a35');
+    ell(g, x, y - 20, 12, 4, '#b5654a');
+    ell(g, x, y - 21, 9, 2, '#4a3222');
+    px(g, x - 9, y - 18, 18, 2, shade('#b5654a', 0.22));
+    px(g, x - 1, y - 49, 2, 28, '#4a7a4a');
+    // Overlapping pointed leaves, each with a short lit central vein.
+    R.leaf(g, x - 1, y - 43, -1, '#4a7a4a');
+    R.leaf(g, x + 1, y - 48, 1, '#5a8a52');
+    R.leaf(g, x - 1, y - 33, -1, '#5a8a52');
+    R.leaf(g, x + 1, y - 36, 1, '#4a7a4a');
+    R.leaf(g, x, y - 24, 1, '#5a8a52');
     px(g, x - 2, y - 54, 4, 8, '#6b9a5f');
   }
 
@@ -643,6 +691,10 @@
       if (n < 0.4) px(g, x + ((n * 20) | 0) % 6, C.frontY + 8 + ((n * 90) | 0) % 12, 2, 5 + ((n * 40) | 0) % 5, 'rgba(0,0,0,0.12)');
     }
     px(g, C.x, C.baseY - 4, C.w, 4, '#4a2f1c');
+    px(g, C.x, C.frontY, C.w, 4, 'rgba(20,12,8,0.22)'); // slab casts onto the face
+    for (let x = C.x + 22; x < C.x + C.w - 4; x += 28) {
+      px(g, x, C.frontY + 6, 2, C.baseY - C.frontY - 14, shade('#6b4529', 0.15));
+    }
     // footrail shadow line — anchors the counter at its new height
     px(g, C.x + 6, C.baseY - 10, C.w - 12, 3, 'rgba(30,18,10,0.35)');
     // top slab with long grain
@@ -683,6 +735,10 @@
     px(g, 862, 254, 13, 8, '#e8dfc9');
     px(g, 862, 257, 13, 2, '#c98f4a'); px(g, 862, 260, 13, 2, '#c98f4a');
     // glass shine
+    px(g, 822, 226, 72, 3, 'rgba(232,240,244,0.25)');     // glass top plane
+    px(g, 888, 229, 6, 32, 'rgba(60,65,77,0.14)');        // recessed side
+    px(g, 824, 230, 2, 12, 'rgba(255,255,255,0.22)');
+    px(g, 826, 230, 6, 2, 'rgba(255,255,255,0.18)');
     px(g, 856, 227, 2, 14, 'rgba(255,255,255,0.12)');
     px(g, 860, 227, 2, 10, 'rgba(255,255,255,0.10)');
     // the tiny shelf plant migrated beside the pastry case when the cat

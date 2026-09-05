@@ -5,6 +5,13 @@ behavior is dt-driven state machines in `js/sim-patrons.js` and
 `js/sim-characters.js`; all drawing is
 `SCENE.drawPerson` / `SCENE.drawCat` in `js/scene-people.js`.
 
+The September 2026 material pass adds derived skin/jaw shading and profile
+noses, shoulder and sweater side tones, visible page markings and shaped cat
+haunch/fur highlights. Character size, roster colours, pose selection and
+behavior are preserved. `__dev.poses()` renders the actual roster across both
+profiles, front/back and seated reading for future visual review (see
+[art-workflow.md](art-workflow.md)).
+
 ---
 
 ## Nora — the barista

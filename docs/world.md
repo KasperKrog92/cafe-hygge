@@ -42,6 +42,14 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 
 ## Weather
 
+The renderer's `drawFloorLight` in scene-bg.js projects two gently widening
+window panes onto the floor. Daylight controls intensity, rain softens it, and
+the hour shifts the projection. Oval floor pools under the reading/studio lamps
+follow `pal.lamp`. These draw **before** depth-sorted furniture and its contact
+shadows; the existing scene-wide tint/glow pass still follows the objects.
+A cached shadow at the wall/floor junction adds depth. These are visual cues,
+with no new timers, simulation state or sound triggers.
+
 - `world.rainTarget` re-rolls every 150–420 s: clear (34%), drizzle 0.4 (34%),
   rain 0.8 (24%), or storm 1.0 (8%). `world.rain` eases toward it at 0.18/s;
   `world.storm` lasts until the next non-storm roll.

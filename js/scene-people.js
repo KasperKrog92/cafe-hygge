@@ -24,10 +24,16 @@
     const bx = facing > 0 ? x - 8 : x + 6;                 // back of the head
     // face
     px(g, x - 8, hy, 18, 16, c.skin);
+    // Turn the cheek into a volume: temple shadow, soft jaw, lit cheek.
+    px(g, bx, hy + 7, 4, 7, shade(c.skin, -0.16));
+    px(g, x - 6, hy + 14, 14, 2, shade(c.skin, -0.12));
+    px(g, facing > 0 ? x + 2 : x - 5, hy + 9, 4, 3, shade(c.skin, 0.08));
+    px(g, facing > 0 ? x + 9 : x - 10, hy + 8, 3, 3, c.skin); // small profile nose
     // hair cap + shine
     px(g, x - 8, hy - 4, 18, 6, c.hair);
     px(g, x + (facing > 0 ? -5 : -1), hy - 3, 7, 2, hairL);
     px(g, bx, hy, 5, 8, c.hair);
+    px(g, bx + 1, hy + 4, 2, 3, shade(c.hair, -0.15));
     if (st === 1) {                                        // swept side-part fringe
       px(g, facing > 0 ? x - 2 : x - 6, hy + 2, 8, 2, c.hair);
       px(g, facing > 0 ? x + 4 : x - 6, hy + 4, 2, 2, c.hair);
@@ -76,6 +82,10 @@
     const st = c.hairStyle || 0;
     // face framed by the cap and both temples
     px(g, x - 8, hy, 18, 16, c.skin);
+    px(g, x - 8, hy + 7, 3, 7, shade(c.skin, -0.13));
+    px(g, x + 8, hy + 7, 2, 7, shade(c.skin, -0.17));
+    px(g, x - 5, hy + 14, 12, 2, shade(c.skin, -0.1));
+    px(g, x, hy + 8, 2, 3, shade(c.skin, 0.1));
     px(g, x - 8, hy - 4, 18, 6, c.hair);
     px(g, x - 2, hy - 3, 7, 2, hairL);
     px(g, x - 8, hy + 2, 3, 6, c.hair);
@@ -131,6 +141,8 @@
     px(g, x - 8, hy + 12, 5, 4, c.hair);                   // nape tapers
     px(g, x + 5, hy + 12, 5, 4, c.hair);
     px(g, x - 2, hy - 3, 7, 2, hairL);                     // shine
+    px(g, x - 8, hy + 2, 3, 9, shade(c.hair, -0.18));
+    px(g, x + 5, hy + 1, 3, 7, shade(c.hair, 0.08));
     if (st === 1) {                                        // side-part groove
       px(g, x + (facing > 0 ? 3 : -3), hy - 4, 2, 5, shade(c.hair, -0.12));
     } else if (st === 2) {                                 // curly: crown + nape bumps
@@ -205,6 +217,9 @@
       px(g, x - 8, y - 3, 18, 3, '#3a2a1c');
       // torso, slightly hunched
       px(g, x - 10, y - 32, 20, 22, c.top);
+      px(g, x - 10, y - 30, 3, 17, topD);                     // rounded far side
+      px(g, x - 6, y - 32, 11, 2, shade(c.top, 0.16));        // shoulder light
+      px(g, x + 6, y - 27, 3, 9, shade(c.top, 0.08));
       px(g, x - 1, y - 28, 2, 12, topD);                        // fold
       px(g, x - 10, y - 12, 20, 2, topD);                       // hem
       if (c.smock) {
@@ -240,6 +255,10 @@
         px(g, bx, by, 18, 10, '#f5efdf');
         px(g, bx + 8, by, 2, 10, '#b5a888');
         px(g, bx, by - 2, 18, 2, '#c9b28a');
+        px(g, bx + 2, by + 3, 4, 2, '#d9d2c0');
+        px(g, bx + 11, by + 3, 5, 2, '#d9d2c0');
+        px(g, bx + 2, by + 7, 4, 2, '#d9d2c0');
+        px(g, bx + 11, by + 7, 4, 2, '#d9d2c0');
         px(g, bx - 2, by + 3, 3, 4, c.skin);                    // hands on the covers
         px(g, bx + 17, by + 3, 3, 4, c.skin);
       } else if (p.painting) {
@@ -366,6 +385,8 @@
     }
     // torso with shoulder light, centre fold and hem
     px(g, x - 10, y - 40, 20, 24, c.top);
+    px(g, x - 10, y - 37, 3, 19, topD);
+    px(g, x + 6, y - 37, 3, 15, shade(c.top, 0.08));
     px(g, x - 10, y - 40, 20, 2, shade(c.top, 0.12));
     px(g, x - 1, y - 34, 2, 14, topD);
     px(g, x - 10, y - 18, 20, 2, topD);
@@ -593,6 +614,8 @@
     if (pose === 'sleep' || pose === 'lap') {
       const breathe = Math.sin(t * 1.7) > 0 ? 2 : 0;
       px(g, x - 12, y - 9 - breathe, 24, 9 + breathe, body);
+      px(g, x - 9, y - 11 - breathe, 17, 3, body);       // rounded sleeping haunch
+      px(g, x - 6, y - 10 - breathe, 11, 2, shade(body, 0.18));
       px(g, x - 12, y - 4, 24, 4, dark);
       px(g, x - 7, y - 9 - breathe, 2, 5, dark); px(g, x, y - 9 - breathe, 2, 5, dark);
       px(g, x + 3, y - 14, 10, 7, body);
@@ -625,6 +648,8 @@
       px(g, x + 12, y - 21, 3, 2, cream);
     } else if (pose === 'sit' || pose === 'groom') {
       px(g, x - 7, y - 17, 14, 17, body);
+      px(g, x - 7, y - 12, 3, 9, shade(body, -0.12));
+      px(g, x + 1, y - 16, 4, 8, shade(body, 0.14));
       px(g, x - 5, y - 5, 10, 5, cream);
       px(g, x - 7, y - 14, 2, 3, dark); px(g, x + 4, y - 15, 2, 3, dark);   // stripes
       const hy = pose === 'groom' ? y - 19 : y - 26;
@@ -666,6 +691,7 @@
       const moving = pose === 'walk' || pose === 'pounce';
       const step = moving ? (Math.floor(t * (pose === 'pounce' ? 12 : 8)) % 2) : 0;
       px(g, x - 12, y - 12, 24, 9, body);
+      px(g, x - 8, y - 13, 16, 3, shade(body, 0.14));
       px(g, x - 8, y - 12, 2, 4, dark); px(g, x - 2, y - 12, 2, 5, dark); px(g, x + 4, y - 12, 2, 4, dark);
       px(g, x - 10, y - 5, 7, 2, dark); px(g, x + 5, y - 5, 7, 2, dark);
       if (moving) {

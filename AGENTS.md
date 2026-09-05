@@ -43,6 +43,16 @@ for the full design ethos.
 
 ## Running & testing
 
+- **For an art pass, start with [docs/art-workflow.md](docs/art-workflow.md).**
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools/art-review.ps1 -Label before`
+  captures a fixed day/night scene, empty furniture, character turnarounds,
+  and six detail crops in `.art-review/before/`. Run again with `-Label after -Verify`
+  after editing. The script uses a fresh disposable browser session to avoid
+  stale JavaScript; requires `agent-browser` and the local server.
+  `__dev.study({hour, rain, seats:[indices]})` makes a detached art fixture;
+  `__dev.shot('fireside', {world: __dev.study()})` uses it. Never assign a
+  study to `__world` or tick it: these are render fixtures, not simulations.
+
 - **To see a visual change, open `http://localhost:8137/?dev` — with the query
   string, not the bare URL.** `?dev` boots straight into the café with `SCENE`,
   `SIM`, `__dev`, and `__world` all defined and no start-overlay click needed.
@@ -272,6 +282,7 @@ matching doc updated in the same change.
 | [docs/world.md](docs/world.md) | Time, weather, lighting, spawning, captions/events |
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |
+| [docs/art-workflow.md](docs/art-workflow.md) | Repeatable visual review, audit findings, capture commands and iteration lessons |
 | [docs/roadmap.md](docs/roadmap.md) | Future plans, incl. the real-sample audio pipeline |
 | [docs/plans/](docs/plans/) | Concrete execution plans. Executed plans are deleted; find them in git history |
 

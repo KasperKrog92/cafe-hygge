@@ -2,7 +2,7 @@
    Inert in normal use: nothing here runs unless the URL carries ?dev
    (or ?hour= / ?overlay) or the console calls __dev.* — zero user-facing
    change. Loads after the sim siblings (whose SIM._ debug contract it consumes)
-   and main.js (whose boot it decorates).
+   before main.js (whose boot it decorates).
 
    URL params:
      ?dev          boot straight into the scene (overlay dismissed; audio
@@ -15,6 +15,9 @@
 
    Console API:
      __dev.hour(h)     jump the in-world clock (no arg: read it)
+     __dev.study(o)    detached art world ({hour, rain, seats:[indices]})
+     __dev.review(o)   ten repeatable PNGs: day/night/empty/people + six crops
+     __dev.poses()     roster turnarounds through the real person renderer
      __dev.kettle()    re-arm the evening kettle to sound shortly
      __dev.storm(on)   force the weather into/out of a storm
      __dev.passer(o)   silhouette past the windows ({dir, umbrella, pair, pause})
@@ -474,12 +477,108 @@
       window1: winRegion(L.win2),
       door: span(d.x - 20, d.y - 16, d.x + d.w + 60, 336),
       hearth: span(f.x - 12, 96, f.x + f.w + 40, f.stand.y + 20),
-      bookshelf: span(sh.x - sh.w / 2 - 12, sh.y - sh.h - 12, sh.x + sh.w / 2 + 12, sh.y + 16),
+      bookshelf: span(sh.x - sh.w / 2 - 12, sh.y - sh.h - 32, sh.x + sh.w / 2 + 12, sh.y + 16),
       piano: span(pn.x - 10, pn.lamp.y - 24, pn.bench.x + 20, pn.baseline + 16),
       artist: span(ar.easel.canvas.x - 18, ar.easel.canvas.y - 16, ar.watch.x + 28, ar.watch.y + 20)
     };
   })();
   D.regions = regions;
+
+  /* A detached, repeatable art fixture. Never SIM.create/update: those can
+     write MEMORY, play sounds or consume randomness. Only this copy is posed;
+     real seats/paths/colours and the shipping composeFrame still do the work.
+     Custom seat indices let a review cover any occupancy without a live wait. */
+  D.study = function (opts) {
+    opts = opts || {};
+    if (opts.seats && opts.seats.length > 7) throw new Error('[dev] study keeps the seven-patron cap');
+    const w = structuredClone(world());
+    w.t = 180; w.hour = opts.hour == null ? 12 : Number(opts.hour);
+    w.pal = SCENE.dayPalette(w.hour); w.daylight = w.pal.daylight;
+    w.rain = w.rainTarget = opts.rain == null ? 0.35 : opts.rain;
+    w.storm = false; w.flash = 0; w.passersby = []; w.particles = [];
+    w.door = { open: 0, target: 0, jiggle: 0 };
+    w.brew = { active: false, stage: '', progress: 0 };
+    w.fire = { level: 0.85, target: 0.85, wantsLog: false, claimed: false, graceT: 0 };
+    w.queue = []; w.counterCups = []; w.umbrellaStand = []; w.sleeper = null;
+    w.captionQueue = []; w.captionScript = []; w.activeCaption = null;
+    w.catBowls = { food: 1, water: 1 };
+    w.memory = { version: MEMORY.VERSION, arcs: {}, bonds: {}, flags: {} };
+    CAST.arcs.forEach(function (a) {
+      w.memory.arcs[a.id] = { stage: 0, progress: 0, pendingBeat: null };
+    });
+    // Half-painted canvas, never a completed/unseen narrative payoff.
+    w.memory.arcs['lunafreya-paintings'].progress = SIM._.arcRows(
+      CAST.arcs.find(function (a) { return a.id === 'lunafreya-paintings'; }), 0) * 0.55;
+    w.tables.forEach(function (tb) { tb.items = []; });
+    w.seats.forEach(function (s) { s.taken = false; });
+    w.patrons = [];
+    (opts.seats || [8, 9, 10, 11, 1, 16, 17]).forEach(function (index, i) {
+      const s = w.seats[index];
+      if (!s || s.taken) throw new Error('[dev] invalid/duplicate study seat: ' + index);
+      const spec = CAST.regulars[i % CAST.regulars.length];
+      const p = {
+        id: -(i + 1), kind: 'patron', name: 'Study ' + index,
+        nameStyle: spec.nameStyle, colors: structuredClone(spec.colors),
+        x: s.window ? s.perchX : s.x, y: s.window ? s.perchY : s.y,
+        facing: s.facing, heading: '', pose: 'sit', state: 'seated', animT: 0,
+        seat: s, reading: !s.artist && !s.piano, painting: !!s.artist,
+        playing: !!s.piano, hasShelfBook: !!s.nook,
+        drink: SIM._.DRINKS[0], holding: null, armUp: 0, bubble: null
+      };
+      if (s.artist) p.colors = structuredClone(CAST.regulars.find(function (r) { return r.id === 'lunafreya'; }).colors);
+      s.taken = true; w.patrons.push(p);
+      if (s.table >= 0) w.tables[s.table].items.push({
+        side: s.side, kind: 'cup', owner: p.id, hot: 0, hidden: false
+      });
+    });
+    w.barista = { kind: 'barista', name: 'Nora', colors: structuredClone(world().barista.colors),
+      x: L.baristaHome.x, y: L.baristaHome.y, facing: -1, heading: 'down',
+      pose: 'stand', state: 'idle', animT: 0, orders: [], holding: null };
+    w.cat = { x: L.catCorner.cushion.x, y: L.catCorner.cushion.y - 2,
+      state: 'sleep', surface: 'floor', facing: 1, animT: 0, scarf: null };
+    SIM._.snapCandles(w);
+    return w;
+  };
+
+  /* Capture a fixed scene at both times plus native-integer detail crops.
+     Plain data URLs make this usable from any browser tool or the console. */
+  D.review = function (opts) {
+    opts = opts || {};
+    const shots = {}, day = D.study(opts);
+    shots.day = D.shot(null, { world: day, scale: 1 });
+    ['fireside', 'nook', 'bookshelf', 'counter', 'artist', 'piano'].forEach(function (name) {
+      shots[name] = D.shot(name, { world: day, scale: 3 });
+    });
+    const night = D.study(Object.assign({}, opts, { hour: 20 }));
+    shots.night = D.shot(null, { world: night, scale: 1 });
+    shots.empty = D.shot(null, { world: D.study(Object.assign({}, opts, { seats: [] })), scale: 1 });
+    shots.people = D.poses();
+    return shots;
+  };
+
+  /* Character turnarounds at exact x2: the roster's actual colours and the
+     shipping person renderer. Complements scene crops, never replaces them. */
+  D.poses = function () {
+    const out = document.createElement('canvas'); out.width = 960; out.height = 850;
+    const g = out.getContext('2d'); g.imageSmoothingEnabled = false;
+    g.fillStyle = '#e3cfa7'; g.fillRect(0, 0, out.width, out.height);
+    const people = [{ name: 'Nora', colors: world().barista.colors }].concat(CAST.regulars);
+    const views = ['right', 'left', 'front', 'back', 'reading'];
+    people.forEach(function (spec, col) {
+      views.forEach(function (view, row) {
+        const x = col * 160, y = row * 170;
+        g.fillStyle = '#c9b28a'; g.fillRect(x + 4, y + 4, 152, 162);
+        g.save(); g.translate(x + 80, y + 146); g.scale(2, 2);
+        SCENE.drawPerson(g, { x: 0, y: 0, colors: spec.colors,
+          kind: col ? 'patron' : 'barista', pose: row === 4 ? 'sit' : 'stand',
+          facing: row === 1 ? -1 : 1, heading: row === 2 ? 'down' : row === 3 ? 'up' : '',
+          animT: 0, reading: row === 4, holding: null });
+        g.restore(); g.font = '10px monospace'; g.fillStyle = '#4a3222';
+        g.fillText(spec.name + ' / ' + view, x + 10, y + 166);
+      });
+    });
+    return out.toDataURL('image/png');
+  };
 
   /* A crop box around a named entity's sprite (feet at e.y, ~1 CH tall):
      'nora'/'barista', 'cat', or any patron by name or regularId. */
@@ -503,11 +602,11 @@
        __dev.shot('fireside')        a named region (D.regions)
        __dev.shot('nora')            cropped around a named entity
        __dev.shot({x,y,w,h,scale})   an arbitrary crop
-     opts (2nd arg): { scale } — integer upscale; default keeps the crop
-     readable. */
+     opts (2nd arg): { scale, world } — integer upscale; default keeps the
+     crop readable. `world` optionally renders a detached __dev.study(). */
   D.shot = function (target, opts) {
     opts = opts || {};
-    const w = world();
+    const w = opts.world || world();
     if (!w) { console.warn('[dev] no world yet — load ?dev first'); return null; }
 
     let box, name;
@@ -609,8 +708,8 @@
     });
   }
 
-  D.audit = function () {
-    const w = world();
+  D.audit = function (reviewWorld) {
+    const w = reviewWorld || world();
     const problems = [];
 
     // every L anchor inside content-safe bounds

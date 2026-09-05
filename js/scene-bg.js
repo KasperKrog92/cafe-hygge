@@ -34,6 +34,7 @@
       drawStaticBG(bgCache.getContext('2d'));
     }
     g.drawImage(bgCache, 0, 0);
+    drawFloorLight(g, world); // incident light belongs UNDER objects and their contact shadows
 
     drawWindow(g, world, L.win, 0);
     drawWindow(g, world, L.win2, 1);
@@ -47,6 +48,41 @@
     drawFireDynamic(g, world);
     drawMachine(g, world);
   };
+
+  function drawFloorLight(g, world) {
+    const d = world.pal.daylight, lamp = world.pal.lamp;
+    g.save();
+    if (d > 0.1) {
+      [L.win, L.win2].forEach(function (w) {
+        const y = L.wallY + 2, depth = 112;
+        const shift = Math.round((world.hour - 12) * 5);
+        const light = g.createLinearGradient(0, y, 0, y + depth);
+        const a = (0.13 * d * (1 - world.rain * 0.8)).toFixed(3);
+        light.addColorStop(0, 'rgba(245,226,174,' + a + ')');
+        light.addColorStop(1, 'rgba(245,226,174,0)');
+        g.fillStyle = light;
+        // Two panes project a widening pool with a quiet mullion gap.
+        for (let i = 0; i < 2; i++) {
+          const x = w.x + 12 + i * (w.w / 2), width = w.w / 2 - 20;
+          g.beginPath();
+          g.moveTo(x, y); g.lineTo(x + width, y);
+          g.lineTo(x + width + shift + 12, y + depth);
+          g.lineTo(x + shift - 12, y + depth); g.closePath(); g.fill();
+        }
+      });
+    }
+    // Low, oval pools locate the reading lamps on the floor. The later
+    // lighting pass supplies the bloom over fabric and faces.
+    L.library.lamps.concat([L.artist.lamp]).forEach(function (lp) {
+      if (lamp < 0.05) return;
+      g.save(); g.translate(lp.x + 8, lp.y - 1); g.scale(1, 0.3);
+      const light = g.createRadialGradient(0, 0, 3, 0, 0, 48);
+      light.addColorStop(0, 'rgba(242,198,109,' + (0.16 * lamp).toFixed(3) + ')');
+      light.addColorStop(1, 'rgba(242,198,109,0)');
+      g.fillStyle = light; g.fillRect(-48, -48, 96, 96); g.restore();
+    });
+    g.restore();
+  }
 
   /* Two honest wall spaces, and only two: Lunafreya's cat painting settles
      above the fireplace; her hearth study becomes the small warmth above the
@@ -110,6 +146,14 @@
     px(g, 0, 228, W, 4, '#4a3222');
     // floorboards: seams, staggered joints, then grain streaks and the odd knot
     px(g, 0, L.wallY, W, H - L.wallY, '#9c6b43');
+    // Quiet board-to-board variation follows the actual joints; all texture
+    // is deterministic and baked once into the background cache.
+    for (let row = 0, y = L.wallY; y < H; y += 32, row++) {
+      for (let x = -112 + (row % 2) * 40; x < W; x += 112) {
+        px(g, x + 2, y, 110, 28, R.shade('#9c6b43', (h2(x, y) - 0.5) * 0.09));
+        px(g, x + 5, y + 2, 102, 2, 'rgba(232,201,153,0.075)');
+      }
+    }
     for (let y = L.wallY + 28; y < H; y += 32) px(g, 0, y, W, 2, '#7d5334');
     for (let y = L.wallY + 28, r = 0; y < H; y += 32, r++) {
       for (let x = (r % 2) * 40; x < W; x += 112) px(g, x, y - 16, 2, 14, 'rgba(125,83,52,0.55)');
@@ -136,11 +180,40 @@
     // reading nook rug under the wing chairs
     ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#8f5a3a');
     ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx - 14, L.library.rug.ry - 7, '#a0693f');
+    rugWeave(g, 390, 450, 168, 74, '#c9a04a');
+    rugWeave(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#c9b28a');
 
     drawFireplaceStatic(g);
     drawMenuBoard(g);
     drawShelves(g);
     drawFirewood(g);
+  }
+
+  /* Sparse stitches in an elliptical border; the centre stays quiet behind
+     readers. Pixel clusters, not high-frequency noise or animated texture. */
+  function rugWeave(g, cx, cy, rx, ry, thread) {
+    g.save();
+    for (let y = -ry + 4; y < ry; y += 6) {
+      for (let x = -rx + 4; x < rx; x += 8) {
+        const r = x * x / (rx * rx) + y * y / (ry * ry);
+        if (r > 0.91 || r < 0.65) continue;
+        g.globalAlpha = 0.12 + h2(x, y) * 0.1;
+        px(g, cx + x, cy + y, 4, 2, thread);
+      }
+    }
+    const junction = g.createLinearGradient(0, L.wallY, 0, L.wallY + 18);
+    junction.addColorStop(0, 'rgba(20,12,8,0.2)');
+    junction.addColorStop(1, 'rgba(20,12,8,0)');
+    g.fillStyle = junction; g.fillRect(0, L.wallY, W, 18);
+    g.globalAlpha = 0.16;
+    for (let i = 0; i < 24; i++) {
+      const a = i * Math.PI * 2 / 24;
+      const x = Math.round(cx + Math.cos(a) * (rx - 24));
+      const y = Math.round(cy + Math.sin(a) * (ry - 11));
+      px(g, x - 4, y, 8, 2, thread);
+      px(g, x - 2, y - 2, 4, 6, thread);
+    }
+    g.restore();
   }
 
   /* ---------- window with the world outside ----------
@@ -750,9 +823,15 @@
     for (let i = 0; i < 5; i++) {
       px(g, 648 + i * 18, 92, 10, 12, cupCols[i]);
       px(g, 658 + i * 18, 96, 2, 4, cupCols[i]);
+      px(g, 648 + i * 18, 92, 10, 2, shade(cupCols[i], 0.2));
+      px(g, 648 + i * 18, 94, 2, 7, shade(cupCols[i], 0.12));
+      px(g, 654 + i * 18, 95, 4, 9, shade(cupCols[i], -0.13));
     }
     // shelf 2: teapot, plates, jars, the displaced books, and one mug
     px(g, 648, 134, 22, 14, '#e8e0d0'); px(g, 670, 138, 6, 4, '#e8e0d0'); px(g, 656, 130, 6, 4, '#e8e0d0');
+    px(g, 650, 134, 3, 10, shade('#e8e0d0', 0.12));
+    px(g, 664, 140, 6, 8, '#d9d2c0');
+    px(g, 651, 146, 16, 2, '#c9c2b0');
     px(g, 692, 140, 18, 8, '#c9c2b0'); px(g, 694, 136, 14, 2, '#b5aa92'); px(g, 694, 144, 14, 2, '#b5aa92');
     px(g, 724, 132, 12, 16, '#d9973f'); px(g, 726, 128, 8, 4, '#8a611e');
     px(g, 744, 136, 12, 12, '#a5763f'); px(g, 746, 132, 8, 4, '#6e4a26');
@@ -789,6 +868,10 @@
     px(g, m.x, m.y, m.w, 40, '#b8bfc7');
     px(g, m.x, m.y + 10, 2, 30, '#d3d9de');
     px(g, m.x + m.w - 2, m.y + 10, 2, 30, '#8a919c');
+    px(g, m.x + 3, m.y + 11, m.w - 6, 2, '#d3d9de');
+    px(g, m.x + 5, m.y + 15, 4, 18, 'rgba(255,255,255,0.16)');
+    px(g, m.x + m.w - 8, m.y + 14, 5, 22, 'rgba(60,65,77,0.16)');
+    px(g, m.x + 4, m.y + 35, m.w - 8, 2, '#8a919c');
     // warming tray on top, spare cups upside-down
     px(g, m.x, m.y, m.w, 10, '#3c414d');
     px(g, m.x + 4, m.y + 3, m.w - 8, 2, '#5a616e');

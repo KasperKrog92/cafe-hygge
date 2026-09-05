@@ -408,19 +408,32 @@
     return cx - x - 2;
   };
 
+  function leaf(g, x, y, dir, col) {
+    const m = function (off, w) { return x + (dir > 0 ? off : -off - w); };
+    px(g, m(0, 5), y - 4, 5, 4, col);
+    px(g, m(3, 7), y - 7, 7, 6, col);
+    px(g, m(8, 4), y - 9, 4, 5, col);
+    px(g, m(11, 2), y - 10, 2, 2, col);
+    px(g, m(3, 5), y - 5, 5, 2, shade(col, 0.24));
+  }
+
   function drawTinyPlant(g, x, y) {
-    px(g, x, y - 8, 12, 8, '#b5654a');
-    px(g, x + 2, y - 10, 8, 2, '#8f4a35');
-    px(g, x + 2, y - 16, 2, 6, '#4a7a4a');
-    px(g, x + 6, y - 18, 2, 8, '#5a8a52');
-    px(g, x + 8, y - 14, 2, 4, '#4a7a4a');
-    px(g, x + 4, y - 14, 4, 4, '#5a8a52');
+    px(g, x + 1, y - 8, 10, 6, '#b5654a');
+    px(g, x + 3, y - 2, 6, 2, '#8f4a35');
+    px(g, x, y - 10, 12, 3, '#8f4a35');
+    px(g, x + 2, y - 9, 8, 2, shade('#b5654a', 0.25));
+    px(g, x + 2, y - 6, 2, 4, shade('#b5654a', 0.18));
+    px(g, x + 5, y - 17, 2, 8, '#4a7a4a');
+    px(g, x, y - 16, 5, 4, '#4a7a4a');
+    px(g, x + 7, y - 19, 4, 5, '#5a8a52');
+    px(g, x + 2, y - 18, 3, 3, '#6b9a5f');
+    px(g, x + 6, y - 14, 5, 3, '#5a8a52');
   }
 
   /* Private renderer contract shared by the scene siblings. */
   SCENE._ = {
     W: W, H: H, L: L,
     px: px, ell: ell, lerp: lerp, shade: shade, h2: h2,
-    drawTinyPlant: drawTinyPlant
+    drawTinyPlant: drawTinyPlant, leaf: leaf
   };
 })();

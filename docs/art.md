@@ -51,8 +51,9 @@ architecture textures, retuned atmosphere and real typography.
   shadow (next rule), a straight-on front face, and a **visible top
   plane** — a lighter band a few px tall, scaled to the piece's real depth
   (the counter slab and the table ellipses set the foreshortening). A tall
-  piece missing its top plane reads as a cardboard cutout. Known drift:
-  the bookshelf crown and the piano lid (see roadmap.md).
+  piece missing its top plane reads as a cardboard cutout. The bookshelf
+  crown now shows a 6 px top; the piano keeps a narrower 3 px lid plane
+  appropriate to its side profile and existing cat anchor.
 - **Grounding shadows.** Every floor-standing thing (tables, seats, armchair,
   lamp, coat stand, umbrella crock, plants, baskets — and every character) gets a soft
   `rgba(20,12,8,~0.2)` contact ellipse. Furniture without one looks unmoored.
@@ -86,6 +87,35 @@ architecture textures, retuned atmosphere and real typography.
 | Chalk / caption text | `#e8dfc9` / `rgba(240,225,195,·)` |
 
 Time-of-day sky colors live in the `DAYKEYS` table (see world.md).
+
+## Material and volume pass (September 2026)
+
+The fixed comparison loop is documented in [art-workflow.md](art-workflow.md).
+The café keeps CH=60, the existing layout, and the same warm palette:
+
+- Side-view armchairs have stepped rounded crowns, recessed inner padding,
+  button seams, a softly lit horizontal arm roll, cushion piping and a shaded
+  skirt. The backrest remains the only vertical; `m()` mirrors every detail.
+  Back/front drawable baselines and seated occlusion stay in their original positions.
+- Floor lamps have tapered linen shades, broad lower rims, short fold highlights
+  and lit wooden stems. Plants have overlapping pointed leaves and tapered
+  terracotta pots with an open soil rim. The shared `leaf()` helper lives in
+  scene-core; details stay inside the existing plant envelope.
+- Tables have restrained satin rim highlights and underside shading; the
+  bookshelf has a visible crown plane, lit stiles, shelf recesses and rounded
+  book-spine shading. The piano lid shows depth within its existing silhouette.
+  The counter slab casts a short shadow onto its bevelled plank face.
+  Shelf ceramics have rim and side shading; chrome and pastry-case glass use
+  narrow reflections and recessed side tones instead of uniformly flat fills.
+- Skin uses derived temple/jaw shadows, cheek highlights and a small profile
+  nose. Sweaters have shaded sides and lit shoulders; reading books have page
+  markings. Cat resting/walking silhouettes gain haunch and fur highlights.
+- Floorboard tones follow staggered joints. Rugs have sparse border stitches
+  and low-contrast geometric motifs, with quiet centres. All surface texture
+  uses `h2()` and is cached in the static background, never regenerated at random.
+- Incident window light and oval reading-lamp pools draw below the furniture
+  and its contact shadows. The existing lighting pass still tints and blooms
+  the whole scene. See world.md for the time/weather response.
 
 ## Layout map (`SCENE.L` in `js/scene-core.js` — the single source of truth)
 

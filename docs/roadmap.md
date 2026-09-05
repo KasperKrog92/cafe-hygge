@@ -20,13 +20,10 @@ Nothing here is committed; the owner picks what sounds lovely next.
 
 ## 🎨 Art consistency
 
-- **Give the bookshelf and the piano their top planes.** The scene's 3/4
-  top-down projection (now written down in art.md, *Style rules*) asks
-  every free-standing piece for a visible, lighter top surface — the
-  counter slab and table tops have one; the bookshelf
-  piano does not, they are seen only from the side. Make sure there is
-  rough consistency between how big other furniture is when fixing this
-  issue.
+- **Bookshelf and piano top planes: built (September 2026).** The material
+  pass gives the crown a broad top surface and the piano a narrower lid
+  plane within its side profile. The repeatable review loop is in
+  [art-workflow.md](art-workflow.md).
 
 ## 🎧 Real sound clips (owner-requested — design ready)
 

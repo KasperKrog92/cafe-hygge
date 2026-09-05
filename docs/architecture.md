@@ -63,7 +63,7 @@ requestAnimationFrame:
   render():                    // all drawing targets the 960×600 master canvas
     SCENE.composeFrame(g, world)       // the whole frame, in one shared call:
       SCENE.drawScene(g, world)        //   blit static-background cache, then the
-                                       //   dynamic layer: window/door/wall frame/
+                                       //   incident floor light, then window/door/wall frame/
                                        //   lamps/flames/clock hands/candles/machine
       drawables = SCENE.furnitureDrawables(world)  // tables, stools, wing chairs,
                    ++ SIM.entityDrawables(world)   // bookshelf, lamps, counter,
@@ -84,8 +84,10 @@ The **static-background cache** is an offscreen 960×600 canvas holding
 everything wall-mounted that never changes (wall, floor, rugs, fireplace
 masonry, menu, shelves, firewood). Day/night tinting happens in the lighting
 pass, so the cache is render-once (call `SCENE.invalidateBG()` if a future
-change makes it state-dependent). Per-frame background cost is one
-`drawImage` — measured draw+present is ≈0.1 ms/frame at ×2 presentation.
+change makes it state-dependent). Per-frame static-background cost is one
+`drawImage`; incident floor light and the dynamic wall layer follow it. Use
+`tools/art-review.ps1 -Verify` for current warm composition timings (PNG export
+and presentation are excluded), rather than relying on historical frame costs.
 
 The sim runs on **one clock with many drivers**: `advance(now)` in main.js
 ticks `SIM.update`/`SND.update` by the real elapsed time since the last tick,
@@ -211,6 +213,8 @@ or console calls:
 | Call | Does |
 | --- | --- |
 | `__dev.hour(h)` | jump the in-world clock (no arg: read it) |
+| `__dev.study({hour, rain, seats})` | detached, fixed art world; optional seat-index array (up to seven, empty array for empty furniture). Clones existing layout, clears live activity, poses readers; never tick or bind it as `__world` |
+| `__dev.review(opts)` / `__dev.poses()` | ten PNG data URLs for a fixed day/night scene, empty scene, six detail crops and character turnarounds / just the roster turnarounds |
 | `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
 | `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`, `umbrella`, `laptop`, `pianist`); `couple: true` returns a linked pair |
 | `__dev.regular(id)` / `__dev.doze()` | force a named regular's next arrival (`'holger'`, `'gerda'`, `'lunafreya'`, `'kasper'`, `'freya'`; defaults to `'holger'`) / put the first eligible seated reader to sleep |
@@ -233,3 +237,16 @@ may pass behind/in front of but never stand in) — both box lists are shared
 by the overlay and the audit. The harness wraps
 `SIM.create` (to apply `?hour`) and `SCENE.drawCaption` (to draw the overlay
 after everything else); it never changes behavior when dormant.
+
+`__dev.shot(target, {world: fixture})` can render a detached study through the
+same `composeFrame` as the live café; omitting `world` keeps the live-shot API.
+`__dev.audit(fixture)` optionally checks that study's seat ownership and layout.
+Studies are render fixtures, not resumable simulation saves. Their cloning uses
+the browser's `structuredClone` only on explicit dev calls, including worlds
+with circular partner/lap links. No new runtime script or package is required.
+
+The optional `tools/art-review.ps1` opens a disposable agent-browser session,
+waits for the harness, saves PNGs and audit JSON under ignored `.art-review/`,
+and closes the session. `-Verify` runs `tools/verify-art.js`: deterministic
+images, capture side effects, all seat groups at day/night, and warm frame
+composition timings. Commands and limits: [art-workflow.md](art-workflow.md).

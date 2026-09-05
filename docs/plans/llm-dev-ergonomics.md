@@ -1,5 +1,14 @@
 # Plan: LLM dev ergonomics — let an agent *see* its work in one call
 
+**September 2026 status:** the active process is now
+[art-workflow.md](../art-workflow.md). Phase 3's occupancy need is delivered as
+`__dev.study({seats})`, a detached render fixture rather than live teleporting.
+Phase 4 is partly delivered by `__dev.poses()` and empty/occupied scene crops;
+an isolated all-prop gallery and Phase 5's selected-sprite ruler remain optional
+backlog. `tools/art-review.ps1` captures the set in one fresh browser session.
+The proposals below describe that remaining backlog, not additional prerequisites
+for art work.
+
 Tooling to make the visual-iteration loop fast for AI agents (and humans) working
 on this project. Motivated by a session where a two-line chair redraw sprawled
 across many turns — most of the cost was **not being able to look at the sprite
