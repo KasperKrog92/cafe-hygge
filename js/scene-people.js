@@ -371,10 +371,20 @@
           : -6 + 12 * swingPhase * swingPhase * (3 - 2 * swingPhase);
         const lift = Math.round(Math.sin(swingPhase * Math.PI) * 4);
         const vertical = front || back;
-        const legX = (leg ? 1 : -8) + Math.round(stride);
+        const hip = vertical ? (leg ? 1 : -8) : (leg ? -2 : -5);
+        const hipX = x + (vertical || facing > 0 ? hip : -hip - 7);
+        const legX = hip + Math.round(stride);
         const lx = x + (vertical ? (leg ? 1 : -8) : facing > 0 ? legX : -legX - 7);
         const footY = y + (vertical ? Math.round(stride * (front ? 1 : -1)) : 0) - lift;
-        px(g, lx, y - 16, 7, footY - y + 13, leg ? c.pants : shade(c.pants, -0.12));
+        // Fixed hip beneath the hem, then a connected pixel-stepped leg to
+        // the ankle. Translating the whole trouser column detached it at
+        // full stride. Profile hips are close together rather than splayed.
+        const top = y - 17, bottom = footY - 3;
+        for (let py = top; py < bottom; py += 2) {
+          const q = (py - top) / Math.max(1, bottom - top - 2);
+          const legLeft = Math.round(hipX + (lx - hipX) * Math.min(1, q));
+          px(g, legLeft, py, 7, Math.min(2, bottom - py), leg ? c.pants : shade(c.pants, -0.12));
+        }
         px(g, lx + (vertical ? 0 : facing), footY - 3, 8, 3, '#3a2a1c');
       }
     } else {

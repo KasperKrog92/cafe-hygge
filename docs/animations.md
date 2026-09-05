@@ -66,3 +66,11 @@ the shoe fixed on the floor. Front/back views apply stride along the vertical
 travel direction. Verification now checks rendered shoe positions against
 actual body movement in all four directions, rather than only checking that
 frames differ.
+
+
+### Follow-up: leg attachment
+
+Walking hips now remain fixed under the hem. Connected two-pixel strips angle
+the trousers toward the moving ankles, rather than shifting the full leg
+column sideways. Profile hips sit closer together to avoid a splayed stride.
+The planted-foot timing and forward swing remain unchanged.

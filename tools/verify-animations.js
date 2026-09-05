@@ -25,17 +25,23 @@
     const dx=direction==='right'?1:direction==='left'?-1:0;
     const dy=direction==='down'?1:direction==='up'?-1:0;
     const c=document.createElement('canvas'), cg=c.getContext('2d');
-    const fill=cg.fillRect.bind(cg);let shoes=[];
+    cg.fillStyle=SCENE._.shade(base.colors.pants,-0.12);const farPants=cg.fillStyle;
+    const fill=cg.fillRect.bind(cg);let shoes=[], trousers=[];
     cg.fillRect=function(x,y,w,h){
       if(cg.fillStyle==='#3a2a1c'&&w===8&&h===3)shoes.push({x,y});
+      if(cg.fillStyle===base.colors.pants||cg.fillStyle===farPants)trousers.push({x,y,w,h});
       fill(x,y,w,h);
     };
     let contact=null, swingStart=null;
     [0,3,6,9].forEach(function(distance){
-      shoes=[];
+      shoes=[];trousers=[];
       SCENE.drawPerson(cg,Object.assign({},base,{x:100+dx*distance,y:100+dy*distance,
         pose:'walk',heading:dy?direction:'',facing:dx||1,walkDistance:distance,
         animT:1,reading:false,holding:null}));
+      const bodyX=100+dx*distance, hem=100+dy*distance-16;
+      const hips=trousers.filter(r=>r.y<=hem&&r.y+r.h>hem);
+      check(hips.length>=2,direction+' legs do not reach hem');
+      check(hips.every(r=>r.x>=bodyX-10&&r.x+r.w<=bodyX+10),direction+' hips extend outside torso');
       check(shoes.length===2,direction+' missing shoes');
       if(shoes.length!==2)return;
       if(!contact){contact=shoes[0];swingStart=shoes[1];}
