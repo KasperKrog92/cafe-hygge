@@ -106,8 +106,14 @@ laptop) is dropped — that café simply held still, which the narrative allows.
 waypoints), sets `pose` (`walk`/`stand`), `facing`, and `heading` (`'down'`
 / `'up'` on mostly-vertical legs longer than 24 px — the renderer's
 front/back-view switch, cleared on horizontal legs and on arrival), and
-returns `true` on arrival. `makePath(e, tx, ty)` builds L-shaped routes via the walking lane
-(`L.lane = 368`): vertical to lane → horizontal → vertical to target. The
+returns `true` on arrival. `makePath(e, tx, ty)` takes a direct line where clear,
+otherwise finds the shortest visible-corner route around `L.footprints` and
+`L.occluders`. Obstacles include low tables and have 10 px shoulder clearance
+and 2 px floor clearance. Start/end furniture is exempt so people can rise
+from and sit in their own chairs. The central lane (`L.lane = 368`) remains
+open, but short trips no longer have to return to it. On each new path,
+`walker` also removes clear detours from authored routes; shortcuts never
+cross any furniture, including endpoint furniture. The
 barista has hand-built paths behind the counter (y = 286) and exits through
 the gap at `L.baristaExitX = 616`. Cat walks use `catRoute`: safe pairs keep a
 straight line, while only the declared colliding pairs thread through clear

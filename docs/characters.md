@@ -182,9 +182,9 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    nook chairs / fireside armchairs / window perches; otherwise a random free
    seat. If the café is full they take it to go.
    **Window perches** are reached by walking to the seat's floor spot and
-   hopping up onto the sill (win2's left perch first descends through its
-   declared clear column, `seat.via`, so the walk never cuts the fireside
-   armchair — and leaves the same way). Both perches at a window share the
+   hopping up onto the sill. Furniture-aware routing finds a clear approach
+   around the fireside armchairs, both arriving and leaving; short trips can
+   cross open floor directly. Both perches at a window share the
    tall table under the glass for their drinks.
    A pianist may instead take the appended piano bench; its drink goes to the
    dedicated saucer spot on the lid, so sipping, steam, cup return, abandoned

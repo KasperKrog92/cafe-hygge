@@ -167,7 +167,7 @@ y=232 ── wall meets floor (L.wallY — kept high so the floor, the life laye
           it (L.armchairs; dir ±1, the right chair is the mirrored art);
           under window 1, `L.catCorner` holds a worn red cushion plus
           terracotta food and blue-grey water bowls (quantized visible levels)
-y=368 ── the walking lane (L.lane — all pathing routes through this corridor
+y=368 ── the walking lane (L.lane — keep this corridor clear
           between the wall furniture and the tables)
           four round tables (L.tables, tagged "by the window" / "near the
           fire"); each seats two at ±L.stoolDX facing inward — chair (with
@@ -208,13 +208,19 @@ occluder's box (see the depth model below for the bookshelf lesson).
 
 Every floor-standing piece also gets a **footprint** box in `L.footprints`
 (derived in scene-core.js from the same `L` entries the art uses; drawn in
-blue by the overlay). The audit's journey check walks every L-shaped route
+blue by the overlay). The audit's journey check walks the generated routes
 against these: no target may *stand* inside one, and no walk leg may *cross*
 one — except boxes marked `passable` (the torso-height tables), whose
 behind/in-front passes the baseline sort renders correctly. Seats are never
 passable: a walker crossing a stool crosses whoever sits on it. New furniture
 added to an existing `L` list gets its footprint automatically; a new *kind*
 of furniture needs a footprint entry alongside its art.
+
+The floor planner also avoids `passable` tables when choosing new routes and
+shortcuts, with 10 px shoulder and 2 px floor clearance. The `passable` audit
+exception remains for authored interaction routes. Run `tools/verify-pathing.js`
+in a disposable `?dev` browser for all seat/service pairs, sampled collision
+checks (including tables), arrival checks, and distance comparisons.
 
 ## Depth model (painter's algorithm)
 

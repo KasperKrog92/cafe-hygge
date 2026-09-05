@@ -190,13 +190,10 @@
     return true;
   }
 
-  /* Window seats live on the sill, not the floor: patrons walk to the seat's
-     floor spot (seat.x/y), then hop up to the perch — and where an armchair
-     blocks the straight drop from the lane, thread through the seat's
-     declared clear column (seat.via, the winSeats twin of busVia). */
+  /* Route to the floor spot; window sitters only hop up after arrival.
+     The shared planner finds the clear side of each chair automatically. */
   function seatPath(p, seat) {
-    makePath(p, seat.via || seat.x, seat.y);
-    if (seat.via) p.path.push({ x: seat.x, y: seat.y });
+    makePath(p, seat.x, seat.y);
   }
 
   function perchUp(p) {
@@ -212,9 +209,6 @@
 
   function pathFrom(p, seat, tx, ty) {
     makePath(p, tx, ty);
-    if (seat && seat.window && seat.via) {
-      p.path = [{ x: seat.via, y: seat.y }, { x: seat.via, y: L.lane }].concat(p.path.slice(1));
-    }
   }
 
   function chairScrape(p, long) {

@@ -167,9 +167,11 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   and pastry case are documented exceptions (slightly oversized hero props).
 - **All positions come from `SCENE.L`**. Never hardcode a coordinate in the sim files
   that exists in `L`. If you add furniture patrons interact with, add it to `L`.
-- **Characters walk the lane** (`L.lane = 368`) between the wall furniture and
-  the tables. Paths are L-shaped: vertical to lane → horizontal → vertical to
-  target. Straying from this causes people to walk "through" tables.
+- **Keep the lane clear** (`L.lane = 368`) between wall furniture and tables.
+  `makePath` finds direct or visible-corner routes around all furniture, with
+  shoulder clearance. Never replace this with unchecked straight paths.
+  Authored staff/cat routes retain their interaction approaches; `walker`
+  skips detours only when the shortcut clears every furniture box.
 - **Cat aerial anchors are exempt from floor footprint rules**: sill,
   bookshelf, counter, machine, back-shelf, and lap anchors are checked against
   their declared surface instead. Cat floor stops and declared routes still

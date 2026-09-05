@@ -751,18 +751,16 @@
       });
     });
 
-    // journeys: the L-shaped walk to every target (lane-first, via the real
-    // makePath) must not cut through an occluder or furniture footprint.
+    // Journeys: the real furniture-aware route to every target must not cut
+    // through an occluder or furniture footprint.
     // Seats and bus spots may end inside their own furniture's box; nothing
     // else may. Bus spots are excluded here — Nora reaches them by her own
     // routes, checked next.
     walkTargets(w).forEach(function (t) {
       if (/^busSpot/.test(t.name) || t.name === 'umbrellaSpot') return;
       const scratch = { x: L.doorSpot.x, y: L.lane, path: null, pose: 'stand', facing: 1, speed: 0 };
-      // window seats with a declared clear column descend there first,
-      // exactly as the sim's seatPath does
-      SIM._.makePath(scratch, t.via || t.x, t.y);
-      if (t.via) scratch.path.push({ x: t.x, y: t.y });
+      SIM._.makePath(scratch, t.x, t.y);
+      if (!scratch.path.length) problems.push('no walking route to ' + t.name);
       const route = [{ x: scratch.x, y: scratch.y }].concat(scratch.path);
       routeProblems(route, t, t.name, null, /^seat\[/.test(t.name), problems);
     });

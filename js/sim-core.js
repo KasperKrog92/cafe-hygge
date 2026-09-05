@@ -390,17 +390,98 @@
 
   /* ---------- movement ---------- */
 
-  function makePath(e, tx, ty) {
-    const path = [];
-    if (Math.abs(e.y - L.lane) > 4 || Math.abs(ty - L.lane) > 4) {
-      path.push({ x: e.x, y: L.lane });
-      path.push({ x: tx, y: L.lane });
+  // Feet-space obstacles, with room for shoulders and a small floor margin.
+  // Even low tables block shortcuts: depth sorting alone isn't a walkable gap.
+  const walkBoxes = L.occluders.map(function (o) {
+    return { x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
+  }).concat(L.footprints).map(function (b) {
+    return { x0: b.x0 - 10, x1: b.x1 + 10, y0: b.y0 - 2, y1: b.y1 + 2 };
+  });
+
+  function insideWalkBox(p, b) {
+    return p.x > b.x0 && p.x < b.x1 && p.y > b.y0 && p.y < b.y1;
+  }
+
+  // Exact slab intersection, including diagonal paths (no sampling gaps).
+  function walkHits(a, z, b) {
+    let lo = 0, hi = 1;
+    for (const axis of ['x', 'y']) {
+      const d = z[axis] - a[axis];
+      if (Math.abs(d) < 0.000001) {
+        if (a[axis] <= b[axis + '0'] || a[axis] >= b[axis + '1']) return false;
+      } else {
+        const t0 = (b[axis + '0'] - a[axis]) / d;
+        const t1 = (b[axis + '1'] - a[axis]) / d;
+        lo = Math.max(lo, Math.min(t0, t1)); hi = Math.min(hi, Math.max(t0, t1));
+        if (lo >= hi) return false;
+      }
     }
-    path.push({ x: tx, y: ty });
+    return hi > 0 && lo < 1;
+  }
+
+  function walkClear(a, b, boxes) {
+    return !boxes.some(function (box) { return walkHits(a, b, box); });
+  }
+
+  const walkCorners = [];
+  walkBoxes.forEach(function (b) {
+    [b.x0 - 1, b.x1 + 1].forEach(function (x) {
+      [b.y0 - 1, b.y1 + 1].forEach(function (y) {
+        const p = { x: x, y: y };
+        if (x >= 22 && x <= L.W - 22 && y >= L.wallY && y <= 566 &&
+            !walkBoxes.some(function (box) { return insideWalkBox(p, box); })) walkCorners.push(p);
+      });
+    });
+  });
+
+  function makePath(e, tx, ty) {
+    const start = { x: e.x, y: e.y }, end = { x: tx, y: ty };
+    // Sitting/standing up is allowed through one's own furniture. All other
+    // furniture stays solid. Authored counter work uses separate staff paths.
+    const boxes = walkBoxes.filter(function (b) {
+      return !insideWalkBox(start, b) && !insideWalkBox(end, b);
+    });
+    if (walkClear(start, end, boxes)) { e.path = [end]; return; }
+    const nodes = [start, end].concat(walkCorners);
+    const costs = nodes.map(function () { return Infinity; }), prev = [], done = [];
+    costs[0] = 0;
+    for (let n = 0; n < nodes.length; n++) {
+      let at = -1;
+      for (let i = 0; i < nodes.length; i++) {
+        if (!done[i] && (at < 0 || costs[i] < costs[at])) at = i;
+      }
+      if (at < 0 || !isFinite(costs[at]) || at === 1) break;
+      done[at] = true;
+      for (let j = 1; j < nodes.length; j++) {
+        if (done[j]) continue;
+        const cost = costs[at] + Math.hypot(nodes[j].x - nodes[at].x, nodes[j].y - nodes[at].y);
+        if (cost < costs[j] && walkClear(nodes[at], nodes[j], boxes)) {
+          costs[j] = cost; prev[j] = at;
+        }
+      }
+    }
+    const path = [];
+    if (isFinite(costs[1])) {
+      for (let i = 1; i !== 0; i = prev[i]) path.unshift({ x: nodes[i].x, y: nodes[i].y });
+    }
+    // Invalid dev destinations must never cause a straight walk through a wall.
     e.path = path;
   }
 
+  function smoothPath(e) {
+    // Keep authored interaction approaches, but omit aisle detours wherever
+    // the entire shortcut is clear. Never exempt endpoint furniture here.
+    let from = e;
+    for (let i = 0; i < e.path.length; i++) {
+      for (let j = e.path.length - 1; j > i; j--) {
+        if (walkClear(from, e.path[j], walkBoxes)) { e.path.splice(i, j - i); break; }
+      }
+      from = e.path[i];
+    }
+  }
+
   function walker(e, dt) {
+    if (e.path && e._walkPath !== e.path) { smoothPath(e); e._walkPath = e.path; }
     // Spend the whole movement budget across corners; tiny remaining legs
     // must not teleport or insert a frame-rate-dependent pause.
     let budget = Math.max(0, e.speed * dt);
