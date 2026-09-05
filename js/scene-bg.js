@@ -783,24 +783,32 @@
   /* ---------- menu board, shelves, lamps ---------- */
   function drawMenuBoard(g) {
     const m = L.menu;
+    // A substantial oak frame sits off the wall, with recessed slate inside.
+    px(g, m.x + 3, m.y + 4, m.w, m.h + 2, 'rgba(30,18,10,0.22)');
     px(g, m.x, m.y, m.w, m.h, '#5a3d28');
-    px(g, m.x, m.y, m.w, 2, '#6e4a33');
-    px(g, m.x + 4, m.y + 4, m.w - 8, m.h - 8, '#2c3038');
-    px(g, m.x + 4, m.y + 4, m.w - 8, 2, 'rgba(0,0,0,0.4)');
-    // chalk handwriting in the 6×10 hand
-    SCENE.chalkText(g, m.x + 16, m.y + 9, 'CAFÉ HYGGE', '#e8dfc9');
-    px(g, m.x + 16, m.y + 21, 76, 2, 'rgba(232,223,201,0.45)');
-    SCENE.chalkText(g, m.x + 12, m.y + 27, 'KAFFE', 'rgba(220,214,196,0.75)');
-    SCENE.chalkText(g, m.x + 12, m.y + 39, 'MATCHA', 'rgba(220,214,196,0.75)');
-    SCENE.chalkText(g, m.x + 12, m.y + 51, 'KAKAO', 'rgba(220,214,196,0.75)');
-    SCENE.chalkText(g, m.x + 12, m.y + 63, 'BOLLER', 'rgba(220,214,196,0.75)');
-    // chalk price dashes
-    g.fillStyle = 'rgba(220,214,196,0.6)';
-    g.fillRect(m.x + 82, m.y + 32, 10, 2);
-    g.fillRect(m.x + 82, m.y + 44, 10, 2);
-    g.fillRect(m.x + 82, m.y + 56, 10, 2);
-    g.fillRect(m.x + 82, m.y + 68, 10, 2);
-    drawMenuDoodle(g, m.x + 94, m.y + 50, menuDoodle);
+    px(g, m.x, m.y, m.w, 3, '#9c6b43');
+    px(g, m.x, m.y + 3, 3, m.h - 3, '#7d5334');
+    px(g, m.x + m.w - 3, m.y + 3, 3, m.h - 3, '#4a3222');
+    px(g, m.x + 6, m.y + 6, m.w - 12, m.h - 12, '#2c3038');
+    px(g, m.x + 6, m.y + 6, m.w - 12, 2, 'rgba(0,0,0,0.3)');
+    px(g, m.x + 6, m.y + 8, 2, m.h - 14, 'rgba(0,0,0,0.18)');
+    // The title and four rows have separate margins; even the widest doodle
+    // fits beside the prices without touching the frame or the lettering.
+    SCENE.chalkText(g, m.x + 23, m.y + 15, 'CAFÉ HYGGE', '#e8dfc9');
+    px(g, m.x + 16, m.y + 28, m.w - 32, 2, 'rgba(232,223,201,0.35)');
+    ['KAFFE', 'MATCHA', 'KAKAO', 'BOLLER'].forEach(function (label, i) {
+      const y = m.y + 36 + i * 15;
+      SCENE.chalkText(g, m.x + 16, y, label, 'rgba(220,214,196,0.82)');
+      px(g, m.x + 78, y + 5, 10, 2, 'rgba(220,214,196,0.6)');
+    });
+    drawMenuDoodle(g, m.x + 94, m.y + 61, menuDoodle);
+    // Projecting chalk tray: bright top, dark front, chalk and a little eraser.
+    px(g, m.x - 3, m.y + m.h - 2, m.w + 6, 4, '#8a6142');
+    px(g, m.x - 3, m.y + m.h + 2, m.w + 6, 3, '#5a3d28');
+    px(g, m.x, m.y + m.h + 5, m.w + 3, 2, 'rgba(30,18,10,0.2)');
+    px(g, m.x + 16, m.y + m.h - 4, 8, 2, '#e8dfc9');
+    px(g, m.x + m.w - 26, m.y + m.h - 6, 14, 4, '#6e4a33');
+    px(g, m.x + m.w - 26, m.y + m.h - 6, 14, 2, '#9c6b43');
   }
 
   function drawMenuDoodle(g, x, y, id) {

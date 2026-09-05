@@ -33,7 +33,7 @@ architecture textures, retuned atmosphere and real typography.
   The cat is ~28×21.
 - **The café ruler** (tuned values; ratios between neighbors matter more than
   absolutes): door 102 h (1.7 CH), window glass 176×140, fireplace brickwork 120 h
-  with a plastered chimney continuing to the ceiling (firebox 48), counter 42 total (slab 14 + front 28), menu board 108×80,
+  with a plastered chimney continuing to the ceiling (firebox 48), counter 42 total (slab 14 + front 28), menu board 116×100,
   floor lamp 68, coat stand ~70, table top at ~32 above the floor (Ø 64),
   stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
   side-table top ~26, window-perch cushions 24, window poseur tables ~52 to
@@ -414,3 +414,9 @@ is centered above the entrance, clear of the bell, window trim and later
 hearth painting. Back-bar shelf bevels, contact shadows and stepped brackets
 clarify how the dishes are supported while keeping the cat's upper perch clear.
 Static wall details remain cached.
+
+The back-bar menu now sits slightly left and lower at L.menu (808,112), sized
+116×100. A six-pixel wooden surround, recessed slate, and projecting chalk
+tray give it depth. The centered heading and four rows use wider vertical
+spacing, with separate columns for price dashes and Nora's changing doodle;
+all six doodles fit inside the frame. Chalk and a small eraser rest on the tray.

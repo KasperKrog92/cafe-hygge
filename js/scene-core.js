@@ -190,7 +190,7 @@
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
     plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
     counterPlant: { x: 900, y: 264 },
-    menu: { x: 820, y: 104, w: 108, h: 80 },  // chalkboard on the wall behind the counter
+    menu: { x: 808, y: 112, w: 116, h: 100 },  // chalkboard on the wall behind the counter
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
     machine: { x: 656, y: 224, w: 56 },       // hero prop: kept a notch above scale
     matchaBar: { x: 726, y: 264 },   // caddy/chawan/chasen corner and Nora's whisking station
