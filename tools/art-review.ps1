@@ -1,7 +1,7 @@
 param(
     [ValidatePattern('^[a-zA-Z0-9_-]+$')][string]$Label = 'review',
     [string]$Session = ('hygge-art-' + [guid]::NewGuid().ToString('N').Substring(0, 8)),
-    [string]$Url = 'http://127.0.0.1:8137/?dev',
+    [string]$Url = 'http://127.0.0.1:8137/reference.html?dev',
     [switch]$Verify
 )
 $ErrorActionPreference = 'Stop'

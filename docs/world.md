@@ -1,3 +1,8 @@
+> **Game branch:** this document describes the retained companion café at
+> `reference.html`. [game.md](game.md) documents the current Fleur de Lune slice;
+> [overview.md](overview.md) takes precedence for game direction. In this game,
+> Lunafreya is the playable owner, not the visiting artist.
+
 # World systems — time, weather, light, events
 
 The systems that make the room feel alive independent of any character.

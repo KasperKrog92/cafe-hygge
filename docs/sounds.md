@@ -1,3 +1,8 @@
+> **Game branch:** this document describes the retained companion café at
+> `reference.html`. [game.md](game.md) documents the current Fleur de Lune slice;
+> [overview.md](overview.md) takes precedence for game direction. In this game,
+> Lunafreya is the playable owner, not the visiting artist.
+
 # Sounds
 
 Every sound in Café Hygge is synthesized live in `js/audio.js` with the Web

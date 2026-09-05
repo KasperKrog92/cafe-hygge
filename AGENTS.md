@@ -2,26 +2,25 @@
 
 Guidance for AI agents (and future humans) working on this project.
 
-## What this is
+## What this is — the game branch
 
-Café Hygge is a **soft narrative game that is also a companion app** — a cozy
-pixel-art café that runs in the browser while its owner reads a book in real
-life. Autonomous characters (a barista, patrons, a cat) live their small lives;
-procedural ASMR-ish audio (rain, fire, espresso, page turns) plays underneath.
-Left alone it is pure ambience, whole if you never touch it. Attended to, it is
-a soft narrative: the regulars grow histories and small projects that advance in
-the background across café days, and turn to you — you keep the café as **Nora** —
-when they have something to share. There is **no score and no fail state**;
-progression is patient, never pressure.
+This branch develops **Fleur de Lune**, a restoration and community game built
+from Café Hygge. The playable owner is **Lunafreya**, blonde hair in a bun,
+with her own emerging personality. Nora is the original companion café's
+barista, not the player in this game.
 
-**The design bar for every change: does it make the café cozier, more
-glanceable, or gently more alive — without ever nagging or punishing absence?**
-A feature that adds challenge, pressure, decay, or UI noise does not belong; one
-that adds warmth, life, or a story beat that *waits for you* does. The one rule
-that reconciles idle progression with never-miss-out — *arcs advance on their
-own; their payoffs never fire on their own and never expire* — lives in
-[docs/narrative.md](docs/narrative.md). See [docs/overview.md](docs/overview.md)
-for the full design ethos.
+Start small: a neglected room becomes the smallest functioning café through
+hands-on cleanup, repairs, basic furnishings and the first cup served.
+Growth can eventually exceed the original café: rooms, equipment, menus,
+helpers and meaningful relationships. Management supports the life of the
+place. Do not forbid upgrades or an eventual economy under the old idle rules.
+No punishment for absence; meaningful conversations suspend demanding gameplay
+while the café remains ambient. Preserve warmth, pixel animation and quiet sound.
+
+See [docs/overview.md](docs/overview.md) for direction and
+[docs/game.md](docs/game.md) for implemented scope, architecture and verification.
+The original simulation is retained at `reference.html` as a development reference;
+the older technical sections below describe that reference unless stated otherwise.
 
 ## Working with the owner
 
@@ -42,6 +41,11 @@ for the full design ethos.
   hedging, or verifying things the owner didn't ask about.
 
 ## Running & testing
+
+- The game entry is `index.html`; open `/?dev` for `__game`. Follow
+  [docs/game.md](docs/game.md) for game smoke checks. Legacy `__dev` commands
+  below require `/reference.html?dev`. Do not expect legacy globals in the game.
+
 
 - **For an art pass, start with [docs/art-workflow.md](docs/art-workflow.md).**
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools/art-review.ps1 -Label before`
@@ -110,8 +114,8 @@ for the full design ethos.
 
 ## Git workflow
 
-- Commit and push directly to `main` unless the owner explicitly asks for a
-  different branch or a pull request.
+- Commit and push to `game` for this direction. Never modify `idle` or push
+  this game to `main`. The public idle deployment is not this branch preview.
 - When changing a shipped script, bump its `?v=` tag in `index.html`. The live
   Cloudflare cache can retain the previous URL for four hours even after a
   successful Pages deployment. Verify the live HTML and its exact script URLs.
@@ -280,6 +284,7 @@ matching doc updated in the same change.
 
 | Doc | Contents |
 | --- | --- |
+| [docs/game.md](docs/game.md) | Current playable game, controls, architecture, persistence and checks |
 | [docs/overview.md](docs/overview.md) | Vision, design principles, what this is and isn't |
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |

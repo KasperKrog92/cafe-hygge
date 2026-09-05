@@ -2,46 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Café Hygge — a cozy idle café</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleur de Lune — a small beginning</title>
+<link rel="stylesheet" href="game.css?v=restoration-1">
 </head>
 <body>
-<div id="stage">
-  <canvas id="cafe"></canvas>
-
-  <div id="overlay">
-    <div class="overlay-card">
-      <h1>Café Hygge</h1>
-      <p class="sub">a tiny café that putters along while you read</p>
-      <button id="enter">☕&nbsp; step inside</button>
-      <p class="hint">sound on — rain, espresso &amp; a crackling fire await</p>
-    </div>
-  </div>
-
-  <div id="controls" class="hidden">
-    <button id="btn-mute"  title="mute (m)">🔊</button>
-    <input  id="vol" type="range" min="0" max="100" value="70" title="volume">
-    <button id="btn-rain"  title="rain on/off">🌧️</button>
-    <button id="btn-fire"  title="fire crackle on/off">🔥</button>
-    <button id="btn-music" title="music on/off">🎵</button>
-    <button id="btn-full"  title="fullscreen (f)">⛶</button>
-  </div>
-</div>
-
+<header><div><div class="eyebrow">Lunafreya's café · chapter one</div><h1>Fleur de Lune</h1></div><button id="sound">Enable sound</button></header>
+<main><canvas id="cafe" aria-label="Lunafreya's café. Move with arrow keys or WASD; use the action button to walk to and restore the next object."></canvas><section id="dialogue" aria-label="Conversation" hidden><div id="speaker"></div><p id="line"></p><button id="continue">Continue</button></section></main>
+<footer><div><p id="objective">An abandoned room. A small beginning.</p><div id="hint">WASD / arrows to move · click to walk · E to interact</div><p id="status" role="status"></p></div><button id="action">Clear the fallen plaster</button></footer>
 <script src="js/audio.js?v=easel-artist-1"></script>
 <script src="js/scene-core.js?v=pathing-20260905-2"></script>
-<script src="js/scene-bg.js?v=animation-20260905-1"></script>
-<script src="js/scene-furniture.js?v=animation-20260905-1"></script>
 <script src="js/scene-people.js?v=walk-arms-20260905-4"></script>
-<script src="js/scene-fx.js?v=pendants-20260905-1"></script>
-<script src="js/characters-roster.js?v=easel-artist-1"></script>
-<script src="js/memory.js"></script>
-<script src="js/sim-core.js?v=pathing-20260905-2"></script>
-<script src="js/sim-patrons.js?v=pathing-20260905-1"></script>
-<script src="js/sim-characters.js?v=animation-20260905-1"></script>
-<script src="js/dev.js?v=pathing-20260905-1"></script>
-<script src="js/main.js"></script>
+<script src="js/game.js?v=restoration-1"></script>
 </body>
 </html>

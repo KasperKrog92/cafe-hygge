@@ -1,3 +1,8 @@
+> **Game branch:** this document describes the retained companion café at
+> `reference.html`. [game.md](game.md) documents the current Fleur de Lune slice;
+> [overview.md](overview.md) takes precedence for game direction. In this game,
+> Lunafreya is the playable owner, not the visiting artist.
+
 # Architecture
 
 Zero-dependency vanilla JS. Thirteen IIFE scripts expose the production globals

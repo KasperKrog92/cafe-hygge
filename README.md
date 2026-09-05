@@ -1,71 +1,38 @@
-# ☕ Café Hygge
+# Fleur de Lune
 
-A tiny idle café that putters along in the corner of your screen while you read.
-No goals, no score — just a warm room, a barista named Nora, patrons coming and
-going, a cat by the fire, rain on the window, and soft ASMR-ish sounds.
+A restoration and community game growing from Café Hygge. Play as **Lunafreya**,
+a blonde-bun café owner who sees possibility in a neglected little room.
 
-Everything is generated in code: the pixel art is drawn on a canvas every frame,
-and every sound — the door bell, the grinder, the espresso pull, the steam wand,
-cup clinks, page turns, murmured conversation, fire crackle, rain, and a sparse
-music box — is synthesized live with the Web Audio API. There are no image or
-audio files, no dependencies, no build step.
+The first playable slice takes you from fallen plaster and dusty floorboards to
+a repaired window, warm light, a second-hand table and the very first coffee for
+Holger. Two intimate conversations introduce the people behind the place.
 
-**Play it live:** <https://hygge.kasper-krog.dk>
+## Play locally
 
-## Running it
+Open `index.html`, or run `python -m http.server 8137` and visit
+[localhost:8137](http://localhost:8137). No build step or dependencies.
 
-Or run it yourself — open `index.html` in any modern browser, that's it.
+- Move with WASD or arrow keys; click the floor to walk.
+- Press E or the action button to approach and complete the next restoration.
+- Choose Continue to advance conversations. You can linger without penalty.
+- Enable sound for quiet synthesized rain and music.
 
-Or serve it (nicer for some browsers):
+Progress saves in this browser under a separate Fleur de Lune key. This slice
+ends after the first cup; expanded service, additional rooms and deeper
+relationships are future work, not existing features.
 
-```bash
-python -m http.server 8137
-```
+## Branches and documentation
 
-then visit <http://localhost:8137>.
+Development belongs on `game`. Do not modify `idle`. The existing public
+[Café Hygge](https://hygge.kasper-krog.dk) is the companion café deployment,
+not a hosted preview of this game. `reference.html` retains that café in this
+checkout for studying and reusing its animation, simulation and atmosphere.
 
-Click **step inside** to start the sound (browsers require a click before audio
-can play). Then leave it running next to your book.
+- [Direction](docs/overview.md)
+- [Implemented slice, architecture, saves and testing](docs/game.md)
+- [Next slices](docs/roadmap.md)
+- [Agent guidance](AGENTS.md)
 
-## What happens in the café
-
-- **Patrons** wander in (more in the daytime, night owls after dark), queue,
-  order — cappuccino, cinnamon latte, chamomile tea, hot chocolate, cardamom
-  bun… — wait for their drink, then find a seat. They sip, read books, chat in
-  soft murmurs with table-mates, and eventually head back out. Some return
-  their cup to the counter; Nora clears up after the ones who don't.
-- **Nora the barista** grinds, tamps, pulls shots, and steams milk (each with
-  its own sound), rings the little counter bell, and putters between orders —
-  wiping the counter, polishing cups, tidying the pastry case.
-- **The cat** sleeps by the fire, stretches, grooms, and pads between favorite
-  spots. Click it to say hello.
-- **Time passes**: a full day cycle runs in 24 minutes — morning light, dusk,
-  lamplit night with stars and a moon, town windows glowing across the street.
-- **Weather drifts**: rain comes and goes, streaking the window and hushing
-  the room.
-- Little **captions** narrate the moment: *"Freja settles in with a book."*
-
-## Controls
-
-Move the mouse to reveal the bar in the corner:
-
-| Control | Effect |
-| --- | --- |
-| 🔊 / slider | mute (`m`) and volume |
-| 🌧️ | let the rain come, or keep the skies clear |
-| 🔥 | fire crackle sound on/off |
-| 🎵 | music box on/off |
-| ⛶ | fullscreen (`f`) |
-
-Settings are remembered between visits.
-
-## Notes
-
-- Keep the window visible (it can be unfocused) for the smoothest animation;
-  if the tab is hidden the café keeps living at a gentler tick.
-- Built with plain HTML/CSS/JS: `js/audio.js` (sound synthesis),
-  `js/scene-*.js` (pixel-art renderer), `js/sim-*.js` (the little lives),
-  `js/main.js` (loop and controls).
-- Deeper documentation lives in [`docs/`](docs/) — design ethos, architecture,
-  the full character/sound/art references, and the [roadmap](docs/roadmap.md).
-  Agents (and curious humans) start at [AGENTS.md](AGENTS.md).
+All art remains programmatic, using the original character renderer and quiet
+Web Audio synthesis. Open `/?dev` to expose the small `__game` test harness;
+the reference café's larger `__dev` harness lives at `/reference.html?dev`.
