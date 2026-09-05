@@ -286,6 +286,7 @@ matching doc updated in the same change.
 | --- | --- |
 | [docs/game.md](docs/game.md) | Current playable game, controls, architecture, persistence and checks |
 | [docs/overview.md](docs/overview.md) | Vision, design principles, what this is and isn't |
+| [docs/story-and-lore.md](docs/story-and-lore.md) | Open-ended game themes, motifs, relationships and story inspiration |
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
 | [docs/characters.md](docs/characters.md) | Nora, patrons, the cat — identities and full behavior state machines |

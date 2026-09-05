@@ -43,6 +43,9 @@ welcome. Absence penalties, decay and pressure remain incompatible with the mood
 
 ## Current scope
 
+[story-and-lore.md](story-and-lore.md) gathers open-ended themes, motifs,
+relationship moments and story inspiration for future development.
+
 [game.md](game.md) records the playable first slice and its technical boundaries.
 The `idle` branch is preserved. `reference.html` retains the earlier café locally
 for comparison and reuse. Future features belong on the roadmap until built.

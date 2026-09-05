@@ -29,6 +29,7 @@ not a hosted preview of this game. `reference.html` retains that café in this
 checkout for studying and reusing its animation, simulation and atmosphere.
 
 - [Direction](docs/overview.md)
+- [Story and lore inspiration](docs/story-and-lore.md)
 - [Implemented slice, architecture, saves and testing](docs/game.md)
 - [Next slices](docs/roadmap.md)
 - [Agent guidance](AGENTS.md)
