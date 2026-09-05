@@ -430,3 +430,14 @@ The back-bar menu now sits slightly left and lower at L.menu (808,112), sized
 tray give it depth. The centered heading and four rows use wider vertical
 spacing, with separate columns for price dashes and Nora's changing doodle;
 all six doodles fit inside the frame. Chalk and a small eraser rest on the tray.
+
+
+## Animation and contact — 5 September 2026
+
+The motion pass keeps the pixel silhouettes and existing furniture projection.
+Shoes remain grounded during walking, sip rims meet mouths, piano hands use
+`L.piano.keyboardY`, and the whisk hand shares the bowl's animation phase.
+Nora's chalk stop is (893, 238), close enough to touch the board; she returns
+to her normal y=286 service line afterwards. Cat hops have their own mirrored
+crouch/tuck/landing poses. See [animations.md](animations.md) for coverage and
+repeatable motion review commands.

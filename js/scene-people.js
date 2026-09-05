@@ -77,7 +77,7 @@
      eyes, a centred mouth, blush on both cheeks, and front variants of the
      five hair styles. `facing` only picks which brow the side-part fringe
      sweeps across, so the view stays consistent with the profile. */
-  function drawHeadFront(g, x, hy, facing, c) {
+  function drawHeadFront(g, x, hy, facing, c, closed) {
     const hairL = shade(c.hair, 0.18);
     const st = c.hairStyle || 0;
     // face framed by the cap and both temples
@@ -117,8 +117,8 @@
     // two brows + eyes, a centred mouth
     px(g, x - 5, hy + 3, 4, 2, c.hair);
     px(g, x + 4, hy + 3, 4, 2, c.hair);
-    px(g, x - 4, hy + 6, 3, 4, '#2a1a12');
-    px(g, x + 4, hy + 6, 3, 4, '#2a1a12');
+    px(g, x - 4, hy + (closed ? 8 : 6), 3, closed ? 2 : 4, '#2a1a12');
+    px(g, x + 4, hy + (closed ? 8 : 6), 3, closed ? 2 : 4, '#2a1a12');
     if (c.beard) {
       px(g, x - 6, hy + 12, 15, 4, c.hair);
       px(g, x - 1, hy + 13, 4, 2, shade(c.hair, -0.25));
@@ -197,9 +197,10 @@
     const walk = p.pose === 'walk';
     const front = p.heading === 'down' && (walk || p.pose === 'stand');
     const back = p.heading === 'up' && (walk || p.pose === 'stand');
-    const cycle = walk ? (Math.floor(p.animT * 8) % 4) : 0;
+    const cycle = walk ? (Math.floor((p.walkDistance || 0) / 6) % 4) : 0;
     const pass = cycle === 1 || cycle === 3;               // passing frames bob up
-    const y = p.y - (walk && pass ? 2 : 0);
+    const y = Math.round(p.y);
+    const blink = p.animT % 4.7 > 4.57;
     const stretchLean = p.pose === 'stretch' ? Math.round(Math.sin(p.animT * 1.4) * 2) : 0;
     const playSway = p.playing ? Math.round(Math.sin(p.animT * 1.15)) : 0;
     const x = Math.round(p.x) + stretchLean + playSway;
@@ -246,7 +247,7 @@
       const dozeDrop = p.dozing ? 2 + (Math.sin(p.animT * 1.15) > 0 ? 1 : 0) : 0;
       const hy = y - 48 + breathe + dozeDrop;
       if (p.gazeFacing && !p.dozing) drawHeadBack(g, x, hy, facing, c);
-      else drawHead(g, x, hy, p.gazeFacing || facing, c, p.dozing);
+      else drawHead(g, x, hy, p.gazeFacing || facing, c, p.dozing || blink);
       // arms + what they hold
       if (p.reading || p.dozing) {
         px(g, x + facing * 3 - 2, y - 24, 5, 8, c.top);
@@ -261,6 +262,14 @@
         px(g, bx + 11, by + 7, 4, 2, '#d9d2c0');
         px(g, bx - 2, by + 3, 3, 4, c.skin);                    // hands on the covers
         px(g, bx + 17, by + 3, 3, 4, c.skin);
+        if (p.pageTurn > 0 && !p.dozing) {
+          const q = 1 - p.pageTurn / 0.8;
+          const edge = Math.round(8 + Math.cos(q * Math.PI) * 8);
+          const lift = Math.round(Math.sin(q * Math.PI) * 5);
+          px(g, bx + Math.min(8, edge), by - lift, Math.max(2, Math.abs(edge - 8)), 9, '#fdf8ec');
+          px(g, bx + edge, by - lift, 2, 9, '#c9b28a');
+          px(g, bx + edge - 1, by + 4 - lift, 3, 3, c.skin);
+        }
       } else if (p.painting) {
         const stroke = Math.floor(p.animT * 5) % 2;
         if (p.paintMixing) {
@@ -286,15 +295,17 @@
         px(g, x - 8, y - 20, 16, 9, '#f5efdf');
         px(g, x - 1, y - 20, 2, 9, '#b5a888');
         px(g, x - 5, y - 18, 8, 1, '#8b8070');
-        px(g, x + 2, y - 25, 1, 10, '#8b7158');
+        const pencil = Math.round(Math.sin(p.animT * 5) * 2);
+        px(g, x + 2 + pencil, y - 25, 1, 10, '#8b7158');
+        px(g, x + pencil, y - 20, 4, 3, c.skin);
       } else if (p.playing) {
         const keyBob = Math.floor(p.animT * 5) % 2;
         // A sideways version of the typing forearms: both hands reach left
         // from the backless bench to the upright's grouped keys.
         px(g, x - 10, y - 29 + keyBob, 7, 11, c.top);
         px(g, x - 5, y - 25 + (1 - keyBob), 7, 9, c.top);
-        px(g, x - 15, y - 19 + keyBob, 6, 3, c.skin);
-        px(g, x - 12, y - 16 + (1 - keyBob), 6, 3, c.skin);
+        px(g, x - 15, SCENE.L.piano.keyboardY + keyBob, 6, 3, c.skin);
+        px(g, x - 12, SCENE.L.piano.keyboardY + 2 + (1 - keyBob), 6, 3, c.skin);
       } else if (p.typing) {
         const keyBob = Math.floor(p.animT * 6) % 2;
         px(g, x - 9, y - 28 + keyBob, 7, 12, c.top);
@@ -303,7 +314,7 @@
         px(g, x + 3, y - 17 + (1 - keyBob), 5, 3, c.skin);
       } else if (p.holding === 'cup' || p.holding === 'glass') {
         const up = p.armUp || 0;
-        const hy = y - 26 - up * 17;
+        const hy = y - 26 - up * 10 + breathe;
         const hx = x + facing * (13 - up * 5);
         const vessel = heldDrinkKind(p);
         px(g, x + facing * 5, y - 30, 5, Math.round(10 - up * 3), c.top);
@@ -325,21 +336,22 @@
           px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
         }
       } else if (p.knitting) {
+        const knit = Math.round(Math.sin(p.animT * 4.5));
         // hands working in the lap, two needles crossing, the scarf growing by
         // row — its length reads the arc's saved progress (docs/narrative.md §8)
         px(g, x - 8, y - 28, 6, 9, c.top);                 // forearms into the lap
         px(g, x + 2, y - 28, 6, 9, c.top);
-        px(g, x - 6, y - 20, 5, 3, c.skin);                // hands meeting
-        px(g, x + 1, y - 20, 5, 3, c.skin);
+        px(g, x - 6, y - 20 + knit, 5, 3, c.skin);
+        px(g, x + 1, y - 20 - knit, 5, 3, c.skin);
         const scol = p.knitColor || '#a94f3f';
         const sw = 3 + Math.round(Math.max(0, Math.min(1, p.knitProgress)) * 11);
         px(g, x - sw, y - 16, sw * 2, 4, scol);            // the scarf across her lap
         px(g, x - sw, y - 16, sw * 2, 1, shade(scol, 0.16));
         px(g, x - sw, y - 13, sw * 2, 1, shade(scol, -0.16));
-        px(g, x - 8, y - 24, 8, 1, '#d9c9a0');             // needles
-        px(g, x, y - 25, 8, 1, '#d9c9a0');
-        px(g, x - 9, y - 25, 2, 2, '#c9b28a');             // needle tips
-        px(g, x + 7, y - 26, 2, 2, '#c9b28a');
+        px(g, x - 8, y - 24 + knit, 8, 1, '#d9c9a0');
+        px(g, x, y - 25 - knit, 8, 1, '#d9c9a0');
+        px(g, x - 9, y - 25 + knit, 2, 2, '#c9b28a');
+        px(g, x + 7, y - 26 - knit, 2, 2, '#c9b28a');
       } else {
         px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
         px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
@@ -347,34 +359,17 @@
       return;
     }
 
-    // standing / walking legs (4-frame walk: stride, pass, stride, pass;
-    // the front/back views step in place — the trailing shoe lifts 2 px
-    // instead of the profile's horizontal stride)
-    if (walk && (front || back)) {
-      if (pass) {
-        px(g, x - 10, y - 16, 8, 16, c.pants);
-        px(g, x + 2, y - 16, 8, 16, c.pants);
-        px(g, x - 10, y - 3, 8, 3, '#3a2a1c');
-        px(g, x + 2, y - 3, 8, 3, '#3a2a1c');
-      } else {
-        const lLift = cycle === 0 ? 0 : 2, rLift = cycle === 0 ? 2 : 0;
-        px(g, x - 10, y - 16, 8, 16 - lLift, c.pants);
-        px(g, x + 2, y - 16, 8, 16 - rLift, c.pants);
-        px(g, x - 10, y - 3 - lLift, 8, 3, '#3a2a1c');
-        px(g, x + 2, y - 3 - rLift, 8, 3, '#3a2a1c');
-      }
-    } else if (walk) {
-      if (pass) {
-        px(g, x - 8, y - 16, 8, 16, c.pants);
-        px(g, x + 1, y - 16, 7, 16, c.pants);
-        px(g, x - 8, y - 3, 8, 3, '#3a2a1c');
-        px(g, x + 1, y - 3, 7, 3, '#3a2a1c');
-      } else {
-        const s = cycle === 0 ? 1 : -1;
-        px(g, x - 10 + s * 3, y - 16, 8, 16, c.pants);
-        px(g, x + 2 - s * 3, y - 16, 8, 16, c.pants);
-        px(g, x - 10 + s * 3, y - 3, 8, 3, '#3a2a1c');
-        px(g, x + 2 - s * 3, y - 3, 8, 3, '#3a2a1c');
+    // A planted foot stays on the baseline while the other passes it.
+    // Phase comes from travelled pixels, so slow walkers do not skate.
+    if (walk) {
+      const phase = (p.walkDistance || 0) / 24 * Math.PI * 2;
+      for (let leg = 0; leg < 2; leg++) {
+        const ph = phase + leg * Math.PI;
+        const stride = Math.round(Math.cos(ph) * 5);
+        const lift = Math.round(Math.max(0, Math.sin(ph)) * 3);
+        const lx = x + (front || back ? (leg ? 2 : -10) : (leg ? 1 : -8) + stride);
+        px(g, lx, y - 16, 7, 13 - lift, leg ? c.pants : shade(c.pants, -0.12));
+        px(g, lx + (front || back ? 0 : facing), y - 3 - lift, 8, 3, '#3a2a1c');
       }
     } else {
       px(g, x - 10, y - 16, 8, 16, c.pants);
@@ -432,22 +427,53 @@
         px(g, abx + 1, y - 28, 2, 6, '#e8dfc9');
       }
     }
-    if (front) drawHeadFront(g, x, y - 56 + breathe, facing, c);
+    if (front) drawHeadFront(g, x, y - 56 + breathe, facing, c, blink);
     else if (back) drawHeadBack(g, x, y - 56 + breathe, facing, c);
-    else drawHead(g, x, y - 56 + breathe, facing, c);
+    else drawHead(g, x, y - 56 + breathe, facing, c, blink);
     // arm + held item, with actual hands
     const held = p.holding;
     const swing = walk && !pass ? (cycle === 0 ? 2 : -2) * facing : 0;
-    if (p.pose === 'stretch') {
+    if (p.kind === 'barista' && p.state === 'prepping') {
+      const step = p.steps[p.stepIdx];
+      const q = Math.min(1, p.stateT / step.dur);
+      const act = step.act;
+      const work = act === 'whisk' ? Math.round(Math.sin(p.stateT * 24) * 2)
+        : act === 'tamp' ? Math.round(Math.sin(q * Math.PI) * 4)
+        : act === 'scoop' || act === 'ice' || act === 'fetch' ? Math.round(Math.sin(q * Math.PI) * 3) : 0;
+      px(g, x - 13, y - 36, 5, 12, c.top);
+      px(g, x + 8, y - 36, 5, 12, c.top);
+      px(g, x - 10, y - 28, 9, 4, c.skin);
+      px(g, x + 1 + (act === 'whisk' ? work : 0), y - 29 + (act === 'whisk' ? 0 : work), 10, 4, c.skin);
+      if (act === 'whisk') {
+        px(g, SCENE.L.matchaBar.x - 2 + work, SCENE.L.matchaBar.y - 17, 5, 4, c.skin);
+      } else if (act === 'scoop') {
+        px(g, x + 3 + work, y - 31, 2, 8, '#c9b28a');
+      } else if (act === 'tamp') {
+        px(g, x + 2, y - 30 + work, 4, 4, '#3c414d');
+        px(g, x, y - 26 + work, 8, 2, '#b8bfc7');
+      } else if (act === 'steam' || act === 'kettle') {
+        px(g, x + 3, y - 29, 9, 7, '#b8bfc7');
+        px(g, x + 2, y - 29, 3, 2, '#d3d9de');
+      }
+    } else if (p.kind === 'barista' && (p.state === 'wipe' || p.state === 'polish') && !walk) {
+      const rub = Math.round(Math.sin(p.stateT * 7) * 4);
+      px(g, x - 12, y - 36, 5, 12, c.top);
+      px(g, x + 7, y - 36, 5, 12, c.top);
+      if (p.state === 'polish') px(g, x - 4, y - 31, 10, 9, '#e8e0d0');
+      px(g, x - 5 + rub, y - 26, 12, 4, '#7a89a5');
+      px(g, x - 3 + rub, y - 29, 5, 4, c.skin);
+    } else if (p.pose === 'stretch') {
       // a long, unhurried reach: both shoulders lift and the hands nearly meet
       px(g, x - 11, y - 50, 5, 14, c.top); px(g, x + 6, y - 50, 5, 14, c.top);
       px(g, x - 8, y - 59, 4, 11, c.skin); px(g, x + 4, y - 59, 4, 11, c.skin);
       px(g, x - 8, y - 62, 4, 4, c.skin); px(g, x + 4, y - 62, 4, 4, c.skin);
     } else if (p.pose === 'reach' && !held) {
       const ax = x + facing * 7 - (facing < 0 ? 4 : 0);
+      const chalk = p.state === 'chalk' ? Math.round(Math.sin(p.stateT * 9) * 2) : 0;
       px(g, ax, y - 48, 5, 13, c.top);
-      px(g, ax + facing * 2, y - 58, 4, 12, c.skin);
-      px(g, ax + facing * 2, y - 61, 4, 4, c.skin);
+      px(g, ax + facing * 2, y - 58 + chalk, 4, 12 - chalk, c.skin);
+      px(g, ax + facing * 2, y - 61 + chalk, 4, 4, c.skin);
+      if (p.state === 'chalk') px(g, ax + facing * 3, y - 63 + chalk, 2, 3, '#e8dfc9');
     } else if (front || back) {
       // front/back views: both arms hang at the sides with a small
       // counter-swing; a held item rides at the hip in the near hand
@@ -590,7 +616,7 @@
   SCENE.drawCat = function (g, cat) {
     const x = Math.round(cat.x), y = Math.round(cat.y);
     const t = cat.animT;
-    const pose = cat.state === 'hop' ? 'stretch' : cat.state;
+    const pose = cat.state;
     // on the back-bar shelf the tail drapes off the board edge instead of the
     // pose's own tail (sleep keeps its tucked curl and skips the drape)
     const drapeTail = (cat.surface === 'backShelf' || cat.surface === 'pianoTop') &&
@@ -599,7 +625,15 @@
     const f = look >= 0 ? 1 : -1;
     const body = '#d98d4a', dark = '#b5702e', cream = '#f0e0c8', pink = '#d9738a';
     const twitch = Math.sin(t * 0.9) > 0.97;    // an occasional ear flick
-    ell(g, x, y + 2, 14, 4, 'rgba(20,12,8,0.2)');
+    // An airborne cat has no contact shadow glued to its belly.
+    if (pose !== 'hop') ell(g, x, y + 2, 14, 4, 'rgba(20,12,8,0.2)');
+    g.save();
+    // These asymmetric poses are authored right-facing (feeding left-facing).
+    // Mirror the complete sprite, including scarf, around its surface anchor.
+    if ((f < 0 && ['hop', 'stretch', 'knead', 'sleep', 'lap'].indexOf(pose) >= 0) ||
+        (f > 0 && (pose === 'eat' || pose === 'drink'))) {
+      g.translate(x * 2, 0); g.scale(-1, 1);
+    }
 
     // ears that move: base + tip triangles, pink inner on the facing side
     function ears(hx, hw, hy) {
@@ -611,8 +645,22 @@
       px(g, (f > 0 ? e2 : e1) + 1, hy - 1, 2, 2, pink);
     }
 
-    if (pose === 'sleep' || pose === 'lap') {
-      const breathe = Math.sin(t * 1.7) > 0 ? 2 : 0;
+    if (pose === 'hop') {
+      const q = Math.max(0, Math.min(1, (cat.hopT - 0.1) / (cat.hopDur - 0.22)));
+      const crouch = q === 0 || q === 1;
+      const tuck = Math.round(Math.sin(q * Math.PI) * 4);
+      px(g, x - 12, y - (crouch ? 10 : 14), 24, 9, body);
+      px(g, x - 8, y - (crouch ? 11 : 15), 16, 3, shade(body, 0.14));
+      px(g, x - 9, y - 6 - tuck, 7, 4, dark);
+      px(g, x + 5, y - 5 - tuck, crouch ? 6 : 9, 4, body);
+      px(g, x + 8, y - (crouch ? 17 : 21), 10, 9, body);
+      ears(x + 8, 10, y - (crouch ? 17 : 21));
+      px(g, x + 14, y - (crouch ? 14 : 18), 2, 2, '#3a5a2a');
+      px(g, x - 17, y - 12, 6, 3, dark);
+      px(g, x - 20, y - 13, 4, 3, cream);
+      if (cat.scarf) catScarf(g, cat.scarf, x, y - (crouch ? 0 : 4), 1, 'stretch');
+    } else if (pose === 'sleep' || pose === 'lap') {
+      const breathe = Math.round((1 + Math.sin(t * 1.7)) * 0.5);
       px(g, x - 12, y - 9 - breathe, 24, 9 + breathe, body);
       px(g, x - 9, y - 11 - breathe, 17, 3, body);       // rounded sleeping haunch
       px(g, x - 6, y - 10 - breathe, 11, 2, shade(body, 0.18));
@@ -652,7 +700,7 @@
       px(g, x + 1, y - 16, 4, 8, shade(body, 0.14));
       px(g, x - 5, y - 5, 10, 5, cream);
       px(g, x - 7, y - 14, 2, 3, dark); px(g, x + 4, y - 15, 2, 3, dark);   // stripes
-      const hy = pose === 'groom' ? y - 19 : y - 26;
+      const hy = pose === 'groom' ? y - 19 + Math.round(Math.sin(t * 5)) : y - 26;
       const hx = pose === 'groom' ? x + f * 2 : x;
       px(g, hx - 5, hy, 14, 9, body);
       ears(hx - 5, 14, hy);
@@ -689,7 +737,7 @@
       px(g, x - 17, y - 21, 3, 2, cream);
     } else { // walk / loaf / pounce
       const moving = pose === 'walk' || pose === 'pounce';
-      const step = moving ? (Math.floor(t * (pose === 'pounce' ? 12 : 8)) % 2) : 0;
+      const step = moving ? (Math.floor(pose === 'walk' ? (cat.walkDistance || 0) / 4 : t * 12) % 2) : 0;
       px(g, x - 12, y - 12, 24, 9, body);
       px(g, x - 8, y - 13, 16, 3, shade(body, 0.14));
       px(g, x - 8, y - 12, 2, 4, dark); px(g, x - 2, y - 12, 2, 5, dark); px(g, x + 4, y - 12, 2, 4, dark);
@@ -723,7 +771,8 @@
       px(g, tx + drape, y + 18, 4, 3, cream);
     }
 
-    if (cat.scarf) catScarf(g, cat.scarf, x, y, f, pose);
+    if (cat.scarf && pose !== 'hop') catScarf(g, cat.scarf, x, y, f, pose);
+    g.restore();
   };
 
   /* A small band of wool around the cat's neck once Gerda's scarf arc has

@@ -236,6 +236,7 @@
 
   function updatePatron(world, p, dt) {
     p.animT += dt;
+    p.pageTurn = Math.max(0, (p.pageTurn || 0) - dt);
     p.stateT += dt;
     if (p.doorCloseT > 0) {
       p.doorCloseT -= dt;
@@ -664,6 +665,7 @@
       p.sipPhase -= dt;
       const tp = 1.3 - p.sipPhase;
       p.armUp = tp < 0.4 ? tp / 0.4 : tp < 0.9 ? 1 : Math.max(0, (1.3 - tp) / 0.4);
+      p.armUp = p.armUp * p.armUp * (3 - 2 * p.armUp);
       if (tp > 0.45 && !p.sipPlayed) {
         p.sipPlayed = true;
         SND.sip();
@@ -745,6 +747,7 @@
       p.pageT -= dt;
       if (p.pageT <= 0) {
         p.pageT = rnd(12, 26);
+        p.pageTurn = 0.8;
         SND.pageTurn();
         if (!regularLine(world, p, 'musing') && Math.random() < 0.12) caption(world, p.name + ' turns a page.');
       }

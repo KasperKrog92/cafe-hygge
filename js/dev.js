@@ -632,13 +632,13 @@
 
     const master = document.createElement('canvas');
     master.width = SCENE.W; master.height = SCENE.H;
-    const mg = master.getContext('2d');
+    const mg = master.getContext('2d', { willReadFrequently: true });
     mg.imageSmoothingEnabled = false;
     SCENE.composeFrame(mg, w);
 
     const out = document.createElement('canvas');
     out.width = box.w * scale; out.height = box.h * scale;
-    const og = out.getContext('2d');
+    const og = out.getContext('2d', { willReadFrequently: true });
     og.imageSmoothingEnabled = false;
     og.drawImage(master, box.x, box.y, box.w, box.h, 0, 0, out.width, out.height);
 

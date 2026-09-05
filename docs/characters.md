@@ -512,3 +512,31 @@ patient, waiting until the reader chooses it, never expiring.
   entry in `SIM.entityDrawables` — follow the cat as the template.
 - Every character action should be **slow, periodic, and interruptible** —
   nothing urgent, nothing that demands watching.
+
+
+## Animation audit — 5 September 2026
+
+Walking phases follow actual distance (24 px per human stride, 8 px per cat
+paw cycle). The walker spends its entire speed × dt budget through route
+corners, without snapping the final 3.2 px or pausing for a simulation tick.
+One shoe lifts while the other remains at the baseline. Carrying hands stay
+steady. Eyes blink briefly on each character's own animation clock.
+
+Readers visibly turn a page for 0.8 seconds when the page-turn sound fires;
+that transient timer lives on the patron, never in the narrative save. Sips
+use smoothstep easing and bring the rim to mouth height. Knitting needles,
+sketching pencils and grooming heads now move; the sleeping cat breathes by
+one pixel. Piano hands use the keyboard's layout anchor. Nora's whisk hand
+and the chasen share the same action clock. Preparation, wiping and polishing
+have working-hand poses; wiping and restocking work timers begin on arrival.
+
+Cat hops include 0.10 seconds of anticipation and 0.12 seconds of landing,
+with a tucked airborne pose in between. Fixed asymmetric poses mirror with
+facing, including their scarves. Airborne cats do not carry a false contact
+shadow underneath their bodies. Existing hop routes and surface anchors remain
+in use. Nora now approaches the chalkboard at `L.noraCare.chalk` (893, 238),
+writes with a small hand stroke, then returns via `chalkHome` to the counter.
+
+The repeatable motion gallery and scenario coverage are described in
+[animations.md](animations.md). The animation timers do not change arc progress
+or the invitation-waits rule.

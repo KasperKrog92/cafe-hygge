@@ -401,28 +401,29 @@
   }
 
   function walker(e, dt) {
-    if (!e.path || !e.path.length) { e.pose = e.pose === 'sit' ? 'sit' : 'stand'; return true; }
-    const tgt = e.path[0];
-    const dx = tgt.x - e.x, dy = tgt.y - e.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist < 3.2) {
-      e.x = tgt.x; e.y = tgt.y;
-      e.path.shift();
-      if (!e.path.length) { e.pose = 'stand'; e.heading = ''; return true; }
-      return false;
+    // Spend the whole movement budget across corners; tiny remaining legs
+    // must not teleport or insert a frame-rate-dependent pause.
+    let budget = Math.max(0, e.speed * dt);
+    while (e.path && e.path.length) {
+      const target = e.path[0];
+      const dx = target.x - e.x, dy = target.y - e.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 0.0001) { e.path.shift(); continue; }
+      if (budget <= 0) break;
+      const step = Math.min(budget, dist);
+      e.x += dx / dist * step; e.y += dy / dist * step;
+      e.walkDistance = (e.walkDistance || 0) + step;
+      budget -= step;
+      if (Math.abs(dx) > 0.6) { e.facing = dx > 0 ? 1 : -1; e.heading = ''; }
+      else if (dy > 24) e.heading = 'down';
+      else if (dy < -24) e.heading = 'up';
+      e.pose = 'walk';
+      if (step < dist) return false;
+      e.x = target.x; e.y = target.y; e.path.shift();
     }
-    const step = e.speed * dt;
-    e.x += (dx / dist) * Math.min(step, dist);
-    e.y += (dy / dist) * Math.min(step, dist);
-    // heading drives drawPerson's front/back views: long vertical legs
-    // walking down the room face the viewer ('down'), long legs walking up
-    // the room show the back ('up'); horizontal legs keep the side profile.
-    // Short vertical hops (< 24 px, e.g. the wait-spot → pickup shuffle)
-    // keep the current view so it doesn't flash mid-journey.
-    if (Math.abs(dx) > 0.6) { e.facing = dx > 0 ? 1 : -1; e.heading = ''; }
-    else if (dy > 24) e.heading = 'down';
-    else if (dy < -24) e.heading = 'up';
-    e.pose = 'walk';
+    if (!e.path || !e.path.length) {
+      e.pose = e.pose === 'sit' ? 'sit' : 'stand'; e.heading = ''; return true;
+    }
     return false;
   }
 
@@ -961,8 +962,8 @@
   function updateParticles(world, dt) {
     // steam from anything hot
     world.hotAcc = (world.hotAcc || 0) + dt;
-    if (world.hotAcc > 0.4) {
-      world.hotAcc = 0;
+    if (world.hotAcc >= 0.4) {
+      world.hotAcc -= 0.4;
       world.counterCups.forEach(function (c) {
         if (c.kind !== 'plate' && c.kind !== 'glass') spawnSteam(world, c.x + 5, c.y - 4);   // pastries and iced drinks don't steam
       });
@@ -974,7 +975,7 @@
         });
       });
       world.patrons.forEach(function (p) {
-        if (p.armUp > 0.7 && p.drink.kind !== 'glass') spawnSteam(world, p.x + p.facing * 8, p.y - 52);
+        if (p.armUp > 0.7 && p.drink.kind !== 'glass') spawnSteam(world, p.x + p.facing * 8, p.y - 38);
       });
     }
     world.tables.forEach(function (tb) {

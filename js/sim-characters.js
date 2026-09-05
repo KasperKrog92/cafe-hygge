@@ -135,14 +135,14 @@
         world.brew.progress = Math.min(1, b.stateT / s.dur);
         if (s.act === 'pull' || s.act === 'steam' || s.act === 'kettle') {
           world.steamAcc += dt;
-          if (world.steamAcc > 0.12) {
-            world.steamAcc = 0;
+          while (world.steamAcc >= 0.12) {
+            world.steamAcc -= 0.12;
             spawnSteam(world, L.machine.x + 16 + Math.random() * 28, L.machine.y + 16);
           }
         } else if (s.act === 'whisk') {
           world.steamAcc += dt;
-          if (world.steamAcc > 0.25) {
-            world.steamAcc = 0;
+          while (world.steamAcc >= 0.25) {
+            world.steamAcc -= 0.25;
             spawnSteam(world, L.matchaBar.x, L.matchaBar.y - 9);
           }
         }
@@ -175,7 +175,7 @@
         break;
       }
       case 'wipe': {
-        if (b.path && b.path.length) { walker(b, dt); break; }
+        if (b.path && b.path.length) { walker(b, dt); b.stateT = 0; break; }
         if (b.stateT < 2.7) {
           b.holding = 'cloth';
           if (!b.swishes) b.swishes = 0;
@@ -192,7 +192,7 @@
         break;
       }
       case 'restock': {
-        if (b.path && b.path.length) { walker(b, dt); break; }
+        if (b.path && b.path.length) { walker(b, dt); b.stateT = 0; break; }
         if (b.stateT > 1.5) {
           SND.clink(0.5, 0.035);
           b.state = 'idle';
@@ -256,9 +256,14 @@
           const doodle = nextMenuDoodle(world);
           SCENE.setMenuDoodle(doodle);
           b.chalkT = rnd(600, 1200);
-          b.pose = 'stand'; b.state = 'idle'; b.idleT = rnd(7, 14);
+          b.pose = 'stand'; b.state = 'chalkHome';
+          b.path = [{ x: b.x, y: L.baristaHome.y }, { x: L.baristaHome.x, y: L.baristaHome.y }];
           if (Math.random() < 0.3) caption(world, chalkCaption(doodle));
         }
+        break;
+      }
+      case 'chalkHome': {
+        if (walker(b, dt)) { b.state = 'idle'; b.idleT = rnd(7, 14); }
         break;
       }
       case 'waterOut': {
@@ -685,7 +690,8 @@
 
   function startChalk(b) {
     b.state = 'chalkWalk'; b.stateT = 0;
-    b.path = [{ x: L.noraCare.chalk.x, y: L.noraCare.chalk.y }];
+    b.path = [{ x: L.noraCare.chalk.x, y: L.baristaHome.y },
+      { x: L.noraCare.chalk.x, y: L.noraCare.chalk.y }];
   }
 
   function startWater(world, b) {
@@ -932,7 +938,7 @@
     cat.hopFrom = { x: cat.x, y: cat.y };
     cat.hopTo = step;
     cat.hopT = 0;
-    cat.hopDur = Math.max(0.35, Math.min(0.55, 0.35 + dist / 500));
+    cat.hopDur = 0.22 + Math.max(0.35, Math.min(0.55, 0.35 + dist / 500));
     cat.state = 'hop';
   }
 
@@ -980,13 +986,13 @@
 
   function updateHop(world, cat, dt) {
     cat.hopT += dt;
-    const q = Math.min(1, cat.hopT / cat.hopDur);
+    const q = Math.max(0, Math.min(1, (cat.hopT - 0.1) / (cat.hopDur - 0.22)));
     const dx = cat.hopTo.x - cat.hopFrom.x, dy = cat.hopTo.y - cat.hopFrom.y;
     const arc = Math.hypot(dx, dy) * 0.4 * 4 * q * (1 - q);
     cat.x = cat.hopFrom.x + dx * q;
     cat.y = cat.hopFrom.y + dy * q - arc;
     if (Math.abs(dx) > 1) cat.facing = dx > 0 ? 1 : -1;
-    if (q < 1) return;
+    if (cat.hopT < cat.hopDur) return;
     const step = cat.hopTo;
     cat.x = step.x; cat.y = step.y;
     if (step.surface) cat.surface = step.surface;

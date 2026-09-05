@@ -581,6 +581,7 @@
   /* ---------- door with jingling bell ----------
      Two-frame hinged swing: closed leaf, or ajar — the leaf seen edge-on at
      the hinge with a lit edge (the old shrinking-width leaf read as sliding). */
+  let doorLeaf = null, doorLeafKey = null;
   function drawDoor(g, world) {
     const d = L.door;
     // frame
@@ -590,7 +591,16 @@
     g.fillRect(d.x + d.w, d.y, 6, d.h + 6);
     // dark opening behind
     px(g, d.x, d.y, d.w, d.h, '#15100b');
-    if (world.door.open < 0.5) {
+    // Rotate the leaf continuously about its left hinge, rasterized first so
+    // its narrowing window and handle retain whole output pixels.
+    if (!doorLeaf) {
+      doorLeaf = document.createElement('canvas'); doorLeaf.width = d.w; doorLeaf.height = d.h;
+      doorLeaf.getContext('2d').translate(-d.x, -d.y);
+    }
+    const room = g, key = world.pal.skyBot + ':' + (world.flash * 0.15).toFixed(3);
+    if (key !== doorLeafKey) {
+      doorLeafKey = key;
+      g = doorLeaf.getContext('2d'); g.clearRect(d.x, d.y, d.w, d.h);
       // closed leaf
       px(g, d.x, d.y, d.w, d.h, '#6b4a30');
       for (let i = 12; i < d.w - 4; i += 14) px(g, d.x + i, d.y + 4, 2, d.h - 8, '#5a3d26');
@@ -605,11 +615,13 @@
       g.strokeStyle = '#4a3020'; g.lineWidth = 3;
       g.strokeRect(d.x + 8, d.y + 12, d.w - 16, 30);
       px(g, d.x + d.w - 10, d.y + 54, 4, 9, '#d9a33c'); // handle
-    } else {
-      // ajar — swung inward on its hinge, edge-on, a touch taller (perspective)
-      px(g, d.x, d.y, 10, d.h + 4, '#57371f');
-      px(g, d.x + 10, d.y, 3, d.h + 2, '#8a6142'); // lit edge
     }
+    g = room;
+    const width = Math.max(10, Math.round(d.w * Math.cos(Math.max(0, Math.min(1, world.door.open)) * 1.38)));
+    g.save(); g.imageSmoothingEnabled = false;
+    g.drawImage(doorLeaf, 0, 0, d.w, d.h, d.x, d.y, width, d.h);
+    g.restore();
+    if (width < d.w - 2) px(g, d.x + width - 2, d.y, 2, d.h, '#8a6142');
     // bell above the door
     const jig = world.door.jiggle > 0 ? Math.round(Math.sin(world.door.jiggle * 22) * 3) : 0;
     px(g, L.bell.x + jig, L.bell.y, 10, 8, '#d9a33c');

@@ -124,3 +124,11 @@ and a selected-sprite ruler overlay. The delivered loop deliberately reviews
 furniture in the room and characters in turnarounds; no live `fill()` command is
 needed for art comparison. Add those remaining tools only when a concrete edit
 would benefit from them.
+
+
+## Animation review
+
+See [animations.md](animations.md) for the September 2026 full motion inventory,
+scenario coverage and the two reusable animation verification scripts. Static
+room shots cannot prove a motion change: inspect the six-frame contact sheet
+as well, and run actual simulation journeys separately from detached art worlds.

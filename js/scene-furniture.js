@@ -662,7 +662,7 @@
     ell(g, M.x, M.y - 7, 6, 2, whisking ? '#8a9a4a' : shade('#8f4a35', -0.24));
     px(g, M.x - 4, M.y - 1, 8, 2, shade('#8f4a35', -0.14));
     if (whisking) {
-      const j = ((world.t * 12) | 0) % 2 ? -1 : 1;
+      const j = Math.round(Math.sin(world.barista.stateT * 24) * 2);
       px(g, M.x - 1 + j, M.y - 21, 2, 12, '#c9a04a');
       px(g, M.x - 4 + j, M.y - 10, 2, 4, '#e0b06a');
       px(g, M.x - 1 + j, M.y - 10, 2, 4, '#e0b06a');

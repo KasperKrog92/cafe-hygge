@@ -201,7 +201,7 @@
     baristaHome: { x: 706, y: 286 },
     baristaExitX: 616,               // where the barista slips out from behind the counter
     noraCare: {
-      chalk: { x: 862, y: 286 },
+      chalk: { x: 893, y: 238 }, // close to the wall: raised chalk meets the doodle
       water: [
         { x: 880, y: 286, facing: 1 },
         { x: 612, y: 286, facing: -1 },

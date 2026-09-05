@@ -261,3 +261,15 @@ The single line of text, bottom-left, that makes a glance feel like a story.
 - Keyboard: `m`, `f`.
 - Everything else watches itself. New interactions must clear a high bar:
   silent-failure-proof, optional, and gentle (see overview.md).
+
+
+## Motion refinements — 5 September 2026
+
+The door leaf now narrows continuously around its left hinge as `door.open`
+changes, keeping its window and handle attached. A small cached leaf canvas
+is redrawn only when its sky/flash appearance changes and is blitted at an
+integer width with nearest-neighbor sampling. Rain, window activity, fire,
+candle flicker, bell motion and particles retain their existing quiet pacing.
+Brewing steam and hot-drink steam retain fractional emission time instead of
+throwing away the remainder on each emission. Steam from a raised mug starts
+near the corrected cup rim. All of these remain simulation-clock driven.
