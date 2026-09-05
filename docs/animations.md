@@ -74,3 +74,11 @@ Walking hips now remain fixed under the hem. Connected two-pixel strips angle
 the trousers toward the moving ankles, rather than shifting the full leg
 column sideways. Profile hips sit closer together to avoid a splayed stride.
 The planted-foot timing and forward swing remain unchanged.
+
+
+### Follow-up: side-view arms
+
+The empty-handed profile walk now places the visible shoulder over the side
+of the torso, slightly behind its centre, rather than at the forward edge.
+A connected sleeve bends through the elbow and the hand counter-swings by
+three pixels against the near leg. Carrying poses still support their props.

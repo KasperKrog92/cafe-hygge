@@ -448,7 +448,6 @@
     else drawHead(g, x, y - 56 + breathe, facing, c, blink);
     // arm + held item, with actual hands
     const held = p.holding;
-    const swing = walk && !pass ? (cycle === 0 ? 2 : -2) * facing : 0;
     if (p.kind === 'barista' && p.state === 'prepping') {
       const step = p.steps[p.stepIdx];
       const q = Math.min(1, p.stateT / step.dur);
@@ -621,9 +620,20 @@
       px(g, lgx + 9, y - 29, 2, 4, '#57371f');
       px(g, lgx + (facing > 0 ? 13 : 0), y - 29, 2, 4, '#8a6142');   // end grain
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 23, 4, 4, c.skin);  // hand under
+    } else if (walk) {
+      // In profile the visible shoulder lies over the side of the torso,
+      // not at its forward edge. Keep it fixed and counter-swing the hand
+      // against the near leg, with a small bend through the elbow.
+      const shoulder = x - facing * 2 - 2;
+      const swing = Math.round(Math.cos((p.walkDistance || 0) / 24 * Math.PI * 2) * 3) * facing;
+      const sleeve = shade(c.top, -0.1);
+      px(g, shoulder, y - 36, 5, 8, sleeve);
+      px(g, shoulder + Math.round(swing / 2), y - 29, 5, 6, sleeve);
+      px(g, shoulder + swing, y - 24, 5, 5, sleeve);
+      px(g, shoulder + swing, y - 20, 4, 4, c.skin);
     } else {
-      px(g, x + facing * 8 - (facing > 0 ? 0 : 3) + swing, y - 34, 5, 16, c.top);
-      px(g, x + facing * 8 - (facing > 0 ? 0 : 2) + swing, y - 20, 4, 4, c.skin);
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 16, c.top);
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 4, c.skin);
     }
     drawOffhand(g, p, x, y, facing, c);
   };

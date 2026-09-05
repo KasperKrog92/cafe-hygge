@@ -26,15 +26,16 @@
     const dy=direction==='down'?1:direction==='up'?-1:0;
     const c=document.createElement('canvas'), cg=c.getContext('2d');
     cg.fillStyle=SCENE._.shade(base.colors.pants,-0.12);const farPants=cg.fillStyle;
-    const fill=cg.fillRect.bind(cg);let shoes=[], trousers=[];
+    const fill=cg.fillRect.bind(cg);let shoes=[], trousers=[], hands=[];
     cg.fillRect=function(x,y,w,h){
       if(cg.fillStyle==='#3a2a1c'&&w===8&&h===3)shoes.push({x,y});
       if(cg.fillStyle===base.colors.pants||cg.fillStyle===farPants)trousers.push({x,y,w,h});
+      if(cg.fillStyle===base.colors.skin&&w===4&&h===4)hands.push({x,y});
       fill(x,y,w,h);
     };
     let contact=null, swingStart=null;
     [0,3,6,9].forEach(function(distance){
-      shoes=[];trousers=[];
+      shoes=[];trousers=[];hands=[];
       SCENE.drawPerson(cg,Object.assign({},base,{x:100+dx*distance,y:100+dy*distance,
         pose:'walk',heading:dy?direction:'',facing:dx||1,walkDistance:distance,
         animT:1,reading:false,holding:null}));
@@ -42,6 +43,10 @@
       const hips=trousers.filter(r=>r.y<=hem&&r.y+r.h>hem);
       check(hips.length>=2,direction+' legs do not reach hem');
       check(hips.every(r=>r.x>=bodyX-10&&r.x+r.w<=bodyX+10),direction+' hips extend outside torso');
+      if(dx){
+        const hand=hands.find(r=>r.y===hem-4);
+        check(!!hand&&Math.abs(hand.x+2-bodyX)<=6,direction+' walking hand is held ahead of torso');
+      }
       check(shoes.length===2,direction+' missing shoes');
       if(shoes.length!==2)return;
       if(!contact){contact=shoes[0];swingStart=shoes[1];}
