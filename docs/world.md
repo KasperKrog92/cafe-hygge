@@ -14,11 +14,14 @@ entrance: right curtain, hearth and mantel candles, then left curtain. She calls
 carries it to the door, switches off the interior lamps and leaves.
 
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
-one-second dark pause lead into the apartment. Nora spends a 90-second
-unattended evening there before the two-second dawn fade leads to 07:30.
+one-second dark pause lead into the apartment. In idle mode, Nora spends a
+90-second unattended evening there before the two-second dawn fade leads to
+07:30. In game mode, the home routine repeats until **go to sleep** is chosen;
+closing the notebook does not start a new day. Sleep jumps to 07:30 and the
+same dawn entrance, saving the transition immediately. Reloading a game evening
+keeps Nora home. Switching to idle lets the current routine finish automatically.
 The café clock holds during home time; elapsed story time still receives real
-dt. Opening the evening notebook in game mode keeps her home, with PC/reading
-routines continuing. Closing it or switching to idle resumes normal departure. Nora comes back
+dt. Nora comes back
 with the cat and turns on the lamps at the entrance first. She puts the cat
 down by its bowls and refills them. If a plant was chosen, she retrieves its
 parcel at the entrance, carries it to the left window, unwraps it for four

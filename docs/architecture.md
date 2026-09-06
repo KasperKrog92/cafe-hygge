@@ -77,8 +77,11 @@ seconds; completed committed stages cannot charge/install again. Boot adds no
 offline time. Transient guests/orders are omitted on ritual restoration, and
 ordinary open-café reloads retain the seeded café foundation.
 
-`SIM.setMode(world, mode)`, `SIM.plan(world, open)` and `SIM.buyPlant(world)` are
-synchronous public actions. The latter checks game mode, home, open planner,
+`SIM.setMode(world, mode)`, `SIM.plan(world, open)`, `SIM.goToSleep(world)` and
+`SIM.buyPlant(world)` are synchronous public actions. Sleep is accepted only
+at home in game mode; it saves the shared morning transition immediately, so
+repeated clicks cannot advance another day. Game mode holds at home independently
+of planner openness, including after reload; idle departs automatically. Buying checks game mode, home, open planner,
 availability and funds before changing both savings and job in one save.
 Planner openness is presentation-only and is not restored as a blocking dialog.
 Mode switching closes it when moving to idle and never changes world identity,

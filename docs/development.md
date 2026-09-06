@@ -90,7 +90,7 @@ Use the established comparison tool for visual passes:
 | `animations` | Movement at different time steps, shoe/body contact and visible animation variations |
 | `animation-journeys` | Real care, cat and seven order-preparation journeys with rendering |
 | `waterfront` | Outdoor orders/seats, weather returns, cleanup, closing and a 50-minute simulation soak |
-| `life` | Three unattended nights per mode; chosen plant; stage reloads, identity and duplicate prevention |
+| `life` | Three nights per mode (idle automatic, game waits for sleep); chosen plant; stage reloads, identity and duplicate prevention |
 | `ship` | Sailing ship movement, window visits, seat reservations, disposal and closing |
 
 **Separate normal-entry smoke test:** `./tools/verify-entry.ps1` automates the
@@ -109,9 +109,9 @@ compact desktop scrolling and a clean audit. It exports settings/confirmation
 screenshots and closes its disposable session. Pair it with the normal-entry
 smoke test when changing audio or the main UI loop.
 
-The `life` suite covers three unattended nights per mode, migration, mode
+The `life` suite covers three nights per mode (idle automatic, game waits for sleep), migration, mode
 switching, one-time purchase and restoration at every plant stage. For actual
-page reloads, planner interactions and two-tab ownership handoff, run:
+page reloads, planner/sleep interactions and two-tab ownership handoff, run:
 
 ```powershell
 ./tools/verify-life-reloads.ps1
@@ -120,7 +120,8 @@ page reloads, planner interactions and two-tab ownership handoff, run:
 Its disposable browser injects `life-browser-init.js` only on its `life-test`
 URL. It stops automatic frame/interval drivers and explicitly ticks the real
 production world, allowing exact persisted phases to be inspected after page
-reload. The regular life suite proves unattended dt-driven cycling separately.
+reload. The regular life suite proves automatic idle cycling and game evenings that
+wait for sleep separately.
 Reports and the actual notebook screenshot go to `.art-review/life-reloads/`.
 This does not claim a Safari execution or full browser-process restart test. `SIM.create({})` creates a private simulated café;
 `SIM.create()` retains production boot behavior. The suites use private worlds,

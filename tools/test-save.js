@@ -52,7 +52,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         SIM.update(w,.25);
         if(w.shop.phase!=='open'&&!captured[w.shop.phase])captured[w.shop.phase]=MEMORY.codec.encode(w.memory);
         if(w.shop.phase==='home'&&w.memory.life.plant.stage==='available') {
-          SIM.setMode(w,'game');SIM.plan(w,true);if(!SIM.buyPlant(w)||SIM.buyPlant(w))throw Error('purchase');SIM.plan(w,false);
+          SIM.setMode(w,'game');SIM.plan(w,true);if(!SIM.buyPlant(w)||SIM.buyPlant(w))throw Error('purchase');SIM.plan(w,false);SIM.goToSleep(w);
         }
         if(w.shop.phase==='open'&&w.memory.life.plant.stage==='installed')break;
       }

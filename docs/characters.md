@@ -7,8 +7,9 @@ closing. Nora pauses by her suitcase, uses her PC, reads and dozes on the bed,
 then meets the cat at the door. Neither entity is replaced; the cat keeps any
 chosen scarf. Home uses authored routes through `L.home.lane`, below the desk
 and bed, with a side approach onto the bed. The cat investigates boxes and
-rests beside her. An open notebook repeats the complete home route without a departure fade;
-closing it allows the routine to finish without another confirmation.
+rests beside her. Game mode repeats the complete home route until the player chooses **go to
+sleep**, with or without an open notebook. Idle mode finishes the routine
+automatically. Sleep advances directly to the short dawn transition and café entrance.
 
 In the morning the original carried-cat entrance and bowl routine run first.
 A chosen plant adds a parcel pickup, furniture-aware carry and four-second

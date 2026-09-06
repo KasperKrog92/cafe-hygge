@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Café Hygge — a cozy idle café</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css?v=settings-20260906-1">
+<link rel="stylesheet" href="style.css?v=sleep-20260906-1">
 </head>
 <body>
 <div id="stage">
@@ -27,7 +27,7 @@
     <p id="plan-balance"></p>
     <p id="plan-status" aria-live="polite"></p>
     <div class="plan-actions"><button id="buy-plant">choose the plant · 30 kr</button><button id="close-plan">back to the evening</button></div>
-    <p class="plan-footnote">Stay a while. Morning waits while your notebook is open.<br>There will always be another evening.</p>
+    <p class="plan-footnote">Stay a while. When you’re ready, close your notebook and choose “go to sleep”.<br>Morning will wait for you.</p>
   </dialog>
   <dialog id="settings" aria-labelledby="settings-title">
     <header class="settings-heading">
@@ -63,6 +63,7 @@
   <div id="controls" class="hidden">
     <button id="btn-mode" title="switch idle / game presentation">idle</button>
     <button id="btn-plan" hidden>evening plan</button>
+    <button id="btn-sleep" hidden>go to sleep</button>
     <button id="btn-mute"  title="mute (m)">🔊</button>
     <input  id="vol" type="range" min="0" max="100" value="70" title="volume" aria-label="Master volume">
     <button id="btn-settings" title="settings" aria-haspopup="dialog">settings</button>
@@ -85,8 +86,8 @@
 <script src="js/sim-patrons.js?v=apartment-20260906-1"></script>
 <script src="js/sim-shop.js?v=apartment-20260906-1"></script>
 <script src="js/sim-characters.js?v=apartment-20260906-1"></script>
-<script src="js/sim-life.js?v=apartment-20260906-1"></script>
+<script src="js/sim-life.js?v=sleep-20260906-1"></script>
 <script src="js/dev.js?v=apartment-20260906-1"></script>
-<script src="js/main.js?v=settings-20260906-1"></script>
+<script src="js/main.js?v=sleep-20260906-1"></script>
 </body>
 </html>

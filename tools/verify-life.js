@@ -17,6 +17,14 @@
     until(w,()=>{
       if(w.shop.phase!==prior) { phases.push(w.shop.phase); if(w.shop.phase==='home') nights++; prior=w.shop.phase; }
       check(w.cat===cat && w.barista===nora,'replaced Nora or cat');
+      if(mode==='game' && w.shop.phase==='home') {
+        const hour=w.hour;
+        tick(w,240);
+        check(w.shop.phase==='home' && w.hour===hour,'game evening advanced unattended');
+        check(SIM.goToSleep(w),'sleep rejected');
+        check(!SIM.goToSleep(w),'duplicate sleep accepted');
+        check(Math.abs(w.hour-7.5)<1e-8 && w.shop.phase==='dawn','sleep did not start morning');
+      }
       return nights===3 && w.shop.phase==='open';
     },6000);
     check(w.memory.life.plant.stage==='available','unattended purchase');
@@ -37,6 +45,8 @@
     check(w.t===t&&w.hour===hour&&w.cat===cat,'mode changed world'); }
   check(w.memory.life.savings===funds-30,'mode charged again');
   SIM.plan(w,false);
+  tick(w,180); check(w.shop.phase==='home','closing notebook started morning');
+  check(SIM.goToSleep(w),'planned sleep rejected');
   const stages=['scheduled','carry','unpack','place','installed'];
   for(const stage of stages) {
     until(w,()=>w.memory.life.plant.stage===stage);
@@ -57,8 +67,13 @@
   const plantBefore=JSON.stringify(w.memory.life.plant);
   until(w,()=>w.shop.phase==='home'); SIM.setMode(w,'game'); SIM.plan(w,true);
   check(!SIM.buyPlant(w),'second evening purchase'); SIM.plan(w,false);
+  SIM.goToSleep(w);
   until(w,()=>w.shop.phase==='open');
   check(JSON.stringify(w.memory.life.plant)===plantBefore,'repeated installation');
+  until(w,()=>w.shop.phase==='home');
+  SIM.setMode(w,'idle');
+  check(!SIM.goToSleep(w),'idle sleep accepted');
+  until(w,()=>w.shop.phase==='open');
   const old=MEMORY.codec.fresh(); delete old.life; old.version=1; old.flags.kept=true;
   old.arcs.kept={stage:2,progress:4,pendingBeat:'finished'};
   const migrated=MEMORY.codec.decode(JSON.stringify(old));

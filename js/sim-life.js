@@ -47,6 +47,11 @@
     w.plannerOpen = !!open && w.shop.phase === 'home' && w.memory.life.mode === 'game';
     return w.plannerOpen;
   };
+  SIM.goToSleep = function (w) {
+    if (w.shop.phase !== 'home' || w.memory.life.mode !== 'game') return false;
+    startMorning(w);
+    return true;
+  };
   SIM.buyPlant = function (w) {
     const l = w.memory.life;
     if (!w.plannerOpen || w.shop.phase !== 'home' || l.mode !== 'game' ||
@@ -96,12 +101,16 @@
   R.updateHome = function (w, dt) {
     const l = w.memory.life;
     w.barista.animT += dt; w.cat.animT += dt;
-    // Planner holds departure, never the ambient routines. No nightly click.
+    // Game evenings wait for sleep; the ambient routine keeps going.
     l.homeTime = Math.min(90, l.homeTime + dt);
-    if (w.plannerOpen && l.homeTime >= 90) l.homeTime = 0;
+    if (l.mode === 'game' && l.homeTime >= 90) l.homeTime = 0;
     homePose(w);
     if (l.homeTime === 45 && w.barista.reading) R.sound.pageTurn();
-    if (l.homeTime < 90 || w.plannerOpen) return;
+    if (l.homeTime < 90 || l.mode === 'game') return;
+    startMorning(w);
+  };
+  function startMorning(w) {
+    const l = w.memory.life;
     w.plannerOpen = false;
     w.barista.reading = w.barista.dozing = false;
     w.barista.pose = 'stand'; w.barista.holding = 'cat'; w.barista.path = null;
@@ -111,7 +120,7 @@
     if (l.plant.stage === 'purchased') l.plant.stage = 'scheduled';
     w.clockOffset += ((7.5-w.hour+24)%24)/24*R.DAY_SECONDS;
     R.updateClock(w,0); commit(w);
-  };
+  }
   R.workPlant = function (w, dt) {
     const p = w.memory.life.plant, b = w.barista;
     if (p.stage === 'available' || p.stage === 'installed') return true;

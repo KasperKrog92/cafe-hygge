@@ -47,13 +47,15 @@ Switch in place without reloading, resetting the clock, duplicating money or
 changing what is installed. There is no separate completed idle café. A person
 who never buys anything still has a pleasant, functioning place indefinitely.
 
-**Proposed unattended rule:** home time ends and the next morning arrives
-automatically in both modes. No submitted plan means an ordinary day, with
-existing work continuing. Opening the planner lets that player linger at home;
-closing it resumes the routine. Merely selecting game mode never requires a
-nightly click. A draft survives leaving the planner and can be used next evening;
-only a confirmed purchase commits funds. Exact evening duration is a playtest
-choice, not a deadline. There are no limited-time offers.
+**Evening rule (updated 6 September 2026):** idle mode automatically finishes
+its 90-second apartment routine and starts the next morning. Game mode stays
+at home until the player chooses **go to sleep**, whether the notebook is open
+or closed. The apartment routines keep repeating while waiting; reloading
+preserves the evening. Sleep immediately advances to 07:30 and the existing
+short dawn transition, with Nora entering the café carrying the cat. No plan
+is required. Switching to idle resumes automatic departure when the current
+routine finishes. Confirmed purchases proceed the following morning; nothing
+expires while the player lingers.
 
 Already authorized practical work may finish while unattended. Its result
 persists, with an optional quiet note in the plan book. Important conversations,
@@ -296,11 +298,11 @@ The first apartment/plant milestone below subsequently added the minimal life an
    purchase, morning carry/unpack/place animation and a persistent result, retaining
    the existing café layout for this isolated prototype. The implementation
    starts with 30 kr, adds 1 kr for each completed pickup and offers one 30 kr
-   plant. Evenings last 90 seconds; an open notebook allows lingering. The same
-   Nora/cat objects inhabit both rooms. Tests cover three unattended nights in
-   each mode, mode switching, migration, actual page reloads at every plant
-   stage, repeated clicks, and browser-tab ownership handoff. Nothing waits for
-   a nightly button; no payment or installation repeats. Larger jobs, H1 box
+   plant. Idle evenings last 90 seconds; game evenings wait for **go to sleep**.
+   The same Nora/cat objects inhabit both rooms. Tests cover three nights in
+   each mode (automatic in idle, explicit sleep in game), mode switching,
+   migration, actual page reloads at every plant stage, repeated clicks, and
+   browser-tab ownership handoff. No payment or installation repeats. Larger jobs, H1 box
    unpacking, street-sign work, new identities and C0 remain later milestones.
 3. **Prove interruptible work.** Add a table assembly and fireplace-cleaning
    project; let normal orders interrupt and work resume. Confirm it looks
