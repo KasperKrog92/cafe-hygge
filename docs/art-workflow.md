@@ -174,6 +174,15 @@ would benefit from them.
 
 ## Animation review
 
+For Nora routing, run `tools/verify-nora-routing.js` through the same disposable
+browser recipe. It walks all 625 ordered pairs of 25 work anchors, including
+obsolete intermediate waypoints, checking sampled body clearance against solid
+furniture. It also completes watering, candles, hearth care, chalk, piano,
+nook bussing and bowl refills, and checks unreachable/replacement destinations.
+`window.noraFrames` contains the rendered nook approach for export. Pair this
+with `tools/verify-hours.js` and the normal-page order cycle; the live audit now
+checks Nora's actual remaining planned path as well as the authored templates.
+
 For the daily shop lifecycle, run `tools/verify-hours.js` through
 `agent-browser --session <disposable-session> eval` on a fresh `?dev` page.
 Use the [browser session lifecycle](#browser-session-lifecycle) recipe so the

@@ -10,6 +10,15 @@ route planner; service can interrupt the round between chores. Ordinary idle
 chores wait until reopening is complete. See [world.md](world.md) for times
 and the full sequence.
 
+All Nora movement—including drinks, watering, candles, clearing tables and
+opening/closing—uses a furniture-aware path from her current position to the
+next work spot. She no longer retraces obsolete aisle waypoints between chores.
+The counter front stays solid, with a separate working corridor behind it;
+12 px side clearance lets her use the nook's narrow service gaps without
+walking through lamps or armchairs. Service approaches may share their own
+low table's projected floor space. Unreachable chores remain pending and are
+reported by the dev audit instead of playing their interaction from afar.
+
 Closing goodnights are spoken from the counter, facing the room. Cleanup
 visits the nook and lower tables right-to-left, the piano/artist corner, then
 upper tables and window ledges left-to-right before returning to put pastries

@@ -121,11 +121,24 @@ plant, lamp, or table remains blocked. The central lane (`L.lane = 368`) remains
 open, but short trips no longer have to return to it. Door arrivals and
 departures use `L.entryApproach` to enter the open floor instead of squeezing
 along the wall behind the fireside readers. Both approach legs are planned
-against the same obstacles. On each new path,
+against the same obstacles. On each new patron/cat path,
 `walker` also removes clear detours from authored routes; shortcuts never
-cross any furniture, including endpoint furniture. The
-barista has hand-built paths behind the counter (y = 286) and exits through
-the gap at `L.baristaExitX = 616`. Cat walks use `catRoute`: safe pairs keep a
+cross any furniture, including endpoint furniture.
+
+Nora's new paths are planned from her actual position to the chore's final
+anchor; intermediate chore-template waypoints are not walked. Her graph uses
+12 px side clearance to fit the service gaps between nook lamps and chairs.
+It preserves the counter's front barrier and its left exit at
+`L.baristaExitX = 616`, while opening her projected work corridor at y ≤ 286.
+At service stops, nearby clearance margins can shrink to the anchor, keeping
+solid chairs, plants and lamps blocked; the low table being serviced admits
+her approach. These adjusted bounds also supply graph corners, so overlapping
+personal-space margins cannot trap an approach. An unreachable destination
+keeps its path pending and sets `walkBlocked`, rather than completing a chore
+remotely. The audit checks Nora's actual planned legs and flags blocked chores.
+Her door-to-switch trip is direct, before joining the floor routes.
+
+Cat walks use `catRoute`: safe pairs keep a
 straight line, while only the declared colliding pairs thread through clear
 approach waypoints. `hop` interpolates a parabolic arc between declared
 surface anchors instead of using `walker`.

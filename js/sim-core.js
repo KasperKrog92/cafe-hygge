@@ -399,11 +399,23 @@
   // approach their own furniture through walkClear's first/last-leg rules.
   // Even low tables block shortcuts: depth sorting alone isn't a walkable gap.
   const walkBoxes = L.occluders.map(function (o) {
-    return { x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
+    return { name: o.name, x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
   }).concat(L.footprints).map(function (b) {
     const side = b.seat ? 22 : 18, depth = b.seat ? 24 : 14;
     return { x0: b.x0 - side, x1: b.x1 + side, y0: b.y0 - depth,
       y1: b.y1 + (b.frontClearance || depth), core: b };
+  });
+
+  // Nora's feet are projected behind the counter at y=286. Keep that
+  // working corridor open, but retain the counter front as a solid barrier:
+  // access to the room is around its left end, never through the slab.
+  const staffBoxes = walkBoxes.map(function (box) {
+    // Nora needs the service gaps between the nook's lamps and armchairs.
+    // Use body clearance there rather than a patron's wider personal space.
+    const staff = Object.assign({}, box, { x0: box.core.x0 - 12, x1: box.core.x1 + 12 });
+    if (box.core.name !== 'counter') return staff;
+    const core = Object.assign({}, box.core, { y0: L.baristaHome.y + 1 });
+    return Object.assign({}, staff, { x0: L.baristaExitX, y0: core.y0, core: core });
   });
 
   function insideWalkBox(p, b) {
@@ -449,22 +461,48 @@
     });
   }
 
-  const walkCorners = [];
-  walkBoxes.forEach(function (b) {
-    [b.x0 - 1, b.x1 + 1].forEach(function (x) {
-      [b.y0 - 1, b.y1 + 1].forEach(function (y) {
-        const p = { x: x, y: y };
-        if (x >= 22 && x <= L.W - 22 && y >= L.wallY && y <= 566 &&
-            !walkBoxes.some(function (box) { return insideWalkBox(p, box); })) walkCorners.push(p);
+  function cornersFor(boxes) {
+    const corners = [];
+    boxes.forEach(function (b) {
+      [b.x0 - 1, b.x1 + 1].forEach(function (x) {
+        [b.y0 - 1, b.y1 + 1].forEach(function (y) {
+          const p = { x: x, y: y };
+          if (x >= 22 && x <= L.W - 22 && y >= L.wallY && y <= 566 &&
+              !boxes.some(function (box) { return insideWalkBox(p, box); })) corners.push(p);
+        });
       });
     });
-  });
+    return corners;
+  }
+  const walkCorners = cornersFor(walkBoxes);
+
+  function staffRouteBoxes(start, end) {
+    return staffBoxes.map(function (box) {
+      const bounds = Object.assign({}, box);
+      [start, end].forEach(function (p) {
+        if (p.x < box.x0 || p.x > box.x1 || p.y < box.y0 || p.y > box.y1) return;
+        // Reaching a service anchor may need the nearby personal-space
+        // margins, but never the solid chair, lamp or plant. Include those
+        // adjusted corners in the graph: otherwise overlapping margins can
+        // seal off a perfectly walkable approach to a nook side table.
+        ['x0', 'x1', 'y0', 'y1'].forEach(function (edge) {
+          if (edge[1] === '0' ? p[edge[0]] <= box.core[edge] : p[edge[0]] >= box.core[edge]) {
+            bounds[edge] = p[edge[0]];
+          }
+        });
+        // A service anchor shares its low table's projected floor box.
+        // Admit the service approach to that table, not unrelated tables.
+        if (box.core.passable) bounds.service = true;
+      });
+      return bounds;
+    }).filter(function (box) { return !box.service; });
+  }
 
   function findWalkPath(e, tx, ty) {
     const start = { x: e.x, y: e.y }, end = { x: tx, y: ty };
-    const boxes = walkBoxes;
+    const boxes = e.kind === 'barista' ? staffRouteBoxes(start, end) : walkBoxes;
     if (walkClear(start, end, boxes, start, end)) { e.path = [end]; return; }
-    const nodes = [start, end].concat(walkCorners);
+    const nodes = [start, end].concat(e.kind === 'barista' ? cornersFor(boxes) : walkCorners);
     const costs = nodes.map(function () { return Infinity; }), prev = [], done = [];
     costs[0] = 0;
     for (let n = 0; n < nodes.length; n++) {
@@ -491,6 +529,8 @@
   }
 
   function makePath(e, tx, ty) {
+    // The light switch is beside the door, before the entrance aisle.
+    if (e.kind === 'barista') { findWalkPath(e, tx, ty); return; }
     const fromDoor = e.x === L.doorSpot.x && e.y === L.doorSpot.y;
     const toDoor = tx === L.doorSpot.x && ty === L.doorSpot.y;
     if (fromDoor === toDoor) { findWalkPath(e, tx, ty); return; }
@@ -499,7 +539,7 @@
     const via = L.entryApproach;
     findWalkPath(e, via.x, via.y);
     const first = e.path;
-    const last = { x: via.x, y: via.y };
+    const last = { x: via.x, y: via.y, kind: e.kind };
     findWalkPath(last, tx, ty);
     e.path = first.length && last.path.length ? first.concat(last.path) : [];
   }
@@ -517,7 +557,18 @@
   }
 
   function walker(e, dt) {
-    if (e.path && e._walkPath !== e.path) { smoothPath(e); e._walkPath = e.path; }
+    if (e.path && e._walkPath !== e.path) {
+      if (e.kind === 'barista' && e.path.length) {
+        const target = e.path[e.path.length - 1];
+        makePath(e, target.x, target.y);
+        e.walkBlocked = !e.path.length;
+        if (e.walkBlocked) e.path = [target];
+      } else smoothPath(e);
+      e._walkPath = e.path;
+    }
+    // An unreachable chore is not an arrival. Keep it pending instead of
+    // collecting cups or switching lights from the wrong side of the room.
+    if (e.kind === 'barista' && e.walkBlocked) return false;
     // Spend the whole movement budget across corners; tiny remaining legs
     // must not teleport or insert a frame-rate-dependent pause.
     let budget = Math.max(0, e.speed * dt);

@@ -1477,7 +1477,7 @@
   // Shop rituals own Nora only for one out-and-back chore at a time. Service
   // retains priority between chores, so an early visitor can already order.
   function shopPath(from, to) {
-    const walker = { x: from.x, y: from.y };
+    const walker = { x: from.x, y: from.y, kind: from.kind };
     R.makePath(walker, to.x, to.y);
     return walker.path;
   }

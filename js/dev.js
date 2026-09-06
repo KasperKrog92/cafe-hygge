@@ -771,7 +771,27 @@
       routeProblems(route, t, t.name, null, /^seat\[/.test(t.name), problems);
     });
 
-    // Nora's bus routes (shared with the sim via SIM._.busRoute): she starts
+    // Check the path the walker actually planned, not just chore templates.
+    const nora = w.barista;
+    if (nora.walkBlocked) problems.push('Nora cannot reach her current chore');
+    if (nora.path && nora.path.length && nora._walkPath === nora.path && !nora.walkBlocked) {
+      const actual = [{ x: nora.x, y: nora.y }].concat(nora.path);
+      const dest = actual[actual.length - 1];
+      noGoBoxes().forEach(function (source) {
+        if (source.passable) return;
+        const box = source.name === 'counter' ? Object.assign({}, source, { y0: L.baristaHome.y + 1 }) : source;
+        function inSeat(p) { return box.seat && p.x > box.x0 && p.x < box.x1 && p.y > box.y0 && p.y < box.y1; }
+        for (let i = 1; i < actual.length; i++) {
+          if ((i === 1 && inSeat(actual[0])) || (i === actual.length - 1 && inSeat(dest))) continue;
+          if (segHitsBox(actual[i - 1], actual[i], box, PAD)) {
+            problems.push('Nora planned route cuts through the ' + box.name);
+            break;
+          }
+        }
+      });
+    }
+
+    // Nora's bus route templates (shared with SIM._.busRoute): she starts
     // behind the counter by design, so the counter box is exempt
     w.tables.forEach(function (tb, i) {
       const route = SIM._.busRoute(w, i);
