@@ -4,11 +4,13 @@
 
 `sim-life.js` sends the existing Nora and cat to the sparse apartment after
 closing. Nora pauses by her suitcase, uses her PC, reads and dozes on the bed,
-then meets the cat at the door. Neither entity is replaced; the cat keeps any
+then walks back to her desk while the cat returns to the boxes. Neither entity is replaced; the cat keeps any
 chosen scarf. Home uses authored routes through `L.home.lane`, below the desk
 and bed, with a side approach onto the bed. The cat investigates boxes and
-rests beside her. Game mode repeats the complete home route until the player chooses **go to
-sleep**, with or without an open notebook. Idle mode finishes the routine
+rests beside her. Arrival at the door happens once. Game mode loops only the indoor desk,
+reading and resting routine until the player chooses **go to sleep**, with or
+without an open notebook. Nora and the cat join matching positions at the loop
+boundary, without replaying arrival or jumping across the room. Idle mode finishes the routine
 automatically. Sleep advances directly to the short dawn transition and café entrance.
 
 In the morning the original carried-cat entrance and bowl routine run first.

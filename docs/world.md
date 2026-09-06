@@ -16,7 +16,8 @@ carries it to the door, switches off the interior lamps and leaves.
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
 one-second dark pause lead into the apartment. In idle mode, Nora spends a
 90-second unattended evening there before the two-second dawn fade leads to
-07:30. In game mode, the home routine repeats until **go to sleep** is chosen;
+07:30. After the one-time arrival, game mode repeats only the indoor desk,
+reading and resting routine until **go to sleep** is chosen;
 closing the notebook does not start a new day. Sleep jumps to 07:30 and the
 same dawn entrance, saving the transition immediately. Reloading a game evening
 keeps Nora home. Switching to idle lets the current routine finish automatically.

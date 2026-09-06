@@ -50,7 +50,8 @@ who never buys anything still has a pleasant, functioning place indefinitely.
 **Evening rule (updated 6 September 2026):** idle mode automatically finishes
 its 90-second apartment routine and starts the next morning. Game mode stays
 at home until the player chooses **go to sleep**, whether the notebook is open
-or closed. The apartment routines keep repeating while waiting; reloading
+or closed. After arriving once, Nora and the cat relax on continuous indoor
+routes without returning to the entrance. Reloading
 preserves the evening. Sleep immediately advances to 07:30 and the existing
 short dawn transition, with Nora entering the café carrying the cat. No plan
 is required. Switching to idle resumes automatic departure when the current

@@ -19,7 +19,15 @@
       check(w.cat===cat && w.barista===nora,'replaced Nora or cat');
       if(mode==='game' && w.shop.phase==='home') {
         const hour=w.hour;
-        tick(w,240);
+        tick(w,20);
+        for(let t=0;t<240;t+=.25) {
+          const positions=[nora,cat].map(e=>({x:e.x,y:e.y}));
+          SIM.update(w,.25);
+          [nora,cat].forEach((e,i)=>{
+            check(Math.hypot(e.x-positions[i].x,e.y-positions[i].y)<16,'home loop teleported');
+            check(e.x>SCENE.L.home.entry.x+50,'home loop revisited entrance');
+          });
+        }
         check(w.shop.phase==='home' && w.hour===hour,'game evening advanced unattended');
         check(SIM.goToSleep(w),'sleep rejected');
         check(!SIM.goToSleep(w),'duplicate sleep accepted');

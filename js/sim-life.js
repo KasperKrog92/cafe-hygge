@@ -87,23 +87,24 @@
     const t = w.memory.life.homeTime, b = w.barista, cat = w.cat;
     track(b,t,[[0,H.entry],[3,H.bag],[7,H.bag],[9,lane(H.bag)], [13,lane(H.deskSeat)],
       [15,H.deskSeat],[33,H.deskSeat],[35,lane(H.deskSeat)],[41,lane(H.bedApproach)], [43,H.bedApproach],
-      [45,H.bedSeat],[78,H.bedSeat],[80,H.bedApproach],[82,lane(H.bedApproach)],[87,lane(H.entry)],[90,H.entry]]);
+      [45,H.bedSeat],[78,H.bedSeat],[80,H.bedApproach],[82,lane(H.bedApproach)],[88,lane(H.deskSeat)],[90,H.deskSeat]]);
     b.reading = t >= 45 && t < 64; b.dozing = t >= 64 && t < 78;
     b.holding = null; b.state = 'idle';
     if ((t >= 15 && t < 33) || (t >= 45 && t < 78)) { b.pose = 'sit'; b.heading = ''; b.facing = -1; }
     const stops=H.catStops;
     const moving=track(cat,t,[[0,H.entry],[5,stops[0]],[16,stops[0]], [18,lane(stops[0])],
       [29,lane(stops[1])],[31,stops[1]],[42,stops[1]], [44,lane(stops[1])],
-      [52,lane(stops[2])],[54,stops[2]],[79,stops[2]],[81,lane(stops[2])],[88,lane(H.entry)],[90,H.entry]]);
+      [52,lane(stops[2])],[54,stops[2]],[79,stops[2]],[81,lane(stops[2])],[88,lane(stops[0])],[90,stops[0]]]);
     cat.state = moving ? 'walk' : t >= 54 && t < 79 ? 'sleep' : 'sit';
     cat.surface = 'floor'; cat.target = {id:'home',x:cat.x,y:cat.y,kind:'floor'};
   }
   R.updateHome = function (w, dt) {
     const l = w.memory.life;
     w.barista.animT += dt; w.cat.animT += dt;
-    // Game evenings wait for sleep; the ambient routine keeps going.
-    l.homeTime = Math.min(90, l.homeTime + dt);
-    if (l.mode === 'game' && l.homeTime >= 90) l.homeTime = 0;
+    // Arrival happens once. The indoor return joins the desk/box poses at 15s,
+    // so waiting evenings repeat continuously without revisiting the entrance.
+    const next = l.homeTime + dt;
+    l.homeTime = l.mode === 'game' && next >= 90 ? 15 + (next - 90) % 75 : Math.min(90, next);
     homePose(w);
     if (l.homeTime === 45 && w.barista.reading) R.sound.pageTurn();
     if (l.homeTime < 90 || l.mode === 'game') return;
