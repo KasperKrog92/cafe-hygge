@@ -10,6 +10,12 @@ route planner; service can interrupt the round between chores. Ordinary idle
 chores wait until reopening is complete. See [world.md](world.md) for times
 and the full sequence.
 
+Closing goodnights are spoken from the counter, facing the room. Cleanup
+visits the nook and lower tables right-to-left, the piano/artist corner, then
+upper tables and window ledges left-to-right before returning to put pastries
+away. The final wall round travels right curtain → hearth → left curtain →
+cat corner → entrance switch → door, without another return to the counter.
+
 Closing readers finish their last cup, then use `beginDeparture`; laptops
 first pass through `closeLaptop`. Couples, dozers, borrowed books and umbrellas
 retain the same cleanup paths. Guests being served get their own final-cup

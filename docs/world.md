@@ -2,13 +2,15 @@
 
 ## Closing time and the next morning
 
-At 21:30, new arrivals stop. Nora wishes the remaining guests a good night,
+At 21:30, new arrivals stop. Nora wishes the remaining guests a good night from the counter,
 wipes the counter and makes a closing round. Existing orders are finished;
 seated guests have another 12–22 seconds for their last cup before following
 their usual departure (laptop, borrowed book, umbrella and lap cat included).
-She waits for everyone to leave before clearing each table and snuffing its
-candle, putting away the pastries, drawing both curtains, settling the fire
-to embers and extinguishing the mantel candles. She calls the cat down,
+She waits for everyone to leave before clearing tables and snuffing their
+candles in a room circuit: reading nook, lower dining tables, piano and artist
+corner, then the upper tables and window ledges from left to right. Back at
+the counter, she puts away the pastries. Her final round heads toward the
+entrance: right curtain, hearth and mantel candles, then left curtain. She calls the cat down,
 carries it to the door, switches off the interior lamps and leaves.
 
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,

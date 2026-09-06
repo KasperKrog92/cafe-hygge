@@ -1488,7 +1488,7 @@
     if (kind === 'hearth') return fireTendRoute();
     if (kind === 'bowls' || kind === 'cat' || kind === 'putCat') return refillRoute();
     if (kind === 'stock') return [{ x: L.shop.pastry.x, y: L.baristaHome.y }];
-    if (kind === 'lights' || kind === 'greet') return [
+    if (kind === 'lights') return [
       { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
       { x: L.entryApproach.x, y: L.lane }, L.entryApproach, L.shop.switchSpot
     ];
@@ -1499,10 +1499,25 @@
     if (opening) return [{ kind: 'lights' }, { kind: 'putCat' }, { kind: 'bowls' },
       { kind: 'curtain', index: 0 }, { kind: 'hearth' }, { kind: 'curtain', index: 1 },
       { kind: 'stock' }, { kind: 'welcome' }];
+    // One floor circuit from the counter: reading nook, lower dining tables,
+    // piano/artist corner, then the upper tables/windows from left to right.
+    // Keep table identity in world.tables; only the visit order changes.
+    const dining = world.tables.filter(function (tb) { return !tb.small && !tb.tall && !tb.piano && !tb.artist; });
+    const middleY = (Math.min.apply(null, dining.map(function (tb) { return tb.y; })) +
+      Math.max.apply(null, dining.map(function (tb) { return tb.y; }))) / 2;
+    function zone(tb) {
+      if (tb.small) return 0;
+      if (!tb.tall && !tb.piano && !tb.artist && tb.y > middleY) return 1;
+      if (tb.piano) return 2;
+      if (tb.artist) return 3;
+      return 4;
+    }
+    const tables = world.tables.map(function (tb, i) { return { kind: 'table', index: i, zone: zone(tb), x: tb.x }; });
+    tables.sort(function (a, b) { return a.zone - b.zone || (a.zone < 2 ? b.x - a.x : a.x - b.x); });
     return [{ kind: 'greet' }, { kind: 'wipe' }, { kind: 'wait' }]
-      .concat(world.tables.map(function (_, i) { return { kind: 'table', index: i }; }))
-      .concat([{ kind: 'stock' }, { kind: 'curtain', index: 0 }, { kind: 'curtain', index: 1 },
-        { kind: 'hearth' }, { kind: 'cat' }, { kind: 'lights' }]);
+      .concat(tables)
+      .concat([{ kind: 'stock' }, { kind: 'curtain', index: 1 }, { kind: 'hearth' },
+        { kind: 'curtain', index: 0 }, { kind: 'cat' }, { kind: 'lights' }]);
   }
 
   function updateShop(world, dt) {
@@ -1561,6 +1576,7 @@
       }
       b.pose = task.kind === 'wipe' || task.kind === 'table' ? 'wipe' : 'reach';
       b.heading = 'up';
+      if (task.kind === 'greet') { b.pose = 'stand'; b.heading = 'down'; }
       if (task.kind === 'cat' && !s.carryingCat) {
         b.pose = 'stand';
         if (cat.surface !== 'floor' || cat.state === 'hop') {
