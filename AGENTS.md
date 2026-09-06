@@ -158,7 +158,10 @@ milestone on the current café foundation, keeping later ideas out of that slice
   do not resume its separate engine or merge it wholesale.
 - When changing a shipped script, bump its `?v=` tag in `index.html`. The live
   Cloudflare cache can retain the previous URL for four hours even after a
-  successful Pages deployment. Verify the live HTML and its exact script URLs.
+  successful Pages deployment.
+- Finish after a successful push. Do not routinely wait for deployment or
+  check the live site, HTML or script URLs. The owner will report if a push
+  appears not to have reached the site; investigate deployment when asked.
 
 ## Architecture (18 scripts, deliberate order)
 

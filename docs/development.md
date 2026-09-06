@@ -24,7 +24,9 @@ until the owner explicitly requests them (6 September 2026).
    existence. New save behavior also needs reload/migration checks; a passing
    in-memory simulation alone is insufficient.
 5. Update implementation docs and the roadmap's actual status. Commit, push to
-   `main` and verify deployment as required by AGENTS.md. A push publishes.
+   `main` and finish after the push succeeds. Deployment runs automatically;
+   do not wait for it or verify the live site unless the owner asks or reports
+   that an update has not appeared.
 
 Avoid combining a file split, a save migration, a new scene and new story content
 in one change. A behavior-preserving extraction should pass the old checks
