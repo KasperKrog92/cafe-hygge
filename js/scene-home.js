@@ -227,7 +227,8 @@
     glow.addColorStop(0,'rgba(255,201,119,.16)'); glow.addColorStop(1,'rgba(255,201,119,0)');
     g.fillStyle=glow;g.fillRect(510,165,280,280);
     SCENE.drawCaption(g,w);
-    const t=w.memory.life.homeTime, fade=w.plannerOpen ? 0 : t<2 ? 1-t/2 : t>88 ? (t-88)/2 : 0;
+    // Only idle departs on this timer. Explicit sleep uses the café dawn fade.
+    const t=w.memory.life.homeTime, fade=w.memory.life.mode === 'game' || w.plannerOpen ? 0 : t<2 ? 1-t/2 : t>88 ? (t-88)/2 : 0;
     if(fade>0) { g.globalAlpha=fade; px(g,0,0,960,600,'#100d14'); g.globalAlpha=1; }
   };
 })();

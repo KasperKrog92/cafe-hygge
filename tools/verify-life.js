@@ -9,6 +9,12 @@
     throw Error('timed out: '+w.shop.phase+' / '+w.memory.life.plant.stage);
   }
   function snap(w,name) { frames[name]=__dev.shot(null,{world:w}); saves[name]=MEMORY.codec.encode(w.memory); }
+  const canvas=document.createElement('canvas'); canvas.width=960; canvas.height=600;
+  const context=canvas.getContext('2d',{willReadFrequently:true});
+  function wallPixel(w) {
+    SCENE.composeFrame(context,w);
+    return Array.from(context.getImageData(400,150,1,1).data).join(',');
+  }
   for(const mode of ['idle','game']) {
     const w=SIM.create({random:SIM.seededRandom(42)}), cat=w.cat, nora=w.barista;
     SIM.setMode(w,mode);
@@ -20,9 +26,15 @@
       if(mode==='game' && w.shop.phase==='home') {
         const hour=w.hour;
         tick(w,20);
+        const wall=wallPixel(w);
         for(let t=0;t<240;t+=.25) {
           const positions=[nora,cat].map(e=>({x:e.x,y:e.y}));
           SIM.update(w,.25);
+          if(w.memory.life.homeTime>=88 || w.memory.life.homeTime<=16) {
+            check(wallPixel(w)===wall,'game apartment faded at loop boundary');
+          }
+          if(nights===1 && w.memory.life.homeTime===89.75) snap(w,'home-before-loop');
+          if(nights===1 && w.memory.life.homeTime===15) snap(w,'home-after-loop');
           [nora,cat].forEach((e,i)=>{
             check(Math.hypot(e.x-positions[i].x,e.y-positions[i].y)<16,'home loop teleported');
             check(e.x>SCENE.L.home.entry.x+50,'home loop revisited entrance');
