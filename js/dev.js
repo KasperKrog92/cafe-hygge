@@ -65,6 +65,7 @@
   /* ---------- time control ---------- */
 
   function setHour(w, h) {
+    w.clockOffset = 0;
     w.t = ((h - SIM._.START_HOUR + 24) % 24) / 24 * SIM._.DAY_SECONDS;
     w.lastCapT = w.t - 10;                 // keep the caption gate sane across jumps
     if (w.activeCaption) w.activeCaption.born = w.t;
@@ -492,6 +493,10 @@
     opts = opts || {};
     if (opts.seats && opts.seats.length > 7) throw new Error('[dev] study keeps the seven-patron cap');
     const w = structuredClone(world());
+    w.clockOffset = 0;
+    w.shop = { phase: 'open', elapsed: 0, step: 0, task: null, fade: 0, lights: 1, lastCall: false,
+      curtains: [0, 0], stocked: true, accepting: true, carryingCat: false, away: false };
+    w.tables.forEach(function (tb) { tb.cake = false; });
     w.t = 180; w.hour = opts.hour == null ? 12 : Number(opts.hour);
     w.pal = SCENE.dayPalette(w.hour); w.daylight = w.pal.daylight;
     w.rain = w.rainTarget = opts.rain == null ? 0.35 : opts.rain;
@@ -772,6 +777,8 @@
       const end = route[route.length - 1];
       routeProblems(route, end, 'busSpot(table ' + i + ')', ['counter'], true, problems);
     });
+    const switchRoute = SIM._.shopRoute(w, 'lights');
+    routeProblems(switchRoute, switchRoute[switchRoute.length - 1], 'shop light switch', ['counter'], false, problems);
 
     ['doorToUmbrella', 'umbrellaApproach', 'umbrellaToDoor'].forEach(function (name) {
       const route = L.patronRoutes[name];
@@ -1035,6 +1042,15 @@
       if (!live[c.owner]) problems.push('counter cup owned by departed patron ' + c.owner);
     });
     if (w.patrons.length > 7) problems.push(w.patrons.length + ' patrons exceed the spawn cap (7)');
+    if (w.shop) {
+      const shop = w.shop;
+      if (['open', 'closing', 'leaving', 'night', 'dawn', 'entering', 'opening'].indexOf(shop.phase) < 0) problems.push('unknown shop phase');
+      if ([shop.fade, shop.lights].concat(shop.curtains).some(function (n) { return !Number.isFinite(n) || n < 0 || n > 1; })) problems.push('shop visuals outside 0–1');
+      if (shop.accepting && shop.phase !== 'open' && shop.phase !== 'opening') problems.push('closed shop accepting guests');
+      if (shop.away && (w.patrons.length || w.queue.length || w.barista.orders.length)) problems.push('Nora left before the guests');
+      if (shop.away && (!shop.carryingCat || shop.lights || shop.stocked || shop.curtains.some(function (n) { return n !== 1; }))) problems.push('shop left before closing chores finished');
+      if (shop.phase === 'open' && (shop.carryingCat || shop.away || shop.fade)) problems.push('open shop still in overnight transition');
+    }
     const parkedOwners = {};
     w.umbrellaStand.forEach(function (u) {
       if (!live[u.owner]) problems.push('umbrella in stand belongs to departed patron ' + u.owner);

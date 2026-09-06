@@ -31,6 +31,8 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | Field | Meaning |
 | --- | --- |
 | `t` | simulation seconds since boot |
+| `clockOffset` | wall-clock-only offset for the overnight skip and late-closing hold; never ages story or activity timers |
+| `shop` | transient daily lifecycle, chore path/timer, curtain amounts, light switch, stock, admission gate, carried-cat/absence flags and fade |
 | `hour` | in-world clock, 0–24 (day = 1440 real seconds, starts 08:24) |
 | `pal` | current palette from `SCENE.dayPalette(hour)`: `{skyTop, skyBot, daylight, lamp}` |
 | `rain` / `rainTarget` | current and target rain intensity 0–1 (lerped) |

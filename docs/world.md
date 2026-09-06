@@ -1,12 +1,39 @@
 # World systems — time, weather, light, events
 
+## Closing time and the next morning
+
+At 21:30, new arrivals stop. Nora wishes the remaining guests a good night,
+wipes the counter and makes a closing round. Existing orders are finished;
+seated guests have another 12–22 seconds for their last cup before following
+their usual departure (laptop, borrowed book, umbrella and lap cat included).
+She waits for everyone to leave before clearing each table and snuffing its
+candle, putting away the pastries, drawing both curtains, settling the fire
+to embers and extinguishing the mantel candles. She calls the cat down,
+carries it to the door, switches off the interior lamps and leaves.
+
+The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
+one-second dark pause and two-second fade in lead to 07:30. Nora comes back
+with the cat, puts it down, turns on the lamps, opens the curtains and stocks
+the pastry case. Guests may enter once that is ready; service takes priority
+between the remaining chores: fresh firewood, full bowls and small covered
+cakes on the four dining tables. These are shared table decorations, separate
+from guest-owned service items. The shop then returns to its usual routines.
+
+`world.shop` holds the transient phase, current chore and visual state.
+`world.clockOffset` skips the sleeping hours without jumping `world.t`, so
+caption, weather, movement and story timers receive only actual simulated
+time. The normal arrival schedule rolls into the new café day. This sequence
+needs no clicks, creates no obligations, and never consumes a story invitation.
+No save-schema change: reloading still begins in an open café with saved stories.
+
 The systems that make the room feel alive independent of any character.
 All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (appearance).
 
 ## Time
 
-- One in-world day = **1440 real seconds (24 minutes)**; the sim boots at
-  08:24 so a fresh visit opens onto morning light.
+- The clock advances one hour per real minute (a base day is **1440 seconds**),
+  with the late-closing hold and overnight skip described above. The sim boots
+  at 08:24 so a fresh visit opens onto morning light.
 - `world.hour` (0–24 float) drives everything: the sky, the lighting, the
   mantel clock's hands, spawn rates, music sparseness.
 - Hour edges are tracked without replaying skipped time after `?hour=` or

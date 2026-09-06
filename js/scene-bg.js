@@ -45,14 +45,14 @@
   };
 
   function drawFloorLight(g, world) {
-    const d = world.pal.daylight, lamp = world.pal.lamp;
+    const d = world.pal.daylight, lamp = SCENE.lampLevel(world);
     g.save();
     if (d > 0.1) {
-      [L.win, L.win2].forEach(function (w) {
+      [L.win, L.win2].forEach(function (w, wi) {
         const y = L.wallY + 2, depth = 112;
         const shift = Math.round((world.hour - 12) * 5);
         const light = g.createLinearGradient(0, y, 0, y + depth);
-        const a = (0.13 * d * (1 - world.rain * 0.8)).toFixed(3);
+        const a = (0.13 * d * (1 - world.rain * 0.8) * (1 - (world.shop ? world.shop.curtains[wi] : 0))).toFixed(3);
         light.addColorStop(0, 'rgba(245,226,174,' + a + ')');
         light.addColorStop(1, 'rgba(245,226,174,0)');
         g.fillStyle = light;
@@ -319,7 +319,7 @@
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 2, '#6e4a33');
     // Small brass casement catch on the central stile.
     px(g, w.x + w.w / 2 + 2, w.y + w.h / 2 + 8, 3, 8, '#c9a04a');
-    drawCurtains(g, w);
+    drawCurtains(g, w, world.shop ? world.shop.curtains[alt] : 0);
     // deep sill: lit top, front face, shadow underneath
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 8, '#6e4a33');
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 2, '#8a6142');
@@ -444,7 +444,7 @@
 
   /* Sill-length tied-back drapes frame the weather without crowding the little
      window seats. Their stepped hems keep the folds crisp at native scale. */
-  function drawCurtains(g, w) {
+  function drawCurtains(g, w, closed) {
     const rodY = w.y - 13;
     px(g, w.x - 13, rodY, w.w + 26, 3, '#4a3020');
     px(g, w.x - 13, rodY, w.w + 26, 1, '#7a5234');
@@ -453,6 +453,21 @@
 
     drawCurtainPanel(g, w.x - 6, w.y - 7, 1);
     drawCurtainPanel(g, w.x + w.w + 6, w.y - 7, -1);
+
+    if (closed > 0) {
+      // Unfastened cloth travels from both sides and meets at a centre seam.
+      const width = Math.round(18 + (w.w / 2 - 18) * closed);
+      [1, -1].forEach(function (dir) {
+        const x = dir === 1 ? w.x : w.x + w.w - width;
+        px(g, x, w.y - 5, width, w.h + 9, CURTAIN.body);
+        for (let fold = 3; fold < width; fold += 9) {
+          px(g, x + fold, w.y - 3, 2, w.h + 5, CURTAIN.shadow);
+          px(g, x + fold + 3, w.y - 2, 1, w.h + 3, CURTAIN.light);
+        }
+        px(g, dir === 1 ? x + width - 2 : x, w.y - 5, 2, w.h + 9, CURTAIN.deep);
+        px(g, x, w.y + w.h + 1, width, 2, CURTAIN.shadow);
+      });
+    }
 
     // four broad loops give the fuller panels enough weight on the rod
     [0, 8, 16, 24].forEach(function (dx) {
@@ -904,7 +919,7 @@
     px(g, x + 16, y - 8, 6, 6, '#9c5f24');
     px(g, x - 24, y - 2, 48, 4, '#9c5f24');
     px(g, x - 18, y + 2, 36, 2, '#d9cfb5');
-    const on = world.pal.lamp;
+    const on = SCENE.lampLevel(world);
     if (on > 0.03) {
       g.globalAlpha = on;
       px(g, x - 18, y + 2, 36, 2, '#ffd98a');

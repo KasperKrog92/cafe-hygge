@@ -1,5 +1,22 @@
 # Art — pixel style guide & layout map
 
+## Closing and opening visuals
+
+The existing red curtains now draw across each window independently from
+`world.shop.curtains[0/1]` (0 open, 1 closed), with pixel folds and a central
+seam. Curtain state also attenuates the corresponding incident daylight pool.
+`SCENE.lampLevel(world)` applies the interior switch without changing the
+street's lighting. Lamp glows disappear when Nora turns the switch off.
+The pastry-case shelves empty during closing and refill during opening;
+covered cakes appear on dining tables as Nora visits each one.
+
+Nora carries the existing sleeping-cat sprite in the same depth-sorted
+drawable as her body, with hands beneath it and no floating contact shadow.
+Both disappear only after reaching the door. `composeFrame` applies the
+overnight fade after the complete room, bubbles and caption, so dev captures
+and the visible canvas share the exact transition. Switch and pastry work
+positions live in `L.shop`; other chores reuse existing layout anchors.
+
 All art is drawn programmatically in the `js/scene-*.js` renderer files — no image assets. The
 scene renders to a **960×600 (16:10) master canvas**; a 16:9 window shows the
 **960×540 crop starting at y=36**, and other aspects a variable crop (visible

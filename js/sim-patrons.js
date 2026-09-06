@@ -632,6 +632,21 @@
   function updateSeated(world, p, dt) {
     p.stay -= dt;
 
+    // Everyone gets a last quiet cup, including guests still being served.
+    // Use the normal packing/departure path: books, umbrellas and pairs survive.
+    if (world.shop && world.shop.phase === 'closing' && world.shop.lastCall) {
+      if (p.closingT == null) p.closingT = rnd(12, 22);
+      p.closingT -= dt;
+      if (p.closingT <= 0) {
+        if (p.laptopActive) {
+          const laptop = world.tables[p.seat.table].items.find(function (it) { return it.owner === p.id && it.kind === 'laptop'; });
+          if (laptop) laptop.open = false;
+          p.typing = false; p.state = 'closeLaptop'; p.stateT = 0;
+        } else beginDeparture(world, p, dt);
+        return;
+      }
+    }
+
     const item = p.seat.table >= 0
       ? world.tables[p.seat.table].items.find(function (it) { return it.owner === p.id && it.kind !== 'laptop'; })
       : null;

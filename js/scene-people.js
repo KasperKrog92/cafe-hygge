@@ -679,7 +679,7 @@
     const body = '#d98d4a', dark = '#b5702e', cream = '#f0e0c8', pink = '#d9738a';
     const twitch = Math.sin(t * 0.9) > 0.97;    // an occasional ear flick
     // An airborne cat has no contact shadow glued to its belly.
-    if (pose !== 'hop') ell(g, x, y + 2, 14, 4, 'rgba(20,12,8,0.2)');
+    if (pose !== 'hop' && !cat.carried) ell(g, x, y + 2, 14, 4, 'rgba(20,12,8,0.2)');
     g.save();
     // These asymmetric poses are authored right-facing (feeding left-facing).
     // Mirror the complete sprite, including scarf, around its surface anchor.

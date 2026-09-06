@@ -26,7 +26,7 @@
 
     // warm pools of light
     g.globalCompositeOperation = 'lighter';
-    const lampA = pal.lamp;
+    const lampA = SCENE.lampLevel(world), power = world.shop ? world.shop.lights : 1;
     L.pendants.forEach(function (lp) {
       // Shade contains the source: modest bloom below its rim, with the
       // useful light directly beneath it on the counter, not across the wall.
@@ -39,11 +39,11 @@
       glow(g, lp.x, L.counter.slabY - 16, 112, 255, 190, 100, 0.26 * lampA);
     });
     L.library.lamps.forEach(function (lp) {
-      glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
+      glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, (0.04 + 0.3 * pal.lamp) * power);
     });
-    glow(g, L.piano.lamp.x, L.piano.lamp.y, 22, 255, 190, 100, 0.03 + 0.28 * lampA);
+    glow(g, L.piano.lamp.x, L.piano.lamp.y, 22, 255, 190, 100, (0.03 + 0.28 * pal.lamp) * power);
     // the studio floor lamp pools over the easel so the canvas stays readable after dark
-    glow(g, L.artist.lamp.x + 8, L.artist.lamp.y - 56, 64, 255, 190, 100, 0.04 + 0.3 * lampA);
+    glow(g, L.artist.lamp.x + 8, L.artist.lamp.y - 56, 64, 255, 190, 100, (0.04 + 0.3 * pal.lamp) * power);
     // fire: its warm pool grows and brightens with the live burn, and shrinks
     // to a small ember glow when low — but never goes fully dark
     const fireLvl = world.fire ? world.fire.level : 1;
@@ -67,8 +67,8 @@
     });
     // daylight spilling in the windows (centred under L.win / L.win2)
     if (d > 0.1) {
-      glow(g, L.win.x + L.win.w / 2, 236, 150, 255, 245, 215, 0.065 * d);
-      glow(g, L.win2.x + L.win2.w / 2, 236, 150, 255, 245, 215, 0.065 * d);
+      glow(g, L.win.x + L.win.w / 2, 236, 150, 255, 245, 215, 0.065 * d * (1 - (world.shop ? world.shop.curtains[0] : 0)));
+      glow(g, L.win2.x + L.win2.w / 2, 236, 150, 255, 245, 215, 0.065 * d * (1 - (world.shop ? world.shop.curtains[1] : 0)));
     }
     // A storm flash is a cool reflection below the windows, visible mostly
     // after dark; it never becomes a full-screen strobe.
@@ -198,5 +198,9 @@
     SCENE.drawLighting(g, world);
     ents.bubbles.forEach(function (b) { SCENE.drawBubble(g, b.x, b.y, b.icon); });
     SCENE.drawCaption(g, world);
+    if (world.shop && world.shop.fade > 0) {
+      g.fillStyle = '#100d14'; g.globalAlpha = world.shop.fade;
+      g.fillRect(0, 0, W, H); g.globalAlpha = 1;
+    }
   };
 })();

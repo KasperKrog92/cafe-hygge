@@ -1,5 +1,11 @@
 # Narrative — the design contract for the story layer
 
+The automatic closing/opening ritual is distinct from closing the app.
+Stories accrue only the actual `dt` spent running, including Nora's chores;
+the wall-clock skip from night to morning adds no progress. Ready invitations
+remain in the save when their owners go home, and return with them on their
+next visit. Neither the fade nor a new shop day plays or expires a payoff.
+
 Café Hygge is becoming a **soft narrative game that is also a companion app**
 ([overview.md](overview.md)). This doc is the north star for that layer: the one
 principle that makes it work, the standard shape every story arc takes, the

@@ -10,6 +10,7 @@
   const W = 960, H = 600;
   SCENE.W = W;
   SCENE.H = H;
+  SCENE.lampLevel = function (world) { return world.pal.lamp * (world.shop ? world.shop.lights : 1); };
   SCENE.VIEW_W = 960;
   SCENE.VIEW_H = 540;
   SCENE.VIEW_Y = 36;
@@ -202,6 +203,7 @@
     pickupSpot: { x: 744, y: 316 },
     returnSpot: { x: 792, y: 316 },  // where bussing patrons set their cup back
     baristaHome: { x: 706, y: 286 },
+    shop: { pastry: { x: 858, y: 286 }, switchSpot: { x: 54, y: 274 } },
     baristaExitX: 616,               // where the barista slips out from behind the counter
     noraCare: {
       chalk: { x: 893, y: 238 }, // close to the wall: raised chalk meets the doodle

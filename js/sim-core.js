@@ -80,6 +80,9 @@
   SIM.create = function () {
     const world = {
       t: 0,
+      clockOffset: 0, // skip the sleeping hours without aging simulation timers or stories
+      shop: { phase: 'open', elapsed: 0, step: 0, task: null, fade: 0, lastCall: false,
+        lights: 1, curtains: [0, 0], stocked: true, accepting: true, carryingCat: false, away: false },
       hour: START_HOUR,
       pal: SCENE.dayPalette(START_HOUR),
       daylight: 1,
@@ -717,7 +720,7 @@
   }
 
   function updateClock(world, dt) {
-    world.hour = (START_HOUR + (world.t / DAY_SECONDS) * 24) % 24;
+    world.hour = (START_HOUR + ((world.t + (world.clockOffset || 0)) / DAY_SECONDS) * 24) % 24;
     world.pal = SCENE.dayPalette(world.hour);
     world.daylight = world.pal.daylight;
     const lampOn = world.pal.lamp > 0.5;
@@ -756,7 +759,7 @@
   }
 
   function dayIndex(world) {
-    return Math.floor((START_HOUR + world.t / DAY_SECONDS * 24) / 24);
+    return Math.floor((START_HOUR + (world.t + (world.clockOffset || 0)) / DAY_SECONDS * 24) / 24);
   }
 
   function candleTables(world) {
@@ -1037,6 +1040,7 @@
   }
 
   function updateSpawning(world, dt) {
+    if (world.shop && !world.shop.accepting) return;
     updateRegulars(world);
     world.spawnT -= dt;
     if (world.spawnT > 0) return;

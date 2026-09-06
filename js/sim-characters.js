@@ -228,7 +228,7 @@
       }
       case 'pianoPlaying': {
         b.pose = 'sit'; b.facing = -1; b.playing = true;
-        if (world.patrons.length || world.queue.length || b.orders.length || b.stateT >= b.pianoDur) {
+        if (world.patrons.length || world.queue.length || b.orders.length || b.stateT >= b.pianoDur || world.shop.phase === 'closing') {
           b.playing = false; SND.pianoStop();
           b.pose = 'stand'; b.state = 'pianoHome'; b.stateT = 0;
           b.path = pianoHomeRoute();
@@ -737,6 +737,7 @@
   }
 
   function startIdleTask(world, b) {
+    if (world.shop && world.shop.phase !== 'open') return;
     if (b.forcedTask) {
       const forced = b.forcedTask; b.forcedTask = '';
       if (forced === 'stretch') startStretch(world, b);
@@ -1423,6 +1424,7 @@
      neighbourhood counts. Returns the arc it played, or null; main.js calls
      this before petCat so an invitation wins the click. */
   SIM.beatAt = function (world, x, y) {
+    if (world.shop && (world.shop.away || world.shop.fade > 0)) return null;
     if (!world.memory) return null;
     const arcs = (CAST && CAST.arcs) || [];
     for (let i = 0; i < arcs.length; i++) {
@@ -1452,6 +1454,7 @@
   };
 
   SIM.petCat = function (world) {
+    if (world.shop && (world.shop.away || world.shop.carryingCat)) return;
     const cat = world.cat;
     if (cat.state === 'walk' || cat.state === 'hop' || cat.state === 'pounce') return;
     cat.bubble = { icon: 'heart', until: world.t + 2.2 };
@@ -1471,20 +1474,200 @@
 
   /* ---------- main update ---------- */
 
+  // Shop rituals own Nora only for one out-and-back chore at a time. Service
+  // retains priority between chores, so an early visitor can already order.
+  function shopPath(from, to) {
+    const walker = { x: from.x, y: from.y };
+    R.makePath(walker, to.x, to.y);
+    return walker.path;
+  }
+
+  function shopRoute(world, kind, index) {
+    if (kind === 'table' || kind === 'cakes') return busRoute(world, index);
+    if (kind === 'curtain') return busRoute(world, L.tables.length + L.library.sideTables.length + index);
+    if (kind === 'hearth') return fireTendRoute();
+    if (kind === 'bowls' || kind === 'cat') return refillRoute();
+    if (kind === 'stock') return [{ x: L.shop.pastry.x, y: L.baristaHome.y }];
+    if (kind === 'lights' || kind === 'greet') return [
+      { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
+      { x: L.entryApproach.x, y: L.lane }, L.entryApproach, L.shop.switchSpot
+    ];
+    return [{ x: L.baristaHome.x, y: L.baristaHome.y }];
+  }
+
+  function shopTasks(world, opening) {
+    if (opening) return [{ kind: 'lights' }, { kind: 'curtain', index: 0 },
+      { kind: 'curtain', index: 1 }, { kind: 'stock' }, { kind: 'welcome' },
+      { kind: 'hearth' }, { kind: 'bowls' }].concat(L.tables.map(function (_, i) { return { kind: 'cakes', index: i }; }));
+    return [{ kind: 'greet' }, { kind: 'wipe' }, { kind: 'wait' }]
+      .concat(world.tables.map(function (_, i) { return { kind: 'table', index: i }; }))
+      .concat([{ kind: 'stock' }, { kind: 'curtain', index: 0 }, { kind: 'curtain', index: 1 },
+        { kind: 'hearth' }, { kind: 'cat' }, { kind: 'lights' }]);
+  }
+
+  function updateShop(world, dt) {
+    const s = world.shop, b = world.barista, cat = world.cat;
+    if (!s) return false;
+    if (s.phase === 'open') {
+      if (dt <= 0 || (world.hour < 21.5 && world.hour >= 6)) return false;
+      s.phase = 'closing'; s.accepting = false; s.elapsed = 0; s.step = 0;
+      s.lastCall = false;
+      caption(world, 'the last cups of the evening; Nora begins to tidy.');
+    }
+    s.elapsed += dt;
+    if (s.phase === 'night') {
+      s.fade = Math.min(1, s.elapsed / 2);
+      if (s.elapsed >= 3) {
+        // Only the wall clock skips. All dt timers and saved arc progress keep
+        // their real elapsed time, and every ready invitation stays pending.
+        world.clockOffset += ((7.5 - world.hour + 24) % 24) / 24 * R.DAY_SECONDS;
+        updateClock(world, 0);
+        s.phase = 'dawn'; s.elapsed = 0;
+      }
+      return true;
+    }
+    if (s.phase === 'dawn') {
+      s.fade = Math.max(0, 1 - s.elapsed / 2);
+      if (s.elapsed >= 2) {
+        s.phase = 'entering'; s.elapsed = 0; s.away = false;
+        b.x = L.doorSpot.x; b.y = L.doorSpot.y; b.pose = 'stand';
+        b.path = [L.entryApproach].concat(shopPath(L.entryApproach, L.catCorner.noraSpot));
+        R.ringDoor(world);
+        caption(world, 'a new morning; Nora brings the cat in from the quiet street.');
+      }
+      return true;
+    }
+    if (s.phase === 'entering') {
+      b.animT += dt;
+      if (walker(b, dt)) {
+        s.carryingCat = false; cat.x = L.catCorner.noraSpot.x; cat.y = L.catCorner.noraSpot.y;
+        cat.surface = 'floor'; cat.state = 'sit'; cat.stateT = 2; cat.path = null;
+        cat.target = { id: 'free', x: cat.x, y: cat.y, kind: 'floor' };
+        b.holding = null; b.state = 'shop';
+        s.phase = 'opening'; s.step = 0;
+        s.task = { kind: 'home', returning: true, time: 0 };
+        b.path = refillRoute().slice(0, -1).reverse().concat([L.baristaHome]);
+      }
+      return true;
+    }
+    if (s.task) {
+      const task = s.task;
+      b.animT += dt;
+      if (b.path && b.path.length) { walker(b, dt); return true; }
+      if (task.returning) {
+        s.task = null; b.state = 'idle'; b.pose = 'stand'; b.holding = s.carryingCat ? 'cat' : null;
+        if (task.kind !== 'home') s.step++;
+        return true;
+      }
+      b.pose = task.kind === 'wipe' || task.kind === 'table' ? 'wipe' : 'reach';
+      b.heading = 'up';
+      if (task.kind === 'cat' && !s.carryingCat) {
+        b.pose = 'stand';
+        if (cat.surface !== 'floor' || cat.state === 'hop') {
+          leavePerch(world, cat); return true;
+        }
+        if (!task.called) {
+          task.called = true; cat.state = 'shopWalk';
+          cat.path = shopPath(cat, b); SND.meow();
+        }
+        if (cat.path && cat.path.length) return true;
+        s.carryingCat = true; b.holding = 'cat'; SND.purr(2);
+        caption(world, 'one sleepy cat, tucked into Nora’s arms.');
+      }
+      task.time += dt;
+      b.stateT = task.time;
+      const progress = Math.min(1, task.time / 2.5), opening = s.phase === 'opening';
+      if (task.kind === 'curtain') s.curtains[task.index] = opening ? 1 - progress : progress;
+      if (task.time < 2.5) return true;
+      if (task.kind === 'table') {
+        const tb = world.tables[task.index];
+        tb.items = tb.items.filter(function (it) { return it.owner !== null; });
+        tb.candle = tb.candleTarget = 0; tb.cake = false; SND.swish();
+      } else if (task.kind === 'cakes') { world.tables[task.index].cake = true; SND.cupDown(); }
+      else if (task.kind === 'stock') { s.stocked = opening; SND.clink(0.5, 0.025); }
+      else if (task.kind === 'lights') s.lights = opening ? 1 : 0;
+      else if (task.kind === 'hearth') {
+        world.candles.mantel = world.candles.mantelTarget = 0;
+        if (opening) addLog(world);
+        else { world.fire.target = 0.16; world.fire.wantsLog = false; }
+      } else if (task.kind === 'bowls') { world.catBowls.food = world.catBowls.water = 1; SND.kibblePour(0.9); }
+      else if (task.kind === 'greet') {
+        s.lastCall = true;
+        if (world.patrons.length) caption(world, 'Nora wishes everyone a good night — time for the last sip.');
+      } else if (task.kind === 'wipe') SND.swish();
+      task.returning = true; b.pose = 'stand'; b.heading = null;
+      b.path = task.route.slice(0, -1).reverse().concat([L.baristaHome]);
+      // With the cat in her arms, switch off by the door and leave directly.
+      if (task.kind === 'lights' && !opening) {
+        s.step++; s.task = null;
+        b.path = shopPath(b, L.doorSpot); R.ringDoor(world);
+        s.phase = 'leaving';
+      } else {
+        const next = shopTasks(world, opening)[s.step + 1];
+        if (next && ['wait', 'welcome'].indexOf(next.kind) < 0 && !b.orders.length && !world.queue.length) {
+          const route = shopRoute(world, next.kind, next.index);
+          let common = 0;
+          while (common < task.route.length && common < route.length &&
+              task.route[common].x === route[common].x && task.route[common].y === route[common].y) common++;
+          // Retrace only to the shared aisle junction, then continue the round.
+          b.path = common ? task.route.slice(common - 1, -1).reverse().concat(route.slice(common))
+            : task.route.slice(0, -1).reverse().concat([L.baristaHome], route);
+          if (['stock', 'wipe'].indexOf(task.kind) < 0 && ['stock', 'wipe'].indexOf(next.kind) < 0) {
+            const direct = shopPath(b, route[route.length - 1]);
+            if (direct.length) b.path = direct;
+          }
+          s.step++;
+          s.task = { kind: next.kind, index: next.index, time: 0, route: route };
+          b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : next.kind === 'cakes' ? 'plate' : null;
+        }
+      }
+      return true;
+    }
+    if (s.phase === 'leaving') {
+      b.animT += dt;
+      if (walker(b, dt)) { s.away = true; s.phase = 'night'; s.elapsed = 0; b.path = null; }
+      return true;
+    }
+    const tasks = shopTasks(world, s.phase === 'opening'), next = tasks[s.step];
+    if (!next) { s.phase = 'open'; s.accepting = true; b.state = 'idle'; b.idleT = 6; return false; }
+    if (next.kind === 'wait') {
+      if (!world.patrons.length && !b.orders.length && !world.queue.length) s.step++;
+      return false;
+    }
+    if (next.kind === 'welcome') {
+      s.accepting = true; world.spawnT = 1; s.step++;
+      caption(world, 'fresh cakes, open curtains — the first guests are welcome.');
+      return false;
+    }
+    if (b.state !== 'idle' || b.orders.length || world.queue.length) return false;
+    s.task = { kind: next.kind, index: next.index, time: 0, route: shopRoute(world, next.kind, next.index) };
+    b.state = 'shop'; b.path = s.task.route.slice(); b.pose = 'stand';
+    b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : next.kind === 'cakes' ? 'plate' : null;
+    return true;
+  }
+
   SIM.update = function (world, dt) {
+    // Let the last evening linger while Nora finishes; a long cleanup must
+    // never turn into a morning shift before the overnight fade has played.
+    if (world.shop && world.shop.phase === 'closing' && (world.hour >= 22.5 || world.hour < 6)) world.clockOffset -= dt;
     world.t += dt;
     updateClock(world, dt);
     updateNarrative(world, dt);
-    updateCandles(world, dt);
+    if (!world.shop || world.shop.phase === 'open') updateCandles(world, dt);
     updateFire(world, dt);
     updateWeather(world, dt);
     updatePassersby(world, dt);
     updateDoor(world, dt);
+    const shopBusy = updateShop(world, dt);
     updateSpawning(world, dt);
-    updateBarista(world, world.barista, dt);
+    if (!shopBusy) updateBarista(world, world.barista, dt);
     world.patrons.forEach(function (p) { updatePatron(world, p, dt); });
     world.patrons = world.patrons.filter(function (p) { return !p.gone; });
-    updateCat(world, world.cat, dt);
+    if (!world.shop.carryingCat) {
+      if (world.cat.state === 'shopWalk') {
+        world.cat.animT += dt; walker(world.cat, dt);
+      } else updateCat(world, world.cat, dt);
+    }
     updateParticles(world, dt);
     updateCaptions(world, dt);
   };
@@ -1504,15 +1687,26 @@
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;
-    draws.push({ y: b.y, draw: function (g) { SCENE.drawPerson(g, b); } });
+    if (!world.shop || !world.shop.away) draws.push({ y: b.y, draw: function (g) {
+      SCENE.drawPerson(g, b);
+      if (world.shop && world.shop.carryingCat) {
+        SCENE.drawCat(g, Object.assign({}, world.cat, { x: b.x + b.facing * 7, y: b.y - 28,
+          state: 'sleep', surface: 'arms', carried: true, facing: b.facing }));
+        SCENE._.px(g, Math.round(b.x) - 6, Math.round(b.y) - 30, 5, 3, b.colors.skin);
+        SCENE._.px(g, Math.round(b.x) + 9, Math.round(b.y) - 30, 5, 3, b.colors.skin);
+      }
+    } });
     const cat = world.cat;
-    draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
-    if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
+    if (!world.shop || !world.shop.carryingCat) {
+      draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
+      if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
+    }
     anchoredInvites(world).forEach(function (b) { bubbles.push(b); });
     return { draws: draws, bubbles: bubbles };
   };
 
   R.updateBarista = updateBarista;
+  R.shopRoute = shopRoute;
   R.updateCat = updateCat;
   R.busRoute = busRoute;
   R.pianoRoute = pianoRoute;

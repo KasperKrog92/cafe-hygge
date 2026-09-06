@@ -1,5 +1,27 @@
 # Characters
 
+## Daily shop rituals
+
+`updateShop` in `sim-characters.js` coordinates Nora's evening and morning
+rounds. Phases are `open → closing → leaving → night → dawn → entering →
+opening → open`; each chore has an outbound path, a 2.5-second interaction
+and an optional return to the till. Consecutive floor chores use the furniture
+route planner; service can interrupt the round between chores. Ordinary idle
+chores wait until reopening is complete. See [world.md](world.md) for times
+and the full sequence.
+
+Closing readers finish their last cup, then use `beginDeparture`; laptops
+first pass through `closeLaptop`. Couples, dozers, borrowed books and umbrellas
+retain the same cleanup paths. Guests being served get their own final-cup
+grace after sitting down. No guests arrive during closing or overnight.
+
+Nora collects the cat after the guests leave. A perched cat first descends
+through its existing hop sequence, then walks to her (`shopWalk`). While
+carried, it is rendered asleep in her arms with its saved scarf and no floor
+shadow; its independent behavior pauses. In the morning she sets it down
+near its bowls and its usual routines resume. The cat can be petted again
+once it is on its own feet.
+
 The café's cast: one barista, a rotating pool of patrons, and a cat. All
 behavior is dt-driven state machines in `js/sim-patrons.js` and
 `js/sim-characters.js`; all drawing is

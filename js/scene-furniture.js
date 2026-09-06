@@ -110,6 +110,14 @@
           if (!it.hidden && offset) drawTableItem(g, cx, cy + offset, it);
         });
         // candle jar stays visible while its flame follows the ritual state
+        if (tb.cake) {
+          ell(g, cx + 13, cy - 4, 8, 3, '#e8dfc9');
+          px(g, cx + 7, cy - 11, 12, 6, '#c98f4a');
+          px(g, cx + 7, cy - 11, 12, 2, '#f0e0c8');
+          px(g, cx + 11, cy - 13, 3, 2, '#a94f3f');
+          ell(g, cx + 13, cy - 10, 9, 8, 'rgba(210,225,235,0.16)');
+          px(g, cx + 12, cy - 20, 3, 2, '#c9a04a');
+        }
         px(g, cx - 4, cy - 14, 8, 8, '#c9b28a');
         px(g, cx - 3, cy - 12, 6, 3, '#f0e0c8');
         if (tb.candle > 0.3) {
@@ -343,7 +351,7 @@
     px(g, P.x + 1, P.y - 6, 6, 2, brass);                 // base on the lid, at the back
     px(g, P.x + 2, P.y - 20, 2, 14, brass);               // stem
     px(g, P.x + 2, P.y - 22, lp.x - P.x - 2, 2, brass);   // arm arched toward the room
-    px(g, lp.x - 4, lp.y - 1, 8, 3, world.pal.lamp > 0.2 ? '#f2c66d' : '#e8dfc9');
+    px(g, lp.x - 4, lp.y - 1, 8, 3, SCENE.lampLevel(world) > 0.2 ? '#f2c66d' : '#e8dfc9');
     px(g, lp.x - 3, lp.y + 2, 6, 2, shade('#e8dfc9', -0.2));
   }
 
@@ -753,6 +761,7 @@
     g.strokeStyle = '#8a919c'; g.lineWidth = 2;
     g.strokeRect(821, 225, 74, 38);
     px(g, 820, 244, 76, 2, '#8a919c');
+    if (!world.shop || world.shop.stocked) {
     // top shelf: croissant, cinnamon swirl, danish — each on doily paper
     px(g, 826, 241, 16, 2, 'rgba(232,224,208,0.5)');
     px(g, 826, 236, 4, 5, '#d9a05a'); px(g, 830, 233, 8, 8, '#e0b06a'); px(g, 838, 236, 4, 5, '#d9a05a');
@@ -770,6 +779,7 @@
     px(g, 848, 252, 7, 2, '#e8b4c4'); px(g, 850, 254, 2, 3, '#e8b4c4');
     px(g, 862, 254, 13, 8, '#e8dfc9');
     px(g, 862, 257, 13, 2, '#c98f4a'); px(g, 862, 260, 13, 2, '#c98f4a');
+    }
     // glass shine
     px(g, 822, 226, 72, 3, 'rgba(232,240,244,0.25)');     // glass top plane
     px(g, 888, 229, 6, 32, 'rgba(60,65,77,0.14)');        // recessed side
