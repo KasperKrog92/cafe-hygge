@@ -802,7 +802,7 @@
     // Fire crackles are the fireplace's whole voice now (no constant rumble):
     // paced and gained by the live burn, so a blaze snaps busily and embers
     // only tick now and then.
-    if (S.fire && !S.muted) {
+    if (S.fire && !S.muted && (!world.shop || world.shop.phase !== 'home')) {
       const fl = world.fire ? world.fire.level : 1;
       crackleT -= dt;
       if (crackleT <= 0) {

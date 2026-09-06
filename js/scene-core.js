@@ -23,6 +23,18 @@
      wall line moved up so the floor (the life layer) dominates the frame. */
   const L = (SCENE.L = {
     W: W, H: H,
+    home: {
+      wallY: 266, lane: 430,
+      door: { x: 180, y: 164, w: 54, h: 102 },
+      entry: { x: 207, y: 294 }, bag: { x: 258, y: 310 },
+      desk: { x: 366, y: 294 }, deskSeat: { x: 370, y: 325 },
+      bed: { x: 664, y: 318, w: 124, h: 74 }, bedSeat: { x: 675, y: 340 }, bedApproach: { x: 646, y: 340 },
+      window: { x: 535, y: 124, w: 128, h: 112 },
+      boxes: [{ x: 280, y: 270 }, { x: 308, y: 270 }, { x: 294, y: 248 },
+        { x: 474, y: 280 }, { x: 503, y: 280 }, { x: 493, y: 258 }, { x: 776, y: 422 }],
+      catStops: [{ x: 278, y: 320 }, { x: 490, y: 320 }, { x: 655, y: 374 }]
+    },
+    firstPlant: { x: 250, y: 210, pickup: { x: 54, y: 300 }, work: { x: 250, y: 268 } },
     wallY: 232,               // where wall meets floor
     door: { x: 28, y: 130, w: 52, h: 102 },   // 1.7 CH
     doorSpot: { x: 54, y: 252 },     // where people appear

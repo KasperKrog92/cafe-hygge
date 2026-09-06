@@ -2,6 +2,7 @@
 (function () {
   'use strict';
 
+  function start() {
   /* ---------- canvases ----------
      Everything renders into an offscreen 960×600 master canvas; the visible
      canvas shows either the full 16:10 master or its 960×540 16:9 crop,
@@ -83,6 +84,34 @@
   const btnMusic = document.getElementById('btn-music');
   const btnFull = document.getElementById('btn-full');
   const vol = document.getElementById('vol');
+  const btnMode = document.getElementById('btn-mode'), btnPlan = document.getElementById('btn-plan');
+  const planner = document.getElementById('planner'), buyPlant = document.getElementById('buy-plant');
+  function refreshLife() {
+    const l = world.memory.life;
+    btnMode.textContent = l.mode;
+    btnMode.setAttribute('aria-label', 'presentation: ' + l.mode + '; switch to ' + (l.mode === 'idle' ? 'game' : 'idle'));
+    btnPlan.hidden = l.mode !== 'game' || world.shop.phase !== 'home';
+    if (!world.plannerOpen && planner.open) planner.close();
+    if (!planner.open) return;
+    document.getElementById('plan-balance').textContent = 'savings · ' + l.savings + ' kr';
+    const status = l.plant.stage === 'installed' ? 'Already settled by the café window.' :
+      l.plant.stage !== 'available' ? 'Chosen and paid for. Nora will take care of the rest.' : 'one plant · 30 kr';
+    document.getElementById('plan-status').textContent = status;
+    buyPlant.hidden = l.plant.stage !== 'available';
+    buyPlant.disabled = l.savings < SIM.plantProject.price;
+  }
+  btnMode.addEventListener('click', function () {
+    SIM.setMode(world, world.memory.life.mode === 'idle' ? 'game' : 'idle'); refreshLife();
+  });
+  btnPlan.addEventListener('click', function () {
+    if (SIM.plan(world, true)) { planner.showModal(); refreshLife(); }
+  });
+  buyPlant.addEventListener('click', function () { SIM.buyPlant(world); refreshLife(); });
+  document.getElementById('close-plan').addEventListener('click', function () { planner.close(); });
+  planner.addEventListener('close', function () { SIM.plan(world,false); btnPlan.focus(); });
+  planner.addEventListener('cancel', function () { SIM.plan(world,false); });
+  controls.addEventListener('focusin', function () { pokeControls(); });
+  refreshLife();
 
   function refreshButtons() {
     const S = SND.settings;
@@ -147,7 +176,7 @@
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
-    if (SIM.beatAt(world, x, y)) return;
+    if (world.memory.life.mode === 'game' && world.shop.phase !== 'home' && SIM.beatAt(world, x, y)) return;
     const cat = world.cat;
     if (Math.hypot(x - cat.x, y - (cat.y - 10)) < 36) SIM.petCat(world);
   });
@@ -205,7 +234,7 @@
   }
   function frame(now) {
     advance(now);
-    render();
+    render(); refreshLife();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
@@ -213,4 +242,27 @@
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) advance(performance.now());
   });
+  }
+  function ready() { start(); window.dispatchEvent(new Event('cafe-ready')); }
+  function holdOwnership() {
+    return new Promise(function(release) {
+      window.addEventListener('pagehide', function () { MEMORY.readOnly = true; release(); }, {once:true});
+    });
+  }
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) location.reload(); // reacquire and re-read after back/forward cache
+  });
+  if (navigator.locks) {
+    navigator.locks.request('cafe-hygge-life', {ifAvailable:true}, function(lock) {
+      if (lock) { MEMORY.readOnly = false; MEMORY.load(); ready(); return holdOwnership(); }
+      document.querySelector('.overlay-card .sub').textContent = 'the café is open in another tab; this window will join when it closes';
+      document.getElementById('overlay').classList.remove('gone');
+      document.getElementById('enter').disabled = true;
+      return navigator.locks.request('cafe-hygge-life', function() {
+        MEMORY.readOnly = false; MEMORY.load(); document.getElementById('enter').disabled = false;
+        document.querySelector('.overlay-card .sub').textContent = 'a tiny café that putters along while you read'; ready();
+        return holdOwnership();
+      });
+    });
+  } else ready(); // file:// and older browsers retain the dependency-free boot.
 })();

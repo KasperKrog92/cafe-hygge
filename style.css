@@ -110,3 +110,17 @@ canvas#cafe {
   accent-color: #e8b04a;
   cursor: pointer;
 }
+
+[hidden] { display: none !important; }
+#controls #btn-mode, #controls #btn-plan { color: #e8d5b0; font: 16px Georgia, serif; padding: 5px 10px; }
+#controls:focus-within { opacity: 1; pointer-events: auto; }
+#planner { margin: auto auto auto 5vw; max-width: 440px; padding: 30px; color: #eadcc4; background: #30271f; border: 1px solid #92714e; border-radius: 8px; box-shadow: 0 18px 80px #100d1490; }
+#planner::backdrop { background: rgba(16,13,20,.18); }
+#planner h2 { font: normal 27px Georgia, serif; margin: 12px 0 20px; }
+#planner p { font: 15px/1.65 Georgia, serif; margin: 14px 0; }
+#planner .eyebrow { color: #c8ad86; font-size: 12px; letter-spacing: .12em; }
+#planner .plan-footnote { color: #c8ad86; font-size: 12px; margin-bottom: 0; }
+.plan-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 22px 0; }
+#planner button { color: #eadcc4; background: #514333; border: 1px solid #92714e; border-radius: 5px; padding: 11px 14px; font: 14px Georgia, serif; cursor: pointer; }
+#planner #buy-plant { background: #d4b17b; color: #30271f; }
+button:focus-visible { outline: 2px solid #e8b04a; outline-offset: 4px; }

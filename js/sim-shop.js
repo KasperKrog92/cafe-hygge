@@ -5,7 +5,7 @@
   const R = window.SIM._;
   const L = R.L, SND = R.sound;
   const caption = R.caption, walker = R.walker;
-  const updateClock = R.updateClock, addLog = R.addLog;
+  const addLog = R.addLog;
 
   // Construct once with the existing character helpers; keep all mutable state
   // on the supplied world. No character implementation is exported for this.
@@ -25,6 +25,7 @@
     }
 
     function shopRoute(world, kind, index) {
+      if (kind === 'plant') return shopPath(world.barista, L.firstPlant.pickup);
       if (kind === 'table') return busRoute(world, index);
       if (kind === 'curtain') return busRoute(world, L.tables.length + L.library.sideTables.length + index);
       if (kind === 'hearth') return fireTendRoute();
@@ -38,9 +39,10 @@
     }
 
     function shopTasks(world, opening) {
-      if (opening) return [{ kind: 'lights' }, { kind: 'putCat' }, { kind: 'bowls' },
-        { kind: 'curtain', index: 0 }, { kind: 'hearth' }, { kind: 'curtain', index: 1 },
-        { kind: 'stock' }, { kind: 'welcome' }];
+      if (opening) return [{ kind: 'lights' }, { kind: 'putCat' }, { kind: 'bowls' }]
+        .concat(world.shop.plantMorning ? [{ kind: 'plant' }] : [])
+        .concat([{ kind: 'curtain', index: 0 }, { kind: 'hearth' }, { kind: 'curtain', index: 1 },
+          { kind: 'stock' }, { kind: 'welcome' }]);
       // One floor circuit from the counter: reading nook, lower dining tables,
       // piano/artist corner, then the upper tables/windows from left to right.
       // Keep table identity in world.tables; only the visit order changes.
@@ -75,18 +77,16 @@
       if (s.phase === 'night') {
         s.fade = Math.min(1, s.elapsed / 2);
         if (s.elapsed >= 3) {
-          // Only the wall clock skips. All dt timers and saved arc progress keep
-          // their real elapsed time, and every ready invitation stays pending.
-          world.clockOffset += ((7.5 - world.hour + 24) % 24) / 24 * R.DAY_SECONDS;
-          updateClock(world, 0);
-          s.phase = 'dawn'; s.elapsed = 0;
+          R.enterHome(world); return true;
         }
         return true;
       }
+      if (s.phase === 'home') return true;
       if (s.phase === 'dawn') {
         s.fade = Math.max(0, 1 - s.elapsed / 2);
         if (s.elapsed >= 2) {
           s.phase = 'entering'; s.elapsed = 0; s.away = false;
+          s.plantMorning = ['available','installed'].indexOf(world.memory.life.plant.stage) < 0;
           b.x = L.doorSpot.x; b.y = L.doorSpot.y; b.pose = 'stand';
           // The switch is beside the threshold: use the clear entrance column
           // before joining any of the café's floor routes.
@@ -109,6 +109,13 @@
       }
       if (s.task) {
         const task = s.task;
+        if (task.kind === 'plant' && !task.returning) {
+          if (!R.workPlant(world, dt)) return true;
+          s.step++;
+          const next = shopTasks(world, true)[s.step], route = shopRoute(world,next.kind,next.index);
+          s.task = {kind:next.kind,index:next.index,time:0,route:route};
+          b.path = shopPath(b,route[route.length-1]); return true;
+        }
         b.animT += dt;
         if (b.path && b.path.length) { walker(b, dt); return true; }
         if (task.returning) {
@@ -214,6 +221,7 @@
     function beforeClock(world, dt) {
       // Let the last evening linger while Nora finishes; a long cleanup must
       // never turn into a morning shift before the overnight fade has played.
+      if (world.shop && world.shop.phase === 'home') world.clockOffset -= dt;
       if (world.shop && world.shop.phase === 'closing' && (world.hour >= 22.5 || world.hour < 6)) world.clockOffset -= dt;
     }
 

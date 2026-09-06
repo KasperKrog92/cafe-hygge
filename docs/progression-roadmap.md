@@ -1,7 +1,7 @@
 # One life, two ways to spend time with it
 
-Planning direction recorded 6 September 2026. This is a proposed roadmap,
-not a description of shipped features or authorization to build every item.
+Direction recorded 6 September 2026. Milestones 1–2 are implemented;
+the remaining stages are proposed, not authorization to build every item.
 It grows from the former `idle` café, now the canonical `main` branch. The
 separate `game` experiment is archived reference material, not the implementation
 baseline. The old tips are preserved in `archive/idle-2026-09-06` and
@@ -283,7 +283,7 @@ commands are in [the development workflow](development.md).
 now owns the existing daily lifecycle through a small explicit contract. Hours,
 Nora routing, terrace/ship closing and save/isolation regressions pass before
 and after extraction. Gameplay, timing, cat handling and appearance are unchanged.
-Apartment features, currency and upgrades remain planned.
+The first apartment/plant milestone below subsequently added the minimal life and savings state.
 
 1. **Keep the current café as the foundation — completed 6 September 2026.**
    Consolidated the `idle` code into canonical `main`, with GitHub Pages and
@@ -291,13 +291,17 @@ Apartment features, currency and upgrades remain planned.
    in the archive tags above; their branches are retired. Reuse selected
    prose/art from the experiment where appropriate; do not merge its control
    and day-loop model.
-2. **Prove one shared life with one plant.** Add the sparse home scene, automatic
+2. **Prove one shared life with one plant — completed 6 September 2026.** Added the sparse home scene, automatic
    café → home → café transitions, idle/game presentation switching, one evening
-   purchase, morning carry/unpack/place animation and a persistent result. Keep
-   the existing café layout for this isolated prototype. A minimal savings
-   balance is enough; do not build a full shop. Verify unattended cycling,
-   mode switching and reload at every job stage. Nothing waits for a nightly
-   button; no payment or installation repeats.
+   purchase, morning carry/unpack/place animation and a persistent result, retaining
+   the existing café layout for this isolated prototype. The implementation
+   starts with 30 kr, adds 1 kr for each completed pickup and offers one 30 kr
+   plant. Evenings last 90 seconds; an open notebook allows lingering. The same
+   Nora/cat objects inhabit both rooms. Tests cover three unattended nights in
+   each mode, mode switching, migration, actual page reloads at every plant
+   stage, repeated clicks, and browser-tab ownership handoff. Nothing waits for
+   a nightly button; no payment or installation repeats. Larger jobs, H1 box
+   unpacking, street-sign work, new identities and C0 remain later milestones.
 3. **Prove interruptible work.** Add a table assembly and fireplace-cleaning
    project; let normal orders interrupt and work resume. Confirm it looks
    natural through a busy day, closing, another morning and reload.

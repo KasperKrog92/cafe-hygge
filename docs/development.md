@@ -90,18 +90,31 @@ Use the established comparison tool for visual passes:
 | `animations` | Movement at different time steps, shoe/body contact and visible animation variations |
 | `animation-journeys` | Real care, cat and seven order-preparation journeys with rendering |
 | `waterfront` | Outdoor orders/seats, weather returns, cleanup, closing and a 50-minute simulation soak |
+| `life` | Three unattended nights per mode; chosen plant; stage reloads, identity and duplicate prevention |
 | `ship` | Sailing ship movement, window visits, seat reservations, disposal and closing |
 
-**Separate normal-entry smoke test:** open the bare URL, click *step inside*,
+**Separate normal-entry smoke test:** `./tools/verify-entry.ps1` automates the
+real-time cappuccino journey and exports the report/night image. To inspect manually, open the bare URL, click *step inside*,
 confirm audio initializes, follow an order from entry through pickup and seating,
 inspect browser errors, and check night with `__dev.hour(20)` / `__dev.audit()`.
 The bare URL already has a sized canvas and initialized globals behind its
 splash. `?dev` skips the splash for captures; audio still needs a real click.
 Keep an occasional `file://` boot check when changing script loading.
 
-The regression runner does not claim to cover browser restarts, saved jobs,
-cross-tab conflicts, a future planner or apartment. Add their tests as the
-corresponding systems arrive. `SIM.create({})` creates a private simulated café;
+The `life` suite covers three unattended nights per mode, migration, mode
+switching, one-time purchase and restoration at every plant stage. For actual
+page reloads, planner interactions and two-tab ownership handoff, run:
+
+```powershell
+./tools/verify-life-reloads.ps1
+```
+
+Its disposable browser injects `life-browser-init.js` only on its `life-test`
+URL. It stops automatic frame/interval drivers and explicitly ticks the real
+production world, allowing exact persisted phases to be inspected after page
+reload. The regular life suite proves unattended dt-driven cycling separately.
+Reports and the actual notebook screenshot go to `.art-review/life-reloads/`.
+This does not claim a Safari execution or full browser-process restart test. `SIM.create({})` creates a private simulated café;
 `SIM.create()` retains production boot behavior. The suites use private worlds,
 while page reloads also isolate dev controls and audio settings.
 
@@ -119,12 +132,13 @@ while page reloads also isolate dev controls and audio settings.
    hours, Nora-routing, waterfront and ship suites pass before and after the
    split, alongside all nine save/isolation groups. Timing, routes, cat handling,
    appearance and save schema remain unchanged.
-3. **Then milestone 2:** build the apartment/plant loop from the roadmap. Define
-   its persisted phase and scene routing with a real use case. Delay general
-   furniture availability, staff scheduling and a large job catalogue.
+3. **Apartment/plant milestone — complete 6 September 2026:** one shared home
+   evening, idle/game presentation, a 30 kr plant, carried/unpacked/placed during
+   morning opening, schema v2 and one active browser writer. The existing café
+   layout remains intact. General furniture availability and later jobs wait.
 
-The opening/closing preparation is finished. Apartment features, currency and
-upgrades remain future milestone work; none shipped with this extraction.
+The first apartment/plant slice is implemented on that extracted contract.
+See [the life contract](architecture.md#shared-life-and-plant-contract).
 
 For each later session, name the one milestone or visual result, add any exact
 preferences, and ask for a rendered review and updated implementation status.
@@ -134,7 +148,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema remains v1. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v2; v1 saves migrate with their stories, bonds and flags intact. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -159,3 +173,19 @@ synchronous custom debug sequence of helpers without a world argument; never
 pass an async callback. The services are non-enumerable `world.context`, omitted
 by `structuredClone` so `__dev.study()` remains a detached render fixture.
 The audit validates the supplied world's memory. Never tick an art study.
+
+
+## Apartment/plant verification — 6 September 2026
+
+Eleven Node save/isolation groups and all nine browser suites pass. The life
+suite exercises three natural nights in each presentation, every plant stage,
+mode identity/time invariants and an additional evening after installation.
+The reload runner restores actual localStorage/page loads at home and every
+job stage; it also verifies keyboard dismissal, repeat-click protection and
+a waiting tab's blocked writes followed by ownership takeover. The normal
+entry run observed wipe-feet → entry → ordering → wait → pickup → seating,
+including grind/tamp/pull/steam, in 41.7 seconds with exactly 1 kr earned.
+Audio initialization, night lighting and the invariant audit passed. Captures
+and reports are in `.art-review/apartment-final/`, `.art-review/life-reloads-final/`
+and `.art-review/entry-smoke/`. These are desktop Chromium results, not a claim
+of native Safari execution. The plain-file boot is checked separately.

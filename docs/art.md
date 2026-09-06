@@ -1,5 +1,23 @@
 # Art — pixel style guide & layout map
 
+## The first apartment and plant
+
+`scene-home.js` composes a sparse room within the same 960×600 master: warm
+floorboards, a night window, basic desk/chair/PC and reading light, a bed and
+light, suitcase and seven moving boxes. No image assets or second rendering
+engine are used. Nora's existing sprite is shown without her apron at home;
+the same cat sprite/scarf is reused. Props retain top/front/side tones and
+contact shadows. Home anchors and the clear lower walking lane live in
+`L.home`; the bed has an explicit side approach. Small rain streaks and a warm
+bedside light keep the scene alive. Boxes remain owned scenery in this slice;
+gradual unpacking belongs to H1.
+
+`L.firstPlant` names the entrance parcel position, its reachable work spot and
+the left window sill destination. It adds no floor collision or seat change.
+`SCENE.plantDrawables` reads one persisted job stage for parcel/carry/unwrap/
+lift or installed art. `composeFrame` selects home or café, so offscreen shots
+and the live canvas share it. A rendered plant is never the persistence trigger.
+
 ## Closing and opening visuals
 
 The existing red curtains now draw across each window independently from

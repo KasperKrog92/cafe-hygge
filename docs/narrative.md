@@ -1,14 +1,13 @@
 # Narrative — the design contract for the story layer
 
-> **Planning note (6 September 2026):**
-> [The shared progression roadmap](progression-roadmap.md) proposes purchased
-> improvements that finish autonomously in either idle or game mode. Their
-> practical installation is distinct from a personal story payoff, which still
-> waits for the player. The detailed rules below describe the current narrative
-> implementation; update them alongside that future job system.
+> **Shared life (6 September 2026):** a chosen plant now finishes its practical
+> installation autonomously in either mode. This is not a personal story payoff.
+> Story invitations remain saved until chosen in game mode; idle hides their
+> controls without consuming them. Both modes share the same progress and home.
+
 
 The automatic closing/opening ritual is distinct from closing the app.
-Stories accrue only the actual `dt` spent running, including Nora's chores;
+Stories accrue only the actual `dt` spent running, including Nora's chores and home evenings;
 the wall-clock skip from night to morning adds no progress. Ready invitations
 remain in the save when their owners go home, and return with them on their
 next visit. Neither the fade nor a new shop day plays or expires a payoff.
@@ -170,11 +169,13 @@ Save shape (a small JSON blob — text state is kilobytes, never a size concern)
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "lastSeen": 1730000000000,
   "arcs": { "gerda-scarf": { "stage": 2, "progress": 14, "pendingBeat": null } },
   "bonds": { "gerda": { "known": true, "warmth": 3 } },
-  "flags": { "cat-wore-scarf": true }
+  "flags": { "cat-wore-scarf": true },
+  "life": { "mode": "idle", "savings": 30, "hour": 8.4, "homeTime": 0,
+    "plant": { "stage": "available", "time": 0 }, "checkpoint": null }
 }
 ```
 

@@ -516,7 +516,7 @@
     w.queue = []; w.counterCups = []; w.umbrellaStand = []; w.sleeper = null;
     w.captionQueue = []; w.captionScript = []; w.activeCaption = null;
     w.catBowls = { food: 1, water: 1 };
-    w.memory = { version: MEMORY.VERSION, lastSeen: 0, arcs: {}, bonds: {}, flags: {} };
+    w.memory = MEMORY.codec.fresh();
     CAST.arcs.forEach(function (a) {
       w.memory.arcs[a.id] = { stage: 0, progress: 0, pendingBeat: null };
     });
@@ -726,6 +726,15 @@
   D.audit = function (reviewWorld) {
     const w = reviewWorld || world();
     const problems = [];
+    if (w.shop.phase === 'home') {
+      try { MEMORY.codec.validate(w.memory); } catch(e) { problems.push(e.message); }
+      if (w.patrons.length || w.shop.accepting || w.shop.carryingCat) problems.push('home has café service or a carried cat');
+      [w.barista,w.cat].forEach(e => {
+        if (!Number.isFinite(e.x) || !Number.isFinite(e.y) || e.x < 150 || e.x > 810 || e.y < 270 || e.y > 510)
+          problems.push('home character outside room');
+      });
+      return problems;
+    }
 
     // every L anchor inside content-safe bounds
     eachAnchor(function (path, o) {
@@ -1212,7 +1221,7 @@
   // inert without ?arc, dev-only, and it keeps prior-stage lasting flags in
   // step with the requested stage so the wall and canvas tell one story.
   if (params.has('arc')) {
-    window.addEventListener('load', function () {
+    window.addEventListener('cafe-ready', function () {
       const id = params.get('arc');
       const def = ((window.CAST && CAST.arcs) || []).find(function (a) { return a.id === id; });
       const w = world();
@@ -1243,7 +1252,7 @@
   }
 
   if (params.has('audit')) {
-    window.addEventListener('load', function () {
+    window.addEventListener('cafe-ready', function () {
       const problems = D.audit();
       document.documentElement.dataset.auditProblems = String(problems.length);
       document.documentElement.dataset.auditDetails = JSON.stringify(problems);

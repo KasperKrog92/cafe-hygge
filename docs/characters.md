@@ -1,16 +1,32 @@
 # Characters
 
+## The first apartment evening
+
+`sim-life.js` sends the existing Nora and cat to the sparse apartment after
+closing. Nora pauses by her suitcase, uses her PC, reads and dozes on the bed,
+then meets the cat at the door. Neither entity is replaced; the cat keeps any
+chosen scarf. Home uses authored routes through `L.home.lane`, below the desk
+and bed, with a side approach onto the bed. The cat investigates boxes and
+rests beside her. An open notebook repeats the complete home route without a departure fade;
+closing it allows the routine to finish without another confirmation.
+
+In the morning the original carried-cat entrance and bowl routine run first.
+A chosen plant adds a parcel pickup, furniture-aware carry and four-second
+unpack/four-second placement before curtains. The package and plant are drawn
+from the saved stage, so reloading resumes one job. Available/installed plants
+add no chore; ordinary service, care and patron routes stay as before.
+
 ## Daily shop rituals
 
 `updateShop` in `sim-shop.js` coordinates Nora's evening and morning
-rounds. Phases are `open → closing → leaving → night → dawn → entering →
+rounds. Phases are `open → closing → leaving → night → home → dawn → entering →
 opening → open`; each chore has an outbound path, a 2.5-second interaction
 and an optional return to the till. Consecutive floor chores use the furniture
 route planner; service can interrupt the round between chores. Ordinary idle
 chores wait until reopening is complete. See [world.md](world.md) for times
 and the full sequence.
 
-All Nora movement—including drinks, watering, candles, clearing tables and
+All café Nora movement—including drinks, watering, candles, clearing tables and
 opening/closing—uses a furniture-aware path from her current position to the
 next work spot. She no longer retraces obsolete aisle waypoints between chores.
 The counter front stays solid, with a separate working corridor behind it;

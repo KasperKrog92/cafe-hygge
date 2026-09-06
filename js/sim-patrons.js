@@ -361,7 +361,10 @@
       case 'pickup': {
         if (walker(p, dt)) {
           const idx = world.counterCups.findIndex(function (c) { return c.owner === p.id; });
-          if (idx >= 0) world.counterCups.splice(idx, 1);
+          if (idx >= 0) {
+            world.counterCups.splice(idx, 1);
+            world.memory.life.savings += 1; world.context.memory.saveNow();
+          }
           p.holding = holdingFor(p.drink.kind);
           SND.clink(0.9, 0.05);
           if (p.coupleToGo || (p.partner && !p.seat && !reserveCoupleSeats(world, p))) {

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Café Hygge — a cozy idle café</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css?v=jersey-captions-20260906-1">
+<link rel="stylesheet" href="style.css?v=apartment-20260906-1">
 </head>
 <body>
 <div id="stage">
@@ -20,7 +20,18 @@
     </div>
   </div>
 
+  <dialog id="planner" aria-labelledby="plan-title">
+    <p class="eyebrow">Nora’s notebook</p>
+    <h2 id="plan-title">A little green for the café</h2>
+    <p>A leafy plant in a terracotta pot, tucked beside the window.<br>Nora will bring it in and find its place tomorrow morning.</p>
+    <p id="plan-balance"></p>
+    <p id="plan-status" aria-live="polite"></p>
+    <div class="plan-actions"><button id="buy-plant">choose the plant · 30 kr</button><button id="close-plan">back to the evening</button></div>
+    <p class="plan-footnote">Stay a while. Morning waits while your notebook is open.<br>There will always be another evening.</p>
+  </dialog>
   <div id="controls" class="hidden">
+    <button id="btn-mode" title="switch idle / game presentation">idle</button>
+    <button id="btn-plan" hidden>evening plan</button>
     <button id="btn-mute"  title="mute (m)">🔊</button>
     <input  id="vol" type="range" min="0" max="100" value="70" title="volume">
     <button id="btn-rain"  title="rain on/off">🌧️</button>
@@ -30,21 +41,23 @@
   </div>
 </div>
 
-<script src="js/audio.js?v=easel-artist-1"></script>
-<script src="js/scene-core.js?v=waterfront-20260906-1-ship"></script>
+<script src="js/audio.js?v=apartment-20260906-1"></script>
+<script src="js/scene-core.js?v=apartment-20260906-1"></script>
 <script src="js/scene-waterfront.js?v=waterfront-20260906-1-ship"></script>
 <script src="js/scene-bg.js?v=waterfront-20260906-1-ship"></script>
 <script src="js/scene-furniture.js?v=book-covers-20260906"></script>
 <script src="js/scene-people.js?v=book-covers-20260906"></script>
-<script src="js/scene-fx.js?v=jersey-captions-20260906-1"></script>
+<script src="js/scene-fx.js?v=apartment-20260906-1"></script>
+<script src="js/scene-home.js?v=apartment-20260906-1"></script>
 <script src="js/characters-roster.js?v=waterfront-20260906-1"></script>
-<script src="js/memory.js?v=save-isolation-20260906-1"></script>
-<script src="js/sim-core.js?v=book-covers-20260906"></script>
+<script src="js/memory.js?v=apartment-20260906-1"></script>
+<script src="js/sim-core.js?v=apartment-20260906-1"></script>
 <script src="js/sim-waterfront.js?v=save-isolation-20260906-1"></script>
-<script src="js/sim-patrons.js?v=book-covers-20260906"></script>
-<script src="js/sim-shop.js?v=shop-lifecycle-20260906-1"></script>
-<script src="js/sim-characters.js?v=shop-lifecycle-20260906-1"></script>
-<script src="js/dev.js?v=book-covers-20260906"></script>
-<script src="js/main.js"></script>
+<script src="js/sim-patrons.js?v=apartment-20260906-1"></script>
+<script src="js/sim-shop.js?v=apartment-20260906-1"></script>
+<script src="js/sim-characters.js?v=apartment-20260906-1"></script>
+<script src="js/sim-life.js?v=apartment-20260906-1"></script>
+<script src="js/dev.js?v=apartment-20260906-1"></script>
+<script src="js/main.js?v=apartment-20260906-1"></script>
 </body>
 </html>

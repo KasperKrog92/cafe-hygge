@@ -23,7 +23,7 @@ function boot(raw) {
   };
   sandbox.window = sandbox;
   const ctx = vm.createContext(sandbox);
-  for (const file of ['audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters']) {
+  for (const file of ['audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'js', file + '.js'), 'utf8'), ctx, { filename: file + '.js' });
   }
   return { ctx, data, events, timers, writes: () => writes, prompts: () => prompts,
@@ -32,6 +32,40 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v1 migration retains history and rejects malformed life data', () => {
+    const b = boot();
+    b.run(`var s=MEMORY.codec.fresh();delete s.life;s.version=1;
+      s.flags.kept=true;s.bonds.gerda={known:true,visits:7};
+      s.arcs.kept={stage:2,progress:8,pendingBeat:'finished'};
+      var out=MEMORY.codec.decode(JSON.stringify(s));
+      if(out.error||!out.state.flags.kept||out.state.bonds.gerda.visits!==7||out.state.arcs.kept.stage!==2||out.state.life.savings!==30)throw Error('v1 migration');
+      for(const change of [l=>l.savings=-1,l=>l.savings=.5,l=>l.mode='new',l=>l.homeTime=91,l=>l.hour=24,l=>l.plant.stage='other',l=>l.plant.time=NaN,l=>l.checkpoint={}]) {
+        var x=MEMORY.codec.fresh();change(x.life);
+        if(!MEMORY.codec.decode(JSON.stringify(x)).error)throw Error('invalid life accepted');
+      }`);
+  });
+  await test('every shop boundary restores, and work/purchase never repeats', () => {
+    const b=boot();
+    b.run(`var w=SIM.create({random:SIM.seededRandom(84)}), captured={};
+      w.clockOffset+=(21.5-w.hour)/24*SIM._.DAY_SECONDS;
+      for(let i=0;i<6500;i++) {
+        SIM.update(w,.25);
+        if(w.shop.phase!=='open'&&!captured[w.shop.phase])captured[w.shop.phase]=MEMORY.codec.encode(w.memory);
+        if(w.shop.phase==='home'&&w.memory.life.plant.stage==='available') {
+          SIM.setMode(w,'game');SIM.plan(w,true);if(!SIM.buyPlant(w)||SIM.buyPlant(w))throw Error('purchase');SIM.plan(w,false);
+        }
+        if(w.shop.phase==='open'&&w.memory.life.plant.stage==='installed')break;
+      }
+      for(const phase of ['closing','leaving','night','home','dawn','entering','opening']) {
+        if(!captured[phase])throw Error('missing '+phase);
+        var r=SIM.create({memory:MEMORY.createStore({state:JSON.parse(captured[phase])})});
+        if(r.shop.phase!==phase)throw Error('phase reset');
+        var funds=r.memory.life.savings;
+        for(let i=0;i<6500&&r.shop.phase!=='open';i++)SIM.update(r,.25);
+        if(r.shop.phase!=='open'||r.memory.life.savings!==funds)throw Error('reload '+phase);
+      }
+      if(w.memory.life.plant.stage!=='installed')throw Error('plant not installed');`);
+  });
   await test('borrowed covers keep their colors when books return out of order', () => {
     const b = boot();
     b.run(`var w = SIM.create({random:SIM.seededRandom(42)});
@@ -74,7 +108,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
   });
   await test('migration ladder runs every explicit step and rejects gaps or wrong versions', () => {
     const b = boot();
-    b.run(`var original=MEMORY.codec.fresh();original.flags.kept=true;var before=JSON.stringify(original),seen=[];
+    b.run(`var original=MEMORY.codec.fresh();original.version=1;original.flags.kept=true;var before=JSON.stringify(original),seen=[];
       var c=MEMORY.createCodec(3,{
         1:s=>{seen.push(1);s.version=2;s.extra='preserved';return s;},
         2:s=>{seen.push(2);s.version=3;return s;}

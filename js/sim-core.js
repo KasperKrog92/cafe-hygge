@@ -271,6 +271,7 @@
     const holger = CAST.regulars.find(function (r) { return r.id === 'holger'; });
     if (holger) seedRegular(world, holger);
 
+    if (SIM._.restoreLife) SIM._.restoreLife(world);
     return world;
   }
 

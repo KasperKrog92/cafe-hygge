@@ -205,8 +205,9 @@
      SIM.entityDrawables / SCENE.drawCaption at call time, so the dev overlay's
      drawCaption wrap (js/dev.js) rides along on shots too. */
   SCENE.composeFrame = function (g, world) {
+    if (world.shop.phase === 'home') { SCENE.drawHome(g, world); return; }
     SCENE.drawScene(g, world);
-    const furniture = SCENE.furnitureDrawables(world);
+    const furniture = SCENE.furnitureDrawables(world).concat(SCENE.plantDrawables(world));
     const ents = SIM.entityDrawables(world);
     const all = furniture.concat(ents.draws);
     all.sort(function (a, b) { return a.y - b.y; });

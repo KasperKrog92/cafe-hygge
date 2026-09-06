@@ -1487,6 +1487,9 @@
     world.t += dt;
     updateClock(world, dt);
     updateNarrative(world, dt);
+    if (world.shop.phase === 'home') {
+      R.updateHome(world, dt); updateCaptions(world, dt); R.saveLife(world, dt); return;
+    }
     if (!world.shop || world.shop.phase === 'open') updateCandles(world, dt);
     updateFire(world, dt);
     updateWeather(world, dt);
@@ -1494,6 +1497,7 @@
     R.updateWaterfront(world, dt);
     updateDoor(world, dt);
     const shopBusy = shop.update(world, dt);
+    if (world.shop.phase === 'home') { R.saveLife(world, dt); return; }
     updateSpawning(world, dt);
     if (!shopBusy) updateBarista(world, world.barista, dt);
     world.patrons.forEach(function (p) { updatePatron(world, p, dt); });
@@ -1505,6 +1509,7 @@
     }
     updateParticles(world, dt);
     updateCaptions(world, dt);
+    R.saveLife(world, dt);
   };
 
   /* ---------- what to draw ---------- */
@@ -1515,7 +1520,7 @@
     // A pending beat raises a soft, persistent invitation over its seated owner
     // (docs/narrative.md §2) — it waits across sessions and never expires. It
     // takes the owner's bubble slot so it never fights their ambient chatter.
-    const invited = pendingInvites(world);
+    const invited = world.memory.life.mode === 'game' ? pendingInvites(world) : {};
     world.patrons.forEach(function (p) {
       if (p.outside) return;
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, p); } });
@@ -1537,7 +1542,7 @@
       draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
       if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
     }
-    anchoredInvites(world).forEach(function (b) { bubbles.push(b); });
+    (world.memory.life.mode === 'game' ? anchoredInvites(world) : []).forEach(function (b) { bubbles.push(b); });
     return { draws: draws, bubbles: bubbles };
   };
 

@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Sixteen IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Eighteen IIFE scripts expose the production globals
 (`SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -12,6 +12,7 @@ js/scene-bg.js          → extends SCENE  (background cache + dynamic wall laye
 js/scene-furniture.js   → extends SCENE  (depth-sorted furniture)
 js/scene-people.js      → extends SCENE  (people, cat, bubbles, icons)
 js/scene-fx.js          → extends SCENE  (lighting, particles, captions, composeFrame)
+js/scene-home.js        → extends SCENE  (apartment and plant work stages)
 js/characters-roster.js → window.CAST    (regulars roster + story arcs, pure data)
 js/memory.js            → window.MEMORY  (persistent cross-visit save; versioned)
 js/sim-core.js          → window.SIM     (world + shared simulation systems)
@@ -19,6 +20,7 @@ js/sim-waterfront.js    → extends SIM    (boat/bird/plane timers, terrace gues
 js/sim-patrons.js       → extends SIM    (patron state machine)
 js/sim-shop.js          → extends SIM    (opening/closing lifecycle factory)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
+js/sim-life.js          → extends SIM    (home, plant, presentation, saved lifecycle)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -46,7 +48,50 @@ from `SIM._`; the character file retains ordinary service/cat updates and all
 entity drawing. Cat walking to Nora and pausing while carried keep their
 original position after patron updates. Every entry selects the supplied
 world's services with `bindWorld`, including direct route inspection. No save
-fields, phase names, task timing, paths or render behavior changed in this split.
+fields, phase names, task timing, paths or render behavior changed in the preparatory split. The subsequent life milestone is described below.
+
+## Shared life and plant contract
+
+The shop factory remains the owner of closing and opening. Its `night` phase
+hands off through `SIM._.enterHome`; `beforeClock` also holds the home clock.
+`SIM.update` still advances real time/narrative, but delegates the home tick to
+`updateHome` rather than spawning or running café characters there. Departure
+returns the same entities to the original `dawn`/`entering` contract. An optional
+`plantMorning` task is fixed for that opening round; without a purchase, the
+original routes and task order are preserved.
+
+Two new plain scripts extend the existing globals: `scene-home.js` (after
+scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
+before dev/main) defines the home/job and persistence hooks. No second world,
+renderer, simulation driver, library or framework is introduced.
+
+`memory.life` (v2, migrated from v1) contains `mode`, integer `savings`, `hour`,
+`homeTime`, `plant: {stage,time}`, and a nullable lifecycle checkpoint containing
+shop state and Nora's position/path. Initial savings and the plant price are
+30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` is the single
+small project definition. Stages are available → purchased → scheduled → carry
+→ unpack → place → installed. Purchase and stage transitions flush immediately;
+working checkpoints update in memory every tick and flush at most every ten
+seconds, plus pagehide/hidden. Abrupt process death can lose the latest partial
+seconds; completed committed stages cannot charge/install again. Boot adds no
+offline time. Transient guests/orders are omitted on ritual restoration, and
+ordinary open-café reloads retain the seeded café foundation.
+
+`SIM.setMode(world, mode)`, `SIM.plan(world, open)` and `SIM.buyPlant(world)` are
+synchronous public actions. The latter checks game mode, home, open planner,
+availability and funds before changing both savings and job in one save.
+Planner openness is presentation-only and is not restored as a blocking dialog.
+Mode switching closes it when moving to idle and never changes world identity,
+time, progress or ownership. Game mode exposes pending story invitations.
+
+On supported desktop browsers, `main.js` acquires the origin's Web Lock
+`cafe-hygge-life` before creating a production world. A second tab waits without
+simulation or writes (including exit/hidden flushes); pagehide releases ownership
+after the final save, and back/forward restores reacquire it. The waiting tab reloads the
+latest memory before boot. Plain file/older-browser environments without Web
+Locks retain single-view boot compatibility; concurrent writers there are not
+supported. The `cafe-ready` event runs dev URL setup after asynchronous ownership
+acquisition. Private worlds never acquire a browser lock.
 
 ## The world object
 
@@ -77,7 +122,7 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
 | `captionQueue[]` / `activeCaption` | ambient narration pipeline (soft cap 2) |
 | `captionScript[]` | a story beat's caption run — drains ahead of `captionQueue`, never dropped by the cap (`captionRun`) |
-| `memory` | the bound context store (production: `MEMORY.state`): `{version, lastSeen, arcs, bonds, flags}`. Set by `reconcileNarrative` at the end of `SIM.create` |
+| `memory` | the bound context store (production: `MEMORY.state`): `{version, lastSeen, arcs, bonds, flags, life}`. Set by `reconcileNarrative` at the end of `SIM.create` |
 | `cat.scarf` | the scarf's hex once Gerda's arc completes (`cat-wore-scarf` flag), else `null`; read by `drawCat` |
 
 ## Frame flow (main.js)
@@ -219,9 +264,9 @@ almost pure **data + state** riding existing primitives — the caption pipeline
 the bubble system, and the one click handler.
 
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
-  `{version, lastSeen, arcs, bonds, flags}`. `MEMORY.codec` is the pure
+  `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is still v1. Each migration
+  integer versions reach the simulation. The schema is v2; its v1 migration retains story history. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is

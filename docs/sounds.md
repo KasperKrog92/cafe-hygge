@@ -132,3 +132,12 @@ All one-shots are wrapped in `guard()`: they silently no-op before
 The waterfront itself is silent: boats, clouds, birds, aircraft and the far-bank
 worker add no competing ambience. Terrace readers turn pages silently behind
 the glass; Nora reuses the existing quiet clink on collection and return.
+
+
+## Apartment/plant milestone
+
+Home retains rain and the quiet music box. Fireplace crackles are suppressed
+while `shop.phase === 'home'`; leaving the café stops its piano voice. The home
+reading transition reuses `pageTurn`, and the plant's unpack-to-place boundary
+reuses `swish`. Both originate from dt-driven simulation code through the
+world's sound adapter, so private tests remain silent. No new gains or samples.

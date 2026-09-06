@@ -1,8 +1,11 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 1;
+  const KEY = 'cafe-hygge-save', VERSION = 2;
   const MEMORY = (window.MEMORY = {});
+  // Waiting browser tabs may receive hidden/pagehide before they own a world.
+  // Their exit listeners must not flush an old snapshot over the active save.
+  MEMORY.readOnly = !!navigator.locks;
   const own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
   function record(o) {
     return !!o && typeof o === 'object' &&
@@ -15,7 +18,7 @@
   // A step consumes version n and must explicitly return version n+1. Add a
   // step and bump VERSION together when the shipped schema actually changes.
   function createCodec(version, migrations) {
-    function fresh() { return { version: version, lastSeen: 0, arcs: {}, bonds: {}, flags: {} }; }
+    function fresh() { return { version: version, lastSeen: 0, arcs: {}, bonds: {}, flags: {}, life: freshLife() }; }
     function validate(s) {
       requireShape(record(s) && s.version === version, 'unsupported save version');
       requireShape(finite(s.lastSeen) && s.lastSeen >= 0, 'invalid lastSeen');
@@ -40,6 +43,7 @@
       Object.keys(s.flags).forEach(function (id) {
         requireShape(typeof s.flags[id] === 'boolean', 'invalid flag: ' + id);
       });
+      if (version >= 2) validateLife(s.life);
       return s;
     }
     function migrate(input) {
@@ -66,7 +70,39 @@
     function encode(s) { validate(s); return JSON.stringify(s); }
     return { fresh: fresh, validate: validate, migrate: migrate, decode: decode, encode: encode };
   }
-  const codec = createCodec(VERSION, {});
+  function freshLife() {
+    return { mode: 'idle', savings: 30, hour: 8.4, homeTime: 0,
+      plant: { stage: 'available', time: 0 }, checkpoint: null };
+  }
+  function validateLife(l) {
+    requireShape(record(l), 'invalid life');
+    requireShape(['idle', 'game'].indexOf(l.mode) >= 0, 'invalid mode');
+    requireShape(integer(l.savings) && l.savings >= 0, 'invalid savings');
+    requireShape(finite(l.hour) && l.hour >= 0 && l.hour < 24, 'invalid life hour');
+    requireShape(finite(l.homeTime) && l.homeTime >= 0 && l.homeTime <= 90, 'invalid home time');
+    requireShape(record(l.plant) && ['available','purchased','scheduled','carry','unpack','place','installed'].indexOf(l.plant.stage) >= 0 &&
+      finite(l.plant.time) && l.plant.time >= 0 && l.plant.time <= 8, 'invalid plant');
+    if (l.checkpoint !== null) {
+      const c = l.checkpoint;
+      requireShape(record(c) && record(c.shop) && record(c.nora), 'invalid lifecycle checkpoint');
+      const s = c.shop, b = c.nora;
+      requireShape(['closing','leaving','night','home','dawn','entering','opening'].indexOf(s.phase) >= 0, 'invalid lifecycle phase');
+      requireShape(finite(s.elapsed) && s.elapsed >= 0 && integer(s.step) && s.step >= 0, 'invalid ritual progress');
+      requireShape(Array.isArray(s.curtains) && s.curtains.length === 2 &&
+        [s.fade,s.lights].concat(s.curtains).every(n => finite(n) && n >= 0 && n <= 1), 'invalid ritual lighting');
+      ['lastCall','stocked','accepting','carryingCat','away'].forEach(k => requireShape(typeof s[k] === 'boolean', 'invalid ritual flag'));
+      function point(p) { return record(p) && finite(p.x) && finite(p.y) && p.x >= 12 && p.x <= 948 && p.y >= 36 && p.y <= 576; }
+      function route(p) { return p === null || (Array.isArray(p) && p.every(point)); }
+      requireShape(point(b) && route(b.path) && ['idle','shop'].indexOf(b.state) >= 0, 'invalid Nora checkpoint');
+      if (s.task !== null) requireShape(record(s.task) &&
+        ['lights','putCat','bowls','curtain','hearth','stock','greet','wipe','table','cat','home','plant'].indexOf(s.task.kind) >= 0 &&
+        finite(s.task.time) && s.task.time >= 0 && Array.isArray(s.task.route) && route(s.task.route), 'invalid ritual task');
+    }
+  }
+  const codec = createCodec(VERSION, { 1: function (s) {
+    createCodec(1, {}).validate(s);
+    s.version = 2; s.life = freshLife(); return s;
+  } });
   MEMORY.VERSION = VERSION;
   MEMORY.codec = codec;
   MEMORY.createCodec = createCodec;
@@ -126,8 +162,8 @@
     now: function () { return Date.now(); },
     storage: {
       getItem: function (key) { return localStorage.getItem(key); },
-      setItem: function (key, value) { localStorage.setItem(key, value); },
-      removeItem: function (key) { localStorage.removeItem(key); }
+      setItem: function (key, value) { if (!MEMORY.readOnly) localStorage.setItem(key, value); },
+      removeItem: function (key) { if (!MEMORY.readOnly) localStorage.removeItem(key); }
     },
     persist: function () {
       if (navigator.storage && navigator.storage.persist) return navigator.storage.persist();

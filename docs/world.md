@@ -14,9 +14,15 @@ entrance: right curtain, hearth and mantel candles, then left curtain. She calls
 carries it to the door, switches off the interior lamps and leaves.
 
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
-one-second dark pause and two-second fade in lead to 07:30. Nora comes back
+one-second dark pause lead into the apartment. Nora spends a 90-second
+unattended evening there before the two-second dawn fade leads to 07:30.
+The café clock holds during home time; elapsed story time still receives real
+dt. Opening the evening notebook in game mode keeps her home, with PC/reading
+routines continuing. Closing it or switching to idle resumes normal departure. Nora comes back
 with the cat and turns on the lamps at the entrance first. She puts the cat
-down by its bowls, refills them, opens the left curtains, tends the hearth,
+down by its bowls and refills them. If a plant was chosen, she retrieves its
+parcel at the entrance, carries it to the left window, unwraps it for four
+seconds and lifts it onto the sill over four seconds. She then opens the left curtains, tends the hearth,
 then opens the right curtains before reaching the counter to stock the pastry
 case. She works across the room without returning to the till between these
 chores. Cakes belong only in the counter display: Nora puts them away at night
@@ -30,7 +36,17 @@ and the shop returns to its usual routines.
 caption, weather, movement and story timers receive only actual simulated
 time. The normal arrival schedule rolls into the new café day. This sequence
 needs no clicks, creates no obligations, and never consumes a story invitation.
-No save-schema change: reloading still begins in an open café with saved stories.
+Schema v2 retains home time, wall-clock hour, presentation, savings, plant
+stage/time and a lifecycle checkpoint. Reload holds time spent away and resumes
+rituals/partial work; transient patrons and incomplete orders are not serialized.
+A normal open-café reload retains the existing seeded-room behavior.
+
+Savings begin at 30 kr. Removing a finished cup at pickup adds 1 kr, once;
+seeded drinks and unfinished orders add nothing. The only purchase is a 30 kr
+plant, explicitly confirmed at home. Its status never expires, and its installed
+sill position has no floor footprint. No costs accrue from absence.
+New captions: “home, with a book and a familiar little shadow.” and
+“a little green by the window.” Both use the ordinary caption queue.
 
 The systems that make the room feel alive independent of any character.
 All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (appearance).
