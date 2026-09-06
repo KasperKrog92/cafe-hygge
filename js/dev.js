@@ -7,6 +7,8 @@
    URL params:
      ?dev          boot straight into the scene (overlay dismissed; audio
                    stays uninitialized until the first real click)
+     ?morning      07:30, Nora arriving with the cat to reopen an empty café
+     ?night        21:30, evening closing with the boot's seated guests
      ?hour=20      start the clock at 20:00 (works with or without ?dev)
      ?overlay      layout overlay on from the first frame
      ?audit        run the invariant sweep after boot and expose its count on
@@ -1118,13 +1120,30 @@
 
   /* ---------- boot ---------- */
 
-  // ?hour= — applied to the world the moment main.js creates it
-  const hourParam = params.has('hour') ? parseFloat(params.get('hour')) : NaN;
+  // Named shop scenarios override ?hour; morning wins if both are supplied.
+  // They prepare transient state, never a save.
+  const morning = params.has('morning'), night = params.has('night');
+  const hourParam = morning ? 7.5 : night ? 21.5 : params.has('hour') ? parseFloat(params.get('hour')) : NaN;
   if (!isNaN(hourParam)) {
     const origCreate = SIM.create;
     SIM.create = function () {
       const w = origCreate.apply(this, arguments);
       setHour(w, hourParam);
+      if (morning) {
+        w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = []; w.sleeper = null;
+        w.seats.forEach(function (s) { s.taken = false; });
+        w.tables.forEach(function (tb) { tb.items = []; tb.cake = false; tb.candle = tb.candleTarget = 0; });
+        // Boot normally marks a seeded regular as already present today.
+        Object.keys(w.regulars).forEach(function (id) { w.regulars[id].lastDay = -1; });
+        w.candles.mantel = w.candles.mantelTarget = 0;
+        w.fire.level = w.fire.target = 0.16;
+        w.barista.holding = 'cat';
+        Object.assign(w.shop, { phase: 'dawn', elapsed: 2, fade: 0,
+          accepting: false, lights: 0, curtains: [1, 1], stocked: false,
+          carryingCat: true, away: true });
+        // Reuse the real dawn → entrance transition, without advancing time.
+        SIM.update(w, 0);
+      }
       return w;
     };
   }
@@ -1157,7 +1176,7 @@
   // ?dev — straight into the scene: overlay dismissed, audio untouched until
   // a real click (autoplay policy). The click reuses main.js's own enter
   // handler so init + controls behave exactly as the normal path.
-  if (params.has('dev')) {
+  if (params.has('dev') || morning || night) {
     document.getElementById('overlay').classList.add('gone');
     document.addEventListener('click', function () {
       document.getElementById('enter').click();

@@ -218,6 +218,13 @@ canvas click handler: a waiting story invitation takes the tap first
 
 ## Dev harness (js/dev.js)
 
+`?morning` starts at 07:30 with an empty, closed room and Nora entering with
+the cat for the real opening sequence. `?night` starts at 21:30 with the
+boot's guests present for closing. Both dismiss the start overlay like `?dev`
+(audio still needs a click). These scenario flags override `?hour`; if both
+are present, morning wins. They prepare transient world state, without aging
+stories or changing saved invitations.
+
 Agent/debug tooling behind `window.__dev` — **inert in normal use** and never
 user-visible. It activates only via URL params (`?dev` boots past the start
 overlay with audio still uninitialized; `?hour=20` starts the clock at 20:00;
