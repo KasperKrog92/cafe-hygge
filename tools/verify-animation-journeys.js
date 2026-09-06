@@ -3,7 +3,7 @@
  const failures=[], results=[];
  const canvas=document.createElement('canvas');canvas.width=960;canvas.height=600;const g=canvas.getContext('2d');
  function fresh(empty){
-  const w=SIM.create();w.spawnT=1e9;
+  const w=SIM.create({});w.spawnT=1e9;
   Object.values(w.regulars).forEach(r=>{r.hour=99;});
   if(empty){w.patrons=[];w.seats.forEach(s=>s.taken=false);w.tables.forEach(t=>t.items=[]);}
   return w;
@@ -30,7 +30,7 @@
   run(w,'cat '+action,150,cat,seen=>seen.size>1&&['sleep','sit','perch','loaf','lap','groom','eat'].includes(cat.state)&&cat.state!=='walk');
  }
  for(const prep of ['coffee_milk','coffee','tea','milk','matcha_hot','matcha_iced','food']){
-  const w=fresh(true),p=SIM._.makePatron('Test');p.drink=SIM._.DRINKS.find(d=>d.prep===prep);p.wantsBook=false;p.ownBook=false;p.laptop=false;
+  const w=fresh(true),p=SIM._.makePatron(w, 'Test');p.drink=SIM._.DRINKS.find(d=>d.prep===prep);p.wantsBook=false;p.ownBook=false;p.laptop=false;
   SIM._.enqueueArrival(w,p,0,true);
   run(w,'order '+prep,150,p,()=>p.state==='seated');
  }

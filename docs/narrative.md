@@ -152,8 +152,9 @@ calendar.
 
 Audio settings persist separately as `cafe-hygge-audio` via `SND.save()`.
 The implemented narrative memory persists as `cafe-hygge-save` via `MEMORY`.
-The API below is built; the save guarantees describe the intended contract,
-with validation gaps recorded in the [pre-development audit](predevelopment-audit.md).
+The save codec validates plain records, supported integer versions and finite
+arc fields before binding them to a world. Findings 1–2 of the
+[pre-development audit](predevelopment-audit.md) are now addressed.
 
 **Implemented:** `js/memory.js` → `window.MEMORY`, loaded early (before `sim-core`
 so world creation can read it), inert-friendly like the rest:
@@ -161,7 +162,7 @@ so world creation can read it), inert-friendly like the rest:
 ```
 MEMORY.state          // the parsed save object (or a fresh default)
 MEMORY.load()         // read cafe-hygge-save from localStorage, migrate, default
-MEMORY.save()         // debounced write back (JSON.stringify), same try/catch guard as SND
+MEMORY.save()         // validated, debounced write; saveNow flushes on exit
 MEMORY.reset()        // wipe to a fresh café (also a __dev call)
 ```
 
@@ -181,14 +182,17 @@ Non-negotiables for the save:
 
 - **Versioned, with forward migration.** `version` gates a migration ladder in
   `MEMORY.load()`: an old save is upgraded field-by-field to the current shape,
-  never dropped. A returning player must never be bricked or silently reset by a
-  code update. This is the single most important discipline in the whole layer —
-  growing state is safe only if old state keeps loading.
+  through every explicitly supplied step. Unsupported or malformed saves open
+  a fresh café. Existing development saves may reset per owner direction; no
+  recovery-copy system is required yet. Future schema changes must supply
+  migrations and tests for the versions they support.
 - **Reconcile on boot, don't trust blindly.** The save can drift from a fresh
   world (an arc naming a regular you renamed, a stage past the last one defined).
-  `MEMORY.load()` clamps and drops unknown ids rather than throwing, the same way
-  the audit tolerates a live world. A corrupt/absent save falls back to a fresh
-  café — the app must always open.
+  The pure codec validates records; `reconcileNarrative(world)` clamps stages
+  and progress against definitions, skipping unknown definitions. It adds no
+  elapsed progress. Storage errors, including rejected persistence promises,
+  are nonfatal and visible through `MEMORY.status`. A corrupt/absent save falls
+  back to a fresh café — the app must always open.
 - **localStorage's limits are acknowledged, not fought.** It is per-browser,
   per-origin, cleared when the user clears site data, and — on Safari/iOS —
   purged after ~7 days without a visit. That is fine for a companion app; a lost

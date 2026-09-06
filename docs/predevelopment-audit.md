@@ -43,6 +43,35 @@ in the final PowerShell 7 run, and the art suite also passed under Windows
 PowerShell 5.1; the updated art-review command passed there too.
 These were tooling issues, not failed café assertions.
 
+## Preparation follow-up — 6 September 2026
+
+Findings 1–2 are implemented: strict pure v1 codec and explicit migration steps,
+injectable persistence with observable failures, immediate-exit flush coverage,
+private memory/random/audio contexts, per-world narrative timers and explicit
+cat-world ownership. The schema and café gameplay are unchanged. Node regressions
+exercise round trips, invalid inputs, migration gaps, blocked storage and rejected
+persist requests, real loader reloads of pending/completed stories, seeded worlds
+and absence of live-world/storage/audio side effects. The browser suites now
+create private worlds and the audit checks the supplied world's memory.
+
+**Owner clarification:** existing development saves do not require preservation.
+Invalid/unsupported saves may be replaced by the fresh fallback; the raw-byte
+recovery requirement proposed below is superseded for this preparation. No
+recovery copies, apartment features, currency or upgrades were added.
+
+Verification: all eight Node regression groups and all eight browser suites
+passed, with zero audit problems. A separate bare-page smoke test initialized
+Web Audio via the real entry click and followed an accelerated cappuccino cycle
+from wet-foot entry through pickup and seating. Night rendering was inspected;
+a browser reload restored the scarf, completed gallery and waiting invitation
+with no load/write errors or page errors. Evidence is in ignored
+`.art-review/save-isolation-final/` and `.art-review/save-smoke/`. All task-owned
+browser sessions were closed; the owner's existing session was left alone.
+
+The original findings below remain the evidence for the change, rather than a
+statement of current defects. Reproduce with `node tools/test-save.js` and
+`tools/verify-project.ps1`; the pure regressions also run in GitHub Actions.
+
 ## 1. Save validation and migration boundaries — high priority
 
 **Evidence:** `migrate()` in [memory.js](../js/memory.js) accepts any object,
@@ -199,7 +228,7 @@ one when editing them. The current audit edits only docs/development tools and
 therefore requires no asset version change. A future lightweight release check
 could compare changed assets against their URLs; it need not introduce a build.
 
-Add pure save tests to CI once they exist and are deterministic. A fast Node
+Pure save/isolation tests now run in CI and in the local verification runner. A fast Node
 check can precede optional browser suites. Do not make screenshot timings into
 hard CI performance thresholds based on this one machine.
 
@@ -217,8 +246,8 @@ persisted job/save work, not after a large catalogue has already shipped.
 ## Recommended order
 
 1. **Now complete:** audit, measured baseline, workflow runner and doc corrections.
-2. **Next preparation session:** findings 1–2, save correctness and isolated
-   worlds, with regression cases proving existing saves and behavior survive.
+2. **Now complete:** findings 1–2, save correctness and isolated worlds with
+   regression coverage. Existing development-save preservation is not required.
 3. **Start the apartment session:** extract opening/closing without behavior
    changes, verify it, then implement the roadmap's evening/plant loop.
 4. **When needed:** dynamic furniture layouts, kitchen inventory, visitor jobs,

@@ -101,11 +101,19 @@ milestone on the current café foundation, keeping later ideas out of that slice
   seat), check the console is clean, and jump the clock to verify night
   lighting: `__dev.hour(20)`. Then open with `?dev`, run `__dev.audit()`, and
   expect 0 problems.
+- **Private simulations:** use `SIM.create({ random: SIM.seededRandom(42) })`
+  for tests, or provide `memory: MEMORY.createStore({ state: validSave })`.
+  No-argument creation is the production persistence/audio context. Private
+  worlds have silent sound, private IDs/timers and no storage side effects.
+  `SIM.dislodgeCat(world, patron)` and `SIM._.makePatron(world, name)` require
+  an explicit world. Keep `__dev.study()` renderer-only.
+
 - `window.__world` is the live world object — inspect or poke it freely when
   debugging.
 - **Repeatable verification:** with this checkout served on port 8137, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-project.ps1`.
-  It checks shipped-script syntax, runs the eight existing browser suites with
+  It runs the Node save/isolation regressions, checks shipped-script syntax,
+  runs the eight existing browser suites with
   fresh saves between them, exports reports/captures, and confirms session
   cleanup. See [docs/development.md](docs/development.md) for targeted commands,
   the separate normal-entry smoke test and the next preparation tasks.
@@ -230,9 +238,9 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   **must migrate, never reset**: growing the save shape is only safe if
   `MEMORY.VERSION` bumps and a migration step lands (see `js/memory.js`). Any
   bad/missing/unsupported-version save should open a **fresh café** — never an
-  error. The current loader does not fully enforce this contract; see the
-  [pre-development audit](docs/predevelopment-audit.md#1-save-validation-and-migration-boundaries--high-priority).
-  Fix that before adding progression fields. Arc
+  error. The pure codec and injectable storage adapter enforce these boundaries.
+  Unsupported development saves may reset (owner direction, 6 September 2026);
+  no recovery-copy system is required yet. Arc
   *state* lives in the save; arc *definitions* live in `CAST.arcs`. **Arcs ride
   the café's own clock: progress accrues only in `updateNarrative` (dt-driven,
   one row per 24-minute café day while the café runs — hidden tabs included;

@@ -1,12 +1,12 @@
 (function () {
   'use strict';
-  const original = __world, random = Math.random, R = SIM._, F = SCENE.L.waterfront;
+  const original = __world, R = SIM._, F = SCENE.L.waterfront;
   const failures = [], frames = {};
   let seed = 725;
-  Math.random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
+  const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   function check(ok, msg) { if (!ok && failures.indexOf(msg) < 0) failures.push(msg); }
   try {
-    const w = SIM.create(); window.__world = w; __dev.hour(12);
+    const w = SIM.create({ random: random }); window.__world = w; __dev.hour(12);
     w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];
     w.seats.forEach(function (s) { s.taken = false; });
     w.tables.forEach(function (t) { t.items = []; });
@@ -51,7 +51,7 @@
     for (let t = 0; t < 200; t += 0.25) SIM.update(w, 0.25);
     check(!w.patrons.includes(p) && !w.patrons.includes(q), 'closing left watchers behind');
     failures.push.apply(failures, __dev.audit());
-  } finally { window.__world = original; Math.random = random; window.shipFrames = frames; }
+  } finally { window.__world = original; window.shipFrames = frames; }
   if (failures.length) throw new Error(JSON.stringify(failures));
   return { failures, checks: 'normal orders, window round trips, reserved seats, waves, both directions, disposal, scheduling, closing' };
 })();

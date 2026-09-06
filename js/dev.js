@@ -147,7 +147,7 @@
     opts = opts || {};
     const w = world();
     if (opts.couple) return SIM._.spawnCouple(w, opts);
-    const p = SIM._.makePatron(opts.name);
+    const p = SIM._.makePatron(w, opts.name);
     ['wantsBook', 'ownBook', 'chatty', 'pianist', 'outdoor'].forEach(function (k) {
       if (k in opts) p[k] = !!opts[k];
     });
@@ -198,7 +198,7 @@
     if ('progress' in opts) rec.progress = opts.progress;
     if ('stage' in opts) rec.stage = opts.stage;
     if ('pendingBeat' in opts) rec.pendingBeat = opts.pendingBeat;
-    if (window.MEMORY) MEMORY.saveNow();
+    w.context.memory.saveNow();
     return rec;
   };
 
@@ -209,7 +209,7 @@
     const w = world();
     if (!w.memory) { console.warn('[dev] no MEMORY bound to the world'); return null; }
     SIM._.advanceArcs(w, days || 1);
-    if (window.MEMORY) MEMORY.saveNow();
+    w.context.memory.saveNow();
     return w.memory.arcs;
   };
 
@@ -516,7 +516,7 @@
     w.queue = []; w.counterCups = []; w.umbrellaStand = []; w.sleeper = null;
     w.captionQueue = []; w.captionScript = []; w.activeCaption = null;
     w.catBowls = { food: 1, water: 1 };
-    w.memory = { version: MEMORY.VERSION, arcs: {}, bonds: {}, flags: {} };
+    w.memory = { version: MEMORY.VERSION, lastSeen: 0, arcs: {}, bonds: {}, flags: {} };
     CAST.arcs.forEach(function (a) {
       w.memory.arcs[a.id] = { stage: 0, progress: 0, pendingBeat: null };
     });
@@ -1024,10 +1024,11 @@
       }
     });
     if (window.MEMORY) {
-      const mem = MEMORY.state;
-      if (!mem || typeof mem !== 'object') {
+      const mem = w.memory;
+      if (!MEMORY.isRecord(mem)) {
         problems.push('MEMORY.state is missing');
       } else {
+        try { MEMORY.codec.validate(mem); } catch (e) { problems.push('invalid world memory: ' + e.message); }
         if (mem.version !== MEMORY.VERSION) problems.push('MEMORY save version ' + mem.version + ' != current ' + MEMORY.VERSION + ' (the migration ladder should have upgraded it)');
         ['arcs', 'bonds', 'flags'].forEach(function (k) {
           if (!mem[k] || typeof mem[k] !== 'object') problems.push('MEMORY.state.' + k + ' is not an object');
@@ -1226,7 +1227,7 @@
       for (let i = 0; i < stages; i++) {
         w.memory.flags[SIM._.arcFlag(def, i)] = i < rec.stage;
       }
-      if (window.MEMORY) MEMORY.save();
+      w.context.memory.save();
     }, { once: true });
   }
 

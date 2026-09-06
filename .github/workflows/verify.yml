@@ -1,0 +1,14 @@
+name: Save and simulation regressions
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  save-isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node tools/test-save.js

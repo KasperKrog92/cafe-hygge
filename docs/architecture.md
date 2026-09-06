@@ -54,7 +54,7 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
 | `captionQueue[]` / `activeCaption` | ambient narration pipeline (soft cap 2) |
 | `captionScript[]` | a story beat's caption run — drains ahead of `captionQueue`, never dropped by the cap (`captionRun`) |
-| `memory` | the bound `MEMORY.state` save: `{version, lastSeen, arcs, bonds, flags}`. Set by `reconcileNarrative` at the end of `SIM.create` |
+| `memory` | the bound context store (production: `MEMORY.state`): `{version, lastSeen, arcs, bonds, flags}`. Set by `reconcileNarrative` at the end of `SIM.create` |
 | `cat.scarf` | the scarf's hex once Gerda's arc completes (`cat-wore-scarf` flag), else `null`; read by `drawCat` |
 
 ## Frame flow (main.js)
@@ -196,13 +196,16 @@ almost pure **data + state** riding existing primitives — the caption pipeline
 the bubble system, and the one click handler.
 
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
-  `{version, lastSeen, arcs, bonds, flags}`. `MEMORY.load()` parses + migrates +
-  back-fills. Parse failures fall back to a fresh café, but unsupported versions
-  are currently relabelled and array-shaped records are accepted. This is a
-  known gap against the intended save contract; harden it before progression
-  work (see [pre-development audit](predevelopment-audit.md)).
-  `MEMORY.save()` is a debounced write (flushed on `pagehide`/hidden);
-  `MEMORY.reset()`, `MEMORY.stamp()`, and `MEMORY.requestPersist()` round it out.
+  `{version, lastSeen, arcs, bonds, flags}`. `MEMORY.codec` is the pure
+  decode/validate/migrate/encode boundary; only plain records and supported
+  integer versions reach the simulation. The schema is still v1. Each migration
+  must explicitly advance one version; no missing step is skipped.
+  `MEMORY.createStore(options)` separates state and serialization from injected
+  storage, clock, debounce and persistence-request dependencies. Its default is
+  private memory without browser effects; `MEMORY` delegates to the browser
+  adapter. `saveNow()` flushes on `pagehide`/hidden; `status` exposes nonfatal
+  errors, including rejected persistence promises. Invalid/unsupported development
+  saves can be replaced with a fresh café under the owner's current direction.
   Bump `MEMORY.VERSION` **and** add a migration step when the shape changes.
 - **Arc definitions** are pure data in `CAST.arcs` (an `owner` or a fixed
   `anchor`, `rows` café-day threshold — one number or one per `stages` —
@@ -215,11 +218,11 @@ the bubble system, and the one click handler.
   café days into every active arc via `advanceArcs` — **the only growth path**
   (`__dev.age` feeds the same function whole days) — and sets `pendingBeat`
   when progress crosses the stage's `rows`. Saves are quantized to the café
-  hour plus every readied beat.
+  hour plus every readied beat; the accumulator is `world.narrSaveT`.
 - **`reconcileNarrative(world)`** (end of `SIM.create`) binds `world.memory`,
   clamps drift against the current definitions, raises any invitation a
   threshold-touching save is owed, re-applies completed marks (the cat's
-  scarf), then stamps + saves. It adds no elapsed time — a closed café holds
+  scarf), then invokes the context store (production stamps + saves). It adds no elapsed time — a closed café holds
   still.
 - **The invitation** is a persistent bubble over a pending arc's seated owner
   (`pendingInvites` → `entityDrawables`), or at a café-owned arc's fixed
@@ -300,3 +303,16 @@ composition timings. Commands and limits: [art-workflow.md](art-workflow.md).
 The rear coffee cabinet and animated espresso machine share a depth-sorted
 furniture drawable (`SCENE.drawCoffeeStation`, defined in scene-bg.js and
 registered by scene-furniture.js), behind Nora and the serving counter.
+
+## Isolated simulation worlds
+
+`SIM.create()` keeps the production browser services. `SIM.create({})` opts into
+private memory, seeded randomness and silent sound; `memory`, `random` and
+`sound` options inject explicit services. See [development.md](development.md#save-and-private-world-contracts).
+Each world owns its narrative save timer; its context owns patron IDs and the
+random stream. World-first exported helpers and `SIM.update` select a synchronous
+service scope with `finally` restoration, without replacing global randomness
+or audio. Internal helper calls inherit that scope. New world-first exports
+must use `SIM._.bindWorld` when they consume random/audio services.
+`SIM.dislodgeCat(world, patron)` no longer looks up `window.__world`.
+Context services are non-enumerable so detached art clones remain render data.

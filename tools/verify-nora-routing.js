@@ -2,7 +2,7 @@
    Exercises actual walker output, including interrupted chores and service. */
 (function () {
   'use strict';
-  const L = SCENE.L, R = SIM._, original = window.__world, random = Math.random;
+  const L = SCENE.L, R = SIM._, original = window.__world;
   const failures = [], results = [], frames = {};
   let seed = 8137, routes = 0, samples = 0;
   function check(ok, message) { if (!ok && failures.indexOf(message) < 0) failures.push(message); }
@@ -20,9 +20,9 @@
     });
     check(p.x >= 22 && p.x <= L.W - 22 && p.y >= L.wallY && p.y <= 566, label + ': outside floor');
   }
-  Math.random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
+  const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   try {
-    const w = SIM.create(); window.__world = w;
+    const w = SIM.create({ random: random }); window.__world = w;
     const targets = [L.baristaHome, L.doorSpot, L.shop.switchSpot, L.shop.pastry,
       L.noraCare.chalk, L.fire.stand, L.noraCare.mantel, L.catCorner.noraSpot]
       .concat(L.noraCare.water, w.tables.map(function (t, i) { return R.busRoute(w, i).slice(-1)[0]; }),
@@ -53,7 +53,7 @@
     check(!blocked.walkBlocked, 'replacement route remained blocked');
 
     ['water', 'candles', 'fire', 'chalk', 'piano', 'bus', 'bowls'].forEach(function (task) {
-      const world = SIM.create(); window.__world = world;
+      const world = SIM.create({ random: random }); window.__world = world;
       world.patrons = []; world.queue = []; world.counterCups = [];
       world.seats.forEach(function (s) { s.taken = false; });
       world.tables.forEach(function (t) { t.items = []; });
@@ -87,7 +87,7 @@
       results.push({ task: task, states: states });
     });
     window.noraFrames = frames;
-  } finally { window.__world = original; Math.random = random; }
+  } finally { window.__world = original; }
   const report = { routes: routes, samples: samples, chores: results, failures: failures };
   if (failures.length) throw new Error(JSON.stringify(report));
   return report;

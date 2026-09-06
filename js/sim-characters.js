@@ -4,6 +4,7 @@
 
   const SIM = window.SIM;
   const R = SIM._;
+  const SND = R.sound;
   const L = R.L;
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
   const caption = R.caption, captionRun = R.captionRun, walker = R.walker, spawnSteam = R.spawnSteam;
@@ -70,11 +71,11 @@
       case 'scoop': SND.clink(0.4, 0.02); break;
       case 'whisk':
         SND.whisk(s.dur);
-        if (Math.random() < 0.3) caption(world, 'the bamboo whisk patters — a pale green foam comes up.');
+        if (R.random() < 0.3) caption(world, 'the bamboo whisk patters — a pale green foam comes up.');
         break;
       case 'ice':
         SND.iceRattle();
-        if (Math.random() < 0.25) caption(world, 'ice sings against the glass.');
+        if (R.random() < 0.25) caption(world, 'ice sings against the glass.');
         break;
       case 'fetch': break;
     }
@@ -143,7 +144,7 @@
           world.steamAcc += dt;
           while (world.steamAcc >= 0.12) {
             world.steamAcc -= 0.12;
-            spawnSteam(world, L.machine.x + 16 + Math.random() * 28, L.machine.y + 16);
+            spawnSteam(world, L.machine.x + 16 + R.random() * 28, L.machine.y + 16);
           }
         } else if (s.act === 'whisk') {
           world.steamAcc += dt;
@@ -174,7 +175,7 @@
           b.holding = null;
           SND.cupDown();
           SND.ding();
-          if (Math.random() < 0.6) caption(world, 'Nora sets ' + withArticle(order.drink.name) + ' on the counter.');
+          if (R.random() < 0.6) caption(world, 'Nora sets ' + withArticle(order.drink.name) + ' on the counter.');
           b.state = 'idle';
           b.idleT = rnd(4, 9);
         }
@@ -256,7 +257,7 @@
         const ticks = [0.35, 1.2, 2.15];
         if (b.chalkPlayed < ticks.length && b.stateT >= ticks[b.chalkPlayed]) {
           b.chalkPlayed++;
-          if (b.chalkPlayed < 3 || Math.random() < 0.65) SND.chalkTick();
+          if (b.chalkPlayed < 3 || R.random() < 0.65) SND.chalkTick();
         }
         if (b.stateT >= 3) {
           const doodle = nextMenuDoodle(world);
@@ -264,7 +265,7 @@
           b.chalkT = rnd(600, 1200);
           b.pose = 'stand'; b.state = 'chalkHome';
           b.path = [{ x: b.x, y: L.baristaHome.y }, { x: L.baristaHome.x, y: L.baristaHome.y }];
-          if (Math.random() < 0.3) caption(world, chalkCaption(doodle));
+          if (R.random() < 0.3) caption(world, chalkCaption(doodle));
         }
         break;
       }
@@ -382,7 +383,7 @@
           if (!b.firePlaced) {
             b.firePlaced = true; b.holding = null; b.pose = 'reach';
             addLog(world);
-            if (Math.random() < 0.6) caption(world, pick([
+            if (R.random() < 0.6) caption(world, pick([
               'Nora lays a fresh log on the fire; it catches and climbs.',
               'Nora feeds the fire a new log — the flames wake up.'
             ]));
@@ -419,7 +420,7 @@
             t.nextPickT = b.stateT + 0.55;
           } else {
             SND.swish();
-            if (t.count > 1 && Math.random() < 0.3) caption(world, 'Nora gathers the empties in one practiced armful.');
+            if (t.count > 1 && R.random() < 0.3) caption(world, 'Nora gathers the empties in one practiced armful.');
             b.state = 'busHome';
             // back behind the counter: the outbound route reversed, then home
             b.path = busRoute(world, t.table).slice(0, -1).reverse();
@@ -452,8 +453,8 @@
         if (b.stateT > 1.6) {
           b.refillKinds.forEach(function (kind) { world.catBowls[kind] = 1; });
           b.holding = null;
-          if (Math.random() < 0.5) caption(world, 'Nora tops up the cat\'s bowl.');
-          if (world.cat.waitingBowl && Math.random() < 0.25) caption(world, 'The cat supervises the refill closely.');
+          if (R.random() < 0.5) caption(world, 'Nora tops up the cat\'s bowl.');
+          if (world.cat.waitingBowl && R.random() < 0.25) caption(world, 'The cat supervises the refill closely.');
           b.state = 'refillHome'; b.stateT = 0;
           b.path = refillRoute().slice(0, -1).reverse();
           b.path.push({ x: L.baristaHome.x, y: L.baristaHome.y });
@@ -688,7 +689,7 @@
 
   function startStretch(world, b) {
     b.state = 'stretch'; b.stateT = 0; b.pose = 'stretch';
-    if (Math.random() < 0.3) caption(world, pick([
+    if (R.random() < 0.3) caption(world, pick([
       'The café is empty; Nora stretches, unhurried.',
       'Nora stretches — the cat pretends it wasn\'t watching.'
     ]));
@@ -703,7 +704,7 @@
   function startWater(world, b) {
     b.state = 'waterOut'; b.stateT = 0; b.waterStop = b.waterNext || 0; b.holding = 'can';
     b.path = waterFromHome(b.waterStop);
-    if (!b.waterNext && Math.random() < 0.4) caption(world, pick([
+    if (!b.waterNext && R.random() < 0.4) caption(world, pick([
       'Nora makes the rounds with the watering can.',
       'The plants get their morning drink.'
     ]));
@@ -717,7 +718,7 @@
     b.path = candleLeg(world, null, stop);
     if (!b.candleCaptioned) {
       b.candleCaptioned = true;
-      if (Math.random() < 0.6) caption(world, pick([
+      if (R.random() < 0.6) caption(world, pick([
         'Nora goes round with a lit taper; the tables glow one by one.',
         'Dusk. Nora lights the candles.'
       ]));
@@ -728,14 +729,14 @@
     world.fire.claimed = true;
     b.state = 'fireOut'; b.stateT = 0; b.holding = null; b.pose = 'stand';
     b.path = fireTendRoute();
-    if (Math.random() < 0.4) caption(world, 'Nora crosses to feed the fire.');
+    if (R.random() < 0.4) caption(world, 'Nora crosses to feed the fire.');
   }
 
   function startPiano(world, b) {
     b.state = 'pianoOut'; b.stateT = 0; b.pose = 'stand'; b.playing = false;
     b.pianoDur = rnd(60, 120); b.path = pianoRoute();
     world.noraPianoNextT = world.t + rnd(600, 1200);
-    if (Math.random() < 0.7) caption(world, 'The café is empty; Nora plays a little.');
+    if (R.random() < 0.7) caption(world, 'The café is empty; Nora plays a little.');
   }
 
   function startIdleTask(world, b) {
@@ -757,7 +758,7 @@
         b.busTarget = { table: ti, item: it };
         b.state = 'busOut'; b.stateT = 0;
         b.path = busRoute(world, ti);
-        if (Math.random() < 0.5) caption(world, 'Nora slips out to clear a table.');
+        if (R.random() < 0.5) caption(world, 'Nora slips out to clear a table.');
         return;
       }
     }
@@ -779,23 +780,23 @@
     // (a fireside regular gets first refusal — see sim-patrons). Never urgent.
     if (world.fire.wantsLog && !world.fire.claimed) { startFireTend(world, b); return; }
     if (!world.patrons.length && world.daylight < 0.35 && b.emptyT > 30 &&
-        world.t >= world.noraPianoNextT && Math.random() < 0.25) {
+        world.t >= world.noraPianoNextT && R.random() < 0.25) {
       startPiano(world, b); return;
     }
-    if (b.emptyT > 20 && Math.random() < 0.3) { startStretch(world, b); return; }
-    if (b.chalkT <= 0 && Math.random() < 0.35) { startChalk(b); return; }
-    const r = Math.random();
+    if (b.emptyT > 20 && R.random() < 0.3) { startStretch(world, b); return; }
+    if (b.chalkT <= 0 && R.random() < 0.35) { startChalk(b); return; }
+    const r = R.random();
     if (r < 0.35) {
       b.state = 'wipe'; b.stateT = 0; b.swishes = 0;
       b.path = [{ x: rnd(660, 780), y: L.baristaHome.y }];
-      if (Math.random() < 0.2) caption(world, 'Nora wipes down the counter.');
+      if (R.random() < 0.2) caption(world, 'Nora wipes down the counter.');
     } else if (r < 0.57) {
       b.state = 'polish'; b.stateT = 0; b.heading = '';   // profile keeps the cup readable
-      if (Math.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
+      if (R.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
     } else if (r < 0.75) {
       b.state = 'restock'; b.stateT = 0;
       b.path = [{ x: 858, y: L.baristaHome.y }];
-      if (Math.random() < 0.25) caption(world, 'Nora tidies the pastry case.');
+      if (R.random() < 0.25) caption(world, 'Nora tidies the pastry case.');
     }
     // otherwise just stand a while, watching the room
   }
@@ -914,7 +915,7 @@
     });
     let total = 0;
     all.forEach(function (s) { total += spotWeight(world, cat, s); });
-    let r = Math.random() * total;
+    let r = R.random() * total;
     for (const s of all) {
       r -= spotWeight(world, cat, s);
       if (r <= 0) return s;
@@ -929,14 +930,14 @@
 
   function settleOnFloor(world, cat) {
     const kneadable = cat.target && ['fire', 'bigRug', 'nookRug', 'cushion'].indexOf(cat.target.id) >= 0;
-    if (kneadable && Math.random() < 0.3) {
+    if (kneadable && R.random() < 0.3) {
       cat.state = 'knead'; cat.stateT = rnd(2.5, 4); cat.kneadPlayed = false;
       return;
     }
-    const r = Math.random();
+    const r = R.random();
     cat.state = r < 0.5 ? 'sleep' : r < 0.8 ? 'loaf' : 'sit';
     cat.stateT = cat.state === 'sleep' ? restTime(world, 40, 100) : restTime(world, 10, 25);
-    if (cat.state === 'sleep' && cat.target && cat.target.id === 'fire' && Math.random() < 0.5) {
+    if (cat.state === 'sleep' && cat.target && cat.target.id === 'fire' && R.random() < 0.5) {
       caption(world, 'The cat curls up in the warmth of the fire.');
     }
   }
@@ -961,26 +962,26 @@
     const after = cat.hopAfter || { intent: 'down' };
     cat.hopQueue = null; cat.hopAfter = null; cat.hopPurpose = '';
     if (after.intent === 'window') {
-      cat.state = Math.random() < 0.3 ? 'sleep' : 'perch';
+      cat.state = R.random() < 0.3 ? 'sleep' : 'perch';
       cat.stateT = rnd(60, 180); cat.facing = -1;
-      if (Math.random() < 0.4) {
+      if (R.random() < 0.4) {
         caption(world, world.rain > 0.3 ? 'The cat watches the rain wander down the glass.'
           : world.daylight < 0.3 ? 'The cat and the streetlamp keep watch together.'
           : 'The cat watches the street drift by.');
       }
     } else if (after.intent === 'bookshelf') {
-      cat.state = Math.random() < 0.45 ? 'sleep' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
-      if (Math.random() < 0.5) caption(world, 'The cat surveys the café from the bookshelf. All is well.');
+      cat.state = R.random() < 0.45 ? 'sleep' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
+      if (R.random() < 0.5) caption(world, 'The cat surveys the café from the bookshelf. All is well.');
     } else if (after.intent === 'counter') {
       cat.intent = 'counterPad';
       cat.state = 'walk';
       cat.path = [{ x: Math.round(rnd(CP.counter.padX0, CP.counter.padX1)), y: CP.counter.anchor.y }];
       cat.facing = -1;
     } else if (after.intent === 'topShelf') {
-      cat.state = Math.random() < 0.5 ? 'loaf' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
-      if (Math.random() < 0.45) caption(world, 'Nora pretends not to see the cat on the shelf.');
+      cat.state = R.random() < 0.5 ? 'loaf' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
+      if (R.random() < 0.45) caption(world, 'Nora pretends not to see the cat on the shelf.');
     } else if (after.intent === 'piano') {
-      const r = Math.random();
+      const r = R.random();
       cat.state = r < 0.55 ? 'loaf' : r < 0.8 ? 'sit' : 'sleep';
       cat.stateT = rnd(60, 180); cat.facing = 1;
     } else if (after.intent === 'lap') {
@@ -1007,7 +1008,7 @@
     if (step.land) SND.softThump();
     if (cat.hopPurpose === 'piano' && step.surface === 'pianoKeys') {
       SND.pianoPlinks();
-      if (Math.random() < 0.5) caption(world, 'The cat pads up the keys and claims the piano lid.');
+      if (R.random() < 0.5) caption(world, 'The cat pads up the keys and claims the piano lid.');
     }
     if (cat.hopPurpose === 'topShelf' && cat.ascentMayAbort && step.surface === 'counter' && world.barista.state === 'idle') {
       cat.hopQueue = null; cat.hopAfter = null; cat.hopPurpose = ''; cat.state = 'sit';
@@ -1035,8 +1036,8 @@
     if (empty) {
       cat.state = 'sit'; cat.stateT = rnd(60, 120); cat.waitingBowl = kind; cat.facing = 1;
       cat.retryNeedT = cat.stateT;
-      if (Math.random() < 0.7) caption(world, 'The cat sits by the empty bowl, radiating patience.');
-      if (Math.random() < 0.35) SND.meow();
+      if (R.random() < 0.7) caption(world, 'The cat sits by the empty bowl, radiating patience.');
+      if (R.random() < 0.35) SND.meow();
       return;
     }
     cat.waitingBowl = '';
@@ -1077,7 +1078,7 @@
       return;
     }
     if (cat.intent === 'topShelf') {
-      cat.ascentMayAbort = Math.random() < 0.3;
+      cat.ascentMayAbort = R.random() < 0.3;
       beginHopQueue(cat, [
         { x: CP.topShelf.counter.x, y: CP.topShelf.counter.y, surface: 'counter' },
         { x: CP.topShelf.machine.x, y: CP.topShelf.machine.y, surface: 'machine' },
@@ -1158,8 +1159,8 @@
     cat.state = 'pounce'; cat.pounceDur = rnd(3, 6); cat.stateT = cat.pounceDur;
     cat.pounceBase = { x: cat.x, y: cat.y };
     world.particles.push({ type: 'mote', x: cat.x + cat.facing * 16, y: cat.y - 20,
-      vx: cat.facing * 2, vy: -1.5, age: 0, life: cat.pounceDur, seed: Math.random() * 5 });
-    caption(world, Math.random() < 0.5 ? 'The cat does battle with a dust mote.' : 'The dust mote wins this round.');
+      vx: cat.facing * 2, vy: -1.5, age: 0, life: cat.pounceDur, seed: R.random() * 5 });
+    caption(world, R.random() < 0.5 ? 'The cat does battle with a dust mote.' : 'The dust mote wins this round.');
   }
 
   function startNextJourney(world, cat) {
@@ -1179,11 +1180,11 @@
       cat.moteT = rnd(180, 420); startPounce(world, cat); return;
     }
     const lap = findLapPatron(world);
-    if (lap && Math.random() < 0.15) { startLap(cat, lap); return; }
+    if (lap && R.random() < 0.15) { startLap(cat, lap); return; }
     const spot = pickCatSpot(world, cat);
     startTravel(cat, spot, spot.kind === 'perch' ? spot.id : 'floor');
-    if (Math.random() < 0.6) caption(world, 'The cat pads over to ' + spot.name + '.');
-    if (Math.random() < 0.15) SND.meow();
+    if (R.random() < 0.6) caption(world, 'The cat pads over to ' + spot.name + '.');
+    if (R.random() < 0.15) SND.meow();
   }
 
   function forceCat(world, cat, action) {
@@ -1250,7 +1251,7 @@
         if (cat.state === 'eat') {
           world.catBowls.food = Math.max(0, world.catBowls.food - 0.34);
           cat.hungerT = rnd(420, 720); cat.foodComaT = 150;
-          if (Math.random() < 0.8) { startNeed(cat, 'drink'); return; }
+          if (R.random() < 0.8) { startNeed(cat, 'drink'); return; }
         } else {
           world.catBowls.water = Math.max(0, world.catBowls.water - 0.2);
           cat.thirstT = rnd(500, 800);
@@ -1277,12 +1278,12 @@
         cat.purrT = cat.state === 'lap' ? rnd(7, 16) : rnd(10, 25);
         SND.purr(rnd(1.8, 3));
       }
-      if (Math.random() < dt * 0.06) cat.bubble = { icon: 'zzz', until: world.t + 2.6 };
+      if (R.random() < dt * 0.06) cat.bubble = { icon: 'zzz', until: world.t + 2.6 };
     }
     if (cat.state === 'knead' && !cat.kneadPlayed) {
       cat.kneadPlayed = true;
       SND.purr(2.4);
-      if (Math.random() < 0.3) caption(world, 'The cat kneads the rug into shape.');
+      if (R.random() < 0.3) caption(world, 'The cat kneads the rug into shape.');
     }
 
     updateCatGaze(world, cat, dt);
@@ -1317,19 +1318,19 @@
     switch (cat.state) {
       case 'sleep': cat.state = 'sit'; cat.stateT = restTime(world, 5, 12); break;
       case 'sit': {
-        const r = Math.random();
+        const r = R.random();
         if (r < 0.3) { cat.state = 'groom'; cat.stateT = rnd(3, 6); }
         else if (r < 0.5) { cat.state = 'sleep'; cat.stateT = restTime(world, 35, 90); }
         else { cat.state = 'stretch'; cat.stateT = 1.6; }
         break;
       }
       case 'groom':
-        cat.state = Math.random() < 0.5 ? 'sit' : 'sleep';
+        cat.state = R.random() < 0.5 ? 'sit' : 'sleep';
         cat.stateT = cat.state === 'sleep' ? restTime(world, 35, 90) : restTime(world, 4, 9);
         break;
       case 'stretch': startNextJourney(world, cat); break;
       case 'loaf':
-        cat.state = Math.random() < 0.6 ? 'sleep' : 'sit';
+        cat.state = R.random() < 0.6 ? 'sleep' : 'sit';
         cat.stateT = cat.state === 'sleep' ? restTime(world, 35, 90) : restTime(world, 5, 12);
         break;
       case 'knead':
@@ -1418,7 +1419,7 @@
     if (rec.stage < arcStages(arc)) rec.progress = 0;   // the next stage starts fresh
     world.memory.flags[lastingFlag] = true;
     if (arc.owner) bumpBond(world, arc.owner);
-    if (window.MEMORY) MEMORY.save();
+    world.context.memory.save();
   }
 
   /* The general tap hit-test the single canvas click handler grows
@@ -1462,16 +1463,15 @@
     if (cat.state === 'walk' || cat.state === 'hop' || cat.state === 'pounce') return;
     cat.bubble = { icon: 'heart', until: world.t + 2.2 };
     if (cat.state === 'sleep' && cat.surface !== 'lap') { cat.state = 'sit'; cat.stateT = rnd(6, 12); }
-    if (Math.random() < 0.4) SND.meow(); else SND.purr(2);
+    if (R.random() < 0.4) SND.meow(); else SND.purr(2);
     caption(world, 'The cat purrs happily.');
   };
 
-  SIM.dislodgeCat = function (patron) {
-    const world = window.__world;
+  SIM.dislodgeCat = function (world, patron) {
     if (!world || world.cat.lapPatron !== patron) return;
     patron.lapCat = false;
     world.cat.lapPatron = null;
-    if (Math.random() < 0.4) caption(world, 'The cat is gently returned to the floor.');
+    if (R.random() < 0.4) caption(world, 'The cat is gently returned to the floor.');
     leavePerch(world, world.cat);
   };
 
@@ -1745,4 +1745,16 @@
   R.catRoute = catRoute;
   R.catSpots = CAT_SPOTS;
   R.catPerches = WINDOW_SPOTS.concat([BOOK_SPOT, PIANO_SPOT]);
+
+  // World-first public/debug entry points also select the private services.
+  R.updateBarista = R.bindWorld(R.updateBarista);
+  R.shopRoute = R.bindWorld(R.shopRoute);
+  R.updateCat = R.bindWorld(R.updateCat);
+  R.busRoute = R.bindWorld(R.busRoute);
+  R.candleRoute = R.bindWorld(R.candleRoute);
+  SIM.beatAt = R.bindWorld(SIM.beatAt);
+  SIM.petCat = R.bindWorld(SIM.petCat);
+  SIM.dislodgeCat = R.bindWorld(SIM.dislodgeCat);
+  SIM.update = R.bindWorld(SIM.update);
+  SIM.entityDrawables = R.bindWorld(SIM.entityDrawables);
 })();

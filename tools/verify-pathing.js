@@ -1,6 +1,6 @@
 /* Evaluate in a disposable ?dev browser. Independent sampled collision checks. */
 (function () {
-  const L = SCENE.L, R = SIM._, w = SIM.create(), failures = [];
+  const L = SCENE.L, R = SIM._, w = SIM.create({}), failures = [];
   const stops = w.seats.concat([L.doorSpot, L.orderSpot, L.pickupSpot,
     L.returnSpot, L.library.browseSpot, L.fire.stand, L.artist.watch, L.umbrellaSpot]);
   for (let i = 0; i < 6; i++) stops.push(R.queueSlot(i), R.waitSpot(i));

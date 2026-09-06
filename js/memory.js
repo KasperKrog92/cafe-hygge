@@ -1,126 +1,147 @@
-/* Café Hygge — MEMORY: the café's persistent, cross-visit memory.
-
-   The narrative layer's keystone (docs/narrative.md §4). Mirrors SND.save()'s
-   proven localStorage pattern: a single versioned JSON blob under
-   `cafe-hygge-save` holding story arcs, bonds, and flags, plus a real-time
-   `lastSeen` visit stamp (metadata — arcs ride the café's own clock, not the
-   calendar; docs/narrative.md §3). Zero dependencies, loaded before sim-core
-   so world creation can reconcile against it.
-
-   Non-negotiables (docs/narrative.md §4):
-   - Versioned, with a forward migration ladder — an old save is upgraded
-     field-by-field, never dropped; a returning reader is never bricked by a
-     code update. This is the single most important discipline in the layer.
-   - Graceful fallback is a hard rule — a missing, unparseable, or wrong-shaped
-     save always opens a FRESH café, never an error, never a "save not found".
-     Data loss degrades to day zero, which is still a complete experience.
-   - localStorage's limits are acknowledged, not fought (per-browser, cleared
-     with site data, ~7-day purge on Safari/iOS). A lost save is a fresh café.
-
-   This file guards the save's *shape*; the *semantic* reconcile against the arc
-   and regular definitions (clamping a stage past its arc, dropping an arc that
-   names a renamed regular, raising an invitation a threshold-touching save is
-   owed) happens at world creation in sim-core. The dev audit checks both. */
+/* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-
+  const KEY = 'cafe-hygge-save', VERSION = 1;
   const MEMORY = (window.MEMORY = {});
-  const KEY = 'cafe-hygge-save';
-  const VERSION = 1;
-  MEMORY.VERSION = VERSION;
-
-  /* Date is available in the app — the ban on Date.now() is a Workflow-
-     scripting constraint, not an app one. Real calendar time stamps `lastSeen`
-     and dates bond continuity; arc pacing rides the café's in-world day
-     (updateNarrative in sim-core — narrative.md §3). */
-  function nowMs() { return Date.now(); }
-  MEMORY.now = nowMs;
-
-  function fresh() {
-    return { version: VERSION, lastSeen: nowMs(), arcs: {}, bonds: {}, flags: {} };
+  const own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
+  function record(o) {
+    return !!o && typeof o === 'object' &&
+      (Object.getPrototypeOf(o) === Object.prototype || Object.getPrototypeOf(o) === null);
   }
+  function finite(n) { return typeof n === 'number' && Number.isFinite(n); }
+  function integer(n) { return finite(n) && Math.floor(n) === n; }
+  function requireShape(ok, message) { if (!ok) throw new Error(message); }
 
-  /* The migration ladder. Each step upgrades a save exactly one version
-     forward; the loader runs every step from the save's version up to the
-     current VERSION, so a save written by any past build lands on today's
-     shape. When the schema changes: add a step here (never edit an old one) and
-     bump VERSION. Field back-filling below covers a save that merely predates a
-     field, so most additive changes need no dedicated step. */
-  const MIGRATIONS = {
-    // 1: function (s) { /* upgrade a v1 save to v2 */ return s; }
-  };
-
-  function migrate(raw) {
-    if (!raw || typeof raw !== 'object') return fresh();
-    let s = raw;
-    let v = typeof s.version === 'number' ? s.version : 0;
-    while (v < VERSION && MIGRATIONS[v]) { s = MIGRATIONS[v](s) || s; v++; }
-    s.version = VERSION;
-    // back-fill any missing top-level shape so a partial/old save loads whole
-    if (typeof s.lastSeen !== 'number') s.lastSeen = nowMs();
-    if (!s.arcs || typeof s.arcs !== 'object') s.arcs = {};
-    if (!s.bonds || typeof s.bonds !== 'object') s.bonds = {};
-    if (!s.flags || typeof s.flags !== 'object') s.flags = {};
-    return s;
-  }
-
-  MEMORY.load = function () {
-    let s;
-    try {
-      const raw = localStorage.getItem(KEY);
-      s = raw ? migrate(JSON.parse(raw)) : fresh();
-    } catch (e) {
-      s = fresh();   // corrupt / unparseable / storage blocked → a fresh café
+  // A step consumes version n and must explicitly return version n+1. Add a
+  // step and bump VERSION together when the shipped schema actually changes.
+  function createCodec(version, migrations) {
+    function fresh() { return { version: version, lastSeen: 0, arcs: {}, bonds: {}, flags: {} }; }
+    function validate(s) {
+      requireShape(record(s) && s.version === version, 'unsupported save version');
+      requireShape(finite(s.lastSeen) && s.lastSeen >= 0, 'invalid lastSeen');
+      ['arcs', 'bonds', 'flags'].forEach(function (key) {
+        requireShape(record(s[key]), 'invalid ' + key + ' record');
+      });
+      Object.keys(s.arcs).forEach(function (id) {
+        const r = s.arcs[id];
+        requireShape(record(r), 'invalid arc record: ' + id);
+        requireShape(integer(r.stage) && r.stage >= 0, 'invalid arc stage: ' + id);
+        requireShape(finite(r.progress) && r.progress >= 0, 'invalid arc progress: ' + id);
+        requireShape(r.pendingBeat === null || r.pendingBeat === 'finished', 'invalid pending beat: ' + id);
+      });
+      Object.keys(s.bonds).forEach(function (id) {
+        const b = s.bonds[id];
+        requireShape(record(b), 'invalid bond record: ' + id);
+        if (own(b, 'known')) requireShape(typeof b.known === 'boolean', 'invalid bond known');
+        if (own(b, 'warmth')) requireShape(finite(b.warmth) && b.warmth >= 0, 'invalid bond warmth');
+        if (own(b, 'visits')) requireShape(integer(b.visits) && b.visits >= 0, 'invalid bond visits');
+        if (own(b, 'lastDay')) requireShape(integer(b.lastDay) && b.lastDay >= -1, 'invalid bond day');
+      });
+      Object.keys(s.flags).forEach(function (id) {
+        requireShape(typeof s.flags[id] === 'boolean', 'invalid flag: ' + id);
+      });
+      return s;
     }
-    MEMORY.state = s;
-    return s;
-  };
-
-  let saveT = null;
-  function writeNow() {
-    saveT = null;
-    try { localStorage.setItem(KEY, JSON.stringify(MEMORY.state)); } catch (e) {}
+    function migrate(input) {
+      requireShape(record(input), 'invalid save root');
+      requireShape(integer(input.version) && input.version >= 0 && input.version <= version,
+        'unsupported save version');
+      // Validate before JSON cloning: JSON would disguise NaN/Infinity as null.
+      let s = input;
+      if (s.version === version) validate(s);
+      s = JSON.parse(JSON.stringify(s));
+      while (s.version < version) {
+        const v = s.version;
+        requireShape(own(migrations, v) && typeof migrations[v] === 'function', 'missing migration: ' + v);
+        s = migrations[v](s);
+        requireShape(record(s) && s.version === v + 1, 'invalid migration result: ' + v);
+      }
+      return validate(s);
+    }
+    function decode(raw) {
+      if (raw === null || raw === undefined) return { state: fresh(), error: null };
+      try { return { state: migrate(JSON.parse(raw)), error: null }; }
+      catch (e) { return { state: fresh(), error: String(e.message || e) }; }
+    }
+    function encode(s) { validate(s); return JSON.stringify(s); }
+    return { fresh: fresh, validate: validate, migrate: migrate, decode: decode, encode: encode };
   }
+  const codec = createCodec(VERSION, {});
+  MEMORY.VERSION = VERSION;
+  MEMORY.codec = codec;
+  MEMORY.createCodec = createCodec;
+  MEMORY.isRecord = record;
 
-  // debounced write (coalesces the boot reconcile's stamp + progress into one
-  // put), same try/catch guard as SND.save(). Narrative state changes are rare,
-  // so a short debounce never risks a dropped beat — and hidden/pagehide flush
-  // below covers a reader who closes the tab the instant they tap.
-  MEMORY.save = function () {
-    if (saveT) return;
-    saveT = setTimeout(writeNow, 400);
+  // Without a storage adapter this is private in-memory state: no timers,
+  // stamps, writes, browser globals or persistence prompts. Useful for tests.
+  MEMORY.createStore = function (options) {
+    const o = options || {}, storage = o.storage;
+    const now = o.now || function () { return 0; };
+    const schedule = o.schedule || setTimeout, cancel = o.cancel || clearTimeout;
+    let timer = null;
+    const store = { state: codec.fresh(), now: now,
+      status: { loadError: null, writeError: null, persistError: null, persisted: null } };
+    function cancelPending() { if (timer !== null) { cancel(timer); timer = null; } }
+    store.load = function () {
+      cancelPending();
+      let result;
+      try { result = codec.decode(storage ? storage.getItem(KEY) : null); }
+      catch (e) { result = { state: codec.fresh(), error: String(e.message || e) }; }
+      store.state = result.state;
+      store.status.loadError = result.error;
+      return store.state;
+    };
+    store.saveNow = function () {
+      cancelPending();
+      if (!storage) return;
+      try { storage.setItem(KEY, codec.encode(store.state)); store.status.writeError = null; }
+      catch (e) { store.status.writeError = String(e.message || e); }
+    };
+    store.save = function () {
+      if (storage && timer === null) timer = schedule(store.saveNow, 400);
+    };
+    store.stamp = function () { if (storage) store.state.lastSeen = now(); };
+    store.requestPersist = function () {
+      if (!o.persist) return;
+      try {
+        Promise.resolve(o.persist()).then(function (granted) {
+          store.status.persisted = !!granted;
+          store.status.persistError = null;
+        }, function (e) { store.status.persistError = String(e.message || e); });
+      } catch (e) { store.status.persistError = String(e.message || e); }
+    };
+    store.reset = function () {
+      cancelPending();
+      try { if (storage) storage.removeItem(KEY); store.status.writeError = null; }
+      catch (e) { store.status.writeError = String(e.message || e); }
+      store.state = codec.fresh();
+      return store.state;
+    };
+    if (own(o, 'state')) store.state = codec.migrate(o.state);
+    else store.load();
+    return store;
   };
-  MEMORY.saveNow = function () {
-    if (saveT) { clearTimeout(saveT); saveT = null; }
-    writeNow();
-  };
 
-  MEMORY.reset = function () {
-    try { localStorage.removeItem(KEY); } catch (e) {}
-    MEMORY.state = fresh();
-    return MEMORY.state;
-  };
-
-  MEMORY.stamp = function () { MEMORY.state.lastSeen = nowMs(); };
-
-  /* Ask the browser to exempt this origin from disk-pressure eviction — cheap,
-     strictly better, fire-and-forget. Firefox prompts, Chrome often grants
-     silently; it does not beat Safari's ~7-day cap (roadmap.md → Save
-     durability). Called once on boot. */
-  MEMORY.requestPersist = function () {
-    try {
-      if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
-    } catch (e) {}
-  };
-
-  // flush a pending debounced write when the reader leaves, so a beat tapped
-  // and immediately abandoned is never lost
-  try {
-    window.addEventListener('pagehide', MEMORY.saveNow);
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) MEMORY.saveNow();
+  const browser = MEMORY.createStore({
+    now: function () { return Date.now(); },
+    storage: {
+      getItem: function (key) { return localStorage.getItem(key); },
+      setItem: function (key, value) { localStorage.setItem(key, value); },
+      removeItem: function (key) { localStorage.removeItem(key); }
+    },
+    persist: function () {
+      if (navigator.storage && navigator.storage.persist) return navigator.storage.persist();
+      return false;
+    }
+  });
+  Object.keys(browser).forEach(function (key) {
+    Object.defineProperty(MEMORY, key, {
+      enumerable: true, get: function () { return browser[key]; },
+      set: function (value) { browser[key] = value; }
     });
-  } catch (e) {}
-
-  MEMORY.load();
+  });
+  window.addEventListener('pagehide', browser.saveNow);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) browser.saveNow();
+  });
 })();

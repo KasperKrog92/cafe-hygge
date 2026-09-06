@@ -49,9 +49,9 @@
     diningTable:   function (s) { return !s.armchair && !s.nook && !s.window && !s.piano && !s.artist && s.table >= 0; }
   };
 
-  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function rnd(a, b) { return a + random() * (b - a); }
   function withArticle(name) { return (/^[aeiou]/i.test(name) ? 'an ' : 'a ') + name; }
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function pick(arr) { return arr[Math.floor(random() * arr.length)]; }
   /* A regular's own line from a spec pool, or a generic fallback when that
      regular has no bespoke pool for the moment. Keeps the continuity captions
      (settle, patient-look, openers) data-driven with a graceful default. */
@@ -68,17 +68,66 @@
   function pickDrink() {
     let total = 0;
     DRINKS.forEach(function (d) { total += d.w; });
-    let r = Math.random() * total;
+    let r = random() * total;
     for (const d of DRINKS) { r -= d.w; if (r <= 0) return d; }
     return DRINKS[0];
   }
 
-  let nextId = 1;
+  // Synchronous simulation calls carry their own services. This scope never
+  // replaces window.SND or Math.random; nested calls restore it even on errors.
+  let activeContext = null;
+  const productionContext = { memory: MEMORY, random: function () { return Math.random(); },
+    sound: window.SND, nextId: 1 };
+  function random() { return (activeContext || productionContext).random(); }
+  function withContext(context, fn, receiver, args) {
+    const previous = activeContext;
+    activeContext = context;
+    try { return fn.apply(receiver, args || []); }
+    finally { activeContext = previous; }
+  }
+  function bindWorld(fn) {
+    return function (world) {
+      return withContext(world.context || activeContext || productionContext, fn, this, arguments);
+    };
+  }
+  SIM.withWorld = function (world, fn) { return withContext(world.context, fn); };
+  SIM.seededRandom = function (seed) {
+    return function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
+  };
+  function silentSound() {
+    const sound = { settings: { rain: true } };
+    Object.keys(window.SND).forEach(function (key) {
+      if (typeof window.SND[key] === 'function') sound[key] = function () {};
+    });
+    let piano = false;
+    sound.pianoStart = function () { piano = true; };
+    sound.pianoStop = function () { piano = false; };
+    sound.pianoActive = function () { return piano; };
+    return sound;
+  }
+  // Existing sound call sites stay readable, but resolve only this world's bus.
+  const SND = {};
+  Object.keys(window.SND).forEach(function (key) {
+    Object.defineProperty(SND, key, { get: function () {
+      const sound = (activeContext || productionContext).sound;
+      return typeof sound[key] === 'function' ? sound[key].bind(sound) : sound[key];
+    } });
+  });
 
   /* ---------- world ---------- */
 
-  SIM.create = function () {
+  SIM.create = function (options) {
+    // No options is the shipped browser boot. Supplying options opts into a
+    // private world unless a caller explicitly supplies a persistence store.
+    const o = options || {};
+    const context = options ? { memory: o.memory || MEMORY.createStore(),
+      random: o.random || SIM.seededRandom(1), sound: o.sound || silentSound(), nextId: 1 } : productionContext;
+    return withContext(context, function () { return createWorld(context); });
+  };
+
+  function createWorld(context) {
     const world = {
+      narrSaveT: 0,
       t: 0,
       clockOffset: 0, // skip the sleeping hours without aging simulation timers or stories
       shop: { phase: 'open', elapsed: 0, step: 0, task: null, fade: 0, lastCall: false,
@@ -146,6 +195,9 @@
       // what it eases toward (a log sets it to 1). See updateFire / addLog.
       fire: { level: 0.85, target: 0.85, wantsLog: false, claimed: false, graceT: 0 }
     };
+
+    // Runtime services are not save/render data; detached art clones omit them.
+    Object.defineProperty(world, 'context', { value: context });
 
     // seats: two stools per table + the fireside armchairs + the nook chairs
     // (each nook chair pairs with its own side table for the sitter's drink);
@@ -220,12 +272,12 @@
     if (holger) seedRegular(world, holger);
 
     return world;
-  };
+  }
 
   function seedPatron(world, seatIdx) {
-    const p = makePatron();
+    const p = makePatron(world);
     const seat = world.seats[seatIdx];
-    p.laptop = !p.wantsBook && Math.random() < 0.16;
+    p.laptop = !p.wantsBook && random() < 0.16;
     seat.taken = true;
     p.seat = seat;
     p.x = seat.x; p.y = seat.y;
@@ -288,29 +340,29 @@
     return p;
   }
 
-  function makePatron(requestedName) {
+  function makePatron(world, requestedName) {
     const drink = pickDrink();
-    const wantsBook = Math.random() < 0.35;
-    const pianist = !wantsBook && Math.random() < 0.1;
-    const nameStyle = requestedName ? nameStyleFor(requestedName) : (Math.random() < 0.5 ? 'feminine' : 'masculine');
+    const wantsBook = random() < 0.35;
+    const pianist = !wantsBook && random() < 0.1;
+    const nameStyle = requestedName ? nameStyleFor(requestedName) : (random() < 0.5 ? 'feminine' : 'masculine');
     return {
-      id: nextId++,
+      id: (activeContext || productionContext).nextId++,
       kind: 'patron',
       name: requestedName || pick(PATRON_NAMES[nameStyle]),
       nameStyle: nameStyle,
       colors: {
         skin: pick(SKINS), hair: pick(HAIRS), top: pick(TOPS), pants: pick(PANTS),
-        scarf: Math.random() < 0.4 ? pick(TOPS) : null,
-        longHair: Math.random() < 0.4,
-        hairStyle: (Math.random() * 4) | 0,   // 0 classic, 1 side-part, 2 curly, 3 bun
-        beard: nameStyle === 'masculine' && Math.random() < 0.3
+        scarf: random() < 0.4 ? pick(TOPS) : null,
+        longHair: random() < 0.4,
+        hairStyle: (random() * 4) | 0,   // 0 classic, 1 side-part, 2 curly, 3 bun
+        beard: nameStyle === 'masculine' && random() < 0.3
       },
       drink: drink,
       wantsBook: wantsBook,
-      ownBook: Math.random() < 0.45,     // readers: brought one vs. borrowing
+      ownBook: random() < 0.45,     // readers: brought one vs. borrowing
       hasShelfBook: false,
       browseDur: 0, afterBook: '', resumeReading: false,
-      chatty: Math.random() < 0.55,
+      chatty: random() < 0.55,
       murmurPitch: rnd(125, 235),
       x: L.doorSpot.x, y: L.doorSpot.y,
       facing: 1, heading: '', pose: 'stand', animT: rnd(0, 5),
@@ -618,14 +670,14 @@
       cat.doorFacing = cat.facing;
       cat.facing = L.doorSpot.x < cat.x ? -1 : 1;
     }
-    if (world.sleeper && world.sleeper.dozing && Math.random() < 0.25) {
+    if (world.sleeper && world.sleeper.dozing && random() < 0.25) {
       const p = world.sleeper;
       p.dozing = false;
       p.reading = true;
       p.resumeReading = false;
       p.dozeT = rnd(70, 140);
       world.sleeper = null;
-      if (Math.random() < 0.5) caption(world, p.name + ' blinks awake and finds the line again.');
+      if (random() < 0.5) caption(world, p.name + ' blinks awake and finds the line again.');
     }
   }
 
@@ -652,7 +704,7 @@
     world.weatherT -= dt;
     if (world.weatherT <= 0) {
       world.weatherT = rnd(150, 420);
-      const r = Math.random();
+      const r = random();
       const next = r < 0.34 ? 0 : r < 0.68 ? 0.4 : r < 0.92 ? 0.8 : 1;
       const enabled = SND.settings.rain !== false;
       const wasStorm = world.storm;
@@ -714,7 +766,7 @@
 
   function makePasser(world, dir, x, opts) {
     opts = opts || {};
-    const hurried = world.rain > 0.55 && Math.random() < 0.8;
+    const hurried = world.rain > 0.55 && random() < 0.8;
     const p = {
       x: x, dir: dir,
       speed: rnd(18, 26) * (hurried ? rnd(1.25, 1.5) : 1),
@@ -726,11 +778,11 @@
     };
     const wantsUmbrella = 'umbrella' in opts
       ? !!opts.umbrella
-      : world.rain > 0.15 && Math.random() < 0.45 + world.rain * 0.5;
+      : world.rain > 0.15 && random() < 0.45 + world.rain * 0.5;
     if (wantsUmbrella) p.umbrella = { color: pick(UMBRELLAS) };
     // fair-weather strollers sometimes slow mid-pane for a look at the room —
     // only at a pane still ahead of them, so no one stops behind the wall
-    if ('pause' in opts ? opts.pause : !hurried && Math.random() < 0.14) {
+    if ('pause' in opts ? opts.pause : !hurried && random() < 0.14) {
       const ahead = [L.win, L.win2].filter(function (win) {
         return dir > 0 ? x < win.x : x > win.x + win.w;
       });
@@ -745,10 +797,10 @@
 
   function spawnPasser(world, opts) {
     opts = opts || {};
-    const dir = opts.dir || (Math.random() < 0.5 ? 1 : -1);
+    const dir = opts.dir || (random() < 0.5 ? 1 : -1);
     const x = 'x' in opts ? opts.x : dir > 0 ? STREET.x0 : STREET.x1;
     const p = makePasser(world, dir, x, opts);
-    if ('pair' in opts ? opts.pair : Math.random() < 0.18) {
+    if ('pair' in opts ? opts.pair : random() < 0.18) {
       p.mate = { dx: -dir * Math.round(rnd(10, 13)), h: Math.max(24, p.h - Math.round(rnd(2, 6))) };
     }
     world.passersby.push(p);
@@ -784,7 +836,7 @@
         p.pauseT -= dt;
         if (!p.glanced) {
           p.glanced = true;
-          if (Math.random() < 0.18) caption(world, 'someone slows on the pavement outside, peeking in.');
+          if (random() < 0.18) caption(world, 'someone slows on the pavement outside, peeking in.');
         }
       } else {
         p.x += p.dir * p.speed * dt;
@@ -808,7 +860,7 @@
     if (!jumped && whole !== world.lastWholeHour) {
       if (whole === 12) {
         SND.churchBells();
-        if (Math.random() < 0.5) caption(world, 'noon — the church bells, from across the water.');
+        if (random() < 0.5) caption(world, 'noon — the church bells, from across the water.');
       } else if ([9, 15, 18, 21].indexOf(whole) >= 0) {
         SND.mantelChime();
       }
@@ -828,7 +880,7 @@
     } else if (world.kettle.firedDay !== day && world.hour >= world.kettle.hour) {
       world.kettle.firedDay = day;
       SND.kettleWhistle();
-      if (Math.random() < 0.6) caption(world, 'a kettle sings, somewhere in the back.');
+      if (random() < 0.6) caption(world, 'a kettle sings, somewhere in the back.');
     }
   }
 
@@ -864,7 +916,7 @@
     } else if (!dark && c.wasDark) {
       world.barista.candlePending = false;
       c.forceRound = false;
-      if (Math.random() < 0.35) caption(world, 'Morning light; the candles get to rest.');
+      if (random() < 0.35) caption(world, 'Morning light; the candles get to rest.');
     }
 
     if (!dark && !c.forceRound) {
@@ -933,9 +985,9 @@
     for (let i = 0; i < 12; i++) {
       world.particles.push({
         type: 'spark',
-        x: L.fire.boxX + 6 + Math.random() * (L.fire.boxW - 12),
-        y: L.fire.boxBot - (10 + Math.random() * 16),
-        vy: -(30 + Math.random() * 40), age: 0, life: rnd(0.35, 0.8), seed: 0
+        x: L.fire.boxX + 6 + random() * (L.fire.boxW - 12),
+        y: L.fire.boxBot - (10 + random() * 16),
+        vy: -(30 + random() * 40), age: 0, life: rnd(0.35, 0.8), seed: 0
       });
     }
     if (window.SND) SND.fireCatch();
@@ -950,8 +1002,8 @@
 
   function applyArrivalTraits(world, p) {
     const night = world.hour >= 21 || world.hour < 7;
-    if (!p.wantsBook && !p.pianist && Math.random() < (night ? 0.06 : 0.16)) p.laptop = true;
-    if (world.rain > 0.4 && Math.random() < 0.75) {
+    if (!p.wantsBook && !p.pianist && random() < (night ? 0.06 : 0.16)) p.laptop = true;
+    if (world.rain > 0.4 && random() < 0.75) {
       p.umbrella = { color: pick(UMBRELLAS) };
     }
     return p;
@@ -982,7 +1034,7 @@
 
   function spawnCouple(world, opts) {
     opts = opts || {};
-    const a = makePatron(), b = makePatron();
+    const a = makePatron(world), b = makePatron(world);
     applyArrivalTraits(world, a); applyArrivalTraits(world, b);
     a.partner = b; b.partner = a;
     a.pianist = false; b.pianist = false;
@@ -995,7 +1047,7 @@
       const drink = DRINKS.find(function (d) { return d.name === opts.drink; });
       if (drink) { a.drink = drink; b.drink = drink; }
     }
-    if (Math.random() < 0.5) b.colors.scarf = a.colors.scarf || pick(TOPS);
+    if (random() < 0.5) b.colors.scarf = a.colors.scarf || pick(TOPS);
     if ('laptop' in opts) { a.laptop = !!opts.laptop; b.laptop = !!opts.laptop; }
     if ('umbrella' in opts && opts.umbrella) a.umbrella = { color: typeof opts.umbrella === 'string' ? opts.umbrella : pick(UMBRELLAS) };
     if (world.rain > 0.4) {
@@ -1028,7 +1080,7 @@
      voice, and spec tag over it. Holger's row reproduces his old hardcoded
      values byte-for-byte. */
   function makeRegular(world, spec) {
-    const p = makePatron(spec.name);
+    const p = makePatron(world, spec.name);
     p.nameStyle = spec.nameStyle;
     p.colors = Object.assign({}, spec.colors);
     const drink = DRINKS.find(function (d) { return d.name === spec.drink; });
@@ -1059,7 +1111,7 @@
   /* The real calendar day (UTC) — the ruler continuity is measured against,
      the same clock arc progress uses (docs/narrative.md §3). */
   function realDay() {
-    return Math.floor((window.MEMORY ? MEMORY.now() : Date.now()) / DAY_MS);
+    return Math.floor((activeContext || productionContext).memory.now() / DAY_MS);
   }
 
   /* Nora's memory of a regular, deepened just by her being present when they
@@ -1079,7 +1131,7 @@
     b.visits += 1;
     b.known = true;
     b.lastDay = realDay();
-    if (window.MEMORY) MEMORY.save();
+    world.context.memory.save();
     return { returning: returning };
   }
 
@@ -1089,7 +1141,7 @@
   function regularArrivalLine(world, spec, info) {
     const lines = spec.lines || {};
     if (world.rain > 0.4 && lines.arrivalRain && lines.arrivalRain.length) return pick(lines.arrivalRain);
-    if (info.returning && lines.arrivalReturn && lines.arrivalReturn.length && Math.random() < 0.6) {
+    if (info.returning && lines.arrivalReturn && lines.arrivalReturn.length && random() < 0.6) {
       return pick(lines.arrivalReturn);
     }
     return arrivalLine(spec);
@@ -1120,11 +1172,11 @@
     if (world.spawnT > 0) return;
     world.spawnT = rnd(1, 1.4) * (26 + (1 - world.daylight) * 55);
     if (world.patrons.length >= spawnCap(world)) return;
-    if (world.patrons.length + 2 <= spawnCap(world) && Math.random() < 0.22) {
+    if (world.patrons.length + 2 <= spawnCap(world) && random() < 0.22) {
       spawnCouple(world);
       return;
     }
-    const p = applyArrivalTraits(world, makePatron());
+    const p = applyArrivalTraits(world, makePatron(world));
     enqueueArrival(world, p, 0, true);
     const lines = world.rain > 0.4
       ? [p.name + ' ducks in out of the rain.', p.name + ' slips in from the wet street.']
@@ -1147,7 +1199,7 @@
   function spawnSteam(world, x, y) {
     world.particles.push({
       type: 'steam', x: x, y: y,
-      vy: -(12 + Math.random() * 10), age: 0, life: rnd(0.9, 1.6), seed: Math.random() * 7
+      vy: -(12 + random() * 10), age: 0, life: rnd(0.9, 1.6), seed: random() * 7
     });
   }
 
@@ -1161,7 +1213,7 @@
       });
       world.tables.forEach(function (tb) {
         tb.items.forEach(function (it) {
-          if (it.hot > 0 && !it.hidden && it.kind !== 'plate' && Math.random() < 0.8) {
+          if (it.hot > 0 && !it.hidden && it.kind !== 'plate' && random() < 0.8) {
             spawnSteam(world, tb.x + it.side * (tb.reach || 24), tb.y + SCENE.tableItemOffsetY(tb, it) - 16);
           }
         });
@@ -1175,12 +1227,12 @@
     });
     // fire sparks — a blaze throws more and higher; embers only spit now and then
     const fireLvl = world.fire ? world.fire.level : 1;
-    if (Math.random() < dt * (0.3 + fireLvl * 2.2)) {
+    if (random() < dt * (0.3 + fireLvl * 2.2)) {
       world.particles.push({
         type: 'spark',
-        x: L.fire.boxX + 8 + Math.random() * (L.fire.boxW - 16),
+        x: L.fire.boxX + 8 + random() * (L.fire.boxW - 16),
         y: L.fire.boxBot - (6 + fireLvl * 14),
-        vy: -(14 + fireLvl * 24 + Math.random() * 16), age: 0, life: rnd(0.25, 0.6), seed: 0
+        vy: -(14 + fireLvl * 24 + random() * 16), age: 0, life: rnd(0.25, 0.6), seed: 0
       });
     }
     for (let i = world.particles.length - 1; i >= 0; i--) {
@@ -1198,7 +1250,7 @@
 
   function arcRecord(mem, id) {
     let rec = mem.arcs[id];
-    if (!rec || typeof rec !== 'object') { rec = { stage: 0, progress: 0, pendingBeat: null }; mem.arcs[id] = rec; }
+    if (!MEMORY.isRecord(rec)) { rec = { stage: 0, progress: 0, pendingBeat: null }; mem.arcs[id] = rec; }
     return rec;
   }
 
@@ -1254,14 +1306,13 @@
      quantized to the café hour (~once a real minute) plus every readied beat,
      so localStorage stays quiet; at worst a hard close drops a sliver of a
      row, never a beat. */
-  let narrSaveT = 0;
   function updateNarrative(world, dt) {
     const res = advanceArcs(world, dt / DAY_SECONDS);
     if (!res.moved) return;
-    narrSaveT += dt;
-    if (res.readied || narrSaveT >= DAY_SECONDS / 24) {
-      narrSaveT = 0;
-      if (window.MEMORY) MEMORY.save();
+    world.narrSaveT += dt;
+    if (res.readied || world.narrSaveT >= DAY_SECONDS / 24) {
+      world.narrSaveT = 0;
+      world.context.memory.save();
     }
   }
 
@@ -1273,8 +1324,7 @@
      threshold-touching save is owed, and re-applies a completed arc's lasting
      mark (the cat wearing the scarf) for a returning reader. */
   function reconcileNarrative(world) {
-    const mem = (window.MEMORY && MEMORY.state) ||
-      { version: 1, lastSeen: Date.now(), arcs: {}, bonds: {}, flags: {} };
+    const mem = world.context.memory.state;
     world.memory = mem;
     const regularIds = {};
     CAST.regulars.forEach(function (r) { regularIds[r.id] = true; });
@@ -1283,11 +1333,12 @@
       if (!arc.anchor && !regularIds[arc.owner]) return;   // drift: names a regular that no longer exists
       const rec = arcRecord(mem, arc.id);
       // clamp a save that drifted from the current definition
-      if (typeof rec.stage !== 'number' || rec.stage < 0) rec.stage = 0;
+      if (!Number.isInteger(rec.stage) || rec.stage < 0) rec.stage = 0;
       if (rec.stage > arcStages(arc)) rec.stage = arcStages(arc);
-      if (typeof rec.progress !== 'number' || rec.progress < 0) rec.progress = 0;
+      if (!Number.isFinite(rec.progress) || rec.progress < 0) rec.progress = 0;
       const rows = arcRows(arc, Math.min(rec.stage, arcStages(arc) - 1));
       if (rec.progress > rows) rec.progress = rows;
+      if (rec.pendingBeat !== 'finished' || rec.stage >= arcStages(arc)) rec.pendingBeat = null;
       // a save already at its threshold is owed its (patient) invitation
       if (rec.stage < arcStages(arc) && !rec.pendingBeat && rec.progress >= rows) {
         rec.pendingBeat = 'finished';
@@ -1296,13 +1347,16 @@
       if (arcFlag(arc, 0) === 'cat-wore-scarf' && mem.flags[arcFlag(arc, 0)]) world.cat.scarf = arc.scarfColor;
     });
 
-    if (window.MEMORY) { MEMORY.stamp(); MEMORY.save(); MEMORY.requestPersist(); }
+    world.context.memory.stamp();
+    world.context.memory.save();
+    world.context.memory.requestPersist();
     return mem;
   }
 
   /* Private simulation contract shared by the sim siblings. The dev harness
      consumes a documented subset after every sibling has loaded. */
   SIM._ = {
+    random: random, sound: SND, bindWorld: bindWorld,
     L: L, LB: LB,
     DAY_SECONDS: DAY_SECONDS, START_HOUR: START_HOUR, WIPE_RAIN: WIPE_RAIN, DRINKS: DRINKS,
     PATRON_NAMES: PATRON_NAMES, SEAT_PREFS: SEAT_PREFS,
@@ -1324,4 +1378,32 @@
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };
+
+  // World-first public/debug entry points also select the private services.
+  SIM._.makePatron = bindWorld(SIM._.makePatron);
+  SIM._.caption = bindWorld(SIM._.caption);
+  SIM._.captionRun = bindWorld(SIM._.captionRun);
+  SIM._.updateCaptions = bindWorld(SIM._.updateCaptions);
+  SIM._.reconcileNarrative = bindWorld(SIM._.reconcileNarrative);
+  SIM._.advanceArcs = bindWorld(SIM._.advanceArcs);
+  SIM._.updateNarrative = bindWorld(SIM._.updateNarrative);
+  SIM._.applyArrivalTraits = bindWorld(SIM._.applyArrivalTraits);
+  SIM._.enqueueArrival = bindWorld(SIM._.enqueueArrival);
+  SIM._.spawnCouple = bindWorld(SIM._.spawnCouple);
+  SIM._.updateRegulars = bindWorld(SIM._.updateRegulars);
+  SIM._.ringDoor = bindWorld(SIM._.ringDoor);
+  SIM._.updateDoor = bindWorld(SIM._.updateDoor);
+  SIM._.updateWeather = bindWorld(SIM._.updateWeather);
+  SIM._.updateClock = bindWorld(SIM._.updateClock);
+  SIM._.updatePassersby = bindWorld(SIM._.updatePassersby);
+  SIM._.spawnPasser = bindWorld(SIM._.spawnPasser);
+  SIM._.dayIndex = bindWorld(SIM._.dayIndex);
+  SIM._.candleTables = bindWorld(SIM._.candleTables);
+  SIM._.snapCandles = bindWorld(SIM._.snapCandles);
+  SIM._.updateCandles = bindWorld(SIM._.updateCandles);
+  SIM._.updateFire = bindWorld(SIM._.updateFire);
+  SIM._.addLog = bindWorld(SIM._.addLog);
+  SIM._.updateSpawning = bindWorld(SIM._.updateSpawning);
+  SIM._.spawnSteam = bindWorld(SIM._.spawnSteam);
+  SIM._.updateParticles = bindWorld(SIM._.updateParticles);
 })();

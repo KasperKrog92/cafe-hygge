@@ -20,6 +20,9 @@ $testSession = 'hygge-check-' + [guid]::NewGuid().ToString('N').Substring(0, 8)
 $reports = @()
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 
+node (Join-Path $PSScriptRoot 'test-save.js')
+if ($LASTEXITCODE -ne 0) { throw 'Save/isolation regressions failed.' }
+
 # Check the actual script-tag list, including newly added production scripts.
 $html = [IO.File]::ReadAllText((Join-Path $repo 'index.html'))
 $scripts = [regex]::Matches($html, '<script\s+src="([^"]+)"')
@@ -45,8 +48,8 @@ try {
     & $browser --session $testSession open $Url
     if ($LASTEXITCODE -ne 0) { throw 'Browser launch failed.' }
     foreach ($name in $Suite) {
-        # Simulation suites call SIM.create(), which binds the global save.
-        # Reload/reset BETWEEN suites so test order cannot age the next suite's arcs.
+        # Suites use private worlds. Reload also isolates dev controls, audio
+        # settings and the normal production boot between browser suites.
         & $browser --session $testSession wait --fn '!!(window.__dev && window.__world)' | Out-Null
         if ($LASTEXITCODE -ne 0) { throw 'Dev harness did not become ready.' }
         "MEMORY.reset(); localStorage.removeItem('cafe-hygge-audio'); true" | & $browser --session $testSession eval --stdin | Out-Null

@@ -3,6 +3,8 @@
   'use strict';
   const R = window.SIM._, L = R.L, F = L.waterfront, rnd = R.rnd;
 
+  const SND = R.sound;
+
   R.createWaterfront = function () {
     return { boats: [], birds: [], planes: [], shipT: rnd(360, 720), boatT: rnd(12, 40), birdT: rnd(8, 28), planeT: rnd(200, 420),
       tables: F.tables.map(function () { return { owner: null, cup: null, dirty: false, cleaning: false }; }) };
@@ -10,7 +12,7 @@
 
   R.spawnWaterfront = function (world, kind, opts) {
     opts = opts || {};
-    const dir = opts.dir || (Math.random() < 0.5 ? 1 : -1);
+    const dir = opts.dir || (R.random() < 0.5 ? 1 : -1);
     const item = { x: opts.x == null ? (dir > 0 ? F.x0 - 35 : F.x1 + 35) : opts.x,
       dir: dir, age: 0 };
     if (kind === 'ship') {
@@ -20,7 +22,7 @@
       item.y = F.waterY + 14; item.speed = 2.6;
       world.waterfront.boats.push(item);
     } else if (kind === 'boat') {
-      item.sail = opts.sail == null ? Math.random() < 0.4 : !!opts.sail;
+      item.sail = opts.sail == null ? R.random() < 0.4 : !!opts.sail;
       item.y = F.waterY + (item.sail ? 14 : 20);
       item.speed = rnd(3, 5); world.waterfront.boats.push(item);
     } else if (kind === 'birds') {
@@ -74,7 +76,7 @@
     // visits and parked umbrellas keep their existing indoor journeys.
     if (!terraceWeather(world) || p.isRegular || p.partner || p.laptop || p.pianist ||
         p.umbrellaParked || p.hasShelfBook || (p.wantsBook && !p.ownBook) || p.seat || p.outdoor === false) return false;
-    if (p.outdoor !== true && Math.random() >= 0.4) return false;
+    if (p.outdoor !== true && R.random() >= 0.4) return false;
     const index = world.waterfront.tables.findIndex(function (t) { return t.owner === null && !t.dirty && !t.cleaning; });
     if (index < 0) return false;
     world.waterfront.tables[index].owner = p.id;
@@ -105,7 +107,7 @@
       tb.cup = null; tb.dirty = false;
     }
     p.state = returnInside ? 'terraceReturn' : 'terraceLeave'; p.stateT = 0;
-    p.terraceExit = Math.random() < 0.5 ? F.x0 - 32 : F.x1 + 32;
+    p.terraceExit = R.random() < 0.5 ? F.x0 - 32 : F.x1 + 32;
   }
 
   R.updateTerracePatron = function (world, p, dt) {
@@ -127,7 +129,7 @@
         p.holding = null; p.reading = !!p.ownBook;
         p.terraceStay = rnd(100, 240); p.terraceSip = rnd(8, 18); p.terraceWeatherT = 0; p.terracePage = rnd(15, 30);
         tb.cup = p.drink.kind;
-        if (Math.random() < 0.4) R.caption(world, p.name + ' takes a little time by the water.');
+        if (R.random() < 0.4) R.caption(world, p.name + ' takes a little time by the water.');
       }
     } else if (p.state === 'terraceSit') {
       p.terraceStay -= dt; p.terraceSip -= dt;
@@ -180,7 +182,7 @@
       if (b.stateT > 2.8) {
         tb.dirty = false; tb.cleaning = false;
         b.holding = 'stack'; b.state = 'terraceBack'; b.stateT = 0; b.pose = 'stand';
-        if (Math.random() < 0.3) R.caption(world, 'Nora gathers the cups outside; the water carries the last of the light.');
+        if (R.random() < 0.3) R.caption(world, 'Nora gathers the cups outside; the water carries the last of the light.');
       }
     } else if (b.state === 'terraceBack') {
       if (outsideStep(b, F.entranceX, dt)) {
@@ -196,4 +198,13 @@
     }
     return true;
   };
+
+  // World-first public/debug entry points also select the private services.
+  R.spawnWaterfront = R.bindWorld(R.spawnWaterfront);
+  R.visibleShip = R.bindWorld(R.visibleShip);
+  R.updateWaterfront = R.bindWorld(R.updateWaterfront);
+  R.reserveTerrace = R.bindWorld(R.reserveTerrace);
+  R.updateTerracePatron = R.bindWorld(R.updateTerracePatron);
+  R.startTerraceClear = R.bindWorld(R.startTerraceClear);
+  R.updateTerraceBarista = R.bindWorld(R.updateTerraceBarista);
 })();

@@ -2,14 +2,14 @@
    never art studies. Covers busy closing, perches, repeated days and saves. */
 (function () {
   'use strict';
-  const original = window.__world, random = Math.random;
+  const original = window.__world;
   let seed = 6137;
   const results = [], failures = [], frames = {};
   function check(ok, message) { if (!ok) failures.push(message); }
-  Math.random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
+  const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   try {
     ['empty', 'busy', 'topShelf', 'piano'].forEach(function (scenario) {
-      const w = SIM.create(); window.__world = w;
+      const w = SIM.create({ random: random }); window.__world = w;
       // Remove boot's already-seated cast before adding the scenario's guests.
       // Otherwise the five forced arrivals overfill the seven-person café.
       w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];
@@ -78,7 +78,7 @@
       results.push({ scenario: scenario, seconds: elapsed, phases: phases, auditProblems: audits.length });
     });
     // Natural clock repeats: no dev time jumps between two full overnight runs.
-    const w = SIM.create(); window.__world = w; __dev.hour(21.5);
+    const w = SIM.create({ random: random }); window.__world = w; __dev.hour(21.5);
     let nights = 0, previous = 'open';
     for (let i = 0; i < 16000; i++) {
       SIM.update(w, 0.25);
@@ -90,7 +90,7 @@
     failures.push.apply(failures, __dev.audit());
     results.push({ naturalNights: nights, hour: w.hour, phase: w.shop.phase });
     window.hoursFrames = frames;
-  } finally { Math.random = random; window.__world = original; }
+  } finally { window.__world = original; }
   if (failures.length) throw new Error(JSON.stringify({ failures: failures, results: results }));
   return { results: results, failures: failures, frames: Object.keys(frames) };
 })();
