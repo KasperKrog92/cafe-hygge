@@ -399,7 +399,7 @@ climbs together when a log goes on — but the coal bed and glow never reach zer
 (the ember floor). See the hearth burn cycle in world.md.
 Speech bubbles/captions draw after lighting on purpose.
 Open laptops are the single cool exception: a 22-pixel shallow keyboard deck,
-a stepped side-view screen hinged at its inner edge, blue-grey text glints,
+a straight upright side-view screen hinged at its inner edge, blue-grey text glints,
 and a faint radius-18 glow scaled by darkness. The screen faces its sitter;
 `SCENE.laptopGeometry` shares keyboard and screen anchors with hands and light.
 The keyboard sits near the table edge. Working arms draw with the tabletop
