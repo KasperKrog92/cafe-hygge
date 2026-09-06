@@ -162,6 +162,49 @@
     }
   }
 
+  function sailingShip(g, world, b, x, y) {
+    // A broad timber hull, two gaff-rigged masts and a long bowsprit.
+    // Draw in local integer pixels so the opposite passage mirrors exactly.
+    g.save(); g.translate(x, y); g.scale(b.dir, 1);
+    function r(x, y, w, h, c) { px(g, x, y, w, h, tone(c, world)); }
+    g.globalAlpha = 0.22;
+    r(-54, 8, 99, 2, '#dcefe8'); r(-62, 11, 76, 1, '#dcefe8');
+    r(-31, 12, 62, 2, '#6e4a33');
+    g.globalAlpha = 1;
+    r(-43, -3, 84, 5, '#b88a62');
+    r(-40, 2, 77, 4, '#7d5334'); r(-34, 6, 65, 3, '#5a3b2a');
+    r(-42, -5, 83, 2, '#e3cfa7');
+    r(-40, -10, 16, 5, '#6e4a33'); r(-41, -11, 18, 2, '#c9b28a');
+    r(-37, -8, 3, 2, '#f5c66a'); r(-30, -8, 3, 2, '#f5c66a');
+    for (let j = -32; j < 33; j += 10) r(j, 0, 6, 1, '#c9a04a');
+    for (let j = 0; j < 7; j++) r(34 + j * 3, -5 - j, 5, 2, '#6e4a33');
+    [-19, 13].forEach(function (mast, i) {
+      const top = i ? -60 : -51;
+      r(mast, top, 2, -top - 4, '#6e4a33');
+      // Stepped cloth edges and warm shadow along the leech.
+      for (let row = 0; row < 16; row++) {
+        const width = 17 + Math.round(Math.sin(row / 15 * Math.PI) * 5);
+        r(mast - width, top + 8 + row * 2, width, 2, '#e8dfc9');
+        r(mast - width, top + 8 + row * 2, 2, 2, '#c9b28a');
+      }
+      r(mast - 20, top + 6, 22, 2, '#b88a62');
+      r(mast - 20, top + 40, 22, 2, '#b88a62');
+      // Fine rigging, stepped rather than antialiased strokes.
+      for (let row = 0; row < -top - 6; row += 3) {
+        r(mast + 3 + Math.round(row * 0.38), top + 4 + row, 1, 3, '#8b7158');
+      }
+    });
+    for (let row = 0; row < 20; row++) r(17, -52 + row * 2, 2 + row, 2, '#e8dfc9');
+    const flutter = Math.round(Math.sin(b.age * 1.5));
+    r(15, -60, 10, 3, '#b5654a'); r(21, -59 + flutter, 6, 3, '#b5654a');
+    [-9, 5, 26].forEach(function (crew, i) {
+      r(crew, -10, 3, 5, i === 1 ? '#8a3d3d' : '#60777e');
+      r(crew, -13, 3, 3, '#c9b28a');
+      if (i === 2) r(crew + 3, -12 + Math.round(Math.sin(b.age * 2)), 2, 5, '#c9b28a');
+    });
+    g.restore();
+  }
+
   function water(g, world) {
     px(g, F.x0, F.waterY, F.x1 - F.x0, F.nearY - F.waterY, tone('#79a5ad', world));
     houses.forEach(function (h, i) {
@@ -190,6 +233,7 @@
     g.globalAlpha = 1;
     (world.waterfront ? world.waterfront.boats : []).forEach(function (b) {
       const x = Math.round(b.x), y = Math.round(b.y + Math.sin(b.age * 0.8) * 0.7);
+      if (b.ship) { sailingShip(g, world, b, x, y); return; }
       g.globalAlpha = 0.3;
       px(g, x - 15 - b.dir * 9, y + 4, 25, 2, '#dcefe8');
       g.globalAlpha = 1;

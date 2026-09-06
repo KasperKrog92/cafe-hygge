@@ -4,7 +4,7 @@
   const R = window.SIM._, L = R.L, F = L.waterfront, rnd = R.rnd;
 
   R.createWaterfront = function () {
-    return { boats: [], birds: [], planes: [], boatT: rnd(12, 40), birdT: rnd(8, 28), planeT: rnd(200, 420),
+    return { boats: [], birds: [], planes: [], shipT: rnd(360, 720), boatT: rnd(12, 40), birdT: rnd(8, 28), planeT: rnd(200, 420),
       tables: F.tables.map(function () { return { owner: null, cup: null, dirty: false, cleaning: false }; }) };
   };
 
@@ -13,7 +13,13 @@
     const dir = opts.dir || (Math.random() < 0.5 ? 1 : -1);
     const item = { x: opts.x == null ? (dir > 0 ? F.x0 - 35 : F.x1 + 35) : opts.x,
       dir: dir, age: 0 };
-    if (kind === 'boat') {
+    if (kind === 'ship') {
+      if (world.waterfront.boats.length >= 2 || world.waterfront.boats.some(function (b) { return b.ship; })) return null;
+      item.ship = true; item.sail = true; item.watchers = 0;
+      item.x = opts.x == null ? (dir > 0 ? F.x0 - 65 : F.x1 + 65) : opts.x;
+      item.y = F.waterY + 14; item.speed = 2.6;
+      world.waterfront.boats.push(item);
+    } else if (kind === 'boat') {
       item.sail = opts.sail == null ? Math.random() < 0.4 : !!opts.sail;
       item.y = F.waterY + (item.sail ? 14 : 20);
       item.speed = rnd(3, 5); world.waterfront.boats.push(item);
@@ -26,8 +32,21 @@
     return item;
   };
 
+  R.visibleShip = function (world) {
+    return world.waterfront.boats.find(function (b) { return b.ship && b.x > F.x0 + 25 && b.x < F.x1 - 25; });
+  };
+
   R.updateWaterfront = function (world, dt) {
     const wf = world.waterfront;
+    wf.shipT -= dt;
+    if (wf.shipT <= 0 && world.daylight > 0.4 && world.rain < 0.35 && wf.boats.length < 2) {
+      R.spawnWaterfront(world, 'ship'); wf.shipT = rnd(720, 1440);
+    }
+    const ship = R.visibleShip(world);
+    if (ship && !ship.announced) {
+      ship.announced = true;
+      R.caption(world, 'a wooden sailing ship glides across the lake, its sails full of afternoon light.');
+    }
     wf.boatT -= dt; wf.birdT -= dt; wf.planeT -= dt;
     if (wf.boatT <= 0) {
       wf.boatT = rnd(100, 190);

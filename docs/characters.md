@@ -614,3 +614,17 @@ waits for both outdoor tables to be clear before the indoor closing chores.
 The dev audit checks reservations, cup ownership, cleanup claims, indoor/outdoor
 exclusivity and the clean-terrace-before-closing condition. See
 [art-workflow.md](art-workflow.md) for the full journey verification.
+
+
+## Watching the sailing ship
+
+During a visible ship passage, up to two ordinary settled guests may follow
+`seated → toShip → watchingShip → backFromShip → seated`. Each uses a distinct
+`L.waterfront.shipWatch` floor anchor and the normal furniture-aware planner.
+Their original seat stays reserved and their drink waits on the table; reading
+resumes after the return. They face the glass, give a short wave, and watch for
+at most 18 seconds. The ship leaving view or last call ends the watch early.
+Regulars, couples, window sitters, artists, pianists, laptop users, knitters,
+sleepers, guests holding drinks and anyone with the cat on their lap keep their
+activities. Eligibility needs over a minute remaining and a quiet gap between
+sips; each guest joins at most once per passage.

@@ -475,7 +475,14 @@
     else drawHead(g, x, y - 56 + breathe, facing, c, blink);
     // arm + held item, with actual hands
     const held = p.holding;
-    if (p.kind === 'barista' && p.state === 'prepping') {
+    if (p.shipWave && !held) {
+      const hand = Math.round(Math.sin(p.animT * 3) * 3);
+      limb(g, x + 8, y - 37, x + 17, y - 34, 5, c.top);
+      limb(g, x + 17, y - 34, x + 19 + hand, y - 50, 4, c.skin);
+      px(g, x + 17 + hand, y - 54, 4, 5, c.skin);
+      px(g, x - 13, y - 38, 4, 15, c.top);
+      px(g, x - 13, y - 25, 4, 4, c.skin);
+    } else if (p.kind === 'barista' && p.state === 'prepping') {
       const step = p.steps[p.stepIdx];
       const q = Math.min(1, p.stateT / step.dur);
       const act = step.act;

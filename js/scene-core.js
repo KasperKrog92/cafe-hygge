@@ -42,6 +42,7 @@
     waterfront: {
       x0: 96, x1: 656, skyY: 64, bankY: 144, waterY: 149, nearY: 176,
       walkY: 185, terraceY: 200, entranceX: 84, scale: 2,
+      shipWatch: [{ x: 248, y: 252 }, { x: 572, y: 252 }],
       tables: [{ x: 252, y: 188 }, { x: 492, y: 188 }],
       house: { x: 166, y: 106, w: 38, h: 36 },
       lamps: [{ x: 157, y: 177 }, { x: 568, y: 177 }]

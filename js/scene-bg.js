@@ -388,7 +388,7 @@
       if (p.x + 34 < w.x || p.x - 34 > w.x + w.w) continue;
       const stride = p.pausing ? 0 : Math.sin(p.animT * p.speed * 0.19);
       if (p.mate) drawPasserFigure(g, p.x + p.mate.dx, p.mate.h, -stride, p.dir, p.hurried);
-      drawPasserFigure(g, p.x, p.h, stride, p.dir, p.hurried);
+      drawPasserFigure(g, p.x, p.h, stride, p.dir, p.hurried, p.shipWaveT > 0 ? p.animT : null);
       if (p.umbrella) {
         const ux = p.mate ? p.x + p.mate.dx / 2 : p.x;
         const top = PASSER_GY - (p.mate ? Math.max(p.h, p.mate.h) : p.h);
@@ -398,7 +398,7 @@
     g.restore();
   }
 
-  function drawPasserFigure(g, cx, h, stride, dir, hurried) {
+  function drawPasserFigure(g, cx, h, stride, dir, hurried, wave) {
     cx = Math.round(cx);
     const top = PASSER_GY - h;
     const legH = Math.round(h * 0.42);
@@ -411,6 +411,11 @@
     // coat with a slight flare at the hem
     px(g, cx - 4 + lean, top + 7 + bob, 9, hipY - top - 5 - bob, PASSER);
     px(g, cx - 5 + lean, hipY - 4, 11, 6, PASSER);
+    if (wave != null) {
+      const hand = Math.round(Math.sin(wave * 3) * 2);
+      px(g, cx + 5, top + 9, 5, 3, PASSER);
+      px(g, cx + 8, top + 2 + hand, 3, 9 - hand, PASSER);
+    }
     // head over shoulders, nudged the way they're going
     px(g, cx - 4 + lean, top + 6 + bob, 9, 3, PASSER);
     px(g, cx - 2 + lean + dir, top + bob, 5, 2, PASSER);

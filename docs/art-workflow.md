@@ -233,3 +233,9 @@ browser errors. Art verification passed ten repeatable images and eight
 occupancy scenarios; local warm composition measured 1.2 ms median / 2.0 ms p95.
 These timings cover composition only, not simulation, PNG export or device-wide
 performance. Every task-owned verification session was closed afterward.
+
+
+For sailing-ship behavior, run `tools/verify-ship.ps1` with the local server
+running. It verifies real orders, window round trips, retained seats, pedestrian
+waves, reverse travel, disposal, weather/daylight scheduling and closing,
+exporting ship captures to `.art-review/ship-motion/` before browser cleanup.

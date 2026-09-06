@@ -113,6 +113,7 @@
   };
 
   /* Quiet life on demand; these are actual dt-driven outdoor entities. */
+  D.ship = function (opts) { return SIM._.spawnWaterfront(world(), 'ship', opts); };
   D.boat = function (opts) { return SIM._.spawnWaterfront(world(), 'boat', opts); };
   D.birds = function (opts) { return SIM._.spawnWaterfront(world(), 'birds', opts); };
   D.plane = function (opts) { return SIM._.spawnWaterfront(world(), 'plane', opts); };

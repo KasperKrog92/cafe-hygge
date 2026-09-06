@@ -438,6 +438,19 @@
         }
         break;
       }
+      case 'toShip': {
+        if (!walker(p, dt)) { p.stateT = 0; break; }
+        p.state = 'watchingShip'; p.stateT = 0; p.pose = 'stand'; p.heading = 'up';
+        break;
+      }
+      case 'watchingShip': {
+        p.heading = 'up'; p.shipWave = p.stateT > 2 && p.stateT < 8;
+        if (!R.visibleShip(world) || p.stateT > 18 || world.shop.lastCall) {
+          p.shipWave = false; p.heading = ''; p.shipWatchSlot = null;
+          p.state = 'backFromShip'; p.stateT = 0; seatPath(p, p.seat);
+        }
+        break;
+      }
       case 'toEasel': {
         if (!walker(p, dt)) { p.stateT = 0; break; }
         p.pose = 'stand'; p.facing = -1;
@@ -462,6 +475,7 @@
         }
         break;
       }
+      case 'backFromShip':
       case 'backFromEasel': {
         if (walker(p, dt)) {
           p.pose = 'sit';
@@ -886,6 +900,24 @@
       if (Math.random() < 0.7) caption(world, R.specLine(p.spec, 'fireUp',
         p.name + ' sets down the book and gets up to tend the fire.'));
       return;
+    }
+
+    const ship = R.visibleShip(world);
+    if (ship && ship.watchers < 2 && p.shipSeen !== ship && world.shop.phase === 'open' &&
+        !world.shop.lastCall && !p.isRegular && !p.partner && !p.seat.window && !p.seat.piano &&
+        !p.seat.artist && !p.holding && !p.dozing && !p.laptopActive && !p.knitting &&
+        world.cat.lapPatron !== p && p.sipPhase <= 0 && p.stay > 60 && Math.random() < dt * 0.035) {
+      const slot = L.waterfront.shipWatch.findIndex(function (a, i) {
+        return !world.patrons.some(function (q) { return q.shipWatchSlot === i; });
+      });
+      if (slot >= 0) {
+        p.shipSeen = ship; ship.watchers++; p.shipWatchSlot = slot;
+        p.watchResumeReading = p.reading; p.reading = false; p.pose = 'stand';
+        chairScrape(p, true); stepDown(p, p.seat);
+        p.state = 'toShip'; p.stateT = 0;
+        const a = L.waterfront.shipWatch[slot]; pathFrom(p, p.seat, a.x, a.y);
+        return;
+      }
     }
 
     // One quiet observer at a time may leave their seat and stand by the

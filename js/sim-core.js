@@ -770,6 +770,15 @@
     for (let i = world.passersby.length - 1; i >= 0; i--) {
       const p = world.passersby[i];
       p.animT += dt;
+      const ship = SIM._.visibleShip(world);
+      if (ship && p.shipSeen !== ship && !p.hurried && !p.umbrella &&
+          [L.win, L.win2].some(function (w) { return p.x > w.x + 18 && p.x < w.x + w.w - 18; })) {
+        p.shipSeen = ship; p.shipWaveT = rnd(6, 11);
+      }
+      if (p.shipWaveT > 0) {
+        p.shipWaveT = ship ? Math.max(0, p.shipWaveT - dt) : 0;
+        p.pausing = true; continue;
+      }
       p.pausing = p.pauseT > 0 && (p.dir > 0 ? p.x >= p.pauseX : p.x <= p.pauseX);
       if (p.pausing) {
         p.pauseT -= dt;

@@ -354,3 +354,21 @@ near the corrected cup rim. All of these remain simulation-clock driven.
 Laptop tables place the drink nine pixels toward the front to keep it clear
 of the keyboard. Table item rendering and hot-drink steam share
 `SCENE.tableItemOffsetY`, including while the laptop is closed for departure.
+
+
+## Occasional sailing ship
+
+A two-masted wooden ship crosses the continuous lake in either direction at
+2.6 master pixels per second. The first opportunity is after 6–12 running
+minutes, then 12–24 minutes between opportunities; passage waits for fair
+daylight (daylight > 0.4, rain < 0.35) and a free boat slot. At most one ship
+and two boats total are present. Its position and timer use simulation dt,
+including hidden tabs, and it is removed beyond the waterfront margins.
+A single rate-limited caption announces its arrival: “a wooden sailing ship
+glides across the lake, its sails full of afternoon light.”
+
+Unhurried pedestrians without umbrellas pause in a visible pane for 6–11
+seconds and wave once per passage, then continue walking. Up to two eligible
+indoor guests can watch from the window floor spots; see characters.md. This
+is ambient life, with no unlock, reward, saved event or required interaction.
+Dev forcing: `__dev.ship({x: 210, dir: 1})`.

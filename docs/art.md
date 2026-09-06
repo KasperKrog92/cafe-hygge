@@ -536,3 +536,16 @@ Sunlight projects away from the actual sun position; morning and afternoon
 beams reverse direction and low sun lengthens them. A cloudy sky softens the
 floor beams and indoor glow together. After dusk, lit sash windows, streetlamp
 pools, stars and a single moon make the same geography visible at night.
+
+
+### Wooden sailing ship
+
+The occasional lake ship is an 84-pixel timber hull with two masts up to 60
+pixels above its waterline, substantially larger than the 24-pixel small boats.
+Cream gaff sails, stepped rigging, a bowsprit, ochre strake, stern windows,
+three tiny crew and a muted red pennant establish its silhouette. Mirroring
+in local integer coordinates supports both headings. Its wake/reflection,
+subpixel travel rounded for drawing and restrained one-pixel bob share the
+waterfront lighting and both panes' continuous clipping. Window visitors use
+a back-facing standing pose and an animated raised hand; pavement figures
+stop their stride and raise an arm.
