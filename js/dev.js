@@ -1,7 +1,7 @@
 /* Café Hygge — dev harness. Agent/debug tooling behind `window.__dev`.
    Inert in normal use: nothing here runs unless the URL carries ?dev
-   (or ?hour= / ?overlay) or the console calls __dev.* — zero user-facing
-   change. Loads after the sim siblings (whose SIM._ debug contract it consumes)
+   (or ?hour= / ?overlay), the apartment dev button is clicked, or the console
+   calls __dev.*. Loads after the sim siblings (whose SIM._ debug contract it consumes)
    before main.js (whose boot it decorates).
 
    URL params:
@@ -17,6 +17,7 @@
 
    Console API:
      __dev.hour(h)     jump the in-world clock (no arg: read it)
+     __dev.home()      skip through closing into a waiting game-mode apartment
      __dev.study(o)    detached art world ({hour, rain, seats:[indices]})
      __dev.review(o)   ten repeatable PNGs: day/night/empty/people + six crops
      __dev.poses()     roster turnarounds through the real person renderer
@@ -137,6 +138,18 @@
     }
     for (let s = 0; s < seconds; s += 0.25) SIM.update(w, 0.25);
     return w.hour;
+  };
+
+  // Temporary apartment shortcut. Run the real closing lifecycle so guests,
+  // orders, seats and the cat are settled before entering the saved evening.
+  D.home = function () {
+    const w = world();
+    if (!w) return false;
+    SIM.setMode(w, 'game');
+    if (w.shop.phase === 'home') return true;
+    if (['closing', 'leaving', 'night'].indexOf(w.shop.phase) < 0) setHour(w, 21.5);
+    for (let elapsed = 0; elapsed < 1800 && w.shop.phase !== 'home'; elapsed++) D.ff(1);
+    return w.shop.phase === 'home';
   };
 
   /* ---------- scenario forcing ---------- */

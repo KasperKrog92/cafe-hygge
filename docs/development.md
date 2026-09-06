@@ -35,6 +35,13 @@ same session; it does not need a separate branch by default.
 
 ## Verification commands
 
+For apartment development, click **apartment (dev)** in the ordinary control
+bar after stepping inside (or call `__dev.home()` in the console). It jumps to
+closing time and fast-forwards the real closing routine into the apartment,
+switching to game mode so the evening waits. This advances the current save;
+it is not a detached art fixture. Use **go to sleep** to return to the next
+morning. The temporary shortcut hides while already at home.
+
 The game has no build/runtime dependencies. These optional development tools
 use **Node.js**, **Python** (or another static server), **PowerShell** and
 **agent-browser** on PATH. No package installation or framework is needed in

@@ -121,7 +121,10 @@ milestone on the current café foundation, keeping later ideas out of that slice
   fresh saves between them, exports reports/captures, and confirms session
   cleanup. See [docs/development.md](docs/development.md) for targeted commands,
   the separate normal-entry smoke test and the next preparation tasks.
-- **Dev harness** (`js/dev.js`, inert for the reader-owner): `?dev` boots past
+- **Temporary apartment shortcut:** click **apartment (dev)** in the ordinary
+  control bar, or call `__dev.home()`. It advances the current save through real
+  closing into game-mode home, which waits for **go to sleep**.
+- **Dev harness** (`js/dev.js`, inactive until invoked): `?dev` boots past
   the start overlay (screenshot-ready, audio still off until a real click),
   `?dev&hour=20` starts at 20:00, `?dev&overlay` boots with the layout
   overlay, `?dev&audit` runs the invariant sweep after load, and

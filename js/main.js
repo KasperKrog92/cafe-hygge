@@ -91,6 +91,7 @@
   const vol = document.getElementById('vol');
   const btnMode = document.getElementById('btn-mode'), btnPlan = document.getElementById('btn-plan');
   const btnSleep = document.getElementById('btn-sleep');
+  const btnHome = document.getElementById('btn-home');
   const planner = document.getElementById('planner'), buyPlant = document.getElementById('buy-plant');
   function refreshLife() {
     const l = world.memory.life;
@@ -98,6 +99,7 @@
     btnMode.setAttribute('aria-label', 'presentation: ' + l.mode + '; switch to ' + (l.mode === 'idle' ? 'game' : 'idle'));
     btnPlan.hidden = l.mode !== 'game' || world.shop.phase !== 'home';
     btnSleep.hidden = btnPlan.hidden;
+    btnHome.hidden = world.shop.phase === 'home';
     if (!world.plannerOpen && planner.open) planner.close();
     if (!planner.open) return;
     document.getElementById('plan-balance').textContent = 'savings · ' + l.savings + ' kr';
@@ -116,6 +118,9 @@
   buyPlant.addEventListener('click', function () { SIM.buyPlant(world); refreshLife(); });
   btnSleep.addEventListener('click', function () {
     if (SIM.goToSleep(world)) { refreshLife(); btnMode.focus(); }
+  });
+  btnHome.addEventListener('click', function () {
+    if (__dev.home()) { refreshLife(); btnSleep.focus(); }
   });
   document.getElementById('close-plan').addEventListener('click', function () { planner.close(); });
   planner.addEventListener('close', function () { SIM.plan(world,false); btnPlan.focus(); });
