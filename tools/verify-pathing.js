@@ -29,8 +29,11 @@
           if(ownSeat) return;
           // No solid obstacle is exempt merely because a stop is nearby.
           if(inside(p,box,0,0)) failures.push(ai+' → '+bi+' crosses solid '+box.name);
-          const marginStop = (departure && inside(a,box,10,2)) || (arrival && inside(b,box,10,2));
-          if(!marginStop && inside(p,box,9,0)) failures.push(ai+' → '+bi+' clips '+box.name);
+          const side = box.seat ? 22 : 18, depth = box.seat ? 24 : 14;
+          const comfort = {x0:box.x0-side,x1:box.x1+side,
+            y0:box.y0-depth,y1:box.y1+(box.frontClearance||depth)};
+          const marginStop = (departure && inside(a,comfort,0,0)) || (arrival && inside(b,comfort,0,0));
+          if(!marginStop && inside(p,comfort,-.1,-.1)) failures.push(ai+' → '+bi+' crowds '+box.name);
         });
       }
       from = to;
@@ -45,6 +48,20 @@
   // Same open counter frontage: never retreat to the aisle between service stops.
   const direct = {x:L.orderSpot.x,y:L.orderSpot.y}; R.makePath(direct,L.pickupSpot.x,L.pickupSpot.y);
   if(direct.path.length!==1) failures.push('counter frontage detour');
+  // Exercise the shipping shortcut smoother, in both directions. Through
+  // traffic must stay on the open-floor side of both occupied fireside chairs.
+  for(const reverse of [false,true]) {
+    const a=reverse?L.orderSpot:L.doorSpot, b=reverse?L.doorSpot:L.orderSpot;
+    const e={x:a.x,y:a.y,speed:60};R.makePath(e,b.x,b.y);
+    for(let n=0;n<1000;n++) {
+      const arrived=R.walker(e,.05);
+      L.armchairs.forEach(chair=>{
+        if(Math.abs(e.x-chair.x)<54 && e.y<chair.y+62)
+          failures.push('entrance traffic crowds fireside reader');
+      });
+      if(arrived)break;
+    }
+  }
   if(failures.length) throw Error(JSON.stringify([...new Set(failures)]));
   return {journeys, failures, distanceReduction:Math.round((1-newLength/oldLength)*100)+'%', worstPlanMs:worstMs};
 })()

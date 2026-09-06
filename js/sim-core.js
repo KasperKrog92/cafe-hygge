@@ -390,12 +390,17 @@
 
   /* ---------- movement ---------- */
 
-  // Feet-space obstacles, with room for shoulders and a small floor margin.
+  // Feet-space obstacles: a body plus breathing room, not just collision skin.
+  // Seats reserve knee/personal space even while empty so arrivals do not
+  // change their route when a reader sits down. Interaction endpoints still
+  // approach their own furniture through walkClear's first/last-leg rules.
   // Even low tables block shortcuts: depth sorting alone isn't a walkable gap.
   const walkBoxes = L.occluders.map(function (o) {
     return { x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
   }).concat(L.footprints).map(function (b) {
-    return { x0: b.x0 - 10, x1: b.x1 + 10, y0: b.y0 - 2, y1: b.y1 + 2, core: b };
+    const side = b.seat ? 22 : 18, depth = b.seat ? 24 : 14;
+    return { x0: b.x0 - side, x1: b.x1 + side, y0: b.y0 - depth,
+      y1: b.y1 + (b.frontClearance || depth), core: b };
   });
 
   function insideWalkBox(p, b) {
@@ -429,14 +434,13 @@
         if (box.core.seat && insideWalkBox(p, box.core)) return false;
         bounds = { x0: bounds.x0, x1: bounds.x1, y0: bounds.y0, y1: bounds.y1 };
         // A stop can be in a clearance margin (the right window is beside a
-        // plant). Relax only the nearest outside edge, never the solid core.
+        // plant). Relax the outside edges on that leg, never the solid core.
+        // At a corner both edges matter: choosing just one can trap a sitter
+        // between the overlapping comfort margins of an easel and side table.
         const edges = ['x0', 'x1', 'y0', 'y1'].filter(function (edge) {
           return edge[1] === '0' ? p[edge[0]] <= box.core[edge] : p[edge[0]] >= box.core[edge];
         });
-        edges.sort(function (u, v) {
-          return Math.abs(p[u[0]] - box[u]) - Math.abs(p[v[0]] - box[v]);
-        });
-        if (edges.length) bounds[edges[0]] = p[edges[0][0]];
+        edges.forEach(function (edge) { bounds[edge] = p[edge[0]]; });
       }
       return walkHits(a, b, bounds);
     });
@@ -453,7 +457,7 @@
     });
   });
 
-  function makePath(e, tx, ty) {
+  function findWalkPath(e, tx, ty) {
     const start = { x: e.x, y: e.y }, end = { x: tx, y: ty };
     const boxes = walkBoxes;
     if (walkClear(start, end, boxes, start, end)) { e.path = [end]; return; }
@@ -481,6 +485,20 @@
     }
     // Invalid dev destinations must never cause a straight walk through a wall.
     e.path = path;
+  }
+
+  function makePath(e, tx, ty) {
+    const fromDoor = e.x === L.doorSpot.x && e.y === L.doorSpot.y;
+    const toDoor = tx === L.doorSpot.x && ty === L.doorSpot.y;
+    if (fromDoor === toDoor) { findWalkPath(e, tx, ty); return; }
+    // The entrance opens into the aisle, not the narrow strip behind readers.
+    // Both legs still use the obstacle planner; no unchecked waypoint splice.
+    const via = L.entryApproach;
+    findWalkPath(e, via.x, via.y);
+    const first = e.path;
+    const last = { x: via.x, y: via.y };
+    findWalkPath(last, tx, ty);
+    e.path = first.length && last.path.length ? first.concat(last.path) : [];
   }
 
   function smoothPath(e) {

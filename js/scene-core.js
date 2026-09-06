@@ -25,6 +25,7 @@
     wallY: 232,               // where wall meets floor
     door: { x: 28, y: 130, w: 52, h: 102 },   // 1.7 CH
     doorSpot: { x: 54, y: 252 },     // where people appear
+    entryApproach: { x: 54, y: 336 }, // enter the open floor before crossing the room
     // coir mat across the threshold, centred on doorSpot so an arrival lands
     // on it; walkable floor decor (no footprint, like the rugs) that darkens
     // with world.rain so rainy arrivals have something to wipe their shoes on
@@ -271,7 +272,7 @@
     });
   });
   L.armchairs.concat(L.library.chairs).forEach(function (A, i) {
-    L.footprints.push({ name: 'wing chair ' + i, seat: true, x0: A.x - 32, x1: A.x + 32, y0: A.y - 16, y1: A.y + 14 });
+    L.footprints.push({ name: 'wing chair ' + i, seat: true, frontClearance: 48, x0: A.x - 32, x1: A.x + 32, y0: A.y - 16, y1: A.y + 14 });
   });
   L.library.sideTables.forEach(function (s, i) {
     L.footprints.push({ name: 'side table ' + i, x0: s.x - 16, x1: s.x + 16, y0: s.y - 4, y1: s.y + 12, passable: true });

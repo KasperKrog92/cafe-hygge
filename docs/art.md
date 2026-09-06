@@ -217,7 +217,13 @@ added to an existing `L` list gets its footprint automatically; a new *kind*
 of furniture needs a footprint entry alongside its art.
 
 The floor planner also avoids `passable` tables when choosing new routes and
-shortcuts, with 10 px shoulder and 2 px floor clearance. The `passable` audit
+shortcuts, with 18 px side and 14 px depth clearance. Seats reserve 22 px
+side and 24 px depth clearance even while empty, keeping through traffic
+away from readers' knees; wing chairs reserve 48 px in front to keep a
+passing walker's full silhouette clear of the seated reader. Door traffic enters the open floor at
+`L.entryApproach` before crossing in front of the fireside pair. Close
+interaction endpoints relax only the first/last leg's outside margins;
+solid furniture remains blocked. The `passable` audit
 exception remains for authored interaction routes. Run `tools/verify-pathing.js`
 in a disposable `?dev` browser for all seat/service pairs, sampled collision
 checks (including tables), arrival checks, and distance comparisons.
