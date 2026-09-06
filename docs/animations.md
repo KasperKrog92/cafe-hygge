@@ -39,6 +39,9 @@ animation or change narrative pacing.
   for `!!window.__world`. Journey tests must use a disposable browser with
   audio off: real simulation creation can write that browser's narrative save.
   Detached `__dev.study()` worlds are used only by the rendering gallery.
+  Follow the [browser cleanup recipe](art-workflow.md#browser-session-lifecycle):
+  run checks sequentially in one owned session, export results, close in
+  `finally`, and verify the session is gone before finishing or retrying.
 - Final art review: ten repeatable images, eight occupancy/time scenarios,
   zero invariant problems. Warm composition: approximately 0.5 ms median,
   0.8 ms p95 on this development browser (100 samples after 20 warmups).

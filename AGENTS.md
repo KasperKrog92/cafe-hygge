@@ -43,6 +43,20 @@ for the full design ethos.
 
 ## Running & testing
 
+- **Browser cleanup is part of every verification run.** Keep at most one
+  project-owned automated browser session active at a time; reuse it for
+  related checks and close it before starting a fresh one. Put every ad hoc
+  `agent-browser` launch, test and capture in a single `try` / `finally` block
+  whose `finally` runs `agent-browser --session $testSession close`. Check CLI
+  exit codes explicitly. Export screenshots before closing, and confirm cleanup
+  with `agent-browser session list` before finishing the task. After interruption
+  or a timeout, inspect and close the known leftover session before retrying;
+  never keep launching replacement sessions. Only close sessions owned by this
+  task, never the owner's browser or another task's session. See the
+  [cleanup recipe](docs/art-workflow.md#browser-session-lifecycle) for details.
+  This applies to smoke tests, lifecycle/animation checks and live-site checks,
+  not just art captures. Hidden café tabs still run the simulation.
+
 - **For an art pass, start with [docs/art-workflow.md](docs/art-workflow.md).**
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools/art-review.ps1 -Label before`
   captures a fixed day/night scene, empty furniture, character turnarounds,

@@ -45,6 +45,52 @@ Inspect the room at its native 960×600 size before enlarging crops. A detail th
 only works enlarged is not a reason to keep it. Show an actual rendered result
 to the owner when finishing, with a short account of the changes and validation.
 
+## Browser session lifecycle
+
+On 6 September 2026, severe laptop slowdown coincided with many Chrome for
+Testing processes. The closing/opening development task contained ten named
+sessions with launch commands and no matching close commands. Accumulated test
+browsers were the likely cause; peak resource usage was not available after
+the restart. Hidden café tabs continue simulating, so finishing a CLI command
+does not mean its browser has stopped doing work.
+
+Keep at most one project-owned automated browser session running at a time.
+Reuse it for related checks. If fresh state is needed, close it before launching
+the next session. `tools/art-review.ps1` already closes its disposable session
+in `finally`; use the same pattern for ad hoc lifecycle, animation, smoke and
+live-site checks. Run this whole block together from the repository root:
+
+```powershell
+$testSession = 'hygge-check-' + [guid]::NewGuid().ToString('N').Substring(0, 8)
+try {
+    agent-browser --session $testSession open 'http://127.0.0.1:8137/?dev'
+    if ($LASTEXITCODE -ne 0) { throw 'Browser launch failed.' }
+    agent-browser --session $testSession wait --fn '!!window.__world'
+    if ($LASTEXITCODE -ne 0) { throw 'Dev harness did not become ready.' }
+    $testCode = Get-Content -Raw tools/verify-hours.js -ErrorAction Stop
+    agent-browser --session $testSession eval $testCode
+    if ($LASTEXITCODE -ne 0) { throw 'Lifecycle verification failed.' }
+    # Run related checks and export needed window.hoursFrames PNGs here.
+} finally {
+    agent-browser --session $testSession close
+    if ($LASTEXITCODE -ne 0) { Write-Warning "Cleanup failed for $testSession; inspect before retrying." }
+}
+agent-browser session list
+```
+
+Use the actual local server port and substitute the relevant verification
+script. Save required screenshots/results before closing the browser. PowerShell
+does not reliably turn a native CLI's nonzero exit code into an exception, so
+check `$LASTEXITCODE` after each browser command.
+
+Confirm the task's session is absent from `agent-browser session list` before
+reporting completion. A forced termination can bypass `finally`: after a timeout,
+interruption or resumed task, inspect the session list and close the known owned
+session with `agent-browser --session <name> close` before launching a replacement.
+If cleanup fails or the laptop slows down, stop launching tests and investigate
+the remaining owned session. Do not use `close --all` or kill all Chrome processes;
+other tasks and the owner's browser must remain under their own control.
+
 ## Targeted console loop
 
 ```javascript
@@ -130,6 +176,8 @@ would benefit from them.
 
 For the daily shop lifecycle, run `tools/verify-hours.js` through
 `agent-browser --session <disposable-session> eval` on a fresh `?dev` page.
+Use the [browser session lifecycle](#browser-session-lifecycle) recipe so the
+session closes after capture, including when verification fails.
 It exercises empty/busy evenings, laptop/book/umbrella departures, cat perches,
 opening admissions, pending-story preservation and two consecutive natural nights.
 It checks invariants during the journeys, not just after reopening, and leaves
