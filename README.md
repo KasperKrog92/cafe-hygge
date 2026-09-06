@@ -66,12 +66,12 @@ Move the mouse to reveal the bar in the corner:
 | Control | Effect |
 | --- | --- |
 | 🔊 / slider | mute (`m`) and volume |
-| 🌧️ | let the rain come, or keep the skies clear |
-| 🔥 | fire crackle sound on/off |
-| 🎵 | music box on/off |
+| settings | separate sound volumes; allow rainy weather; restore sound defaults; start over |
 | ⛶ | fullscreen (`f`) |
 
-Settings are remembered between visits.
+Sound settings are remembered between visits. Start over asks for confirmation,
+then erases stories, relationships, savings and improvements in this browser.
+It keeps sound preferences and returns to the entry screen.
 
 ## Notes
 

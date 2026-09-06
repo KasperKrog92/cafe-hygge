@@ -22,6 +22,8 @@ New-Item -ItemType Directory -Force -Path $output | Out-Null
 
 node (Join-Path $PSScriptRoot 'test-save.js')
 if ($LASTEXITCODE -ne 0) { throw 'Save/isolation regressions failed.' }
+node (Join-Path $PSScriptRoot 'test-audio-settings.js')
+if ($LASTEXITCODE -ne 0) { throw 'Audio settings regressions failed.' }
 
 # Check the actual script-tag list, including newly added production scripts.
 $html = [IO.File]::ReadAllText((Join-Path $repo 'index.html'))

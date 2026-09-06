@@ -27,12 +27,27 @@ window taps + storm ───► amb ───┤
 crackles + log catch ──► fire ──┼─► master ─► compressor ─► speakers
 music box + night pad ─► music ─┤
 corner felt piano ─────► music ─┤
-      └─ send ─► delay "room" (0.31 s, feedback 0.34, damped 1700 Hz, wet 0.2) ─┘
+Each sfx/music room send returns through its own channel fader.
+Room: 0.31 s delay, feedback 0.34, damped 1700 Hz, wet 0.2.
 ```
 
-`fire` and `music` bus gains are the 🔥/🎵 toggles (smoothly ramped). Master
-gain is the volume slider / mute. Bell-like sounds (door bell, ding, clinks,
-music notes) take the delay send — it makes the room sound like a room.
+Settings provides master volume and mute, plus independent 0–100% sliders for
+rain & storms, fireplace, music, and café activity. Zero silences a channel;
+100% retains its original quiet mix. The default master remains 70%. Fire,
+rain and music ease over 0.4 s; café activity and master over 0.05 s.
+Bell-like sounds (door bell, ding, clinks, music notes) take a room send.
+Separate sfx/music delay returns pass through their channel faders, so even
+ringing echoes follow volume and mute without leaking into another channel.
+
+Preferences save automatically under `cafe-hygge-audio`. Existing volume,
+mute and rain/fire/music off preferences are preserved; missing channel levels
+default to 100%. Invalid types fall back to defaults and numeric levels clamp
+to 0–1. Adjusting formerly disabled fire/music re-enables that channel at the chosen level.
+“restore sound defaults” restores the original mix and unmutes sound. These
+controls change sound only; weather and character behavior continue normally.
+The separate “Allow rain & storms” checkbox preserves the old rain toggle's
+weather behavior: off gently clears the skies; on lets weather drift again.
+Rain volume and sound defaults leave this weather preference unchanged.
 
 ## Ambience loops
 
@@ -56,7 +71,7 @@ same music bus. It chooses C–E–G, A–C–E, G–D–A, or D–A–E from th
 pentatonic notes one octave lower. Each pitch is a triangle/sine pair detuned
 ±4 cents, summed through a 900 Hz lowpass. Chords attack for 2–3.5 s, hover for
 4–7 s, release for 4–5.5 s, then leave 2–5 s of silence; the combined peak is
-about 0.025. Dawn fades active voices without a click. The 🎵 toggle governs
+about 0.025. Dawn fades active voices without a click. The music slider governs
 both layers. There is no vinyl crackle—the fireplace already owns that texture.
 
 ## The corner piano
@@ -71,8 +86,8 @@ G-ish pentatonic-safe graph while a random-walk right hand answers every
 
 `SND.pianoStart(style)` / `pianoStop()` own the dt-driven session. While a
 session is active the music box rests; stopping resets its timer to 4–8 s so
-it returns gently. The compatible night pad continues underneath. The 🎵
-toggle mutes all three layers without changing their visual behavior.
+it returns gently. The compatible night pad continues underneath. The music
+slider controls all three layers without changing their visual behavior.
 
 ## One-shot catalog
 

@@ -12,3 +12,4 @@ jobs:
         with:
           node-version: '24'
       - run: node tools/test-save.js
+      - run: node tools/test-audio-settings.js

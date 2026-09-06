@@ -252,7 +252,8 @@ surface anchors instead of using `walker`.
 - Every public sound function is wrapped in `guard()` — safe to call before
   init or while muted (it no-ops).
 - Buses: `master → compressor → destination`, with `sfx`, `amb` (rain),
-  `fireBus`, `musicBus` feeding master, plus a feedback-delay "room" send.
+  `fireBus`, `musicBus` feeding master. Separate sfx/music feedback-delay
+  returns feed their channel faders, so echoes respect the mix.
   See [sounds.md](sounds.md).
 - Settings live in `SND.settings`, persisted to localStorage key
   `cafe-hygge-audio` by `SND.save()`.
@@ -305,10 +306,24 @@ completion flag is set without its beat having played.
 
 ## UI
 
-One overlay (start gate for audio), one auto-fading control bar (volume, rain,
-fire, music, fullscreen), keyboard `m` (mute) and `f` (fullscreen), and one
+One overlay (start gate for audio), one auto-fading control bar (presentation,
+evening plan when available, mute, volume, settings, fullscreen), keyboard `m`
+(mute) and `f` (fullscreen), and one
 canvas click handler: a waiting story invitation takes the tap first
-(`SIM.beatAt`), otherwise it pets the cat. Resist adding more UI.
+(`SIM.beatAt`), otherwise it pets the cat.
+
+The native settings dialog contains five volume sliders, mute, a weather switch, sound defaults
+and a separate start-over confirmation. Opening it leaves the simulation running.
+Focus stays in the dialog and returns to its opener on close. Escape first
+cancels an open reset confirmation, then closes settings; shortcuts ignore
+dialogs, editable fields and modifier keys. The evening planner remains separate.
+
+Confirmed reset calls `MEMORY.reset()`, checks storage errors, then stops
+simulation advancement and marks persistence read-only before navigating to
+the entry screen without scenario query parameters. This prevents pending
+timers and unload saves from resurrecting the old world. A failed deletion
+restores the old in-memory save and reports the failure in the dialog. Audio
+preferences and unrelated localStorage keys are retained.
 
 ## Dev harness (js/dev.js)
 

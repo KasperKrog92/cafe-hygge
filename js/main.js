@@ -79,9 +79,14 @@
   const overlay = document.getElementById('overlay');
   const controls = document.getElementById('controls');
   const btnMute = document.getElementById('btn-mute');
-  const btnRain = document.getElementById('btn-rain');
-  const btnFire = document.getElementById('btn-fire');
-  const btnMusic = document.getElementById('btn-music');
+  const btnSettings = document.getElementById('btn-settings');
+  const settings = document.getElementById('settings');
+  const settingsMain = document.getElementById('settings-main');
+  const resetConfirmation = document.getElementById('reset-confirmation');
+  const settingMute = document.getElementById('setting-mute');
+  const settingWeather = document.getElementById('setting-weather');
+  const soundSliders = settings.querySelectorAll('[data-sound]');
+  let restarting = false;
   const btnFull = document.getElementById('btn-full');
   const vol = document.getElementById('vol');
   const btnMode = document.getElementById('btn-mode'), btnPlan = document.getElementById('btn-plan');
@@ -117,11 +122,72 @@
     const S = SND.settings;
     btnMute.textContent = S.muted ? '🔇' : '🔊';
     btnMute.classList.toggle('off', S.muted);
-    btnRain.classList.toggle('off', !S.rain);
-    btnFire.classList.toggle('off', !S.fire);
-    btnMusic.classList.toggle('off', !S.music);
+    btnMute.setAttribute('aria-label', S.muted ? 'Unmute sound (m)' : 'Mute sound (m)');
+    btnMute.setAttribute('aria-pressed', String(S.muted));
+    settingMute.setAttribute('aria-pressed', String(S.muted));
+    settingMute.textContent = S.muted ? 'unmute' : 'mute all';
+    settingWeather.checked = S.rain;
     vol.value = Math.round(S.volume * 100);
+    soundSliders.forEach(function (slider) {
+      const key = slider.dataset.sound, toggle = key.replace('Volume', '');
+      const value = toggle !== 'rain' && S[toggle] === false ? 0 : Math.round(S[key] * 100);
+      slider.value = value;
+      slider.nextElementSibling.value = value + '%';
+    });
   }
+
+  function showResetConfirmation(show) {
+    settingsMain.hidden = show;
+    resetConfirmation.hidden = !show;
+    document.getElementById('reset-error').hidden = true;
+    document.getElementById(show ? 'cancel-reset' : 'start-over').focus();
+  }
+  btnSettings.addEventListener('click', function () {
+    restoreBurstMute(); refreshButtons();
+    settingsMain.hidden = false; resetConfirmation.hidden = true;
+    settings.showModal();
+  });
+  document.getElementById('close-settings').addEventListener('click', function () { settings.close(); });
+  settings.addEventListener('close', function () { pokeControls(); btnSettings.focus(); });
+  settings.addEventListener('cancel', function (e) {
+    if (!resetConfirmation.hidden) { e.preventDefault(); showResetConfirmation(false); }
+  });
+  soundSliders.forEach(function (slider) {
+    slider.addEventListener('input', function () {
+      restoreBurstMute();
+      const key = slider.dataset.sound, toggle = key.replace('Volume', '');
+      SND.settings[key] = slider.value / 100;
+      // Older saves keep their off toggles until the owner adjusts that mix.
+      if (toggle === 'fire' || toggle === 'music') SND.settings[toggle] = true;
+      SND.applyVolume(); SND.applyToggles(); SND.save(); refreshButtons();
+    });
+  });
+  settingMute.addEventListener('click', function () { btnMute.click(); });
+  settingWeather.addEventListener('change', function () {
+    restoreBurstMute(); SND.settings.rain = settingWeather.checked;
+    SND.applyToggles(); SND.save(); refreshButtons();
+  });
+  document.getElementById('reset-sound').addEventListener('click', function () {
+    restoreBurstMute(); SND.resetSettings(); refreshButtons();
+  });
+  document.getElementById('start-over').addEventListener('click', function () { showResetConfirmation(true); });
+  document.getElementById('cancel-reset').addEventListener('click', function () { showResetConfirmation(false); });
+  document.getElementById('confirm-reset').addEventListener('click', function () {
+    if (restarting) return;
+    const previous = MEMORY.state;
+    MEMORY.reset();
+    if (MEMORY.status.writeError) {
+      MEMORY.state = previous;
+      const error = document.getElementById('reset-error');
+      error.textContent = 'Your browser could not erase the save. Your café is still here. Please try again.';
+      error.hidden = false;
+      return;
+    }
+    // Stop the old world and unload handlers from writing progress back.
+    restarting = true; MEMORY.readOnly = true;
+    location.replace(location.pathname);
+  });
+  refreshButtons();
 
   document.getElementById('enter').addEventListener('click', function () {
     SND.init();
@@ -132,31 +198,23 @@
   });
 
   btnMute.addEventListener('click', function () {
+    restoreBurstMute();
     SND.settings.muted = !SND.settings.muted;
     SND.applyVolume(); SND.save(); refreshButtons();
-  });
-  btnRain.addEventListener('click', function () {
-    SND.settings.rain = !SND.settings.rain;
-    SND.save(); refreshButtons();
-  });
-  btnFire.addEventListener('click', function () {
-    SND.settings.fire = !SND.settings.fire;
-    SND.applyToggles(); SND.save(); refreshButtons();
-  });
-  btnMusic.addEventListener('click', function () {
-    SND.settings.music = !SND.settings.music;
-    SND.applyToggles(); SND.save(); refreshButtons();
   });
   btnFull.addEventListener('click', function () {
     if (document.fullscreenElement) document.exitFullscreen();
     else stage.requestFullscreen();
   });
   vol.addEventListener('input', function () {
+    restoreBurstMute();
     SND.settings.volume = vol.value / 100;
-    SND.applyVolume(); SND.save();
+    SND.applyVolume(); SND.save(); refreshButtons();
   });
 
   document.addEventListener('keydown', function (e) {
+    if (settings.open || planner.open || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
     if (e.key === 'm') btnMute.click();
     if (e.key === 'f') btnFull.click();
   });
@@ -205,6 +263,12 @@
      __dev.ff pattern); a gap beyond 90 s (a frozen tab, a sleeping laptop) is
      dropped — that café simply held still, which the narrative allows. */
   let hiddenMute = null;
+  function restoreBurstMute() {
+    if (!hiddenMute) return;
+    clearTimeout(hiddenMute.timer);
+    SND.settings.muted = hiddenMute.muted;
+    SND.applyVolume(); hiddenMute = null;
+  }
   function muteBurst() {
     if (!SND.ready()) return;
     if (hiddenMute) clearTimeout(hiddenMute.timer);
@@ -213,14 +277,11 @@
       SND.settings.muted = true;
       SND.applyVolume();
     }
-    hiddenMute.timer = setTimeout(function () {
-      SND.settings.muted = hiddenMute.muted;
-      SND.applyVolume();
-      hiddenMute = null;
-    }, 1500);
+    hiddenMute.timer = setTimeout(restoreBurstMute, 1500);
   }
   let last = performance.now();
   function advance(nowMs) {
+    if (restarting) return;
     let elapsed = Math.min(90, (nowMs - last) / 1000);
     last = nowMs;
     if (elapsed <= 0) return;

@@ -5,13 +5,29 @@
   const SND = (window.SND = {});
 
   let ctx = null;
-  let master, sfx, amb, musicBus, fireBus, delaySend, nightGain;
+  let master, sfx, amb, musicBus, fireBus, nightGain;
   let noiseBuf = null;
   let stormGain = null;
   let stormLfo1, stormLfo2, stormSwell1, stormSwell2;
 
-  const S = (SND.settings = { volume: 0.7, muted: false, rain: true, fire: true, music: true });
-  try { Object.assign(S, JSON.parse(localStorage.getItem('cafe-hygge-audio') || '{}')); } catch (e) {}
+  const defaults = { volume: 0.7, muted: false, rain: true, fire: true, music: true,
+    rainVolume: 1, fireVolume: 1, musicVolume: 1, cafeVolume: 1 };
+  const S = (SND.settings = Object.assign({}, defaults));
+  try {
+    const saved = JSON.parse(localStorage.getItem('cafe-hygge-audio') || '{}');
+    Object.keys(defaults).forEach(function (key) {
+      if (!saved || typeof saved[key] !== typeof defaults[key]) return;
+      if (typeof defaults[key] === 'boolean') S[key] = saved[key];
+      else if (Number.isFinite(saved[key])) S[key] = Math.max(0, Math.min(1, saved[key]));
+    });
+  } catch (e) {}
+
+  SND.resetSettings = function () {
+    const weather = S.rain;
+    Object.assign(S, defaults);
+    S.rain = weather; // Sound defaults do not change the chosen weather.
+    SND.applyVolume(); SND.applyToggles(); SND.save();
+  };
 
   SND.save = function () {
     try { localStorage.setItem('cafe-hygge-audio', JSON.stringify(S)); } catch (e) {}
@@ -65,26 +81,33 @@
     master = gainNode(S.muted ? 0 : S.volume);
     master.connect(comp);
 
-    sfx = gainNode(1); sfx.connect(master);
-    amb = gainNode(1); amb.connect(master);
-    fireBus = gainNode(S.fire ? 1 : 0); fireBus.connect(master);
-    musicBus = gainNode(S.music ? 1 : 0); musicBus.connect(master);
+    sfx = gainNode(S.cafeVolume); sfx.connect(master);
+    amb = gainNode(S.rain ? S.rainVolume : 0); amb.connect(master);
+    fireBus = gainNode(S.fire ? S.fireVolume : 0); fireBus.connect(master);
+    musicBus = gainNode(S.music ? S.musicVolume : 0); musicBus.connect(master);
     nightGain = gainNode(0); nightGain.connect(musicBus);
 
-    // a soft "room" — feedback delay standing in for reverb
+    // Each room return stays upstream of its channel fader: muting a
+    // channel also silences its echoes, including notes already ringing.
+    sfx.roomSend = makeRoom(sfx);
+    musicBus.roomSend = makeRoom(musicBus);
+
+    noiseBuf = makeNoiseBuffer();
+    startStormWash();
+  };
+
+  function makeRoom(bus) {
     const dly = ctx.createDelay(1.0);
     dly.delayTime.value = 0.31;
     const damp = filt('lowpass', 1700);
     const fb = gainNode(0.34);
     dly.connect(damp); damp.connect(fb); fb.connect(dly);
     const wet = gainNode(0.2);
-    damp.connect(wet); wet.connect(master);
-    delaySend = gainNode(1);
+    damp.connect(wet); wet.connect(bus);
+    const delaySend = gainNode(1);
     delaySend.connect(dly);
-
-    noiseBuf = makeNoiseBuffer();
-    startStormWash();
-  };
+    return delaySend;
+  }
 
   SND.applyVolume = function () {
     if (!ctx) return;
@@ -92,8 +115,10 @@
   };
   SND.applyToggles = function () {
     if (!ctx) return;
-    fireBus.gain.setTargetAtTime(S.fire ? 1 : 0, ctx.currentTime, 0.4);
-    musicBus.gain.setTargetAtTime(S.music ? 1 : 0, ctx.currentTime, 0.4);
+    sfx.gain.setTargetAtTime(S.cafeVolume, ctx.currentTime, 0.05);
+    amb.gain.setTargetAtTime(S.rain ? S.rainVolume : 0, ctx.currentTime, 0.4);
+    fireBus.gain.setTargetAtTime(S.fire ? S.fireVolume : 0, ctx.currentTime, 0.4);
+    musicBus.gain.setTargetAtTime(S.music ? S.musicVolume : 0, ctx.currentTime, 0.4);
   };
 
   /* ---------- ambience loops ---------- */
@@ -177,7 +202,7 @@
       o.connect(lp); lp.connect(g);
     } else o.connect(g);
     g.connect(opts.dest || sfx);
-    if (opts.send) { const sg = gainNode(opts.send); g.connect(sg); sg.connect(delaySend); }
+    if (opts.send) { const sg = gainNode(opts.send); g.connect(sg); sg.connect((opts.dest || sfx).roomSend); }
     const a = opts.attack || 0.004;
     g.gain.setValueAtTime(0, t);
     g.gain.linearRampToValueAtTime(opts.gain, t + a);
@@ -669,7 +694,7 @@
     const lp = filt('lowpass', 1900);
     const g = gainNode(0);
     lp.connect(g); g.connect(musicBus);
-    const send = gainNode(0.42); g.connect(send); send.connect(delaySend);
+    const send = gainNode(0.42); g.connect(send); send.connect(musicBus.roomSend);
     g.gain.setValueAtTime(0, t);
     g.gain.linearRampToValueAtTime(Math.min(0.024, 0.022 * vel), t + 0.006);
     g.gain.exponentialRampToValueAtTime(0.0004, t + dur);

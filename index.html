@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Café Hygge — a cozy idle café</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css?v=apartment-20260906-1">
+<link rel="stylesheet" href="style.css?v=settings-20260906-1">
 </head>
 <body>
 <div id="stage">
@@ -29,19 +29,48 @@
     <div class="plan-actions"><button id="buy-plant">choose the plant · 30 kr</button><button id="close-plan">back to the evening</button></div>
     <p class="plan-footnote">Stay a while. Morning waits while your notebook is open.<br>There will always be another evening.</p>
   </dialog>
+  <dialog id="settings" aria-labelledby="settings-title">
+    <header class="settings-heading">
+      <div><p class="eyebrow">make yourself at home</p><h2 id="settings-title">Settings</h2></div>
+      <button id="close-settings" aria-label="Close settings" autofocus>✕</button>
+    </header>
+    <div id="settings-main">
+      <p class="settings-intro">A little louder, a little softer. Just as you like it.</p>
+      <div class="master-row"><label for="setting-volume">Master volume</label><button id="setting-mute" aria-pressed="false">mute all</button></div>
+      <div class="slider-row"><input id="setting-volume" data-sound="volume" type="range" min="0" max="100" step="1"><output for="setting-volume"></output></div>
+      <fieldset class="sound-mix"><legend>The sounds of the café</legend>
+        <label for="setting-rain">Rain &amp; storms <small>drops on the glass, distant thunder</small></label>
+        <div class="slider-row"><input id="setting-rain" data-sound="rainVolume" type="range" min="0" max="100" step="1"><output for="setting-rain"></output></div>
+        <label for="setting-fire">Fireplace <small>crackles and settling logs</small></label>
+        <div class="slider-row"><input id="setting-fire" data-sound="fireVolume" type="range" min="0" max="100" step="1"><output for="setting-fire"></output></div>
+        <label for="setting-music">Music <small>music box, felt piano and evening notes</small></label>
+        <div class="slider-row"><input id="setting-music" data-sound="musicVolume" type="range" min="0" max="100" step="1"><output for="setting-music"></output></div>
+        <label for="setting-cafe">Café activity <small>coffee-making, cups, page turns, voices and the cat</small></label>
+        <div class="slider-row"><input id="setting-cafe" data-sound="cafeVolume" type="range" min="0" max="100" step="1"><output for="setting-cafe"></output></div>
+      </fieldset>
+      <div class="sound-footer"><span>Sound preferences save automatically.</span><button id="reset-sound">restore sound defaults</button></div>
+      <label class="weather-setting" for="setting-weather"><span>Allow rain &amp; storms <small>weather comes and goes at its own pace</small></span><input id="setting-weather" type="checkbox"></label>
+      <section class="progress-settings" aria-labelledby="progress-title"><div><h3 id="progress-title">A fresh beginning</h3><p>Erase your progress and open a new café.</p></div><button id="start-over">start over…</button></section>
+    </div>
+    <section id="reset-confirmation" hidden aria-labelledby="reset-title">
+      <h3 id="reset-title">Start a new café?</h3>
+      <p>This erases your stories, relationships, savings and improvements in this browser. Nora’s day will begin again.</p>
+      <p>Your sound preferences will stay. Erased progress cannot be recovered.</p>
+      <p id="reset-error" role="alert" hidden></p>
+      <div class="reset-actions"><button id="cancel-reset">keep my café</button><button id="confirm-reset" class="danger">erase progress &amp; start over</button></div>
+    </section>
+  </dialog>
   <div id="controls" class="hidden">
     <button id="btn-mode" title="switch idle / game presentation">idle</button>
     <button id="btn-plan" hidden>evening plan</button>
     <button id="btn-mute"  title="mute (m)">🔊</button>
-    <input  id="vol" type="range" min="0" max="100" value="70" title="volume">
-    <button id="btn-rain"  title="rain on/off">🌧️</button>
-    <button id="btn-fire"  title="fire crackle on/off">🔥</button>
-    <button id="btn-music" title="music on/off">🎵</button>
+    <input  id="vol" type="range" min="0" max="100" value="70" title="volume" aria-label="Master volume">
+    <button id="btn-settings" title="settings" aria-haspopup="dialog">settings</button>
     <button id="btn-full"  title="fullscreen (f)">⛶</button>
   </div>
 </div>
 
-<script src="js/audio.js?v=apartment-20260906-1"></script>
+<script src="js/audio.js?v=settings-20260906-1"></script>
 <script src="js/scene-core.js?v=apartment-20260906-1"></script>
 <script src="js/scene-waterfront.js?v=waterfront-20260906-1-ship"></script>
 <script src="js/scene-bg.js?v=waterfront-20260906-1-ship"></script>
@@ -58,6 +87,6 @@
 <script src="js/sim-characters.js?v=apartment-20260906-1"></script>
 <script src="js/sim-life.js?v=apartment-20260906-1"></script>
 <script src="js/dev.js?v=apartment-20260906-1"></script>
-<script src="js/main.js?v=apartment-20260906-1"></script>
+<script src="js/main.js?v=settings-20260906-1"></script>
 </body>
 </html>

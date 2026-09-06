@@ -150,6 +150,12 @@ calendar.
 ## 4. Persistence — the `MEMORY` global
 
 Audio settings persist separately as `cafe-hygge-audio` via `SND.save()`.
+
+The owner's explicit **Settings → start over** action is the exception to
+preserving progress. A second confirmation explains that stories, relationships,
+savings and improvements in this browser will be erased permanently. Cancel
+keeps the café; confirming resets it and returns to the entry screen. Sound
+preferences remain. If storage deletion fails, the current café is retained.
 The implemented narrative memory persists as `cafe-hygge-save` via `MEMORY`.
 The save codec validates plain records, supported integer versions and finite
 arc fields before binding them to a world. Findings 1–2 of the

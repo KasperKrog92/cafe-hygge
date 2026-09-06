@@ -101,6 +101,14 @@ The bare URL already has a sized canvas and initialized globals behind its
 splash. `?dev` skips the splash for captures; audio still needs a real click.
 Keep an occasional `file://` boot check when changing script loading.
 
+**Settings:** `node tools/test-audio-settings.js` checks legacy/malformed audio
+preferences, independent channel gains and room-return routing. Run
+`./tools/verify-settings.ps1` for real UI persistence, defaults, keyboard focus,
+confirmation/cancel, failed deletion, restart/reload, retained audio preferences,
+compact desktop scrolling and a clean audit. It exports settings/confirmation
+screenshots and closes its disposable session. Pair it with the normal-entry
+smoke test when changing audio or the main UI loop.
+
 The `life` suite covers three unattended nights per mode, migration, mode
 switching, one-time purchase and restoration at every plant stage. For actual
 page reloads, planner interactions and two-tab ownership handoff, run:
