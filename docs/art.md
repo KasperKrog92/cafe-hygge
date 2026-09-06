@@ -13,9 +13,12 @@ sit to the right of each fixture run. The kitchen sink, two-ring cooker/oven
 and small fridge share the rear wall, with no floor strip behind them; one mug
 and a towel are unpacked. The bathroom basin and toilet cistern sit against
 the back wall, with the bowl facing open floor and clear approach space in
-front. The shower tray meets that same wall, with a standing-height shower
-head and its curtain tied to one side. The bathroom extends 30 px farther
-right to give its doorway a clear route past the shower.
+front. The shower hugs the left bathroom wall, with its pipe and gathered
+curtain on the left; the basin and toilet sit to its right, clear of the doorway.
+The bed is tucked into the rear-right corner, with a paneled headboard,
+thick mattress, two pillows, folded duvet and low timber rails and feet.
+The PC chair has a padded seat and full backrest on a wheeled pedestal;
+separate depth layers place Nora between the cushion and the near backrest.
 Bare counters and walls keep the just-moved-in feel. No image assets or second rendering
 engine are used. Nora's existing sprite is shown without her apron at home;
 the same cat sprite/scarf is reused. Props retain top/front/side tones and

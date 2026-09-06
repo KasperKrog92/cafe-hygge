@@ -34,13 +34,13 @@
       },
       bathroom: {
         x: 354, y: 454, w: 224, h: 96, wallH: 96, doorX: 528, doorW: 42,
-        basin: { x: 379, y: 466 }, toilet: { x: 438, y: 482 },
-        shower: { x: 470, y: 454, w: 48, h: 54 }
+        basin: { x: 442, y: 466 }, toilet: { x: 498, y: 482 },
+        shower: { x: 362, y: 454, w: 48, h: 54 }
       },
       door: { x: 180, y: 164, w: 54, h: 102 },
       entry: { x: 207, y: 294 }, bag: { x: 258, y: 310 },
-      desk: { x: 366, y: 294 }, deskSeat: { x: 370, y: 325 },
-      bed: { x: 664, y: 318, w: 124, h: 74 }, bedSeat: { x: 675, y: 340 }, bedApproach: { x: 646, y: 340 },
+      desk: { x: 366, y: 294 }, deskSeat: { x: 366, y: 306 },
+      bed: { x: 704, y: 266, w: 124, h: 84 }, bedSeat: { x: 713, y: 310 }, bedApproach: { x: 683, y: 310 },
       window: { x: 535, y: 124, w: 128, h: 112 },
       boxes: [{ x: 280, y: 270 }, { x: 308, y: 270 }, { x: 294, y: 248 },
         { x: 474, y: 280 }, { x: 503, y: 280 }, { x: 493, y: 258 }, { x: 776, y: 422 }],

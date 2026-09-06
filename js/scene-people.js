@@ -236,6 +236,24 @@
 
     ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
 
+    if (p.pose === 'pc') {
+      const y = Math.round(p.y) - Math.round((1-p.pcSit)*8);
+      // Rear-facing desk sitter: thighs on the cushion, bent knees below
+      // the desk, shoulders above the chair back and hands on the keyboard.
+      px(g,x-10,y-25,20,8,c.pants);
+      px(g,x-10,y-20,6,13,c.pants); px(g,x+4,y-20,6,13,c.pants);
+      px(g,x-11,y-9,7,4,'#3a2a1c'); px(g,x+4,y-9,7,4,'#3a2a1c');
+      px(g,x-10,y-46+breathe,20,23-breathe,c.top);
+      px(g,x-10,y-43+breathe,3,18,topD); px(g,x+7,y-43+breathe,3,18,topD);
+      [-1,1].forEach((side)=>{
+        const tap=Math.sin(p.animT*5+side*1.7)>.45 ? 1 : 0;
+        px(g,x+side*12-3,y-44+breathe,6,11,c.top);
+        px(g,x+side*12-2,y-44,4,9,c.skin);
+        px(g,x+side*9-3,y-45-tap,6,3,c.skin);
+      });
+      drawHeadBack(g,x,y-60+breathe,facing,c);
+      return;
+    }
     if (p.pose === 'sit') {
       // bent legs with a knee crease
       px(g, x - 8, y - 10, 16, 10, c.pants);

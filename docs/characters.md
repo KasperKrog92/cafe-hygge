@@ -4,7 +4,10 @@
 
 `sim-life.js` sends the existing Nora and cat to the sparse apartment after
 closing. Nora pauses by her suitcase, uses her PC, reads and dozes on the bed,
-then walks back to her desk while the cat returns to the boxes. Neither entity is replaced; the cat keeps any
+then returns to the desk. She has a dedicated rear-facing PC pose: she lowers into the chair, keeps bent
+legs beneath the desk and types with alternating small hand movements at the
+keyboard, then rises before leaving. These movements use simulation time.
+The cat returns to the boxes. Neither entity is replaced; the cat keeps any
 chosen scarf. Home uses authored routes through `L.home.lane`, below the desk
 and bed, with a side approach onto the bed. The cat investigates boxes and
 rests beside her. Arrival at the door happens once. Game mode loops only the indoor desk,

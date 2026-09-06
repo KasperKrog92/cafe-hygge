@@ -90,7 +90,12 @@
       [45,H.bedSeat],[78,H.bedSeat],[80,H.bedApproach],[82,lane(H.bedApproach)],[88,lane(H.deskSeat)],[90,H.deskSeat]]);
     b.reading = t >= 45 && t < 64; b.dozing = t >= 64 && t < 78;
     b.holding = null; b.state = 'idle';
-    if ((t >= 15 && t < 33) || (t >= 45 && t < 78)) { b.pose = 'sit'; b.heading = ''; b.facing = -1; }
+    b.pcSit = 0;
+    if (t >= 15 && t < 33) {
+      b.pose = 'pc'; b.heading = 'up'; b.facing = 1;
+      b.pcSit = Math.min(1,(t-15)/.7,(33-t)/.7);
+    }
+    if (t >= 45 && t < 78) { b.pose = 'sit'; b.heading = ''; b.facing = -1; }
     const stops=H.catStops;
     const moving=track(cat,t,[[0,H.entry],[5,stops[0]],[16,stops[0]], [18,lane(stops[0])],
       [29,lane(stops[1])],[31,stops[1]],[42,stops[1]], [44,lane(stops[1])],

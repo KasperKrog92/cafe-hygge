@@ -143,16 +143,16 @@
       px(g,sh.x+6,sh.y+6,sh.w-12,sh.h-14,'#c7c0b4');
       px(g,sh.x+sh.w-15,sh.y+sh.h-19,6,4,'#84958e');
       px(g,sh.x,sh.y+sh.h-5,sh.w,5,'#d9d2c0');
-      // Exposed shower pipe and a curtain bunched against the outside wall.
-      px(g,sh.x+sh.w-18,sh.y-66,3,52,'#b8bfc7');
-      px(g,sh.x+sh.w-29,sh.y-68,14,3,'#d3d9de');
-      px(g,sh.x+sh.w-32,sh.y-66,9,4,'#b8bfc7');
-      px(g,sh.x+sh.w-23,sh.y-17,12,3,'#647b83');
+      // Plumbing and gathered curtain hug the left bathroom wall.
+      px(g,sh.x+10,sh.y-66,3,52,'#b8bfc7');
+      px(g,sh.x+10,sh.y-68,17,3,'#d3d9de');
+      px(g,sh.x+22,sh.y-66,9,4,'#b8bfc7');
+      px(g,sh.x+7,sh.y-17,12,3,'#647b83');
       px(g,sh.x,sh.y-72,sh.w,3,'#b8bfc7');
-      px(g,sh.x+sh.w-3,sh.y-72,3,sh.h+69,'#b8bfc7');
-      px(g,sh.x+sh.w-12,sh.y-66,9,sh.h+56,'#7a89a5');
-      px(g,sh.x+sh.w-9,sh.y-64,2,sh.h+52,'#94a1b4');
-      px(g,sh.x+sh.w-12,sh.y-12,9,3,'#d9d2c0');
+      px(g,sh.x,sh.y-72,3,sh.h+69,'#b8bfc7');
+      px(g,sh.x+3,sh.y-66,9,sh.h+56,'#7a89a5');
+      px(g,sh.x+5,sh.y-64,2,sh.h+52,'#94a1b4');
+      px(g,sh.x+3,sh.y-12,9,3,'#d9d2c0');
     }});
   }
   SCENE.drawHome = function(g,w) {
@@ -214,31 +214,64 @@
       px(g,x-47,y-38,94,12,'#c08a58'); px(g,x-47,y-26,94,5,'#825638');
       px(g,x-21,y-65,40,26,'#2c3038'); px(g,x-18,y-62,34,19,'#647b83');
       px(g,x-13,y-58,20,2,'#c7d0c2'); px(g,x-13,y-53,13,2,'#9cbbb5');
-      px(g,x-3,y-40,5,6,'#3d4a5c'); px(g,x-17,y-33,33,3,'#3d4a5c');
+      px(g,x-3,y-40,5,6,'#3d4a5c'); px(g,x-10,y-35,19,3,'#3d4a5c');
+      px(g,x-17,y-32,33,5,'#b8bfc7'); px(g,x-15,y-31,29,2,'#64706d');
+      for(let k=0;k<7;k++) px(g,x-14+k*4,y-31,2,1,'#d3d9de');
+      px(g,x+21,y-32,5,5,'#b8bfc7');
       px(g,x+32,y-62,3,24,'#4a3222'); px(g,x+23,y-69,21,9,'#e8d5b0');
       px(g,x+21,y-61,25,3,'#c9a04a');
     }});
-    draws.push({y:H.deskSeat.y,draw:g=>{
+    draws.push({y:H.deskSeat.y-.2,draw:g=>{
       const x=H.deskSeat.x,y=H.deskSeat.y;
-      ell(g,x,y+2,18,5,'rgba(20,12,8,.22)');
-      px(g,x-13,y-18,4,18,'#5a3d28'); px(g,x+9,y-18,4,18,'#5a3d28');
-      px(g,x-15,y-22,30,6,'#a8764a'); px(g,x+11,y-45,4,24,'#6e4a33');
-      px(g,x-14,y-45,29,5,'#a8764a');
+      ell(g,x,y+2,19,5,'rgba(20,12,8,.22)');
+      px(g,x-2,y-20,4,18,'#64706d');
+      px(g,x-15,y-3,30,3,'#3c414d'); px(g,x-2,y-3,4,7,'#64706d');
+      px(g,x-17,y-2,5,5,'#2c3038'); px(g,x+12,y-2,5,5,'#2c3038');
+      px(g,x-2,y+2,5,4,'#2c3038');
+      px(g,x-15,y-27,30,7,'#647b83'); px(g,x-13,y-28,26,3,'#84958e');
+      px(g,x-15,y-22,30,3,'#3d4a5c');
     }});
-    draws.push({y:H.bed.y,draw:g=>{
-      const b=H.bed;
-      ell(g,b.x+b.w/2,b.y+b.h-4,b.w/2+6,12,'rgba(20,12,8,.22)');
-      px(g,b.x-4,b.y-38,b.w+8,91,'#6e4a33'); px(g,b.x,b.y-32,b.w,22,'#a8764a');
-      px(g,b.x,b.y-10,b.w,b.h,'#b5ada0'); px(g,b.x,b.y-10,b.w,28,'#e8dfc9');
-      px(g,b.x+8,b.y-6,35,17,'#f5efdf');
-      px(g,b.x+48,b.y+1,76,b.h-11,'#7a89a5'); px(g,b.x+48,b.y+1,76,6,'#94a1b4');
-      px(g,b.x+58,b.y+15,3,40,'#697892'); px(g,b.x+106,b.y+18,3,37,'#697892');
-      px(g,b.x,b.y+b.h-10,b.w,10,'#5a3d28');
-      px(g,b.x+5,b.y+b.h,6,8,'#4a3222'); px(g,b.x+b.w-11,b.y+b.h,6,8,'#4a3222');
-      if(!w.barista.reading) { px(g,b.x+22,b.y+27,15,10,'#a94f3f'); px(g,b.x+24,b.y+29,11,2,'#e8dfc9'); }
-      px(g,b.x-22,b.y-5,4,38,'#4a3222'); px(g,b.x-33,b.y-16,27,12,'#e8d5b0');
+    // The near backrest is a separate depth layer in front of the sitter.
+    draws.push({y:H.deskSeat.y+.2,draw:g=>{
+      const x=H.deskSeat.x,y=H.deskSeat.y;
+      px(g,x-11,y-33,3,13,'#3c414d'); px(g,x+8,y-33,3,13,'#3c414d');
+      px(g,x-15,y-42,30,16,'#3d4a5c');
+      px(g,x-13,y-44,26,18,'#647b83'); px(g,x-11,y-43,22,2,'#84958e');
+      px(g,x-12,y-29,24,3,'#4c5d61');
     }});
-    draws.push({y:w.barista.y,draw:g=>{
+    draws.push({y:H.bed.y+H.bed.h,draw:g=>{
+      const b=H.bed, x=b.x, y=b.y, width=b.w;
+      ell(g,x+width/2,y+b.h-1,width/2+4,8,'rgba(20,12,8,.22)');
+      // Headboard sits at the rear floor line, frame tight to the right wall.
+      px(g,x-4,y-38,width+8,43,'#5a3d28');
+      px(g,x-1,y-35,width+2,34,'#a8764a');
+      px(g,x+3,y-31,width-6,25,'#936747');
+      px(g,x+7,y-28,width-14,2,'#a8764a');
+      px(g,x-4,y-39,width+8,4,'#c08a58');
+      // Low timber rails, legs and a visibly thick, rounded mattress edge.
+      px(g,x,y+4,width,b.h-6,'#825638');
+      px(g,x+3,y+b.h-2,6,8,'#4a3222'); px(g,x+width-9,y+b.h-2,6,8,'#4a3222');
+      px(g,x+2,y-5,width-4,b.h-12,'#d9d2c0');
+      px(g,x+5,y-8,width-10,b.h-15,'#f5efdf');
+      px(g,x+2,y+b.h-24,width-4,12,'#b5ada0');
+      px(g,x+4,y+b.h-24,width-8,3,'#e8dfc9');
+      // Two soft pillows at the head, duvet running across the whole bed.
+      [x+10,x+width/2+4].forEach(p=>{
+        px(g,p,y-1,46,18,'#b5ada0'); px(g,p+1,y-3,44,17,'#e8dfc9');
+        px(g,p+4,y-5,38,16,'#f5efdf'); px(g,p+6,y+9,34,2,'#d9d2c0');
+      });
+      px(g,x+4,y+19,width-8,b.h-30,'#7a89a5');
+      px(g,x+5,y+17,width-10,10,'#94a1b4');
+      px(g,x+8,y+19,width-16,3,'#b8bfc7');
+      px(g,x+4,y+b.h-24,width-8,10,'#697892');
+      px(g,x+10,y+30,2,28,'#94a1b4'); px(g,x+14,y+48,2,15,'#697892');
+      px(g,x+width-15,y+32,3,31,'#697892');
+      px(g,x+30,y+57,26,2,'#8492aa');
+      px(g,x,y+b.h-12,width,7,'#6e4a33'); px(g,x+2,y+b.h-12,width-4,2,'#a8764a');
+      if(!w.barista.reading) { px(g,x+24,y+32,15,10,'#a94f3f'); px(g,x+26,y+34,11,2,'#e8dfc9'); }
+      px(g,x-22,y-5,4,38,'#4a3222'); px(g,x-33,y-16,27,12,'#e8d5b0');
+    }});
+    draws.push({y:w.barista.pose==='sit' ? H.bed.y+H.bed.h+.1 : w.barista.y,draw:g=>{
       const b=Object.assign({},w.barista,{colors:Object.assign({},w.barista.colors,{apron:false}),bookColor:'#a94f3f'});
       SCENE.drawPerson(g,b);
     }});
