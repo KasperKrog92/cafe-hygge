@@ -60,12 +60,13 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 ## Frame flow (main.js)
 
 ```
-requestAnimationFrame:
-  dt = clamp(elapsed, 0, 0.1)
-  SIM.update(world, dt)        // clock → weather → outdoor life → door → shop → spawning → barista
+advance(now), called by rAF / hidden interval / refocus:
+  elapsed = min(90, seconds since previous call)
+  repeat in steps dt <= 0.25 until elapsed is consumed:
+    SIM.update(world, dt)      // clock → weather → outdoor life → door → shop → spawning → barista
                                // → patrons → cat → particles → captions
-  SND.update(dt, world)        // rain/fire, music box + night pad + piano notes
-  render():                    // all drawing targets the 960×600 master canvas
+    SND.update(dt, world)      // rain/fire, music box + night pad + piano notes
+requestAnimationFrame also calls render():  // all drawing targets the 960×600 master canvas
     SCENE.composeFrame(g, world)       // the whole frame, in one shared call:
       SCENE.drawScene(g, world)        //   blit static-background cache, then the
                                        //   incident floor light, then window/door/wall frame/
@@ -102,8 +103,11 @@ so the café keeps real-time pace no matter how the browser throttles any one
 driver (hidden-tab timers slow to ≥1 s, once a minute under Chrome's intensive
 throttling; an occluded window can slow rAF without ever setting
 `document.hidden`). A catch-up burst longer than ~2 s mutes its flood of
-one-shots (the `__dev.ff` pattern); a gap past 90 s (a frozen tab, a sleeping
-laptop) is dropped — that café simply held still, which the narrative allows.
+one-shots (the `__dev.ff` pattern). Catch-up is capped at 90 s per call: a
+120 s gap advances 90 s and drops the remaining 30 s. It does not discard the
+whole gap. This is a cap on an existing page's clock, not offline progress on
+reload. See the [pre-development audit](predevelopment-audit.md) for coverage
+needed before planner pauses and apartment time join this clock.
 
 ## Movement
 
@@ -193,7 +197,10 @@ the bubble system, and the one click handler.
 
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags}`. `MEMORY.load()` parses + migrates +
-  back-fills; a bad/missing/wrong-version save falls back to a **fresh café**.
+  back-fills. Parse failures fall back to a fresh café, but unsupported versions
+  are currently relabelled and array-shaped records are accepted. This is a
+  known gap against the intended save contract; harden it before progression
+  work (see [pre-development audit](predevelopment-audit.md)).
   `MEMORY.save()` is a debounced write (flushed on `pagehide`/hidden);
   `MEMORY.reset()`, `MEMORY.stamp()`, and `MEMORY.requestPersist()` round it out.
   Bump `MEMORY.VERSION` **and** add a migration step when the shape changes.

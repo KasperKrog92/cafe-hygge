@@ -150,11 +150,12 @@ calendar.
 
 ## 4. Persistence — the `MEMORY` global
 
-Today only audio settings persist (`cafe-hygge-audio`, via `SND.save()`). The
-narrative layer needs the café to *remember*, so it gets one new global that
-mirrors that proven pattern exactly.
+Audio settings persist separately as `cafe-hygge-audio` via `SND.save()`.
+The implemented narrative memory persists as `cafe-hygge-save` via `MEMORY`.
+The API below is built; the save guarantees describe the intended contract,
+with validation gaps recorded in the [pre-development audit](predevelopment-audit.md).
 
-**Proposed:** `js/memory.js` → `window.MEMORY`, loaded early (before `sim-core`
+**Implemented:** `js/memory.js` → `window.MEMORY`, loaded early (before `sim-core`
 so world creation can read it), inert-friendly like the rest:
 
 ```

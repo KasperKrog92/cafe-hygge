@@ -26,6 +26,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/art-review.ps1 -Label 
 default PowerShell policy blocks local scripts; it changes no saved policy.
 The café itself still has no dependencies or build step. The tooling is optional.
 
+For simulation regressions across the whole project, use
+`tools/verify-project.ps1`; see [development.md](development.md) for its eight
+suites and targeted commands. Art captures and the normal-entry smoke test
+remain distinct checks.
+
 Each command opens a **fresh, disposable browser session**, waits for the actual
 dev globals, captures, then closes it in `finally`. Do not pass the name of the
 owner's everyday café session. Results are local, ignored files:

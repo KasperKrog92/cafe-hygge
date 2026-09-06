@@ -19,6 +19,8 @@ The [progression roadmap](docs/progression-roadmap.md) describes the next steps:
 one saved life shared by idle and game modes, with autonomous café/home routines
 and player-chosen improvements. These features are planned, not yet built.
 Start progression work with that roadmap and [AGENTS.md](AGENTS.md).
+The [development workflow](docs/development.md) provides verification commands
+and the focused preparation recommended by the [project audit](docs/predevelopment-audit.md).
 
 The former branch tips are preserved as `archive/idle-2026-09-06` and
 `archive/game-2026-09-06` tags. The separate game experiment is archived reference

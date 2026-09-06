@@ -77,8 +77,9 @@ milestone on the current café foundation, keeping later ideas out of that slice
 - **To see a visual change, open `http://localhost:8137/?dev` — with the query
   string, not the bare URL.** `?dev` boots straight into the café with `SCENE`,
   `SIM`, `__dev`, and `__world` all defined and no start-overlay click needed.
-  The bare URL sits on the splash: the canvas is an unsized 300×150 and none of
-  the globals exist yet, which is a dead end for inspection. If the in-app
+  The bare URL shows the splash over an already initialized canvas and world;
+  use it for the real entry/audio smoke test. `?dev` is more convenient for
+  unobstructed captures. If the in-app
   preview pane is not *visibly displayed*, `computer screenshot` cannot
   composite it — call **`__dev.shot()`** instead: it renders the live world to
   an offscreen 960×600 canvas via the exact same draw list `render()` ships
@@ -102,6 +103,12 @@ milestone on the current café foundation, keeping later ideas out of that slice
   expect 0 problems.
 - `window.__world` is the live world object — inspect or poke it freely when
   debugging.
+- **Repeatable verification:** with this checkout served on port 8137, run
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-project.ps1`.
+  It checks shipped-script syntax, runs the eight existing browser suites with
+  fresh saves between them, exports reports/captures, and confirms session
+  cleanup. See [docs/development.md](docs/development.md) for targeted commands,
+  the separate normal-entry smoke test and the next preparation tasks.
 - **Dev harness** (`js/dev.js`, inert for the reader-owner): `?dev` boots past
   the start overlay (screenshot-ready, audio still off until a real click),
   `?dev&hour=20` starts at 20:00, `?dev&overlay` boots with the layout
@@ -222,7 +229,10 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 - **The narrative save is separate** (`cafe-hygge-save` via `MEMORY.save()`) and
   **must migrate, never reset**: growing the save shape is only safe if
   `MEMORY.VERSION` bumps and a migration step lands (see `js/memory.js`). Any
-  bad/missing/wrong-version save opens a **fresh café** — never an error. Arc
+  bad/missing/unsupported-version save should open a **fresh café** — never an
+  error. The current loader does not fully enforce this contract; see the
+  [pre-development audit](docs/predevelopment-audit.md#1-save-validation-and-migration-boundaries--high-priority).
+  Fix that before adding progression fields. Arc
   *state* lives in the save; arc *definitions* live in `CAST.arcs`. **Arcs ride
   the café's own clock: progress accrues only in `updateNarrative` (dt-driven,
   one row per 24-minute café day while the café runs — hidden tabs included;
@@ -308,6 +318,9 @@ matching doc updated in the same change.
 | Doc | Contents |
 | --- | --- |
 | [docs/overview.md](docs/overview.md) | Vision, design principles, what this is and isn't |
+| [docs/progression-roadmap.md](docs/progression-roadmap.md) | Shared idle/game direction, café/home stages, upgrades and milestones |
+| [docs/development.md](docs/development.md) | Session workflow, verification commands and preparation checklist |
+| [docs/predevelopment-audit.md](docs/predevelopment-audit.md) | Measured baseline, findings, priorities and deferred work |
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
 | [docs/characters.md](docs/characters.md) | Nora, patrons, the cat — identities and full behavior state machines |

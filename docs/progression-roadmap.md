@@ -274,6 +274,13 @@ at the roadmap stage.
 
 ## Build order and evidence for moving on
 
+**Before milestone 2:** complete the focused save/isolation preparation in
+[the pre-development audit](predevelopment-audit.md), following
+[the development workflow](development.md). The existing café passed all eight
+browser suites; preparation addresses save boundaries and test isolation rather
+than replacing the engine. Extract the opening/closing boundary immediately
+before apartment work, with unchanged behavior verified first.
+
 1. **Keep the current café as the foundation — completed 6 September 2026.**
    Consolidated the `idle` code into canonical `main`, with GitHub Pages and
    project instructions following `main`. Old `idle` and `game` tips are retained

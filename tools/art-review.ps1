@@ -43,4 +43,15 @@ if ($Verify) {
 Write-Output "Saved day, night, empty scene, people and six detail crops to $output; audit: 0 problems."
 } finally {
     agent-browser --session $Session close
+    $closed = $LASTEXITCODE -eq 0
+    for ($attempt = 0; $attempt -lt 10; $attempt++) {
+        $sessions = agent-browser session list
+        $listed = $LASTEXITCODE -eq 0
+        if ($listed -and !($sessions -match [regex]::Escape($Session))) { break }
+        Start-Sleep -Milliseconds 200
+    }
+    Write-Output $sessions
+    if (!$closed -or !$listed -or ($sessions -match [regex]::Escape($Session))) {
+        throw "Browser cleanup not confirmed for $Session. Inspect before retrying."
+    }
 }

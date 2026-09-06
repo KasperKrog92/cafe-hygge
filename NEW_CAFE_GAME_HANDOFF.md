@@ -1,5 +1,12 @@
 # Project Hearthcup — greenfield café game handoff
 
+> **RETIRED — historical reference only (6 September 2026).** The owner has
+> superseded this greenfield/manual-control direction. Do not follow the setup
+> instructions below for Café Hygge development. Work in this repository on
+> `main`, following [AGENTS.md](AGENTS.md) and the
+> [shared progression roadmap](docs/progression-roadmap.md). The original text
+> is retained for optional ideas, not as the active specification.
+
 > Working title only. This document is a self-contained product, technical, and
 > production handoff for an LLM starting a new project inspired by Café Hygge.
 > It was prepared on 2026-08-23. Read the whole file before creating code.
