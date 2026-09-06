@@ -399,7 +399,7 @@ back-shelf/piano-lid tail that hangs and sways below the board or lid.
   sprig, umbrella, or bamboo whisk). The doodle id invalidates the static
   background cache only when Nora finishes chalking. Glyph set is caps A–Y
   subset + É; extend the map when a new word needs a missing letter.
-- **Captions use readable, antialiased text**: 17 px Arial/Helvetica/sans-serif,
+- **Captions use readable, antialiased text**: 20 px Patrick Hand,
   warm cream with a 3 px dark stroke (1.5 px outside the letter) and a subtle
   shadow, cached per text on a transparent canvas. No backing rectangle or
   tiny-font thresholding. Lines wrap at 540 master pixels;
@@ -551,3 +551,11 @@ subpixel travel rounded for drawing and restrained one-pixel bob share the
 waterfront lighting and both panes' continuous clipping. Window visitors use
 a back-facing standing pose and an animated raised hand; pavement figures
 stop their stride and raise an arm.
+
+
+Caption lettering uses the bundled Patrick Hand font by Patrick Wagesreiter
+([source](https://github.com/google/fonts/tree/main/ofl/patrickhand)). The font
+and its SIL Open Font License live in `assets/fonts/`; no external font service
+is contacted. The caption cache rebuilds after the font loads so a temporary
+fallback never remains cached. Rounded handwritten shapes retain ordinary
+uppercase/lowercase and Danish letters, with 26 px line spacing.
