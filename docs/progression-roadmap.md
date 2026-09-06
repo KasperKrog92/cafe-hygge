@@ -29,6 +29,10 @@ source of reusable ideas, not the implementation baseline.
 
 The concrete stages, pacing and rules below are recommendations to prototype.
 They should be revised after watching the first complete day-and-home loop.
+Further owner brainstorming from 6 September is integrated below: the street
+sign, menu and counter growth, hiring help, possible shared-home stories, many
+moving boxes and the cat at home. Possible relationship outcomes remain open
+story ideas rather than a prescribed ending.
 
 ## One save and one autonomous routine
 
@@ -66,18 +70,27 @@ it does not calculate purchases or building progress from time spent away.
 1. **Home, evening:** she puts down her bag, changes activity, reads or uses the
    PC. The player can review savings and choose tomorrow's improvement.
 2. **Morning arrival:** she carries small purchases into the café, sets them
-   down and performs opening chores. Short installations fit here.
+   down and performs opening chores. Short installations fit here. Putting the
+   street sign outside is the **last step of opening**, marking the café open.
 3. **Open café:** the existing order, brewing, seating and social simulation
    continues. She works on improvements in suitable free periods.
 4. **Visitors at work:** a booked contractor or delivery person arrives and
    follows their own visible route and work sequence.
 5. **Closing:** finish the current safe action, put tools away and tidy up.
+   She carries the street sign back inside as part of the closing routine.
    Unfinished work retains its physical stage and resumes another day.
 6. **Home again:** the apartment offers its own ambient routines and traces
    of the day. Planning is available, with nothing required to proceed.
 
 Apartment life is a full ambient scene: warm light, small sounds, idle movement
 and several activities. It should feel worth watching with the planner closed.
+The same cat also roams the apartment, rests nearby and explores the changing
+room. Café/home transitions must account for its whereabouts rather than create
+a second cat. The exact travel animation remains to be designed.
+
+The street sign is a physical prop with an indoor storage position, an outdoor
+position and a carry animation. Its placement follows the opening state in both
+modes; it must not block the entrance or pedestrian routes.
 
 ## Café progression: explicit states
 
@@ -87,7 +100,7 @@ The starting café must already meet its standard of warmth and believable life.
 
 | State | Room and equipment | Life it supports |
 | --- | --- | --- |
-| C0 — First opening | Intact but worn room, working counter and coffee equipment, two usable tables with chairs, warm lighting, basic cups and safe clear routes. Hearth unused, bookshelf and optional furnishings absent. | Complete autonomous coffee service, reading with patrons' own books, weather and a small starting cast. No mandatory repair tutorial. |
+| C0 — First opening | Intact but worn room, compact counter with basic coffee/tea equipment and a sink for hand washing, two usable tables with chairs, warm lighting, basic cups, street sign and safe clear routes. Hearth unused, bookshelf and optional furnishings absent. | Complete autonomous service of simple coffee and tea, possibly one food item; hand-washed dishes, reading with patrons' own books, weather and a small starting cast. No mandatory repair tutorial. |
 | C1 — Settling in | First plant, small table assembled, cleaned hearth, a few personal touches. | More places to settle; watering, fire tending and improvement work become part of the day. |
 | C2 — A reading place | Delivered bookshelf, then partially and eventually fully stocked shelves; an optional reading chair and lamp. | Browsing and borrowed-book reading become available as their furniture and contents are ready. Holger's familiarity can support a reading-corner story. |
 | C3 — A cared-for café | Repainted walls, repaired window frames, coordinated small furnishings; the room keeps its familiar layout. | Contractor visits provide temporary daytime activity; completed work improves appearance without making the previous room feel like failure. |
@@ -98,6 +111,39 @@ Do not remove all charming details to create things to sell back. Weather,
 sound, expressive characters and appealing light belong in C0. Every optional
 seat, shelf and activity must be conditional in both rendering and simulation.
 Absent furniture must never leave a patron walking toward an invisible target.
+
+## Menu, counter and kitchen progression
+
+The owner's direction is to grow from simple coffee and tea, possibly with one
+food item, toward several more complex drinks, dishes, cakes and snacks. The
+counter grows with that menu: more workspace, more or better equipment, a sink
+where she initially washes dishes by hand, a later dishwasher, a small oven for
+making more cakes and potentially a larger oven afterward.
+
+These proposed stages run alongside C0–C5; they are not tied to a particular
+decorating milestone or mandatory menu size.
+
+| Stage | Counter and equipment | Menu and visible routine |
+| --- | --- | --- |
+| K0 — Simple service | Compact preparation space, basic drink equipment, hand-washing sink and a small food display if the first food item needs one. | Simple coffee and tea, perhaps one food item; she collects, washes, rinses and puts dishes away. |
+| K1 — Space to prepare | Counter extension and additional or improved drink equipment. | Gradually introduce more involved drinks and a few snacks/dishes supported by the actual preparation space and equipment. |
+| K2 — Small batches | Small oven, preparation surface and suitable cake display. | She prepares, bakes and transfers small batches to the stand; the cake selection can grow. |
+| K3 — Help with washing | Dishwasher installed alongside the sink. | She loads, starts and unloads it; washing takes less hands-on work, leaving time for service, baking and other activity. |
+| K4 — A fuller kitchen | Optional larger oven and further counter/equipment improvements. | Broader dishes, cakes and snacks, with larger batches and room for two people to work when help is hired. |
+
+**The cake stand reflects actual sales.** Cakes, slices or individual pastries
+disappear as they are bought; which unit a recipe uses must be clear in the art.
+Taking a portion for an order changes the display, and replenishing it requires
+a visible transfer of fresh stock. It is not a permanently full decoration.
+
+Recommended handling: reserve each portion once when accepting its order so two
+customers cannot buy the last piece. Sold-out items quietly become unavailable
+until replenished; customers choose from what remains without anger or penalty.
+Preparation and replenishment are autonomous in both modes. Avoid compulsory
+inventory clicks, spoilage pressure and oven timers that punish an absent player.
+Recipes, batch sizes, replenishment sources for the earliest food item and exact
+baking routines remain to be designed. Menu availability must agree with both
+installed equipment and current portions.
 
 ## Café upgrade catalogue
 
@@ -118,6 +164,11 @@ Each row specifies a visible journey, not an instant menu toggle.
 | Piano | Delivery route and reserved position | Movers transport and unpack it; setup completes before it becomes usable. | Current piano activities and later musical relationship beats. |
 | Art display | Suitable finished wall space and available art | She brings hanging supplies and mounts pieces during quiet moments. | Persistent artwork connected to existing artist stories. |
 | Terrace furniture | Safe access and an outdoor layout | Furniture delivery followed by unpacking, positioning and plant placement. | Outdoor reservations and service enabled only for completed seats. |
+| Counter extension | Clear staff workspace and a viable service layout | Sections delivered, fitted and arranged; equipment moves to its completed working position. | More preparation room and later space for a second worker. |
+| Improved drink equipment | Suitable counter space | Delivered or carried in, unpacked, installed and tried out. | Additional drink preparation routines and supported menu choices. |
+| Small oven | Suitable preparation and installation space | Delivered and installed; she unpacks baking supplies and prepares the first batch. | Small-batch cakes and visible replenishment of the stand. |
+| Dishwasher | Sink area and installation space | Delivered and fitted; she begins loading and unloading dishes during normal service. | A new dishwashing routine that reduces hands-on washing. |
+| Larger oven | Sufficient counter/kitchen space | Larger unit delivered and installed; any replaced oven is visibly removed. | Larger batches and additional supported baked dishes. |
 
 For the initial system, allow one new project per evening and retain unfinished
 jobs in a small queue. This is a simplicity recommendation, not a daily reward
@@ -142,15 +193,16 @@ a particular milestone. Purchases, unpacking and remembered moments add to it.
 
 | State | Visible room | Autonomous evening life |
 | --- | --- | --- |
-| H0 — Just moved in | Bed, basic desk and chair, PC, reading light, suitcase, a few boxes and one book. Sparse but comfortable. | Arrive, put away coat/bag, use PC, read on bed, wind down and sleep. |
-| H1 — Unpacking | Boxes gradually emptied, folded clothes, a few personal books and a mug. | Short unpacking sessions mixed with the existing evening activities. |
+| H0 — Just moved in | Bed, basic desk and chair, PC, reading light, suitcase, lots of moving boxes and one accessible book. Sparse furnishings but comfortable, with clear walking routes. | Arrive, put away coat/bag, use PC, read on bed, wind down and sleep; the cat wanders and investigates boxes. |
+| H1 — Unpacking | Moving boxes gradually opened, emptied and folded away over several days; folded clothes, personal books and a mug find their places. | Short unpacking sessions mixed with evening activities; the cat explores the changing room and remaining boxes. |
 | H2 — Making it comfortable | Optional rug, curtains, bedside table and plant. | Arrange purchases, water plant and enjoy softer evening lighting. |
 | H3 — A place to linger | Small bookcase and reading chair, more books and a personal wall picture. | Choose between desk, bed and reading corner; occasionally rearrange books. |
 | H4 — A life here | Patron's note or drawing, a keepsake from a chosen story, cared-for plants and small signs of habit. | Pause by meaningful objects, read, use PC and continue ordinary life. No finished-home victory state. |
+| Optional — Sharing the space | For a temporary guest, a made-up sleeping place and a few belongings; for a chosen long-term housemate or partner, room for both people's possessions. | Two people have their own evening routines and moments together, with the cat continuing to roam. These are story-dependent arrangements, not a required H5. |
 
 | Home improvement | How it arrives and changes the scene |
 | --- | --- |
-| Unpack personal belongings | Already-owned boxes; she opens, sorts and puts objects away across evenings. No purchase needed. |
+| Unpack personal belongings | Many already-owned moving boxes; she opens, sorts and puts objects away across days/evenings, then folds away the empty boxes. The room fills as the stacks shrink. No purchase needed. |
 | Plant or lamp | Carried home; unwrapped and placed during evening free time. |
 | Rug and curtains | Planned purchase; delivered/carried as appropriate, then laid or hung in visible stages. |
 | Bookcase and reading chair | Home delivery scheduled while she is home; unpacked before the new reading location is used. |
@@ -182,6 +234,42 @@ a neighbor gives a cutting; a musician asks about playing one evening. Basic
 furniture need not be locked behind the correct dialogue answer. Distinctive
 gifts and personal stories belong to their chosen relationship moments.
 
+### Hiring help and possible shared lives
+
+The owner imagines the café eventually becoming busy enough that Lunafreya
+wants to hire someone. This should emerge through story and the visible growth
+of her working day. After a chosen hiring conversation, two autonomous people
+work in the café: sharing service, washing, preparation and other duties.
+The division of work should be legible in their actions and allow both people
+to use equipment and move around each other naturally.
+
+Recommended pacing: hiring is a welcome step toward company and more room in
+the day, without making the preceding solo café fail or become stressful. How
+pay is represented is still open; reconcile it with the proposed no-draining-
+wages economy before implementation. Staff should have their own personality
+and relationships rather than exist only as faster production.
+
+Possible longer story paths from the owner's brainstorming:
+
+- **A colleague becomes close.** The helper might be someone she gets to know
+  at the café who becomes a potential romantic interest or a new best friend.
+  Neither outcome is settled, and hiring need not require romance.
+- **Eventually living together.** A later chosen relationship development could
+  lead to moving into her apartment together, bringing belongings and changing
+  both people's home routines. It is a possible culmination, not an automatic
+  reward for hiring or a compulsory ending.
+- **Offering a friend somewhere to stay.** A separate side story could involve
+  a patron friend who is temporarily homeless staying at her apartment. Give
+  the friend their own circumstances, voice and everyday presence; the stay
+  need not imply romance, employment or permanent cohabitation. Its duration
+  and resolution remain open story work, with no countdown to losing shelter.
+
+Invitations to hire, offer a stay or move in wait for the player. Once chosen,
+shared daily routines can unfold autonomously in either mode. Personal turning
+points still follow the invitation-waits rule. None of these possibilities
+requires locking in a character, cause of homelessness or relationship ending
+at the roadmap stage.
+
 ## Build order and evidence for moving on
 
 1. **Keep the current café as the foundation.** Save an archive tag for the
@@ -209,6 +297,9 @@ gifts and personal stories belong to their chosen relationship moments.
    or window worker after the delivery loop is convincing.
 6. **Grow both places and their stories.** Add reading corner, home comforts,
    relationship gifts, music, art and terrace in small complete sequences.
+   Extend the menu and counter through the K stages, proving visible food sales
+   and replenishment before adding many recipes. Later, prove shared staff
+   duties before introducing a helper's relationship arc or shared-home stories.
    Expand only after each addition feels enjoyable when left unattended.
 7. **Apply the settled identity before a public progression release.** Rename
    the protagonist to Lunafreya; settle the café title. The existing artist
@@ -250,6 +341,10 @@ direction. A large catalogue or a redesigned whole café would hide that test.
 - Which furniture belongs in the final C0 layout, and the apartment's framing.
 - Whether one new project per evening feels sufficient or overly restrictive.
 - Final café name and the existing artist's distinct name/identity.
+- Recipes, food portions and replenishment, counter layouts, oven routines and
+  the order of kitchen upgrades; the working-day role and pay model for a helper.
+- Who might become a colleague, close friend, partner or temporary guest; the
+  timing and meaning of any shared-home story. These remain possibilities.
 
 The old no-economy/no-upgrades rule is superseded for this proposed direction
 by the owner's explicit request for purchases and improvements. The no-pressure
