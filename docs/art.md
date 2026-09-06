@@ -398,8 +398,13 @@ scale off `world.fire.level`, so the whole hearth dims to embers together and
 climbs together when a log goes on — but the coal bed and glow never reach zero
 (the ember floor). See the hearth burn cycle in world.md.
 Speech bubbles/captions draw after lighting on purpose.
-Open laptops are the single cool exception: dark 16×3 base, 14×10 screen,
-blue-grey one-pixel text, and a faint radius-18 glow scaled by darkness.
+Open laptops are the single cool exception: a 22-pixel shallow keyboard deck,
+a stepped side-view screen hinged at its inner edge, blue-grey text glints,
+and a faint radius-18 glow scaled by darkness. The screen faces its sitter;
+`SCENE.laptopGeometry` shares keyboard and screen anchors with hands and light.
+The keyboard sits near the table edge. Working arms draw with the tabletop
+after the props, while bodies retain their seated baseline behind the table.
+Cups sit nine pixels forward beside a laptop; their steam uses the same offset.
 
 ## Adding furniture — checklist
 
@@ -456,3 +461,16 @@ Nora's chalk stop is (893, 238), close enough to touch the board; she returns
 to her normal y=286 service line afterwards. Cat hops have their own mirrored
 crouch/tuck/landing poses. See [animations.md](animations.md) for coverage and
 repeatable motion review commands.
+
+
+## Seated activity pass — 6 September 2026
+
+Seated sleeves bend continuously through elbows to prop grips. Typing alternates
+small fingertip taps with held beats, leaving shoulders still. Piano wrists
+reach the declared keyboard from connected forearms. Reading has a dark cover
+edge, a supporting arm, and a single turning hand following the lifted leaf;
+dozer arms follow the lowered book. Sip elbows connect to the moving grip.
+Sketching keeps a support hand at the pad and joins the pencil hand to its
+elbow. Painting and mixing retain canvas/tray contact with connected wrists.
+Knitting uses crossed needle shafts, attached grips and sparse stitch marks
+across the scarf, retaining its saved progress-driven size.

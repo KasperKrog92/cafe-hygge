@@ -60,7 +60,8 @@
       glow(g, tb.x + (tb.small ? 7 : 0), tb.y - 14, 34, 255, 195, 105, a);
       tb.items.forEach(function (it) {
         if (it.kind === 'laptop' && it.open) {
-          glow(g, tb.x + it.side * 12, tb.y - 13, 18, 120, 155, 215, 0.055 * (1 - d));
+          const laptop = SCENE.laptopGeometry(tb.x, tb.y, it.side);
+          glow(g, laptop.screenX, laptop.screenY, 18, 120, 155, 215, 0.055 * (1 - d));
         }
       });
     });

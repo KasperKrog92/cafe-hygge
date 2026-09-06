@@ -273,3 +273,8 @@ candle flicker, bell motion and particles retain their existing quiet pacing.
 Brewing steam and hot-drink steam retain fractional emission time instead of
 throwing away the remainder on each emission. Steam from a raised mug starts
 near the corrected cup rim. All of these remain simulation-clock driven.
+
+
+Laptop tables place the drink nine pixels toward the front to keep it clear
+of the keyboard. Table item rendering and hot-drink steam share
+`SCENE.tableItemOffsetY`, including while the laptop is closed for departure.

@@ -8,6 +8,17 @@
   const px = R.px, ell = R.ell, shade = R.shade, h2 = R.h2;
   const drawTinyPlant = R.drawTinyPlant;
 
+  // One contact frame for the side-view laptop, hands and screen light.
+  SCENE.tableItemOffsetY = function (tb, it) {
+    return it.kind !== 'laptop' && tb.items.some(function (other) {
+      return other.kind === 'laptop' && other.side === it.side;
+    }) ? 9 : 0;
+  };
+  SCENE.laptopGeometry = function (cx, cy, side) {
+    return { x: cx + side * 28, y: cy - 5, facing: -side,
+      screenX: cx + side * 13, screenY: cy - 15 };
+  };
+
   /* ================= FURNITURE (depth-sorted) ================= */
 
   SCENE.furnitureDrawables = function (world) {
@@ -84,7 +95,15 @@
         px(g, cx - 8, cy - 2, 13, 2, 'rgba(90,58,34,0.22)');
         px(g, cx + 10, cy - 9, 2, 2, '#6e4c30');                  // a knot
         // items left on the table
-        tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, cx, cy, it); });
+        tb.items.forEach(function (it) {
+          if (!it.hidden) drawTableItem(g, cx, cy + SCENE.tableItemOffsetY(tb, it), it);
+        });
+        // Only the working arms cross the tabletop depth plane, not the body.
+        world.patrons.forEach(function (p) {
+          if (p.pose === 'sit' && p.typing && p.seat && p.seat.table === i &&
+              tb.items.some(function (it) { return it.kind === 'laptop' && it.open && !it.hidden && it.owner === p.id; }))
+            SCENE.drawTypingArms(g, p, SCENE.laptopGeometry(cx, cy, p.seat.side));
+        });
         // candle jar stays visible while its flame follows the ritual state
         px(g, cx - 4, cy - 14, 8, 8, '#c9b28a');
         px(g, cx - 3, cy - 12, 6, 3, '#f0e0c8');
@@ -591,14 +610,27 @@
   function drawTableItem(g, cx, cy, it, reach) {
     const ix = cx + it.side * (it.kind === 'laptop' ? 12 : (reach || 24)) - 5;
     if (it.kind === 'laptop') {
-      ell(g, ix + 5, cy, 10, 3, 'rgba(20,12,8,0.18)');
-      px(g, ix - 3, cy - 4, 16, 3, '#424854');
-      px(g, ix - 2, cy - 5, 14, 2, '#687080');
+      const k = SCENE.laptopGeometry(cx, cy, it.side);
+      function r(u, v, w, h, color) {
+        px(g, k.x + (k.facing > 0 ? u : -u - w), k.y + v, w, h, color);
+      }
+      ell(g, cx + it.side * 23, cy, 12, 3, 'rgba(20,12,8,0.22)');
+      r(-5, 2, 22, 2, '#363b45');                       // front edge on the table
+      r(-5, -1, 22, 3, '#687080');                     // shallow keyboard deck
       if (it.open) {
-        px(g, ix - 2, cy - 15, 14, 10, '#424854');
-        px(g, ix, cy - 13, 10, 7, '#2c3038');
-        px(g, ix + 2, cy - 11, 7, 1, '#8a9ab5');
-        px(g, ix + 2, cy - 8, 5, 1, '#6f809b');
+        r(-1, -1, 12, 1, '#363b45');
+        r(0, 1, 10, 1, '#424854');
+        r(-4, 0, 2, 1, '#8a9ab5');                    // trackpad edge
+        r(11, -14, 5, 15, '#424854');                 // hinged screen, facing sitter
+        r(13, -17, 5, 5, '#424854');
+        r(10, -13, 3, 11, '#8a9ab5');
+        r(12, -16, 3, 4, '#8a9ab5');
+        r(10, -10, 2, 1, '#c9d2df');
+        r(10, -6, 2, 1, '#c9d2df');
+        r(11, 0, 5, 2, '#363b45');                    // continuous hinge
+      } else {
+        r(-5, -2, 22, 3, '#424854');
+        r(-4, -2, 20, 1, '#687080');
       }
     } else if (it.kind === 'plate') {
       ell(g, ix + 5, cy - 2, 12, 4, 'rgba(20,12,8,0.18)');   // contact shadow

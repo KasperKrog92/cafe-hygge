@@ -1084,7 +1084,7 @@
       world.tables.forEach(function (tb) {
         tb.items.forEach(function (it) {
           if (it.hot > 0 && !it.hidden && it.kind !== 'plate' && Math.random() < 0.8) {
-            spawnSteam(world, tb.x + it.side * (tb.reach || 24), tb.y - 16);
+            spawnSteam(world, tb.x + it.side * (tb.reach || 24), tb.y + SCENE.tableItemOffsetY(tb, it) - 16);
           }
         });
       });

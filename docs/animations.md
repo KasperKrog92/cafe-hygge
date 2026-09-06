@@ -82,3 +82,17 @@ The empty-handed profile walk now places the visible shoulder over the side
 of the torso, slightly behind its centre, rather than at the forward edge.
 A connected sleeve bends through the elbow and the hand counter-swings by
 three pixels against the near leg. Carrying poses still support their props.
+
+
+### Seated props and arm contact — 6 September 2026
+
+`tools/capture-seated.js` returns a six-frame contact sheet covering mirrored
+laptops, page turns and sips, plus knitting, sketching, painting, mixing,
+piano and dozing, and an occupied room PNG. It uses detached fixtures only,
+checks visible motion in every row, and guards live-world/save isolation.
+Laptops and piano are captured through full room composition so tabletop
+occlusion is part of the review. Seated limbs share pixel-stepped connected
+shoulder/elbow/grip drawing; typing uses the laptop's keyboard anchor and
+only its working arms cross the table depth plane. No activity timing or
+narrative progression changes. Art review and animation/journey verification
+passed with zero failures; the day/night occupancy audit remains clean.

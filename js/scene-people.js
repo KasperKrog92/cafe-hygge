@@ -192,6 +192,32 @@
     }
   }
 
+  // Pixel-stepped limbs keep shoulder, elbow and prop grip joined at every phase.
+  function limb(g, ax, ay, bx, by, width, color) {
+    const steps = Math.max(Math.abs(bx - ax), Math.abs(by - ay), 1);
+    for (let i = 0; i <= steps; i++) {
+      px(g, Math.round(ax + (bx - ax) * i / steps) - Math.floor(width / 2),
+        Math.round(ay + (by - ay) * i / steps) - Math.floor(width / 2), width, width, color);
+    }
+  }
+  function seatedArm(g, p, sx, sy, ex, ey, hx, hy, far) {
+    const top = far ? shade(p.colors.top, -0.18) : p.colors.top;
+    limb(g, sx, sy, ex, ey, 5, top);
+    limb(g, ex, ey, hx, hy, 4, top);
+    px(g, hx - 2, hy - 1, 5, 3, far ? shade(p.colors.skin, -0.12) : p.colors.skin);
+  }
+  SCENE.drawTypingArms = function (g, p, k) {
+    const x = Math.round(p.x), y = Math.round(p.y), f = k.facing;
+    const phase = Math.floor(p.animT * 8) % 6;
+    // Small alternating taps, with a held beat between words; shoulders stay put.
+    [true, false].forEach(function (far) {
+      const lift = phase === (far ? 1 : 3) ? 1 : 0;
+      const hx = k.x + f * (far ? 5 : 0), hy = k.y + (far ? -1 : 1) - lift;
+      seatedArm(g, p, x + f * (far ? 4 : -3), y - 28,
+        x + f * 9, y - (far ? 19 : 15), hx, hy, far);
+    });
+  };
+
   SCENE.drawPerson = function (g, p) {
     const facing = p.facing >= 0 ? 1 : -1;
     const walk = p.pose === 'walk';
@@ -250,9 +276,14 @@
       else drawHead(g, x, hy, p.gazeFacing || facing, c, p.dozing || blink);
       // arms + what they hold
       if (p.reading || p.dozing) {
-        px(g, x + facing * 3 - 2, y - 24, 5, 8, c.top);
         const bx = x + facing * 10 - 9;
         const by = y - 29 + (p.dozing ? 6 : 0);
+        seatedArm(g, p, x + facing * 4, y - 28, x + facing * 11, y - 19,
+          bx + 18, by + 5, true);
+        if (!(p.pageTurn > 0) || p.dozing)
+          seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
+            bx - 1, by + 5, false);
+        px(g, bx - 1, by + 1, 20, 10, '#8b7158');
         px(g, bx, by, 18, 10, '#f5efdf');
         px(g, bx + 8, by, 2, 10, '#b5a888');
         px(g, bx, by - 2, 18, 2, '#c9b28a');
@@ -260,7 +291,7 @@
         px(g, bx + 11, by + 3, 5, 2, '#d9d2c0');
         px(g, bx + 2, by + 7, 4, 2, '#d9d2c0');
         px(g, bx + 11, by + 7, 4, 2, '#d9d2c0');
-        px(g, bx - 2, by + 3, 3, 4, c.skin);                    // hands on the covers
+        if (!(p.pageTurn > 0) || p.dozing) px(g, bx - 2, by + 3, 3, 4, c.skin);
         px(g, bx + 17, by + 3, 3, 4, c.skin);
         if (p.pageTurn > 0 && !p.dozing) {
           const q = 1 - p.pageTurn / 0.8;
@@ -268,19 +299,20 @@
           const lift = Math.round(Math.sin(q * Math.PI) * 5);
           px(g, bx + Math.min(8, edge), by - lift, Math.max(2, Math.abs(edge - 8)), 9, '#fdf8ec');
           px(g, bx + edge, by - lift, 2, 9, '#c9b28a');
-          px(g, bx + edge - 1, by + 4 - lift, 3, 3, c.skin);
+          seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
+            bx + edge, by + 5 - lift, false);
         }
       } else if (p.painting) {
         const stroke = Math.floor(p.animT * 5) % 2;
         if (p.paintMixing) {
           // mixing happens down at the tray
-          px(g, x - 10, y - 29, 7, 11, c.top);
+          seatedArm(g, p, x - 4, y - 29, x - 8, y - 19, x - 13, y - 22 + stroke, false);
           px(g, x - 14, y - 24 + stroke, 8, 3, c.skin);
           px(g, x - 21, y - 25 + stroke, 9, 1, '#8b7158');
         } else {
           // the working arm lifts so the brush meets the canvas itself
           // (canvas panel bottoms out at y 424; the tray line is not a stroke)
-          px(g, x - 10, y - 32, 7, 12, c.top);
+          seatedArm(g, p, x - 4, y - 29, x - 9, y - 22, x - 16, y - 34 + stroke, false);
           px(g, x - 17, y - 36 + stroke, 9, 4, c.skin);
           px(g, x - 29, y - 39 + stroke, 13, 2, '#8b7158');
           px(g, x - 31, y - 42 + stroke, 3, 3, '#5a7a8a');
@@ -288,36 +320,35 @@
           px(g, x + 2, y - 20, 5, 3, c.skin);
         }
       } else if (p.sketching) {
-        px(g, x - 8, y - 28, 6, 10, c.top);
-        px(g, x + 2, y - 28, 6, 10, c.top);
+        seatedArm(g, p, x - 4, y - 28, x - 11, y - 19, x - 8, y - 15, true);
         // kraft cover round the pages so the sketchbook reads against the smock
         px(g, x - 10, y - 21, 20, 11, '#8b7158');
         px(g, x - 8, y - 20, 16, 9, '#f5efdf');
         px(g, x - 1, y - 20, 2, 9, '#b5a888');
         px(g, x - 5, y - 18, 8, 1, '#8b8070');
         const pencil = Math.round(Math.sin(p.animT * 5) * 2);
+        seatedArm(g, p, x + 3, y - 28, x + 9, y - 18, x + 2 + pencil, y - 19, false);
         px(g, x + 2 + pencil, y - 25, 1, 10, '#8b7158');
         px(g, x + pencil, y - 20, 4, 3, c.skin);
       } else if (p.playing) {
-        const keyBob = Math.floor(p.animT * 5) % 2;
-        // A sideways version of the typing forearms: both hands reach left
-        // from the backless bench to the upright's grouped keys.
-        px(g, x - 10, y - 29 + keyBob, 7, 11, c.top);
-        px(g, x - 5, y - 25 + (1 - keyBob), 7, 9, c.top);
-        px(g, x - 15, SCENE.L.piano.keyboardY + keyBob, 6, 3, c.skin);
-        px(g, x - 12, SCENE.L.piano.keyboardY + 2 + (1 - keyBob), 6, 3, c.skin);
+        const phase = Math.floor(p.animT * 6) % 6;
+        const keys = SCENE.L.piano;
+        [true, false].forEach(function (far) {
+          const tap = phase === (far ? 1 : 4) ? 1 : 0;
+          seatedArm(g, p, x + (far ? -5 : 1), y - 28,
+            x - 7, y - (far ? 19 : 15), keys.keyboardX + (far ? 5 : 10),
+            keys.keyboardY + (far ? 0 : 2) - tap, far);
+        });
       } else if (p.typing) {
-        const keyBob = Math.floor(p.animT * 6) % 2;
-        px(g, x - 9, y - 28 + keyBob, 7, 12, c.top);
-        px(g, x + 2, y - 28 + (1 - keyBob), 7, 12, c.top);
-        px(g, x - 7, y - 18 + keyBob, 5, 3, c.skin);
-        px(g, x + 3, y - 17 + (1 - keyBob), 5, 3, c.skin);
+        // Table composition draws these arms after the deck, using its anchors.
+        // Their body remains behind the table's near edge.
       } else if (p.holding === 'cup' || p.holding === 'glass') {
         const up = p.armUp || 0;
-        const hy = y - 26 - up * 10 + breathe;
-        const hx = x + facing * (13 - up * 5);
+        const hy = Math.round(y - 26 - up * 10 + breathe);
+        const hx = Math.round(x + facing * (13 - up * 5));
         const vessel = heldDrinkKind(p);
-        px(g, x + facing * 5, y - 30, 5, Math.round(10 - up * 3), c.top);
+        seatedArm(g, p, x - facing * 3, y - 28, x + facing * 2, y - 18,
+          hx + (facing > 0 ? -4 : 5), hy + 6, false);
         if (vessel === 'glass') {
           px(g, hx - 1, hy - 4, 2, 7, '#d9738a');
           px(g, hx - 3, hy, 8, 13, 'rgba(200,220,230,0.7)');
@@ -337,21 +368,17 @@
         }
       } else if (p.knitting) {
         const knit = Math.round(Math.sin(p.animT * 4.5));
-        // hands working in the lap, two needles crossing, the scarf growing by
-        // row — its length reads the arc's saved progress (docs/narrative.md §8)
-        px(g, x - 8, y - 28, 6, 9, c.top);                 // forearms into the lap
-        px(g, x + 2, y - 28, 6, 9, c.top);
-        px(g, x - 6, y - 20 + knit, 5, 3, c.skin);
-        px(g, x + 1, y - 20 - knit, 5, 3, c.skin);
         const scol = p.knitColor || '#a94f3f';
-        const sw = 3 + Math.round(Math.max(0, Math.min(1, p.knitProgress)) * 11);
-        px(g, x - sw, y - 16, sw * 2, 4, scol);            // the scarf across her lap
-        px(g, x - sw, y - 16, sw * 2, 1, shade(scol, 0.16));
-        px(g, x - sw, y - 13, sw * 2, 1, shade(scol, -0.16));
-        px(g, x - 8, y - 24 + knit, 8, 1, '#d9c9a0');
-        px(g, x, y - 25 - knit, 8, 1, '#d9c9a0');
-        px(g, x - 9, y - 25 + knit, 2, 2, '#c9b28a');
-        px(g, x + 7, y - 26 - knit, 2, 2, '#c9b28a');
+        const sw = 3 + Math.round(Math.max(0, Math.min(1, p.knitProgress || 0)) * 11);
+        px(g, x - sw, y - 19, sw * 2, 7, scol);
+        px(g, x - sw, y - 19, sw * 2, 1, shade(scol, 0.16));
+        for (let stitch = -sw + 2; stitch < sw; stitch += 3)
+          px(g, x + stitch, y - 16, 1, 3, shade(scol, -0.16));
+        // The needle tips cross above the live stitches; grips follow their shafts.
+        limb(g, x - 8, y - 24 + knit, x + 5, y - 19 - knit, 1, '#d9c9a0');
+        limb(g, x + 8, y - 25 - knit, x - 5, y - 19 + knit, 1, '#c9b28a');
+        seatedArm(g, p, x - 5, y - 28, x - 9, y - 19, x - 5, y - 23 + knit, true);
+        seatedArm(g, p, x + 4, y - 28, x + 9, y - 19, x + 5, y - 23 - knit, false);
       } else {
         px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
         px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
