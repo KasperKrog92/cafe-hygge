@@ -134,7 +134,7 @@
   /* ---------- captions ----------
      Keep normal antialiased letterforms: thresholding a tiny platform font
      can erase strokes differently across platform fonts. Cache the measured,
-     wrapped text with its quiet backing, independent of the floor lighting. */
+     wrapped text with an outline and shadow to separate it from the floor. */
   let capCache = { text: null, canvas: null };
 
   function buildCaption(text) {
@@ -156,13 +156,21 @@
     card.width = width + pad * 2;
     card.height = lines.length * lineHeight + pad * 2;
     g = card.getContext('2d');
-    g.fillStyle = 'rgba(20, 16, 14, 0.9)';
-    g.fillRect(0, 0, card.width, card.height);
     g.font = font;
     g.textBaseline = 'middle';
     g.fillStyle = '#f0e1c3';
+    g.strokeStyle = '#14100e';
+    g.lineWidth = 3;
+    g.lineJoin = 'round';
     lines.forEach(function (row, i) {
-      g.fillText(row, pad, pad + i * lineHeight + lineHeight / 2);
+      const y = pad + i * lineHeight + lineHeight / 2;
+      g.shadowColor = 'rgba(10, 6, 4, 0.7)';
+      g.shadowBlur = 2;
+      g.shadowOffsetY = 1;
+      g.strokeText(row, pad, y);
+      // Keep the cream letter interiors clean; only the outline casts a shadow.
+      g.shadowColor = 'transparent';
+      g.fillText(row, pad, y);
     });
     capCache = { text: text, canvas: card };
   }

@@ -400,10 +400,11 @@ back-shelf/piano-lid tail that hangs and sways below the board or lid.
   background cache only when Nora finishes chalking. Glyph set is caps A–Y
   subset + É; extend the map when a new word needs a missing letter.
 - **Captions use readable, antialiased text**: 17 px Arial/Helvetica/sans-serif,
-  warm cream on a 90% opaque dark backing, cached per text. No tiny-font
-  thresholding or offset duplicate glyphs. Lines wrap at 540 master pixels;
-  the padded card sits at x=24 with its bottom at y=568, inside desktop crops.
-  The existing caption fade applies to the whole card. The welcome subtitle
+  warm cream with a 3 px dark stroke (1.5 px outside the letter) and a subtle
+  shadow, cached per text on a transparent canvas. No backing rectangle or
+  tiny-font thresholding. Lines wrap at 540 master pixels;
+  the padded text canvas sits at x=24 with its bottom at y=568, inside desktop crops.
+  The existing caption fade applies to the text, outline and shadow together. The welcome subtitle
   is fully opaque and its sound hint uses larger, higher-contrast text.
 
 ## Lighting & effects
