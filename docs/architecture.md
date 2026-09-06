@@ -65,11 +65,10 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v2, migrated from v1) contains `mode`, integer `savings`, `hour`,
-`homeTime`, `plant: {stage,time}`, and a nullable lifecycle checkpoint containing
+`memory.life` (v3, migrated through v1/v2) contains `mode`, integer `savings`, `hour`,
+`homeTime`, `plant: {stage,time}`, `projects`, `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Nora's position/path. Initial savings and the plant price are
-30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` is the single
-small project definition. Stages are available → purchased → scheduled → carry
+30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
 → unpack → place → installed. Purchase and stage transitions flush immediately;
 working checkpoints update in memory every tick and flush at most every ten
 seconds, plus pagehide/hidden. Abrupt process death can lose the latest partial
@@ -270,7 +269,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v2; its v1 migration retains story history. Each migration
+  integer versions reach the simulation. The schema is v3; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -402,3 +401,39 @@ or audio. Internal helper calls inherit that scope. New world-first exports
 must use `SIM._.bindWorld` when they consume random/audio services.
 `SIM.dislodgeCat(world, patron)` no longer looks up `window.__world`.
 Context services are non-enumerable so detached art clones remain render data.
+
+
+## Interruptible project contract
+
+`SIM.projects` defines the two prices, destinations, carry delivery and ordered
+18-second work phases. `SIM.buyProject(world, id)` accepts one affordable choice
+per home evening (shared with the plant). Savings and `plannedTonight` change
+with the purchase in one immediate save. The flag resets only on entering the
+next home evening. Unfinished work stays in a two-job queue; laid-out work
+precedes another kit. No purchase occurs autonomously.
+
+Each v3 `life.projects[id]` record is `{stage, step, time}`. Stages are
+available → purchased → scheduled → arrived → working → installed. Morning
+schedules the purchase; Nora collects the single kit after opening. An arrived
+kit is owned at its reserved site; a reload places it there rather than replaying
+its transport. Work advances only while Nora is at `L.projects[id].work`.
+Every three-second fastening/stroke is a safe interruption and immediate save;
+a visit lasts at most nine seconds before she returns for an 18-second break.
+Orders and closing finish the current hand action; a carried kit is deposited
+at its reserved site first. All walking uses the existing obstacle planner.
+
+`updateProject` owns only `projectOut`, `projectWork` and `projectHome`; normal
+service and care retain the existing barista states. Closing waits until she
+returns. Open reloads resume the saved job from the ordinary counter boot;
+closing checkpoints normalize a transient worker to the counter, preserving
+partial work without stale tool/path ownership. No offline work is credited.
+`installProjects` derives one appended table and two appended seats from the
+installed flag, preserving historical seat/table indices. Repeated calls and
+reloads cannot append duplicates. Art never installs anything.
+
+`SCENE.hearthWork` shares the cleaning state across flame, glow, sparks, audio
+and fire tending. Scheduled/arrived/working means a cold hearth; completion
+allows the existing fire routine again. Other furnishings and stories remain.
+The audit checks work anchors and table/seat equivalence. Its route check allows
+exiting a service seat's clearance margin only when the solid furniture stays
+clear, matching the path planner.

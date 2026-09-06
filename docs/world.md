@@ -42,15 +42,15 @@ and the shop returns to its usual routines.
 caption, weather, movement and story timers receive only actual simulated
 time. The normal arrival schedule rolls into the new café day. This sequence
 needs no clicks, creates no obligations, and never consumes a story invitation.
-Schema v2 retains home time, wall-clock hour, presentation, savings, plant
-stage/time and a lifecycle checkpoint. Reload holds time spent away and resumes
+Schema v3 retains home time, wall-clock hour, presentation, savings, plant
+stage/time, partial table/hearth jobs, the evening choice and a lifecycle checkpoint. Reload holds time spent away and resumes
 rituals/partial work; transient patrons and incomplete orders are not serialized.
 A normal open-café reload retains the existing seeded-room behavior.
 
 Savings begin at 30 kr. Removing a finished cup at pickup adds 1 kr, once;
-seeded drinks and unfinished orders add nothing. The only purchase is a 30 kr
-plant, explicitly confirmed at home. Its status never expires, and its installed
-sill position has no floor footprint. No costs accrue from absence.
+seeded drinks and unfinished orders add nothing. Home offers a 30 kr plant, 60 kr table set or 30 kr fireplace cleaning. One
+choice per evening is optional; savings and unfinished jobs never expire. The
+plant has no floor footprint; the table uses a reserved area until complete. No costs accrue from absence.
 New captions: “home, with a book and a familiar little shadow.” and
 “a little green by the window.” Both use the ordinary caption queue.
 
@@ -398,3 +398,19 @@ seconds and wave once per passage, then continue walking. Up to two eligible
 indoor guests can watch from the window floor spots; see characters.md. This
 is ambient life, with no unlock, reward, saved event or required interaction.
 Dev forcing: `__dev.ship({x: 210, dir: 1})`.
+
+
+## Patient café projects
+
+The table kit is unpacked, its legs laid out, top fitted, seats assembled,
+wood wiped and the whole set positioned before any new seating opens. Hearth
+work brushes the cooled fireplace, gathers ash, wipes stone and polishes the
+lip. Each phase takes 18 seconds of actual hands-on work, split across short
+visits around service. Jobs may take further days without decay or penalties.
+A chosen fireplace rests cold from the following morning until cleaning is
+complete; unchosen fireplaces keep the previous fire/tending behavior.
+
+New completion captions use the normal quiet queue: “another little place to
+settle, whenever you like.” and “the hearth is clean; a small fire can glow
+again.” Neither completion consumes a story invitation. There are no progress
+bars, deadlines or required acknowledgement clicks.

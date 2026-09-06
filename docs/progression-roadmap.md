@@ -1,6 +1,6 @@
 # One life, two ways to spend time with it
 
-Direction recorded 6 September 2026. Milestones 1–2 are implemented;
+Direction recorded 6 September 2026. Milestones 1–3 are implemented;
 the remaining stages are proposed, not authorization to build every item.
 It grows from the former `idle` café, now the canonical `main` branch. The
 separate `game` experiment is archived reference material, not the implementation
@@ -305,9 +305,16 @@ The first apartment/plant milestone below subsequently added the minimal life an
    migration, actual page reloads at every plant stage, repeated clicks, and
    browser-tab ownership handoff. No payment or installation repeats. Larger jobs, H1 box
    unpacking, street-sign work, new identities and C0 remain later milestones.
-3. **Prove interruptible work.** Add a table assembly and fireplace-cleaning
-   project; let normal orders interrupt and work resume. Confirm it looks
-   natural through a busy day, closing, another morning and reload.
+3. **Prove interruptible work — completed 6 September 2026.** Optional 60 kr
+   table set and 30 kr fireplace cleaning, chosen one per evening alongside
+   the plant. Nora collects supplies after opening, works in three-second
+   actions, pauses for orders and returns in later quiet moments. Partial jobs
+   carry through closing, home, mornings, reload and either mode. A new set
+   adds two seats only when fully assembled; the existing furnished café stays.
+   The chosen hearth rests cold during cleaning, then resumes its usual fire.
+   Schema v3 preserves v2 life/history. Busy/unattended simulations, actual
+   page reloads at each work phase, purchase UI and duplicate prevention pass.
+   C0, H1 unpacking, contractors and later catalogue items remain deferred.
 4. **Introduce the modest starting café.** Define C0 and explicit furniture
    availability using the existing scene. Verify complete service and all
    character routes at every intermediate layout before adding more upgrades.

@@ -1,7 +1,7 @@
 # Narrative — the design contract for the story layer
 
-> **Shared life (6 September 2026):** a chosen plant now finishes its practical
-> installation autonomously in either mode. This is not a personal story payoff.
+> **Shared life (6 September 2026):** chosen plants, table assembly and hearth cleaning finish their practical
+> work autonomously in either mode. This is not a personal story payoff.
 > Story invitations remain saved until chosen in game mode; idle hides their
 > controls without consuming them. Both modes share the same progress and home.
 
@@ -175,13 +175,16 @@ Save shape (a small JSON blob — text state is kilobytes, never a size concern)
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "lastSeen": 1730000000000,
   "arcs": { "gerda-scarf": { "stage": 2, "progress": 14, "pendingBeat": null } },
   "bonds": { "gerda": { "known": true, "warmth": 3 } },
   "flags": { "cat-wore-scarf": true },
   "life": { "mode": "idle", "savings": 30, "hour": 8.4, "homeTime": 0,
-    "plant": { "stage": "available", "time": 0 }, "checkpoint": null }
+    "plant": { "stage": "available", "time": 0 },
+    "projects": { "table": { "stage": "available", "step": 0, "time": 0 },
+      "fireplace": { "stage": "available", "step": 0, "time": 0 } },
+    "plannedTonight": false, "checkpoint": null }
 }
 ```
 

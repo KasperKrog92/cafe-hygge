@@ -11,6 +11,10 @@
   SCENE.W = W;
   SCENE.H = H;
   SCENE.lampLevel = function (world) { return world.pal.lamp * (world.shop ? world.shop.lights : 1); };
+  SCENE.hearthWork = function (world) {
+    const p = world.memory && world.memory.life.projects.fireplace;
+    return !!p && ['scheduled','arrived','working'].indexOf(p.stage) >= 0;
+  };
   SCENE.VIEW_W = 960;
   SCENE.VIEW_H = 540;
   SCENE.VIEW_Y = 36;
@@ -47,6 +51,11 @@
       catStops: [{ x: 278, y: 320 }, { x: 490, y: 320 }, { x: 655, y: 374 }]
     },
     firstPlant: { x: 250, y: 210, pickup: { x: 54, y: 300 }, work: { x: 250, y: 268 } },
+    projects: {
+      pickup: { x: 54, y: 300 },
+      table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
+      fireplace: { x: 390, y: 246, work: { x: 390, y: 274 } }
+    },
     wallY: 232,               // where wall meets floor
     door: { x: 28, y: 130, w: 52, h: 102 },   // 1.7 CH
     doorSpot: { x: 54, y: 252 },     // where people appear
@@ -260,6 +269,7 @@
       // fire table's right stool (the audit's journey check proves it)
       { x: 548, y: 524, tag: '' }
     ],
+    queueBend: { x: 510, y: 438 },
     stoolDX: 52, stoolDY: 8
   });
 
@@ -301,6 +311,16 @@
      __dev.audit()'s journey sweep. The counter and bookshelf are already
      occluders and stay out of this list. */
   L.footprints = [];
+  // Reserved from the outset: loose parts and the completed set share one
+  // footprint, so installation never puts furniture across an active route.
+  const projectTable = L.projects.table;
+  L.footprints.push({ name: 'reserved table project', x0: projectTable.x - 34, x1: projectTable.x + 34,
+    y0: projectTable.y - 8, y1: projectTable.y + 34, passable: true });
+  [-1, 1].forEach(function (side) {
+    const x = projectTable.x + side * L.stoolDX;
+    L.footprints.push({ name: 'reserved project seat ' + side, seat: true,
+      x0: x - (side < 0 ? 17 : 13), x1: x + 13, y0: projectTable.y + 4, y1: projectTable.y + 26 });
+  });
   L.footprints.push({ name: 'back bar', x0: L.backBar.x, x1: L.backBar.x + L.backBar.w,
     y0: L.wallY, y1: L.backBar.baseY });
   L.tables.forEach(function (t, i) {

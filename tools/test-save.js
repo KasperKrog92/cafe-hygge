@@ -32,6 +32,20 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v2 migration retains the apartment and plant; v3 jobs reject invalid progress', () => {
+    const b=boot();
+    b.run(`var old=MEMORY.codec.fresh();old.version=2;delete old.life.projects;delete old.life.plannedTonight;
+      old.life.savings=83;old.life.plant={stage:'place',time:2.5};old.flags.kept=true;
+      var next=MEMORY.codec.decode(JSON.stringify(old));
+      if(next.error||next.state.version!==3||next.state.life.savings!==83||next.state.life.plant.time!==2.5||!next.state.flags.kept)throw Error('v2 lost life');
+      for(const change of [p=>p.time=-1,p=>p.time=18,p=>p.step=1.5,p=>p.step=7,p=>p.stage='other',p=>p.stage='installed',p=>p.step=1]) {
+        var s=MEMORY.codec.fresh();change(s.life.projects.table);
+        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('bad project accepted');
+      }
+      var s=MEMORY.codec.fresh();s.life.projects.table={stage:'working',step:4,time:1.25};
+      var r=MEMORY.codec.decode(MEMORY.codec.encode(s));
+      if(r.error||r.state.life.projects.table.time!==1.25)throw Error('partial work lost');`);
+  });
   await test('v1 migration retains history and rejects malformed life data', () => {
     const b = boot();
     b.run(`var s=MEMORY.codec.fresh();delete s.life;s.version=1;

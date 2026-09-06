@@ -100,6 +100,7 @@ Use the established comparison tool for visual passes:
 | `animation-journeys` | Real care, cat and seven order-preparation journeys with rendering |
 | `waterfront` | Outdoor orders/seats, weather returns, cleanup, closing and a 50-minute simulation soak |
 | `life` | Three nights per mode (idle automatic, game waits for sleep); chosen plant; stage reloads, identity and duplicate prevention |
+| `projects` | Orders interrupt hand actions; overnight/reload/mode resumption, queued jobs, completed seats and two unattended hour-long runs |
 | `ship` | Sailing ship movement, window visits, seat reservations, disposal and closing |
 
 **Separate normal-entry smoke test:** `./tools/verify-entry.ps1` automates the
@@ -153,7 +154,7 @@ while page reloads also isolate dev controls and audio settings.
 3. **Apartment/plant milestone — complete 6 September 2026:** one shared home
    evening, idle/game presentation, a 30 kr plant, carried/unpacked/placed during
    morning opening, schema v2 and one active browser writer. The existing café
-   layout remains intact. General furniture availability and later jobs wait.
+   layout remains intact. General furniture availability remains deferred; the next two jobs are now implemented below.
 
 The first apartment/plant slice is implemented on that extracted contract.
 See [the life contract](architecture.md#shared-life-and-plant-contract).
@@ -166,7 +167,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v2; v1 saves migrate with their stories, bonds and flags intact. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v3; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -207,3 +208,39 @@ Audio initialization, night lighting and the invariant audit passed. Captures
 and reports are in `.art-review/apartment-final/`, `.art-review/life-reloads-final/`
 and `.art-review/entry-smoke/`. These are desktop Chromium results, not a claim
 of native Safari execution. The plain-file boot is checked separately.
+
+
+## Interruptible projects — 6 September 2026
+
+Milestone 3 adds optional table assembly and fireplace cleaning on the existing
+furnished café. The `projects` suite is included in `verify-project.ps1`; run it
+alone with `-Suite projects`. The project reload/UI runner is:
+
+```powershell
+./tools/verify-project-reloads.ps1 -Label projects-reloads-final
+```
+
+It uses the same isolated `life-test` driver as the plant reload runner. It
+restores real localStorage/page reloads at purchase, scheduling, arrival, every
+work phase, closing, home, the following morning and installation, checking
+exact partial progress/balance before resuming. It verifies the new planner
+buttons, scrolling and duplicate clicks. The original life reload runner still
+covers the plant and two-tab ownership handoff. No Safari execution is claimed.
+
+The full set now contains ten browser suites and twelve Node save/isolation
+groups. Project checks also serve a real new-seat patron, keep the original
+café running while a job is pending and run two unattended hour-long soaks.
+An existing lap-hop/departure race found in those runs is fixed. A route-audit
+false positive when stepping out of the piano bench's clearance margin is
+corrected without allowing a path through the solid bench.
+
+Reports and inspected captures: `.art-review/projects-final/`,
+`.art-review/projects-reloads-final/` and `.art-review/projects-after/`.
+
+Final milestone evidence: all ten suites and twelve save/isolation groups pass;
+28 actual project reload fixtures retain exact progress and balance. Both new
+planner choices, the original plant reloads and two-tab writer handoff pass.
+The normal-entry cappuccino run completed in 36.5 seconds with audio ready,
+savings credited, clean browser errors and a zero-problem night audit. The art
+runner verified ten repeatable images and eight occupancy fixtures. All owned
+verification sessions were closed. These are desktop Chromium results.

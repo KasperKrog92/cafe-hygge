@@ -236,6 +236,19 @@
 
     ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
 
+    if (p.pose === 'kneel') {
+      // One knee on the mat, the other foot planted; brush strokes meet the
+      // hearth lip without stretching a standing sprite into the masonry.
+      const rub = Math.round(Math.sin(p.stateT*5)*5);
+      px(g,x-11,y-10,21,8,c.pants); px(g,x-15,y-5,10,5,'#3a2a1c');
+      px(g,x+7,y-14,7,13,c.pants); px(g,x+7,y-3,10,3,'#3a2a1c');
+      px(g,x-10,y-33,20,23,c.top); px(g,x-9,y-22,18,12,'#e8dfc9');
+      px(g,x-11,y-32,5,12,c.top); px(g,x+7,y-32,5,12,c.top);
+      px(g,x-13,y-26,5,8,c.skin); px(g,x+8,y-26,5,8,c.skin);
+      px(g,x-9+rub,y-27,17,3,'#96704c'); px(g,x-7+rub,y-24,13,4,'#c9b28a');
+      px(g,x-3+rub,y-30,5,5,c.skin);
+      drawHeadBack(g,x,y-48+breathe,facing,c); return;
+    }
     if (p.pose === 'pc') {
       const y = Math.round(p.y) - Math.round((1-p.pcSit)*8);
       // Rear-facing desk sitter: thighs on the cushion, bent knees below
@@ -524,6 +537,11 @@
         px(g, x + 3, y - 29, 9, 7, '#b8bfc7');
         px(g, x + 2, y - 29, 3, 2, '#d3d9de');
       }
+    } else if (p.state === 'projectWork' && p.project === 'table') {
+      const turn = Math.round(Math.sin(p.stateT*6)*3);
+      px(g,x-13,y-37,5,10,c.top); px(g,x+8,y-37,5,10,c.top);
+      limb(g,x-10,y-28,x-5,y-42,4,c.skin); limb(g,x+10,y-28,x+5,y-42,4,c.skin);
+      px(g,x-4+turn,y-45,9,3,'#7a89a5'); px(g,x-2+turn,y-44,4,4,c.skin);
     } else if (p.kind === 'barista' && (p.state === 'wipe' || p.state === 'polish') && !walk) {
       const rub = Math.round(Math.sin(p.stateT * 7) * 4);
       px(g, x - 12, y - 36, 5, 12, c.top);

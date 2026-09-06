@@ -92,6 +92,7 @@
     }
     world.brew.active = false;
 
+    if (R.updateProject(world, dt)) return;
     if (R.updateTerraceBarista(world, b, dt)) return;
 
     switch (b.state) {
@@ -107,6 +108,7 @@
         }
         // stay ready at the till if anyone is queueing
         if (world.queue.length) break;
+        if (R.startProject(world)) break;
         // otherwise, potter about
         b.idleT -= dt;
         if (b.idleT <= 0) {
@@ -816,7 +818,7 @@
 
   // Only pairs that fail the cat-journey audit take the little shared clear
   // corridor. Every other pair keeps the house-precedent straight cat line.
-  const CAT_VIA_PAIRS = {};
+  const CAT_VIA_PAIRS = { 'eat>bookshelfStand': true, 'bookshelfStand>eat': true };
   [
     'fire>bigRug', 'fire>armchair', 'fire>nookRug', 'fire>cushion', 'fire>window1Stand',
     'fire>window2Stand', 'fire>counterStand', 'fire>topShelfStand', 'fire>eat',
@@ -985,6 +987,9 @@
       cat.state = r < 0.55 ? 'loaf' : r < 0.8 ? 'sit' : 'sleep';
       cat.stateT = rnd(60, 180); cat.facing = 1;
     } else if (after.intent === 'lap') {
+      // A reader may get up during the short hop. Land, then step down;
+      // never bind a lap to a patron who has already released their seat.
+      if (!after.patron.seat || after.patron.state !== 'seated') { leavePerch(world,cat); return; }
       cat.state = 'lap'; cat.stateT = 9999; cat.facing = after.patron.facing;
       cat.lapPatron = after.patron; after.patron.lapCat = true;
     } else {

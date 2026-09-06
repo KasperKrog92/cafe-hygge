@@ -40,8 +40,62 @@
       }
       px(g,x-9,y-29-Math.round(Math.sin(p.time*4)*3),6,4,b.colors.skin);
     }});
-    return draws;
+    return draws.concat(projectDrawables(w));
   };
+  function projectDrawables(w) {
+    const draws=[], b=w.barista, jobs=w.memory.life.projects, anchors=SCENE.L.projects;
+    Object.keys(jobs).forEach(function(id) {
+      const p=jobs[id], a=anchors[id];
+      if (p.stage==='available'||p.stage==='purchased') return;
+      const carried=b.project===id && b.holding==='parcel';
+      if (carried) draws.push({y:b.y+.1,draw:g=>box(g,Math.round(b.x)+12,Math.round(b.y)-22,false)});
+      if (id==='table') {
+        if(p.stage==='installed') return; // normal furniture renderer + real seats
+        draws.push({y:a.y+32,draw:g=>{
+          const x=a.x,y=a.y;
+          ell(g,x,y+28,34,8,'rgba(20,12,8,.18)');
+          if(p.stage==='scheduled') return;
+          if(p.stage==='arrived' && !carried) { box(g,x,y+20,false); return; }
+          if(p.stage!=='working') return;
+          // Parts stay within the final set's reserved floor area.
+          if(p.step<2) {
+            box(g,x-16,y+22,true);
+            px(g,x-25,y+27,49,5,'#96704c'); px(g,x-21,y+35,40,4,'#6e4c30');
+            ell(g,x+10,y+10,23,7,'#8a6142');
+          } else {
+            px(g,x-5,y,10,27,'#5a3d28'); px(g,x-16,y+26,32,5,'#4a3222');
+            ell(g,x,y,32,12,'#8a6142'); ell(g,x,y-3,27,9,'#96704c');
+            px(g,x-18,y-10,30,2,'#b08a64');
+          }
+          [-1,1].forEach(side=>{
+            const sx=x+side*SCENE.L.stoolDX;
+            if(p.step<3) { px(g,sx-9,y+18,20,4,'#96704c'); px(g,sx-7,y+24,16,3,'#6e4c30'); }
+            else {
+              px(g,sx-9,y+8,5,14,'#4a3222'); px(g,sx+4,y+8,5,14,'#4a3222');
+              ell(g,sx,y+8,13,6,'#94684a');
+              if(side<0) { px(g,sx-16,y-28,6,38,'#5a3d28'); px(g,sx-17,y-30,8,4,'#7d5334'); }
+            }
+          });
+          // Folded cloth and screwdriver, set down whenever service calls.
+          px(g,x+17,y+23,10,4,'#7a89a5'); px(g,x+17,y+29,9,2,'#b8bfc7'); px(g,x+25,y+28,5,4,'#a8764a');
+        }});
+      } else {
+        draws.push({y:a.y+3,draw:g=>{
+          const x=a.x,y=a.y;
+          // Ash and soot disappear in remembered sections; no future decay.
+          if(p.stage!=='installed') {
+            const n=p.step;
+            for(let i=0;i<8-n*2;i++) px(g,x-19+i*5,y-17+(i%2)*3,4,2,'#62574b');
+            px(g,x+23,y-5,13,13,'#69756b'); px(g,x+24,y-7,11,3,'#a9afa0');
+            px(g,x+25,y-14,2,9,'#96704c'); px(g,x+22,y-15,8,3,'#c9b28a');
+          } else {
+            px(g,x-27,y-12,54,2,'#d5c3a5'); px(g,x-22,y-10,44,2,'#b6a48d');
+          }
+        }});
+      }
+    });
+    return draws;
+  }
   function utilityRoom(g,r,bath) {
     // Only the side/front walls are cut away. The rear elevation is drawn
     // separately at its floor baseline, with room above the plumbed fixtures.

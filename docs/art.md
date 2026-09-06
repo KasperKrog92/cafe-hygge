@@ -621,3 +621,20 @@ at their established anchors, gathered on one muted woven pad; a wicker rim
 locates the red cushion. The door retains its hinged animation, with recessed
 lower panels, a brass lever and a beveled frame/threshold. No save or simulation
 state changes are part of this art pass.
+
+
+## Table assembly and hearth cleaning
+
+`L.projects.table` is centered at (568,450), with Nora working at (568,496).
+The set occupies the open space between the fire table and lower dining table.
+Its table and seat footprints are reserved from the outset; parts stay inside
+that envelope, away from the main lane. Completed art uses the ordinary dining
+table/chair/stool renderer and is derived from the same state as usable seats.
+The intermediate renderer in `scene-home.js` shows the carton, loose wood,
+pedestal/top and assembled seats; a cloth and screwdriver rest during pauses.
+
+`L.projects.fireplace` puts the supplies at (390,246) and Nora at (390,274).
+Her new kneeling pose keeps one knee down and one foot planted while the brush
+moves at the hearth lip. Ash patches disappear by remembered phase; the clean
+stone lip remains. Fire, glow and sparks stay off during the chosen cleaning.
+The untouched furnished café remains the prototype baseline; this is not C0.

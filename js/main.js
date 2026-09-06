@@ -107,7 +107,15 @@
       l.plant.stage !== 'available' ? 'Chosen and paid for. Nora will take care of the rest.' : 'one plant · 30 kr';
     document.getElementById('plan-status').textContent = status;
     buyPlant.hidden = l.plant.stage !== 'available';
-    buyPlant.disabled = l.savings < SIM.plantProject.price;
+    buyPlant.disabled = l.plannedTonight || l.savings < SIM.plantProject.price;
+    Object.keys(SIM.projects).forEach(function (id) {
+      const p = l.projects[id], d = SIM.projects[id], button = document.getElementById('buy-' + id);
+      button.hidden = p.stage !== 'available';
+      button.disabled = l.plannedTonight || l.savings < d.price;
+      document.getElementById('status-' + id).textContent = p.stage === 'installed' ? 'Settled in the café.' :
+        p.stage === 'available' ? '' : p.stage === 'working' ? 'Underway: ' + d.phases[p.step] + '. It can wait.' : 'Chosen and paid for. Nora will take care of it.';
+    });
+    document.getElementById('plan-choice').textContent = l.plannedTonight ? 'Something chosen for tomorrow. The rest can wait for another evening.' : 'One small plan this evening, if you like.';
   }
   btnMode.addEventListener('click', function () {
     SIM.setMode(world, world.memory.life.mode === 'idle' ? 'game' : 'idle'); refreshLife();
@@ -116,6 +124,9 @@
     if (SIM.plan(world, true)) { planner.showModal(); refreshLife(); }
   });
   buyPlant.addEventListener('click', function () { SIM.buyPlant(world); refreshLife(); });
+  Object.keys(SIM.projects).forEach(function (id) {
+    document.getElementById('buy-' + id).addEventListener('click', function () { SIM.buyProject(world,id); refreshLife(); });
+  });
   btnSleep.addEventListener('click', function () {
     if (SIM.goToSleep(world)) { refreshLife(); btnMode.focus(); }
   });

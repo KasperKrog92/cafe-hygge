@@ -1,9 +1,92 @@
-/* Café Hygge — one shared life, one optional plant. */
+/* Café Hygge — one shared life and patient, interruptible projects. */
 (function () {
   'use strict';
   const R = SIM._, L = SCENE.L, H = L.home;
   const PLANT = { price: 30, destination: 'cafe', delivery: 'carry', phases: ['scheduled','carry','unpack','place','installed'] };
   SIM.plantProject = PLANT;
+  const PROJECTS = SIM.projects = {
+    table: { price: 60, destination: 'cafe', delivery: 'carry', title: 'table and chairs',
+      phases: ['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'], duration: 18 },
+    fireplace: { price: 30, destination: 'cafe', delivery: 'carry', title: 'clean the fireplace',
+      phases: ['brush the cooled hearth','gather the ash','wipe the stone','polish the hearth'], duration: 18 }
+  };
+  function busy(w) { return w.barista.orders.length || w.queue.length || w.shop.phase !== 'open'; }
+  function pending(w) {
+    // Finish the job already laid out before opening another kit.
+    for (const stage of ['working','arrived','scheduled']) {
+      const id=Object.keys(PROJECTS).find(id => w.memory.life.projects[id].stage === stage);
+      if(id) return id;
+    }
+    return null;
+  }
+  R.installProjects = function (w) {
+    if (w.memory.life.projects.table.stage !== 'installed' || w.tables.some(t => t.project === 'table')) return;
+    const t = L.projects.table, index = w.tables.length;
+    w.tables.push({ x:t.x, y:t.y, tag:t.tag, project:'table', items:[], candle:0, candleTarget:0 });
+    [-1,1].forEach(side => w.seats.push({x:t.x+side*L.stoolDX,y:t.y+L.stoolDY+4,
+      facing:-side,table:index,side:side,armchair:false,taken:false,project:'table'}));
+  };
+  SIM.buyProject = function (w, id) {
+    const l = w.memory.life, d = PROJECTS[id], p = l.projects[id];
+    if (!d || !p || !w.plannerOpen || w.shop.phase !== 'home' || l.mode !== 'game' ||
+        l.plannedTonight || p.stage !== 'available' || l.savings < d.price) return false;
+    l.savings -= d.price; p.stage = 'purchased'; l.plannedTonight = true;
+    commit(w); return true;
+  };
+  function projectHome(w) {
+    const b = w.barista;
+    b.state = 'projectHome'; b.pose = 'stand'; b.holding = null;
+    b.path = [L.baristaHome];
+  }
+  // Only a three-second hand action is atomic. Travel can turn back at once;
+  // completed strokes/fastenings and the current partial stroke live in memory.
+  R.updateProject = function (w, dt) {
+    const b = w.barista;
+    w.projectRest = Math.max(0,(w.projectRest || 0)-dt);
+    if (b.state === 'projectHome') {
+      if (R.walker(b,dt)) { b.state = 'idle'; b.project = null; w.projectRest = 18; }
+      return true;
+    }
+    if (b.state !== 'projectOut' && b.state !== 'projectWork') return false;
+    const id = b.project, p = w.memory.life.projects[id], d = PROJECTS[id];
+    if (b.state === 'projectOut') {
+      // A carried kit is set down at its reserved site before returning;
+      // it must never pop across the room when an order arrives mid-carry.
+      if (busy(w) && b.holding !== 'parcel') { projectHome(w); return true; }
+      if (!R.walker(b,dt)) return true;
+      if (p.stage === 'scheduled') {
+        p.stage = 'arrived'; b.holding = 'parcel'; b.path = [L.projects[id].work];
+        commit(w); return true;
+      }
+      p.stage = 'working'; b.holding = null; b.state = 'projectWork'; b.projectSession = 0; commit(w);
+    }
+    b.pose = id === 'fireplace' ? 'kneel' : 'wipe'; b.heading = 'up'; b.facing = -1;
+    const before = p.time;
+    // If a stroke ended on the previous frame, an arriving order wins now.
+    if (busy(w) && before % 3 < 1e-8) { projectHome(w); return true; }
+    p.time = Math.min(d.duration,p.time+dt); b.stateT = p.time;
+    b.projectSession += dt;
+    const boundary = Math.floor(p.time/3) > Math.floor(before/3);
+    if (p.time >= d.duration) {
+      p.time = 0; p.step++;
+      if (p.step === d.phases.length) {
+        p.stage = 'installed'; R.installProjects(w);
+        R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : 'the hearth is clean; a small fire can glow again.');
+        if (id === 'fireplace') R.addLog(w);
+      }
+      commit(w);
+    } else if (boundary) commit(w);
+    if (p.stage === 'installed' || (boundary && (busy(w) || b.projectSession >= 9))) projectHome(w);
+    return true;
+  };
+  R.startProject = function (w) {
+    const id = pending(w), b = w.barista;
+    if (!id || busy(w) || w.projectRest > 0) return false;
+    const p = w.memory.life.projects[id];
+    b.project = id; b.state = 'projectOut'; b.pose = 'stand'; b.holding = null;
+    b.path = [p.stage === 'scheduled' ? L.projects.pickup : L.projects[id].work];
+    return true;
+  };
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
   function saveLife(w, dt) {
     const l = w.memory.life, b = w.barista;
@@ -14,6 +97,11 @@
         state: b.state === 'shop' ? 'shop' : 'idle', pose: b.pose, heading: b.heading,
         facing: b.facing, holding: b.holding }
     };
+    // A closing reload returns the transient worker safely to the counter;
+    // only the durable job is restored, never a stale tool/path ownership.
+    if (l.checkpoint && b.state.indexOf('project') === 0) {
+      Object.assign(l.checkpoint.nora,{x:L.baristaHome.x,y:L.baristaHome.y,path:null,state:'idle',pose:'stand',holding:null});
+    }
     const key = w.shop.phase + ':' + l.plant.stage;
     w.lifeSaveT = (w.lifeSaveT || 0) + dt;
     if (w.lifeSaveKey !== key || w.lifeSaveT >= 10) {
@@ -23,6 +111,8 @@
   R.saveLife = saveLife;
   R.restoreLife = function (w) {
     const l = w.memory.life, c = l.checkpoint;
+    R.installProjects(w);
+    if (SCENE.hearthWork(w)) { w.fire.level = w.fire.target = 0; w.fire.wantsLog = false; }
     w.clockOffset = (l.hour - w.hour) / 24 * R.DAY_SECONDS;
     R.updateClock(w, 0);
     if (!c) return;
@@ -55,13 +145,15 @@
   SIM.buyPlant = function (w) {
     const l = w.memory.life;
     if (!w.plannerOpen || w.shop.phase !== 'home' || l.mode !== 'game' ||
-        l.plant.stage !== 'available' || l.savings < PLANT.price) return false;
+        l.plannedTonight || l.plant.stage !== 'available' || l.savings < PLANT.price) return false;
     l.savings -= PLANT.price; l.plant.stage = 'purchased'; l.plant.time = 0;
+    l.plannedTonight = true;
     commit(w); return true;
   };
   R.enterHome = function (w) {
     w.shop.phase = 'home'; w.shop.elapsed = 0; w.shop.fade = 0;
     w.shop.carryingCat = false; w.memory.life.homeTime = 0;
+    w.memory.life.plannedTonight = false;
     w.barista.path = null; w.barista.holding = null; w.barista.state = 'idle';
     w.cat.path = null; w.cat.surface = 'floor'; w.cat.lapPatron = null;
     w.cat.hopQueue = null; w.cat.hopFrom = w.cat.hopTo = null;
@@ -124,6 +216,7 @@
     w.shop.phase = 'dawn'; w.shop.elapsed = 0; w.shop.fade = 1; w.shop.carryingCat = true;
     w.barista.x = L.doorSpot.x; w.barista.y = L.doorSpot.y;
     if (l.plant.stage === 'purchased') l.plant.stage = 'scheduled';
+    Object.keys(PROJECTS).forEach(id => { if (l.projects[id].stage === 'purchased') l.projects[id].stage = 'scheduled'; });
     w.clockOffset += ((7.5-w.hour+24)%24)/24*R.DAY_SECONDS;
     R.updateClock(w,0); commit(w);
   }

@@ -613,6 +613,7 @@
   }
 
   function drawFireDynamic(g, world) {
+    if (SCENE.hearthWork(world)) return;
     const f = L.fire, t = world.t;
     // The live burn (0..1) scales the flames: a full log throws tall tongues,
     // embers leave only the glowing coal bed. `flame` is 0 at the ember floor.

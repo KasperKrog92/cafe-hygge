@@ -969,6 +969,9 @@
   function updateFire(world, dt) {
     const f = world.fire;
     if (!f) return;
+    if (SCENE.hearthWork(world)) {
+      f.level = f.target = 0; f.wantsLog = f.claimed = false; f.graceT = 0; return;
+    }
     f.target = Math.max(FIRE_EMBER, f.target - dt * FIRE_BURN);
     f.level += (f.target - f.level) * Math.min(1, dt * FIRE_EASE);
     if (f.level < FIRE_LOW && !f.wantsLog && !f.claimed) {
@@ -989,6 +992,7 @@
   function addLog(world) {
     const f = world.fire;
     if (!f) return;
+    if (SCENE.hearthWork(world)) return;
     f.target = 1;
     f.level = Math.min(1, f.level + 0.15);   // a small immediate catch, then the climb
     f.wantsLog = false;
@@ -1197,6 +1201,7 @@
   }
 
   function queueSlot(i) {
+    if (i === 5) return {x:L.queueBend.x,y:L.queueBend.y};
     return { x: L.orderSpot.x - i * 34, y: L.orderSpot.y + i * 30 };
   }
 
@@ -1239,7 +1244,7 @@
     });
     // fire sparks — a blaze throws more and higher; embers only spit now and then
     const fireLvl = world.fire ? world.fire.level : 1;
-    if (random() < dt * (0.3 + fireLvl * 2.2)) {
+    if (!SCENE.hearthWork(world) && random() < dt * (0.3 + fireLvl * 2.2)) {
       world.particles.push({
         type: 'spark',
         x: L.fire.boxX + 8 + random() * (L.fire.boxW - 16),

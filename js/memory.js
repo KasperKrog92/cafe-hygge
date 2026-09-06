@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 2;
+  const KEY = 'cafe-hygge-save', VERSION = 3;
   const MEMORY = (window.MEMORY = {});
   // Waiting browser tabs may receive hidden/pagehide before they own a world.
   // Their exit listeners must not flush an old snapshot over the active save.
@@ -44,6 +44,7 @@
         requireShape(typeof s.flags[id] === 'boolean', 'invalid flag: ' + id);
       });
       if (version >= 2) validateLife(s.life);
+      if (version >= 3) validateProjects(s.life);
       return s;
     }
     function migrate(input) {
@@ -72,7 +73,22 @@
   }
   function freshLife() {
     return { mode: 'idle', savings: 30, hour: 8.4, homeTime: 0,
-      plant: { stage: 'available', time: 0 }, checkpoint: null };
+      plant: { stage: 'available', time: 0 }, projects: freshProjects(), plannedTonight: false, checkpoint: null };
+  }
+  function freshProjects() {
+    return { table: { stage: 'available', step: 0, time: 0 }, fireplace: { stage: 'available', step: 0, time: 0 } };
+  }
+  function validateProjects(l) {
+    requireShape(record(l.projects) && typeof l.plannedTonight === 'boolean', 'invalid projects');
+    ['table','fireplace'].forEach(function (id) {
+      const p = l.projects[id], steps = id === 'table' ? 6 : 4;
+      requireShape(record(p) && ['available','purchased','scheduled','arrived','working','installed'].indexOf(p.stage) >= 0 &&
+        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < 18,
+        'invalid project: ' + id);
+      requireShape(p.stage === 'installed' ? p.step === steps && p.time === 0 : p.step < steps, 'invalid project completion');
+      if (['available','purchased','scheduled','arrived'].indexOf(p.stage) >= 0)
+        requireShape(p.step === 0 && p.time === 0, 'invalid project arrival');
+    });
   }
   function validateLife(l) {
     requireShape(record(l), 'invalid life');
@@ -102,6 +118,10 @@
   const codec = createCodec(VERSION, { 1: function (s) {
     createCodec(1, {}).validate(s);
     s.version = 2; s.life = freshLife(); return s;
+  }, 2: function (s) {
+    createCodec(2, {}).validate(s);
+    s.version = 3; s.life.projects = freshProjects();
+    s.life.plannedTonight = s.life.plant.stage === 'purchased'; return s;
   } });
   MEMORY.VERSION = VERSION;
   MEMORY.codec = codec;

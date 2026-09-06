@@ -156,3 +156,11 @@ while `shop.phase === 'home'`; leaving the café stops its piano voice. The home
 reading transition reuses `pageTurn`, and the plant's unpack-to-place boundary
 reuses `swish`. Both originate from dt-driven simulation code through the
 world's sound adapter, so private tests remain silent. No new gains or samples.
+
+
+## Hearth cleaning
+
+A chosen cleaning project suppresses fire crackles while scheduled or underway,
+matching the cold hearth, absent glow and absent sparks. Finishing the work
+uses the existing quiet `fireCatch` via `addLog`; ordinary tending then resumes.
+No new work sound or audio layer is introduced.

@@ -27,7 +27,7 @@ for the full design ethos.
 before progression work. It records the owner's shared idle/game life, autonomous
 café and apartment routines, evening purchases and animated improvements. Its
 explicit direction supersedes older bans on money/upgrades; the no-pressure
-principle remains. The first apartment/plant milestone is shipped; later stages remain planned. Build the named
+principle remains. The apartment/plant and interruptible table/hearth milestones are shipped; later stages remain planned. Build the named
 milestone on the current café foundation, keeping later ideas out of that slice.
 
 ## Working with the owner
@@ -117,7 +117,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
 - **Repeatable verification:** with this checkout served on port 8137, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-project.ps1`.
   It runs the Node save/isolation regressions, checks shipped-script syntax,
-  runs the nine browser suites with
+  runs the ten browser suites with
   fresh saves between them, exports reports/captures, and confirms session
   cleanup. See [docs/development.md](docs/development.md) for targeted commands,
   the separate normal-entry smoke test and the next preparation tasks.
@@ -177,7 +177,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, plants, and Lunafreya's easel station/canvas. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
 | `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering, plus `SCENE.composeFrame` — the shared depth-sorted frame composition that both `main.js` `render()` and `__dev.shot()` call. |
-| `js/scene-home.js` | `SCENE` | Sparse apartment and saved plant work/installed drawables. |
+| `js/scene-home.js` | `SCENE` | Sparse apartment and saved plant/table/hearth work drawables. |
 | `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, café-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
 | `js/memory.js` | `MEMORY` | The persistent, cross-visit save (`cafe-hygge-save`): versioned JSON blob (arcs, bonds, flags, `lastSeen`), a migration ladder, and a graceful fresh-café fallback. Mirrors `SND.save()`. Loaded before sim-core so world creation reconciles against it. |
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
@@ -185,7 +185,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes; character helpers supplied explicitly. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
-| `js/sim-life.js` | `SIM` | Shared home routine, presentation actions, one plant project and v2 lifecycle checkpoints. |
+| `js/sim-life.js` | `SIM` | Shared home, presentation, plant and interruptible projects, v3 checkpoints. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 

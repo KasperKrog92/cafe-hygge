@@ -116,6 +116,9 @@ canvas#cafe {
 #controls:focus-within { opacity: 1; pointer-events: auto; }
 #planner { margin: auto auto auto 5vw; max-width: 440px; padding: 30px; color: #eadcc4; background: #30271f; border: 1px solid #92714e; border-radius: 8px; box-shadow: 0 18px 80px #100d1490; }
 #planner::backdrop { background: rgba(16,13,20,.18); }
+#planner { max-height: 85vh; overflow-y: auto; }
+#planner button:disabled { opacity: .55; cursor: default; }
+#planner p:empty { display: none; }
 #planner h2 { font: normal 27px Georgia, serif; margin: 12px 0 20px; }
 #planner p { font: 15px/1.65 Georgia, serif; margin: 14px 0; }
 #planner .eyebrow { color: #c8ad86; font-size: 12px; letter-spacing: .12em; }

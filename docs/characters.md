@@ -652,3 +652,22 @@ Regulars, couples, window sitters, artists, pianists, laptop users, knitters,
 sleepers, guests holding drinks and anyone with the cat on their lap keep their
 activities. Eligibility needs over a minute remaining and a quiet gap between
 sips; each guest joins at most once per passage.
+
+
+## Interruptible table and hearth work
+
+After opening, Nora picks up a chosen kit and carries it to the reserved work
+site. `projectOut` walks there, `projectWork` animates fastening/wiping or a
+kneeling brush stroke, and `projectHome` returns to the counter with empty
+hands. A held kit is put down at its site before responding; hand work finishes
+its current three-second action before orders or closing take over. Nine-second
+visits and an 18-second break leave room for the existing care routines.
+Partial phases persist across evenings, reloads and presentation changes.
+A finished table enables two normal seats with ordinary ordering, reading,
+items and clearing; the cleaned hearth rejoins ordinary fire tending.
+
+The new reserved set also bends the sixth queue position through `L.queueBend`;
+all seven waiting/queue stops remain clear. The cat's bowl–bookshelf journey
+uses its existing lane approaches to avoid the set. If a reader releases their
+seat during a lap hop, the cat lands and steps down instead of retaining a
+stale lap link. This race was exposed by the unattended project soak.

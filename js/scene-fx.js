@@ -47,7 +47,7 @@
     // fire: its warm pool grows and brightens with the live burn, and shrinks
     // to a small ember glow when low — but never goes fully dark
     const fireLvl = world.fire ? world.fire.level : 1;
-    const flick = (0.06 + 0.16 * fireLvl) + (0.04 + 0.05 * fireLvl) * Math.sin(t * 8.7) + 0.03 * fireLvl * Math.sin(t * 23.3);
+    const flick = SCENE.hearthWork(world) ? 0 : (0.06 + 0.16 * fireLvl) + (0.04 + 0.05 * fireLvl) * Math.sin(t * 8.7) + 0.03 * fireLvl * Math.sin(t * 23.3);
     glow(g, 388, 204, 52 + 40 * fireLvl, 255, 140, 50, flick);
     glow(g, 388, 212, 24 + 16 * fireLvl, 255, 190, 90, flick * 0.8);
     // candle pools bloom only after Nora has lit their visible flames

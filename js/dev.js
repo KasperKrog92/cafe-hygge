@@ -368,6 +368,9 @@
     t.push({ x: L.pickupSpot.x, y: L.pickupSpot.y, name: 'pickupSpot' });
     t.push({ x: L.returnSpot.x, y: L.returnSpot.y, name: 'returnSpot' });
     t.push({ x: L.artist.watch.x, y: L.artist.watch.y, name: 'artistWatch' });
+    ['table','fireplace'].forEach(function (id) {
+      const p=L.projects[id].work;t.push({x:p.x,y:p.y,name:'project '+id});
+    });
     return t;
   }
 
@@ -814,6 +817,12 @@
         function inSeat(p) { return box.seat && p.x > box.x0 && p.x < box.x1 && p.y > box.y0 && p.y < box.y1; }
         for (let i = 1; i < actual.length; i++) {
           if ((i === 1 && inSeat(actual[0])) || (i === actual.length - 1 && inSeat(dest))) continue;
+          // After stepping out of a service seat, Nora briefly remains in
+          // its clearance margin. Match the planner's endpoint relaxation:
+          // leaving that margin is valid only if the solid furniture is clear.
+          function inMargin(p) { return p.x > box.x0-PAD && p.x < box.x1+PAD && p.y > box.y0-PAD && p.y < box.y1+PAD; }
+          if (!segHitsBox(actual[i-1],actual[i],box,0) &&
+              ((i === 1 && inMargin(actual[0])) || (i === actual.length-1 && inMargin(dest)))) continue;
           if (segHitsBox(actual[i - 1], actual[i], box, PAD)) {
             problems.push('Nora planned route cuts through the ' + box.name);
             break;
@@ -957,6 +966,14 @@
     if (L.lane !== 368) problems.push('L.lane = ' + L.lane + ' (the walking lane is 368; see AGENTS.md)');
     if (!Array.isArray(L.occluders) || L.occluders.length < 2) problems.push('L.occluders missing or incomplete (expect at least bookshelf + counter)');
     if (!Array.isArray(L.footprints) || !L.footprints.length) problems.push('L.footprints missing (the journey check needs the furniture floor boxes)');
+    const jobs=w.memory.life.projects, installedTable=jobs.table.stage==='installed';
+    if(w.tables.filter(t=>t.project==='table').length!==(installedTable?1:0) ||
+        w.seats.filter(s=>s.project==='table').length!==(installedTable?2:0)) problems.push('project table installation/seating mismatch');
+    if(w.barista.state==='projectWork') {
+      const id=w.barista.project, job=jobs[id], anchor=L.projects[id];
+      if(!job || job.stage!=='working' || !anchor ||
+          w.barista.x!==anchor.work.x || w.barista.y!==anchor.work.y) problems.push('project work away from its reserved anchor');
+    }
 
     // the regulars roster (CAST): cheap constant-checks over the data the sim
     // reads for each regular — no geometry (they reuse existing seats/routes)

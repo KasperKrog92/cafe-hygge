@@ -65,7 +65,11 @@
             s.phase === 'opening' && s.accepting && w.patrons.length ? 'early-guests' : s.phase;
           if (!frames[key]) frames[key] = __dev.shot();
         }
-        if (i % 80 === 0) audits.push.apply(audits, __dev.audit());
+        if (i % 80 === 0) {
+          const problems=__dev.audit();
+          if(problems.length) problems.push(JSON.stringify({state:w.barista.state,x:w.barista.x,y:w.barista.y,path:w.barista.path}));
+          audits.push.apply(audits,problems);
+        }
         if (closed && s.phase === 'open') { reopened = true; break; }
       }
       check(reopened, scenario + ': did not reopen');
