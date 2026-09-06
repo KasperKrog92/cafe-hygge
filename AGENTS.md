@@ -66,8 +66,8 @@ for the full design ethos.
   (`__dev.shot('fireside')`), an entity (`__dev.shot('nora')`), or a
   `{x,y,w,h,scale}` crop; regions live in `__dev.regions`.
 
-- Live at <https://hygge.kasper-krog.dk> (GitHub Pages, `main` + `CNAME`) —
-  pushes to `main` publish there.
+- Live at <https://hygge.kasper-krog.dk> (GitHub Pages, `idle` + `CNAME`) —
+  pushes to `idle` publish there.
 - No build step, no dependencies, no TypeScript, no modules. Plain script tags.
 - Open `index.html` directly (file:// works — this is why there are no ES
   modules), or serve: `python -m http.server 8137` (there is a `.claude/launch.json`
@@ -110,7 +110,7 @@ for the full design ethos.
 
 ## Git workflow
 
-- Commit and push directly to `main` unless the owner explicitly asks for a
+- Commit and push directly to `idle` unless the owner explicitly asks for a
   different branch or a pull request.
 - When changing a shipped script, bump its `?v=` tag in `index.html`. The live
   Cloudflare cache can retain the previous URL for four hours even after a
