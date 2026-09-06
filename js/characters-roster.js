@@ -351,7 +351,7 @@
           lines: ['Gerda is at the glass too; she gives the finished colour a quiet nod.']
         },
         beat: [
-          'Across the road, the painter steps back the width of the street and looks for a long moment.',
+          'Across the water, the painter steps back onto the quay and looks for a long moment.',
           'He folds the ladder down; the old facade holds its new warmth.',
           'For a while, you have both kept company with someone else\'s patient work.'
         ]

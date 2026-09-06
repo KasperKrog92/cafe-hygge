@@ -198,3 +198,38 @@ See [animations.md](animations.md) for the September 2026 full motion inventory,
 scenario coverage and the two reusable animation verification scripts. Static
 room shots cannot prove a motion change: inspect the six-frame contact sheet
 as well, and run actual simulation journeys separately from detached art worlds.
+
+
+## Waterfront verification
+
+Run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-waterfront.ps1 -Regression`
+with the local server running. Its single disposable session executes real
+coffee orders through two terrace visits, distinct reservations, guest departures,
+Nora's two cleanup trips, rain before/after seating, and closing/reopening with
+a pending painter invitation. It also checks elapsed-time boat movement,
+clock-jump continuity, disposal and shared sun/light geometry, then simulates
+50 minutes of normal arrivals and weather. The optional regression flag adds
+the existing Nora-routing and shop-hours checks in that same browser.
+
+Snapshots and JSON reports are exported to `.art-review/waterfront-motion/`
+before the session closes in `finally`. Inspect `terrace-day.png`,
+`nora-clears.png`, and the fixed morning/late-afternoon/night views. Repeatable
+`art-review.ps1 -Verify` remains required for the room and empty furniture.
+Outdoor fixtures are detached, deterministic and contain no ambient entities
+unless explicitly placed on the fixture. Never tick a study.
+
+The full layout audit is intentionally sampled once per simulated minute in
+the long soak: rerunning the entire path-planning audit every few seconds can
+exceed the browser command timeout. Behavior/state assertions still execute on
+every 0.25-second simulation step in the targeted scenarios.
+
+
+September 2026 waterfront result: all targeted journeys and the 50-minute soak
+passed (55 sampled full audits). The existing routing regression passed 729
+ordered routes / 142,739 samples; shop-hours checks passed all four setups and
+two consecutive natural nights. A real-time normal-page smoke completed the
+cappuccino sequence through terrace seating with audio initialized and no
+browser errors. Art verification passed ten repeatable images and eight
+occupancy scenarios; local warm composition measured 1.2 ms median / 2.0 ms p95.
+These timings cover composition only, not simulation, PNG export or device-wide
+performance. Every task-owned verification session was closed afterward.

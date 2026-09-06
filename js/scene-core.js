@@ -37,6 +37,15 @@
     // generous without stealing any floor-space from the café's life layer.
     win: { x: 128, y: 64, w: 176, h: 140 },
     win2: { x: 448, y: 64, w: 176, h: 140 },   // second window, hearth ↔ counter
+    // One continuous exterior, clipped by the two windows. Its coordinates
+    // belong to the distant projection, never to the indoor floor planner.
+    waterfront: {
+      x0: 96, x1: 656, skyY: 64, bankY: 144, waterY: 149, nearY: 176,
+      walkY: 185, terraceY: 200, entranceX: 84, scale: 2,
+      tables: [{ x: 252, y: 188 }, { x: 492, y: 188 }],
+      house: { x: 166, y: 106, w: 38, h: 36 },
+      lamps: [{ x: 157, y: 177 }, { x: 568, y: 177 }]
+    },
     // fire: the chimney breast + firebox; `stand` is the floor spot a tender
     // (Nora or a fireside regular) takes to lay a fresh log, just left of the
     // firebox centre so the reach carries into the coals

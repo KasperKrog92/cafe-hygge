@@ -89,6 +89,7 @@
       rain: 0.55, rainTarget: 0.55, weatherT: rnd(120, 300),
       storm: false, flash: 0, thunderT: rnd(25, 75), thunderIn: 0,
       passersby: [], passerT: rnd(4, 12),
+      waterfront: SIM._.createWaterfront(),
       lastWholeHour: Math.floor(START_HOUR), clockHour: START_HOUR,
       kettle: { day: 0, hour: rnd(19, 21.5), firedDay: -1 },
       door: { open: 0, target: 0, jiggle: 0 },
@@ -608,6 +609,7 @@
 
   function ringDoor(world) {
     world.door.target = 1;
+    world.door.holdT = 1.2;
     world.door.jiggle = 1;
     SND.doorBell();
     const cat = world.cat;
@@ -629,13 +631,16 @@
 
   function updateDoor(world, dt) {
     const d = world.door;
-    let near = false;
+    d.holdT = Math.max(0, (d.holdT || 0) - dt);
+    let near = d.holdT > 0;
     world.patrons.forEach(function (p) {
       if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 44 &&
           (p.state === 'enter' || p.state === 'enterDelay' || p.state === 'wipeFeet' ||
            p.state === 'shake' || p.state === 'parkUmbrella' ||
-           p.state === 'collectUmbrella' || p.state === 'exit')) near = true;
+           p.state === 'collectUmbrella' || p.state === 'exit' || p.state === 'terraceDoor')) near = true;
     });
+    const b = world.barista;
+    if (!b.outside && b.state === 'terraceOut' && Math.hypot(b.x - L.doorSpot.x, b.y - L.doorSpot.y) < 44) near = true;
     d.target = near ? 1 : 0;
     d.open += (d.target - d.open) * Math.min(1, dt * 5);
     if (d.jiggle > 0) d.jiggle = Math.max(0, d.jiggle - dt * 0.8);
@@ -705,15 +710,15 @@
      reappears in the other a few seconds later. Scenery, not characters —
      they never come in — but dt-driven here so hidden tabs keep the street
      alive. Drawn by drawPassersby in scene-bg.js, clipped inside the glass. */
-  const STREET = { x0: 96, x1: 628 };
+  const STREET = L.waterfront;
 
   function makePasser(world, dir, x, opts) {
     opts = opts || {};
     const hurried = world.rain > 0.55 && Math.random() < 0.8;
     const p = {
       x: x, dir: dir,
-      speed: rnd(30, 44) * (hurried ? rnd(1.25, 1.5) : 1),
-      h: Math.round(rnd(38, 46)),
+      speed: rnd(18, 26) * (hurried ? rnd(1.25, 1.5) : 1),
+      h: Math.round(rnd(26, 30)),
       animT: rnd(0, 5),
       hurried: hurried, pausing: false,
       umbrella: null, mate: null,
@@ -744,7 +749,7 @@
     const x = 'x' in opts ? opts.x : dir > 0 ? STREET.x0 : STREET.x1;
     const p = makePasser(world, dir, x, opts);
     if ('pair' in opts ? opts.pair : Math.random() < 0.18) {
-      p.mate = { dx: -dir * Math.round(rnd(10, 13)), h: Math.max(35, p.h - Math.round(rnd(2, 6))) };
+      p.mate = { dx: -dir * Math.round(rnd(10, 13)), h: Math.max(24, p.h - Math.round(rnd(2, 6))) };
     }
     world.passersby.push(p);
     return p;
@@ -794,7 +799,7 @@
     if (!jumped && whole !== world.lastWholeHour) {
       if (whole === 12) {
         SND.churchBells();
-        if (Math.random() < 0.5) caption(world, 'noon — the church bells, from across the street.');
+        if (Math.random() < 0.5) caption(world, 'noon — the church bells, from across the water.');
       } else if ([9, 15, 18, 21].indexOf(whole) >= 0) {
         SND.mantelChime();
       }

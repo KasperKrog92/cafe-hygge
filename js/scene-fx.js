@@ -65,11 +65,12 @@
         }
       });
     });
-    // daylight spilling in the windows (centred under L.win / L.win2)
-    if (d > 0.1) {
-      glow(g, L.win.x + L.win.w / 2, 236, 150, 255, 245, 215, 0.065 * d * (1 - (world.shop ? world.shop.curtains[0] : 0)));
-      glow(g, L.win2.x + L.win2.w / 2, 236, 150, 255, 245, 215, 0.065 * d * (1 - (world.shop ? world.shop.curtains[1] : 0)));
-    }
+    // Same moving source and weather attenuation as the floor projections.
+    [L.win, L.win2].forEach(function (w, i) {
+      const beam = SCENE.windowLight(world, w);
+      glow(g, w.x + w.w / 2 + beam.shift / 2, L.wallY + beam.depth / 3,
+        130, 255, 235, 195, 0.065 * beam.strength * (1 - (world.shop ? world.shop.curtains[i] : 0)));
+    });
     // A storm flash is a cool reflection below the windows, visible mostly
     // after dark; it never becomes a full-screen strobe.
     const flashA = (world.flash || 0) * (1 - d) * 0.08;

@@ -105,14 +105,59 @@ with no new timers, simulation state or sound triggers.
   ends in a low thunder rumble. The flash decays at 4/s and adds only faint
   cool pools below the windows after dark—never a full-screen strobe.
 
-## The street (passers-by + the painter)
+## The waterfront (terrace, lake and far quay)
+
+Both windows look onto one continuous small city lake, inspired by the scale
+and warm facades of Christianshavn. `L.waterfront` holds the banks, near footpath,
+terrace anchors and worker's house. `scene-waterfront.js` draws the sky, far
+apartment buildings, water, railings, lamps and terrace; the existing window
+renderer clips it behind the glass, weather, mullions and curtains.
+
+- One sun moves left to right from 06:00 to 20:00, on a shallow arc. The wall
+  between the panes naturally hides it during the middle of its crossing.
+  `SCENE.sunPosition` and `SCENE.windowLight` drive the visible sun, its water
+  reflection, the direction/length of incident floor light, and the soft indoor
+  glow. Rain attenuates all daylight; each curtain attenuates its own beam.
+- Slow broad clouds cross that same sky. Stars and a moving moon fade in as
+  daylight falls below 0.52. The far buildings' windows warm at staggered dusk
+  thresholds; near-bank street lamps cast small pools and small pools on the path; lit far-bank windows reflect on the water.
+- `world.waterfront` contains transient boat, bird and aircraft entities plus
+  two outdoor tables. `sim-waterfront.js` updates them through `SIM.update`:
+  hidden tabs use the same elapsed time, and a clock-only overnight skip does
+  not teleport a boat. Rendering never spawns, consumes randomness or advances
+  the painter's saved progress.
+- Rowing boats and small sailboats pass in fair weather, usually 100–190 s
+  apart, with at most two active. Birds cross in small groups every 45–100 s
+  in daylight; a small silent airplane may pass every 7–12 minutes in clear
+  daylight. Each entity leaves the entire shared view before disposal.
+  Dev: `__dev.boat({dir, sail, x})`, `__dev.birds({dir, x})`, `__dev.plane({dir, x})`.
+- The two bistro tables belong to real café guests who order inside and carry
+  their drink through the door. Fair-weather walk-ins sometimes choose them
+  between 08:00 and 20:30; readers can take their own book. Regulars keep their
+  authored indoor seats. Guests linger, sip and read, then stroll away, leaving
+  cups for Nora. A sustained shower brings the same guest and drink indoors;
+  nobody is punished for rain or for the owner's absence.
+- Nora walks through the room to the door, crosses the terrace, collects the
+  abandoned cup, wipes, and carries the empties back to the counter. Table
+  reservations prevent overlap or seating on an uncleared table. Queued orders
+  take priority before a trip; a trip already started finishes before service
+  resumes. Closing waits for outdoor guests and Nora's final terrace cleanup
+  before the indoor closing round and curtains.
+- These tables and exterior positions are separate from indoor seats and the
+  floor route planner. Outdoor people remain in `world.patrons` (the same total
+  cap of seven); their original entity draws at half scale beyond the glass,
+  never also in the room. No narrative save shape changes are required.
+  Dev: `__dev.spawn({outdoor:true, pianist:false, wantsBook:true, ownBook:true})`
+  in fair weather exercises the full ordering journey.
+
+### People on the path and the worker across the water
 
 - `world.passersby` holds the silhouettes crossing outside the glass. They
-  walk in master-canvas x along the whole facade (`STREET` in `sim-core.js`),
+  walk in master-canvas x along the whole facade (`L.waterfront`),
   so a figure leaves the first pane, disappears behind the wall, and
   reappears in the second a few seconds later. Scenery, not characters: they
   never enter and never interact; `drawPassersby` (scene-bg.js) clips them
-  inside each pane, over the town and under the rain on the glass.
+  inside each pane on the near path, behind terrace guests and under the rain on the glass.
 - Cadence follows the day: every ~9–40 s in daylight, sparser toward dusk,
   only the odd night owl 22:30–06:00; storms halve the traffic. About one in
   five is a pair walking shoulder to shoulder (one object, drawn twice, so
@@ -125,7 +170,7 @@ with no new timers, simulation state or sound triggers.
   those pauses earn a caption. `__dev.passer({dir, umbrella, pair, pause})`
   forces one for testing.
 - **The street painter** is the first persistent story told entirely beyond
-  the glass. A weathered house in the door-side window is repainted from the
+  the glass. A weathered apartment building across the water in the door-side window is repainted from the
   top down over seven café days (`street-house` in `CAST.arcs`). Its warm,
   muted-brick band and the painter's ladder position are pure views of saved
   progress, so a glance after a few chapters simply finds the work further

@@ -49,10 +49,10 @@
     g.save();
     if (d > 0.1) {
       [L.win, L.win2].forEach(function (w, wi) {
-        const y = L.wallY + 2, depth = 112;
-        const shift = Math.round((world.hour - 12) * 5);
+        const beam = SCENE.windowLight(world, w);
+        const y = L.wallY + 2, depth = beam.depth, shift = beam.shift;
         const light = g.createLinearGradient(0, y, 0, y + depth);
-        const a = (0.13 * d * (1 - world.rain * 0.8) * (1 - (world.shop ? world.shop.curtains[wi] : 0))).toFixed(3);
+        const a = (0.17 * beam.strength * (1 - (world.shop ? world.shop.curtains[wi] : 0))).toFixed(3);
         light.addColorStop(0, 'rgba(245,226,174,' + a + ')');
         light.addColorStop(1, 'rgba(245,226,174,0)');
         g.fillStyle = light;
@@ -213,71 +213,16 @@
   }
 
   /* ---------- window with the world outside ----------
-     Shared by both windows; `alt` picks the stretch of town seen through the
-     glass (and keeps the moon in one sky only). */
+     Shared by both windows; both clip the same continuous waterfront.
+     `alt` identifies the curtain and rain seed, never a second sun or moon. */
   function drawWindow(g, world, w, alt) {
     const pal = world.pal, t = world.t;
     // Clip the entire exterior: rain and town silhouettes cannot spill onto the sill.
     g.save();
     g.beginPath(); g.rect(w.x, w.y, w.w, w.h); g.clip();
-    // outside: sky
-    px(g, w.x, w.y, w.w, Math.round(w.h * 0.55), pal.skyTop);
-    px(g, w.x, w.y + Math.round(w.h * 0.55), w.w, Math.round(w.h * 0.45), pal.skyBot);
-    // stars & moon at night
-    const nightA = Math.max(0, 1 - pal.daylight * 3);
-    if (nightA > 0.05) {
-      const stars = alt
-        ? [[14, 6], [36, 12], [58, 4], [74, 16], [98, 8], [116, 18], [28, 22], [88, 26]]
-        : [[10, 8], [30, 4], [52, 12], [78, 6], [102, 14], [20, 24], [90, 26], [62, 18]];
-      for (let i = 0; i < stars.length; i++) {
-        g.globalAlpha = nightA * (0.4 + 0.6 * Math.abs(Math.sin(t * 0.7 + i * 1.8 + alt * 2.3)));
-        px(g, w.x + stars[i][0], w.y + stars[i][1], 2, 2, '#e8ecf5');
-      }
-      if (!alt) {   // one moon in the sky — it hangs in the first window only
-        g.globalAlpha = nightA;
-        ell(g, w.x + w.w - 20, w.y + 14, 7, 7, '#e8e4d0');
-        ell(g, w.x + w.w - 23, w.y + 12, 6, 6, pal.skyTop);
-      }
-      g.globalAlpha = 1;
-    }
-    // town silhouette with lit windows — each window sees its own stretch.
-    // The first pane has one named facade whose patient repaint is driven
-    // entirely by the persisted street-house arc.
-    g.fillStyle = '#2b3242';
-    if (alt) {
-      g.fillRect(w.x, w.y + 84, 28, w.h - 84);
-      g.fillRect(w.x + 32, w.y + 94, 30, w.h - 94);
-      // church tower up the street — kept clear of the central mullion
-      g.fillRect(w.x + 72, w.y + 62, 16, w.h - 62);
-      g.fillRect(w.x + 77, w.y + 54, 6, 8);           // its little spire
-      g.fillRect(w.x + 94, w.y + 78, 34, w.h - 78);
-      g.fillRect(w.x + 134, w.y + 90, 42, w.h - 90);
-      px(g, w.x + 38, w.y + 86, 4, 8, '#2b3242');     // chimney
-    } else {
-      g.fillRect(w.x, w.y + 88, 30, w.h - 88);
-      g.fillRect(w.x + 34, w.y + 56, 46, w.h - 56);   // the painter's house
-      g.fillRect(w.x + 88, w.y + 94, 34, w.h - 94);
-      g.fillRect(w.x + 128, w.y + 78, 48, w.h - 78);
-      px(g, w.x + 40, w.y + 48, 5, 8, '#2b3242');     // chimney
-      drawStreetHouse(g, world, w);
-    }
-    const lit = pal.lamp;
-    if (lit > 0.05) {
-      g.globalAlpha = lit;
-      const townLit = alt
-        ? [[8, 94], [18, 112], [40, 104], [78, 78], [102, 94], [116, 112], [144, 104], [162, 118]]
-        : [[8, 104], [20, 122], [42, 80], [66, 108], [98, 112], [112, 126], [140, 94], [160, 116]];
-      townLit.forEach(function (p) {
-        px(g, w.x + p[0], w.y + p[1], 4, 4, '#f5c66a');
-      });
-      if (!alt && streetHouseDone(world)) {
-        // The finished house gains one small warm light of its own.
-        px(g, w.x + 58, w.y + 88, 6, 6, '#f5c66a');
-      }
-      g.globalAlpha = 1;
-    }
-    if (!alt) drawStreetPainter(g, world, w);
+    SCENE.drawWaterfront(g, world);
     drawPassersby(g, world, w);
+    SCENE.drawTerrace(g, world);
     // rain streaks — 1 px at native res, mixed lengths and speeds
     if (world.rain > 0.02) {
       g.globalAlpha = 0.3 * Math.min(1, world.rain * 1.6);
@@ -330,101 +275,6 @@
     drawSillCushion(g, w.x + 2, w.y + w.h - 16, CUSHIONS[alt]);
     drawSillCushion(g, w.x + w.w - 14, w.y + w.h - 16, CUSHIONS[alt]);
     drawTinyPlant(g, w.x + w.w / 2 - 6, w.y + w.h + 8);
-  }
-
-  /* ---------- the street painter ----------
-     A distant facade in the first window slowly warms from top to bottom.
-     Progress, ladder position, and completion are pure views of MEMORY: the
-     render never advances the story, so what the reader sees is exactly what
-     the café saved. */
-  const STREET_HOUSE = { dx: 34, dy: 56, w: 46 };
-  const STREET_PAINT = '#4a3038';
-
-  function streetHouseArc(world) {
-    if (!world.memory || !world.memory.arcs) return null;
-    const def = ((window.CAST && CAST.arcs) || []).find(function (a) { return a.id === 'street-house'; });
-    const rec = world.memory.arcs['street-house'];
-    if (!def || !rec) return null;
-    const rows = Array.isArray(def.rows) ? def.rows[Math.min(rec.stage || 0, def.rows.length - 1)] : def.rows;
-    return { def: def, rec: rec, rows: rows || 7 };
-  }
-
-  function streetHouseDone(world) {
-    return !!(world.memory && world.memory.flags && world.memory.flags['street-house-painted']);
-  }
-
-  function streetFacade(w) {
-    return { x: w.x + STREET_HOUSE.dx, y: w.y + STREET_HOUSE.dy,
-      w: STREET_HOUSE.w, h: w.h - STREET_HOUSE.dy };
-  }
-
-  function drawStreetHouse(g, world, w) {
-    const arc = streetHouseArc(world), f = streetFacade(w);
-    if (!arc) return;
-    // Faint, fixed scars make the cool-blue "before" read as weathered rather
-    // than simply another clean town block.
-    px(g, f.x + 7, f.y + 10, 13, 2, '#343746');
-    px(g, f.x + 27, f.y + 24, 10, 2, '#252d3b');
-    px(g, f.x + 4, f.y + 44, 8, 2, '#343746');
-    px(g, f.x + 22, f.y + 58, 16, 2, '#252d3b');
-
-    const done = streetHouseDone(world);
-    const amount = done ? 1 : Math.max(0, Math.min(1, arc.rec.progress / arc.rows));
-    const painted = Math.round(f.h * amount);
-    if (painted > 0) {
-      px(g, f.x, f.y, f.w, painted, STREET_PAINT);
-      // Two uneven brush ends keep the moving edge hand-made without ever
-      // drifting independently of saved progress.
-      if (!done && painted < f.h) {
-        px(g, f.x + 5, f.y + painted, 12, Math.min(3, f.h - painted), STREET_PAINT);
-        px(g, f.x + 28, f.y + painted, 9, Math.min(2, f.h - painted), STREET_PAINT);
-      }
-    }
-    px(g, f.x - 2, f.y, f.w + 4, 3, '#232936');        // shallow roof lip
-  }
-
-  function drawStreetPainter(g, world, w) {
-    const arc = streetHouseArc(world);
-    if (!arc || streetHouseDone(world) || arc.rec.stage >= 1) return;
-    const f = streetFacade(w);
-    const amount = Math.max(0, Math.min(1, arc.rec.progress / arc.rows));
-    const lineY = f.y + Math.round((f.h - 5) * amount);
-    const baseY = w.y + w.h + 7;
-    const ladderTopY = Math.max(f.y + 5, Math.min(baseY - 28, lineY - 10));
-    const ladderTopX = f.x + f.w - 10, ladderBaseX = f.x + f.w + 5;
-
-    g.save();
-    g.beginPath(); g.rect(w.x, w.y, w.w, w.h); g.clip();
-    g.strokeStyle = '#8b7158'; g.lineWidth = 1;
-    g.beginPath();
-    g.moveTo(ladderTopX - 3, ladderTopY); g.lineTo(ladderBaseX - 3, baseY);
-    g.moveTo(ladderTopX + 3, ladderTopY); g.lineTo(ladderBaseX + 3, baseY);
-    g.stroke();
-    const rungs = Math.max(3, Math.floor((baseY - ladderTopY) / 7));
-    for (let i = 1; i < rungs; i++) {
-      const q = i / rungs;
-      const rx = Math.round(ladderTopX + (ladderBaseX - ladderTopX) * q);
-      const ry = Math.round(ladderTopY + (baseY - ladderTopY) * q);
-      px(g, rx - 4, ry, 8, 1, '#8b7158');
-    }
-
-    // In fair daylight the painter works at the saved paint edge. At night or
-    // in rain the same ladder waits against the wall, progress unchanged.
-    if (world.daylight > 0.45 && world.rain < 0.3) {
-      const feetY = Math.max(f.y + 22, Math.min(baseY - 8, lineY + 10));
-      const cx = Math.round(ladderTopX + (ladderBaseX - ladderTopX) *
-        ((feetY - ladderTopY) / Math.max(1, baseY - ladderTopY))) - 2;
-      px(g, cx - 3, feetY - 13, 7, 9, PASSER);          // coat
-      px(g, cx - 2, feetY - 19, 5, 5, PASSER);          // head
-      px(g, cx - 2, feetY - 4, 2, 5, PASSER);           // feet on one rung
-      px(g, cx + 2, feetY - 4, 2, 5, PASSER);
-      const stroke = ((world.t * 2) | 0) % 2;
-      px(g, cx - 8 - stroke * 2, feetY - 13 - stroke * 2, 7 + stroke * 2, 2, PASSER);
-      px(g, cx - 10 - stroke * 2, feetY - 14 - stroke * 2, 2, 3, '#b88a62');
-      px(g, ladderBaseX + 4, baseY - 7, 7, 5, STREET_PAINT);  // little paint tin
-      px(g, ladderBaseX + 3, baseY - 8, 9, 2, '#8b7158');
-    }
-    g.restore();
   }
 
   /* back cushions for the window perches — red pair in the door-side window,
@@ -522,10 +372,9 @@
      Silhouettes strolling the pavement, positioned in master-canvas x (state
      in updatePassersby, sim-core.js). Each pane clips its own view of the
      same street, drawn over the town and under the rain on the glass. Feet
-     sit below the frame so the sill crops their shoes — the near pavement
-     runs closer than the town across the street. */
+     sit on the near-bank path, above the sill and behind the terrace tables. */
   const PASSER = '#2c3038';        // existing trouser swatch, darker than the town
-  const PASSER_GY = 212;           // pavement line, just below the lowered glass bottom
+  const PASSER_GY = L.waterfront.walkY;  // visible feet on the near-bank path
 
   function drawPassersby(g, world, w) {
     const list = world.passersby;

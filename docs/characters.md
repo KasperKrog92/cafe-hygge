@@ -585,3 +585,32 @@ writes with a small hand stroke, then returns via `chalkHome` to the counter.
 The repeatable motion gallery and scenario coverage are described in
 [animations.md](animations.md). The animation timers do not change arc progress
 or the invitation-waits rule.
+
+
+## Terrace visits and Nora's outdoor round
+
+`sim-waterfront.js` extends the existing patron and barista state machines.
+Eligible ordinary solo walk-ins may reserve one clean terrace table at pickup;
+regulars, couples, pianists, laptop users and borrowers retain their indoor
+journeys. The same patron and the same ordered drink travel
+`terraceDoor → terraceWalk → terraceSit → terraceLeave`. They sit for 100–240 s,
+sip every 12–25 s, and turn pages if they brought their own book. Outdoor
+people remain within the shared seven-patron cap and hold no indoor seat.
+
+After ten seconds of sustained rain, `terraceReturn` carries the drink back
+through the entrance and reserves an indoor seat; if no seat is available the
+normal take-away departure applies. Rain changing before the guest reaches
+the door cancels the outdoor reservation. Last call sends outside guests home
+and leaves any empties for Nora. No outdoor story beat or expiration exists.
+
+Nora's round is `terraceOut → terraceApproach → terraceClear → terraceBack →
+terraceHome → idle`. She uses the normal furniture-aware planner inside,
+changes to the clipped exterior only at `L.doorSpot`, collects and wipes for
+2.8 seconds at the table, then walks home carrying a stack. Outdoor x positions
+live separately on the same entity; neither Nora nor patrons are drawn twice.
+The ordinary idle-task priority handles clearing, while closing explicitly
+waits for both outdoor tables to be clear before the indoor closing chores.
+
+The dev audit checks reservations, cup ownership, cleanup claims, indoor/outdoor
+exclusivity and the clean-terrace-before-closing condition. See
+[art-workflow.md](art-workflow.md) for the full journey verification.

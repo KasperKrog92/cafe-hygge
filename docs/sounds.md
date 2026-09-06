@@ -78,9 +78,9 @@ toggle mutes all three layers without changing their visual behavior.
 
 | Function | Triggered by | Recipe (abbreviated) |
 | --- | --- | --- |
-| `doorBell()` | patron entering/leaving | 3 staggered bell tones around 1244 Hz (±2% detune, ×1.335 second strike) + 2.76× partial, 1.1 s decay, big delay send |
+| `doorBell()` | patron entering/leaving and Nora/guests crossing the terrace door | 3 staggered bell tones around 1244 Hz (±2% detune, ×1.335 second strike) + 2.76× partial, 1.1 s decay, big delay send |
 | `doorClose()` | ~1.1 s after entry | 95→55 Hz sine thump + lowpassed noise tap |
-| `clink(pitch, vol)` | cup pickups, plates, busing, matcha-caddy scoop | 3 partials (f, 1.51f, 2.63f) of ~2350×pitch Hz, 45–90 ms decays |
+| `clink(pitch, vol)` | cup pickups, plates, busing (terrace pickups/return at 0.02), matcha-caddy scoop | 3 partials (f, 1.51f, 2.63f) of ~2350×pitch Hz, 45–90 ms decays |
 | `chairScrape(long)` | ordinary chairs settling / patrons standing | 90–140 ms noise scrape around 380–650 Hz under a 900 Hz lowpass, soft 8 ms attack, peak 0.02–0.028; the 160 ms standing variant adds a half-gain scuff |
 | `coins()` | about half of returned cups | 2–3 muffled inharmonic clinks around 2.9–4.2 kHz and 1.43×, loosely spaced 40–90 ms, combined peak ≤0.025, small room send |
 | `cupDown()` | cup set on table/counter | 260 Hz tap + `clink(0.62)` |
@@ -128,3 +128,7 @@ All one-shots are wrapped in `guard()`: they silently no-op before
 3. Start at half the gain you think it needs; listen with the volume at 50%
    next to an open book.
 4. Wrap in `guard()`, document it here, and wire the trigger in the relevant `sim-*.js` file.
+
+The waterfront itself is silent: boats, clouds, birds, aircraft and the far-bank
+worker add no competing ambience. Terrace readers turn pages silently behind
+the glass; Nora reuses the existing quiet clink on collection and return.

@@ -130,12 +130,13 @@ for the full design ethos.
   Cloudflare cache can retain the previous URL for four hours even after a
   successful Pages deployment. Verify the live HTML and its exact script URLs.
 
-## Architecture (13 scripts, deliberate order)
+## Architecture (15 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
 | `js/audio.js` | `SND` | Web Audio synthesis. Buses, ambience loops, one-shot sounds, music box. No samples (yet — see roadmap). |
 | `js/scene-core.js` | `SCENE` | Creates the renderer global; owns `SCENE.L`, palette interpolation, and shared drawing helpers. |
+| `js/scene-waterfront.js` | `SCENE` | Continuous exterior, sun/window-light geometry, far-bank painter, lake and terrace rendering. |
 | `js/scene-bg.js` | `SCENE` | Static background cache and the dynamic wall layer: window, door, fireplace, shelves, lamps, and espresso machine. |
 | `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, plants, and Lunafreya's easel station/canvas. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
@@ -143,17 +144,18 @@ for the full design ethos.
 | `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, café-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
 | `js/memory.js` | `MEMORY` | The persistent, cross-visit save (`cafe-hygge-save`): versioned JSON blob (arcs, bonds, flags, `lastSeen`), a migration ladder, and a graceful fresh-café fallback. Mirrors `SND.save()`. Loaded before sim-core so world creation reconciles against it. |
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
+| `js/sim-waterfront.js` | `SIM` | Dt-driven boats, birds and planes; real terrace reservations, guests and Nora cleanup journeys. |
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
-Load order matters: audio → scene-core → scene-bg → scene-furniture →
-scene-people → scene-fx → characters-roster → memory → sim-core → sim-patrons →
-sim-characters → dev → main. Scene-core creates `SCENE`; the four renderer
+Load order matters: audio → scene-core → scene-waterfront → scene-bg → scene-furniture →
+scene-people → scene-fx → characters-roster → memory → sim-core → sim-waterfront → sim-patrons →
+sim-characters → dev → main. Scene-core creates `SCENE`; the five renderer
 siblings extend it. `characters-roster` then defines `CAST` (the regulars
 roster + story arcs) as pure data, and `memory` loads the `MEMORY` save. The
-three sim scripts then build `SIM`, reading `CAST` for its regulars and
+four sim scripts then build `SIM`, reading `CAST` for its regulars and
 reconciling `MEMORY` on boot (`SIM.create` → `reconcileNarrative`); dev consumes
 its `SIM._` debug contract and decorates the boot, and main reads all.
 

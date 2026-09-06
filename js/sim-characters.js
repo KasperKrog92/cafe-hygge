@@ -91,6 +91,8 @@
     }
     world.brew.active = false;
 
+    if (R.updateTerraceBarista(world, b, dt)) return;
+
     switch (b.state) {
       case 'idle': {
         // start an order?
@@ -759,6 +761,7 @@
         return;
       }
     }
+    if (R.startTerraceClear(world, b)) return;
     // Bowl care comes immediately after clearing tables: never urgent, but
     // Nora notices before she invents another counter-polishing task.
     const refillKinds = [];
@@ -1652,7 +1655,9 @@
     const tasks = shopTasks(world, s.phase === 'opening'), next = tasks[s.step];
     if (!next) { s.phase = 'open'; s.accepting = true; b.state = 'idle'; b.idleT = 6; return false; }
     if (next.kind === 'wait') {
-      if (!world.patrons.length && !b.orders.length && !world.queue.length) s.step++;
+      const terraceDirty = world.waterfront.tables.some(function (tb) { return tb.dirty || tb.cleaning; });
+      if (terraceDirty) { R.startTerraceClear(world, b); return false; }
+      if (!world.patrons.length && !b.orders.length && !world.queue.length && b.state === 'idle') s.step++;
       return false;
     }
     if (next.kind === 'welcome') {
@@ -1678,6 +1683,7 @@
     updateFire(world, dt);
     updateWeather(world, dt);
     updatePassersby(world, dt);
+    R.updateWaterfront(world, dt);
     updateDoor(world, dt);
     const shopBusy = updateShop(world, dt);
     updateSpawning(world, dt);
@@ -1703,12 +1709,13 @@
     // takes the owner's bubble slot so it never fights their ambient chatter.
     const invited = pendingInvites(world);
     world.patrons.forEach(function (p) {
+      if (p.outside) return;
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, p); } });
       if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id] });
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;
-    if (!world.shop || !world.shop.away) draws.push({ y: b.y, draw: function (g) {
+    if (!b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {
       SCENE.drawPerson(g, b);
       if (world.shop && world.shop.carryingCat) {
         SCENE.drawCat(g, Object.assign({}, world.cat, { x: b.x + b.facing * 7, y: b.y - 28,

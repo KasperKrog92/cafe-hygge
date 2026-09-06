@@ -237,6 +237,8 @@
       if (p.doorCloseT <= 0) SND.doorClose();
     }
 
+    if (R.updateTerracePatron(world, p, dt)) return;
+
     switch (p.state) {
       case 'enterDelay': {
         if (p.stateT >= 0) {
@@ -366,6 +368,7 @@
             leaveCafe(world, p);
             break;
           }
+          if (R.reserveTerrace(world, p)) break;
           if (p.wantsBook && !p.ownBook) {
             // a borrower: browse the shelf before settling anywhere
             p.state = 'browse'; p.stateT = 0;
@@ -1013,6 +1016,13 @@
     if (Math.random() < 0.35) caption(world, p.name + ' heads back out into the ' + (world.rain > 0.4 ? 'rain' : (world.daylight < 0.3 ? 'night' : 'afternoon')) + '.');
   }
 
+  R.seatAfterTerrace = function (world, p) {
+    const seat = freeSeat(world, p);
+    p.pose = 'stand'; p.reading = false; p.armUp = 0;
+    if (!seat || world.shop.lastCall) { leaveCafe(world, p); return; }
+    seat.taken = true; p.seat = seat; p.state = 'toSeat'; p.stateT = 0;
+    seatPath(p, seat);
+  };
   R.freeSeat = freeSeat;
   R.updatePatron = updatePatron;
   R.startDoze = startDoze;

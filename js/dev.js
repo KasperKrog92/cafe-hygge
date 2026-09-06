@@ -112,6 +112,11 @@
     return SIM._.spawnPasser(world(), opts || {});
   };
 
+  /* Quiet life on demand; these are actual dt-driven outdoor entities. */
+  D.boat = function (opts) { return SIM._.spawnWaterfront(world(), 'boat', opts); };
+  D.birds = function (opts) { return SIM._.spawnWaterfront(world(), 'birds', opts); };
+  D.plane = function (opts) { return SIM._.spawnWaterfront(world(), 'plane', opts); };
+
   /* Fast-forward by ticking the sim like the hidden-tab path (0.25 s steps,
      SND.update skipped). One-shots the sim fires are muted for the duration
      plus a beat, so a day's worth of door bells doesn't land at once. */
@@ -142,7 +147,7 @@
     const w = world();
     if (opts.couple) return SIM._.spawnCouple(w, opts);
     const p = SIM._.makePatron(opts.name);
-    ['wantsBook', 'ownBook', 'chatty', 'pianist'].forEach(function (k) {
+    ['wantsBook', 'ownBook', 'chatty', 'pianist', 'outdoor'].forEach(function (k) {
       if (k in opts) p[k] = !!opts[k];
     });
     if (opts.pianist) { p.wantsBook = false; p.laptop = false; }
@@ -502,6 +507,8 @@
     w.pal = SCENE.dayPalette(w.hour); w.daylight = w.pal.daylight;
     w.rain = w.rainTarget = opts.rain == null ? 0.35 : opts.rain;
     w.storm = false; w.flash = 0; w.passersby = []; w.particles = [];
+    w.waterfront = { boats: [], birds: [], planes: [], boatT: 90, birdT: 40, planeT: 300,
+      tables: L.waterfront.tables.map(function () { return { owner: null, cup: null, dirty: false, cleaning: false }; }) };
     w.door = { open: 0, target: 0, jiggle: 0 };
     w.brew = { active: false, stage: '', progress: 0 };
     w.fire = { level: 0.85, target: 0.85, wantsLog: false, claimed: false, graceT: 0 };
@@ -1044,6 +1051,34 @@
     // live-world invariants (the soak-test set — cheap enough to keep forever)
     const live = {};
     w.patrons.forEach(function (p) { live[p.id] = true; });
+    const wf = w.waterfront;
+    if (!wf || wf.tables.length !== L.waterfront.tables.length) problems.push('missing waterfront tables');
+    else {
+      wf.tables.forEach(function (tb, i) {
+        const holders = w.patrons.filter(function (p) {
+          return p.terraceTable === i && ['terraceDoor', 'terraceWalk', 'terraceSit'].indexOf(p.state) >= 0;
+        });
+        if (holders.length !== (tb.owner === null ? 0 : 1) ||
+            (holders.length && holders[0].id !== tb.owner)) problems.push('terrace table ' + i + ' reservation mismatch');
+        if (tb.owner !== null && (tb.dirty || tb.cleaning)) problems.push('occupied terrace table is dirty/being cleared');
+        if (tb.dirty && !tb.cup && !tb.cleaning) problems.push('dirty terrace table has no cup');
+        if (tb.cleaning && (w.barista.terraceTable !== i || w.barista.state.indexOf('terrace') !== 0)) problems.push('terrace cleanup has no Nora');
+      });
+      w.patrons.concat([w.barista]).forEach(function (p) {
+        if (!p.outside) return;
+        if (!Number.isFinite(p.exteriorX) || p.exteriorX < L.waterfront.entranceX - 40 || p.exteriorX > L.waterfront.x1 + 40) problems.push('outdoor person outside promenade');
+        if (p.path && p.path.length) problems.push('outdoor person still has an indoor route');
+        if (p.x !== L.doorSpot.x || p.y !== L.doorSpot.y) problems.push('outdoor person did not leave through the door');
+        if (p.state.indexOf('terrace') !== 0 || p.seat) problems.push('outdoor person still owns indoor state/seat');
+      });
+      ['boats', 'birds', 'planes'].forEach(function (key) {
+        if (wf[key].length > (key === 'boats' ? 2 : 1)) problems.push('too many waterfront ' + key);
+        wf[key].forEach(function (p) {
+          if (!Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.age) || p.speed <= 0) problems.push('invalid waterfront movement');
+        });
+      });
+      if (w.shop && w.shop.away && wf.tables.some(function (tb) { return tb.owner !== null || tb.dirty || tb.cleaning; })) problems.push('Nora left the terrace uncleared');
+    }
     w.seats.forEach(function (s, i) {
       const holders = w.patrons.filter(function (p) { return p.seat === s; }).length;
       if (s.taken && holders !== 1) problems.push('seat[' + i + '] taken but ' + holders + ' patron(s) hold it');

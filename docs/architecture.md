@@ -1,12 +1,13 @@
 # Architecture
 
-Zero-dependency vanilla JS. Thirteen IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Fifteen IIFE scripts expose the production globals
 (`SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
 ```
 js/audio.js             → window.SND     (sound engine; no DOM, no sim knowledge)
 js/scene-core.js        → window.SCENE   (layout, palette, shared renderer helpers)
+js/scene-waterfront.js  → extends SCENE  (continuous exterior, sky/light geometry, terrace art)
 js/scene-bg.js          → extends SCENE  (background cache + dynamic wall layer)
 js/scene-furniture.js   → extends SCENE  (depth-sorted furniture)
 js/scene-people.js      → extends SCENE  (people, cat, bubbles, icons)
@@ -14,6 +15,7 @@ js/scene-fx.js          → extends SCENE  (lighting, particles, captions, compo
 js/characters-roster.js → window.CAST    (regulars roster + story arcs, pure data)
 js/memory.js            → window.MEMORY  (persistent cross-visit save; versioned)
 js/sim-core.js          → window.SIM     (world + shared simulation systems)
+js/sim-waterfront.js    → extends SIM    (boat/bird/plane timers, terrace guests and Nora journeys)
 js/sim-patrons.js       → extends SIM    (patron state machine)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
@@ -40,6 +42,7 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `patrons[]` | live patron entities (see characters.md for the state machine) |
 | `umbrellaStand[]` | visible parked umbrellas `{owner, color}`; owner links are audited and removed on collection |
 | `regulars` / `sleeper` | per-id once-per-day arrival schedule for the roster (`CAST.regulars`, built by `buildRegulars`) and the single active dozing-patron reference |
+| `waterfront` | Transient exterior: `boats/birds/planes`, spawn timers, and two tables with `owner/cup/dirty/cleaning`. Outdoor people stay in `patrons` and use `outside/exteriorX/terraceTable`; indoor coordinates stay at the door while their floor path is empty. |
 | `queue[]` | patrons currently in the order line (index 0 = at the till) |
 | `barista` | Nora's entity |
 | `cat` | the cat entity: core pose/path plus `surface`, `hopFrom/hopTo/hopT`, `hungerT`/`thirstT`, `gazeT/gazeFacing`, `lapPatron`, `sniffedPass`, and rare-event `counterT`/`ascentT`/`moteT` fields |
@@ -59,7 +62,7 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 ```
 requestAnimationFrame:
   dt = clamp(elapsed, 0, 0.1)
-  SIM.update(world, dt)        // clock → weather → door → spawning → barista
+  SIM.update(world, dt)        // clock → weather → outdoor life → door → shop → spawning → barista
                                // → patrons → cat → particles → captions
   SND.update(dt, world)        // rain/fire, music box + night pad + piano notes
   render():                    // all drawing targets the 960×600 master canvas

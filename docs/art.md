@@ -147,17 +147,16 @@ y=36  ── 16:9 crop top
           wall band: door + bell (L.door, L.bell), broad low-silled window
           (L.win), fireplace
           breast with mantel clock/candles + firewood basket (L.fire), second
-          broad low-silled window (L.win2 — same glass, its own stretch of town; the moon hangs
-          in L.win only); passers-by cross both panes as trouser-swatch
-          silhouettes on the near pavement, feet cropped by the sill,
-          umbrellas up in rain (drawPassersby in scene-bg.js; behavior in
-          world.md). Both panes are deliberately much wider and taller than
-          one character-height, and their deep sills finish just above the
-          wall/floor line: the street is a second living layer, not a narrow
-          wall decoration. The door-side window sits close to the fireplace
-          bay and carries the persistent street-painter facade (weathered blue
-          to muted brick, filled top-down from saved arc progress), ladder, and
-          tiny working silhouette. Full rust-red drapes frame both views, with
+          broad low-silled window (L.win2 — another slice of the SAME waterfront).
+          From top to bottom: a little sky, warm pitched-roof apartment blocks
+          on the far quay, reflective blue-green water, then a nearby footpath
+          with railings, lamps and two bistro tables. One sun and one moon move
+          across the full exterior; the wall naturally hides their middle
+          crossing. Passers walk behind the terrace guests. Outdoor patrons
+          and Nora reuse their own sprites at half scale (the indoor ruler
+          remains CH=60); the worker across the lake is more distant still.
+          The door-side building preserves the seven-day repaint arc, ladder
+          and tiny working figure on the FAR quay. Full rust-red drapes frame both views, with
           broad pleated crowns and long lower folds gathered at mid-window by
           brass tiebacks; enough glass stays open for weather, the street, and
           seated silhouettes to remain glanceable;
@@ -511,3 +510,29 @@ participates in routing. Nora approaches `L.backBar.workY` for machine stages
 and returns to `L.baristaHome.y` for front-counter work and service. Machine
 station x positions derive from `L.machine`; the cat transit anchor follows
 the relocated warming tray.
+
+
+## Waterfront projection (September 2026)
+
+`scene-waterfront.js` composes one exterior behind both panes. The banks, path,
+terrace and worker's building read `L.waterfront`; the two windows retain their
+original framing and sill positions. Facades use warm ochre, terracotta,
+weathered blue and pale sage with pitched tile roofs, small dormers, cornices,
+doors and sash windows. The reserved painter's facade changes from blue to
+terracotta with saved progress. Fixed architecture uses deterministic detail;
+night shades use a small quantized palette to keep the shade cache bounded.
+
+Water has broken facade/window reflections and sparse slow ripple lines.
+Sailboats and rowing boats sit between the quays. Rails locate the far edge
+of the near pavement; low-contrast paving joints leave the terrace legible.
+Bistro tables have elliptical tops, pedestal feet, two chairs and an owner-linked
+cup. One guest occupies each table; the opposite chair keeps Nora's approach
+visible. People are rasterized with the existing person renderer and presented
+at half size with nearest sampling, so their clothes, book, sip, gait and Nora's
+apron stay recognizable without introducing a second cast. The near-path
+silhouettes are 26–30 px tall and have visible feet above the sill.
+
+Sunlight projects away from the actual sun position; morning and afternoon
+beams reverse direction and low sun lengthens them. A cloudy sky softens the
+floor beams and indoor glow together. After dusk, lit sash windows, streetlamp
+pools, stars and a single moon make the same geography visible at night.
