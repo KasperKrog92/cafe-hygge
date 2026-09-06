@@ -283,16 +283,8 @@
         if (!(p.pageTurn > 0) || p.dozing)
           seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
             bx - 1, by + 5, false);
-        px(g, bx - 1, by + 1, 20, 10, '#8b7158');
-        px(g, bx, by, 18, 10, '#f5efdf');
-        px(g, bx + 8, by, 2, 10, '#b5a888');
-        px(g, bx, by - 2, 18, 2, '#c9b28a');
-        px(g, bx + 2, by + 3, 4, 2, '#d9d2c0');
-        px(g, bx + 11, by + 3, 5, 2, '#d9d2c0');
-        px(g, bx + 2, by + 7, 4, 2, '#d9d2c0');
-        px(g, bx + 11, by + 7, 4, 2, '#d9d2c0');
-        if (!(p.pageTurn > 0) || p.dozing) px(g, bx - 2, by + 3, 3, 4, c.skin);
-        px(g, bx + 17, by + 3, 3, 4, c.skin);
+        // The reader sees the pages; we see the outside of both covers.
+        // Draw the turning leaf and reaching hand first, behind the cover.
         if (p.pageTurn > 0 && !p.dozing) {
           const q = 1 - p.pageTurn / 0.8;
           const edge = Math.round(8 + Math.cos(q * Math.PI) * 8);
@@ -300,8 +292,18 @@
           px(g, bx + Math.min(8, edge), by - lift, Math.max(2, Math.abs(edge - 8)), 9, '#fdf8ec');
           px(g, bx + edge, by - lift, 2, 9, '#c9b28a');
           seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
-            bx + edge, by + 5 - lift, false);
+            bx + edge, by - lift, false);
         }
+        const bookColor = p.bookColor || '#a94f3f';
+        px(g, bx, by - 1, 18, 1, '#e6dcc5'); // only the top page edges show
+        px(g, bx - 1, by + 1, 20, 10, shade(bookColor, -0.25));
+        px(g, bx, by, 8, 10, bookColor);
+        px(g, bx + 10, by, 8, 10, shade(bookColor, -0.08));
+        px(g, bx + 8, by + 1, 2, 10, shade(bookColor, -0.3)); // spine fold
+        px(g, bx, by, 8, 1, shade(bookColor, 0.16));
+        px(g, bx + 10, by, 8, 1, shade(bookColor, 0.12));
+        if (!(p.pageTurn > 0) || p.dozing) px(g, bx - 2, by + 3, 3, 4, c.skin);
+        px(g, bx + 17, by + 3, 3, 4, c.skin);
       } else if (p.painting) {
         const stroke = Math.floor(p.animT * 5) % 2;
         if (p.paintMixing) {
@@ -575,8 +577,8 @@
             px(g, x + 12, y - 49, 2, 2, '#f8dc8a');
           }
         } else if (held === 'book') {
-          px(g, x + 8, y - 26, 10, 8, '#a94f3f');
-          px(g, x + 8, y - 26, 10, 2, shade('#a94f3f', -0.2));
+          px(g, x + 8, y - 26, 10, 8, p.bookColor || '#a94f3f');
+          px(g, x + 8, y - 26, 10, 2, shade(p.bookColor || '#a94f3f', -0.2));
           px(g, x + 16, y - 25, 2, 6, '#f5efdf');          // page edges
           px(g, x + 10, y - 19, 4, 3, c.skin);             // fingers curled under
         }
@@ -640,8 +642,8 @@
       // borrowed book tucked under the arm
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 12, c.top);
       const bkx = x + facing * 12 - (facing > 0 ? 0 : 10);
-      px(g, bkx, y - 25, 10, 8, '#a94f3f');
-      px(g, bkx, y - 25, 10, 2, shade('#a94f3f', -0.2));
+      px(g, bkx, y - 25, 10, 8, p.bookColor || '#a94f3f');
+      px(g, bkx, y - 25, 10, 2, shade(p.bookColor || '#a94f3f', -0.2));
       px(g, bkx + (facing > 0 ? 8 : 0), y - 24, 2, 6, '#f5efdf');   // page edges
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 22, 4, 4, c.skin);
     } else if (held === 'log') {

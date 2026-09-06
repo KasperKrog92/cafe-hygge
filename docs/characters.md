@@ -215,8 +215,10 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    appears at the pass with their id on it.
 4. **pickup** — takes the cup (clink). Book-borrowers (`wantsBook` without
    `ownBook`) first **browse** the bookshelf (2.5–5.5 s at the browse spot,
-   page-turn sound, `hasShelfBook = true` — a spine visibly leaves the shelf),
-   then pick a seat. Seat choice: spots where an abandoned drink still waits
+   page-turn sound, `hasShelfBook = true` — a spine visibly leaves the shelf).
+   `bookColor` keeps the selected gold, red or blue loan spine's color through
+   carrying and seated reading; returning it restores that matching spine.
+   After browsing they pick a seat. Seat choice: spots where an abandoned drink still waits
    for Nora are avoided while cleaner seats exist (two cups would share one
    saucer spot); borrowers prefer the nook chairs; readers in general prefer
    nook chairs / fireside armchairs / window perches; otherwise a random free

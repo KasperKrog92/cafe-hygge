@@ -124,8 +124,12 @@ The café keeps CH=60, the existing layout, and the same warm palette:
   Shelf ceramics have rim and side shading; chrome and pastry-case glass use
   narrow reflections and recessed side tones instead of uniformly flat fills.
 - Skin uses derived temple/jaw shadows, cheek highlights and a small profile
-  nose. Sweaters have shaded sides and lit shoulders; reading books have page
-  markings. Cat resting/walking silhouettes gain haunch and fur highlights.
+  nose. Sweaters have shaded sides and lit shoulders. Seated readers show the
+  colored outside covers and spine fold, with a thin top page edge. Turning
+  pages and the reaching hand pass behind the covers, peeking above the rim.
+  Borrowed books retain their gold, red or blue shelf color while carried and
+  read; the matching shelf spine stays absent until returned. Own books default
+  to warm red. Cat resting/walking silhouettes gain haunch and fur highlights.
 - Floorboard tones follow staggered joints. Rugs have sparse border stitches
   and low-contrast geometric motifs, with quiet centres. All surface texture
   uses `h2()` and is cached in the static background, never regenerated at random.

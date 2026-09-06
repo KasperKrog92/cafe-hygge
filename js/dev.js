@@ -537,6 +537,7 @@
         facing: s.facing, heading: '', pose: 'sit', state: 'seated', animT: 0,
         seat: s, reading: !s.artist && !s.piano, painting: !!s.artist,
         playing: !!s.piano, hasShelfBook: !!s.nook,
+        bookColor: SCENE.bookLoans[i % SCENE.bookLoans.length].col,
         drink: SIM._.DRINKS[0], holding: null, armUp: 0, bubble: null
       };
       if (s.artist) p.colors = structuredClone(CAST.regulars.find(function (r) { return r.id === 'lunafreya'; }).colors);

@@ -32,6 +32,20 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('borrowed covers keep their colors when books return out of order', () => {
+    const b = boot();
+    b.run(`var w = SIM.create({random:SIM.seededRandom(42)});
+      w.patrons = [];
+      var readers = [{}, {}, {}];
+      readers.forEach(function(p) { SIM._.borrowBook(w, p); w.patrons.push(p); });
+      var colors = readers.map(function(p) { return p.bookColor; });
+      if (new Set(colors).size !== 3) throw Error('Loan colors repeat before shelf is empty');
+      readers[0].hasShelfBook = false;
+      var next = {}; SIM._.borrowBook(w, next);
+      if (next.bookColor !== colors[0]) throw Error('Returned book was not available');
+      if (readers[1].bookColor !== colors[1] || readers[2].bookColor !== colors[2])
+        throw Error('Remaining books changed color');`);
+  });
   await test('v1 round trip preserves story, bond, flag and extra data', () => {
     const b = boot();
     b.run(`var s = MEMORY.codec.fresh(); s.lastSeen = 123;

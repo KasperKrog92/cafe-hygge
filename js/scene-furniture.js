@@ -500,7 +500,7 @@
      patrons have books out (world.patrons[].hasShelfBook) and return with
      them — the shelf quietly tells the story. */
   const BOOKCOLS = ['#a94f3f', '#4a7a5a', '#7a89a5', '#c9a04a', '#8a6a9a', '#6b7a55', '#b5654a', '#5a7a8a', '#9c4848', '#d9a05a'];
-  const LOAN_SLOTS = [
+  const LOAN_SLOTS = SCENE.bookLoans = [
     { row: 0, off: 34, col: '#c9a04a' },
     { row: 1, off: 58, col: '#a94f3f' },
     { row: 2, off: 16, col: '#5a7a8a' }
@@ -509,8 +509,7 @@
   function drawBookshelf(g, world) {
     const S = L.library.shelf;
     const left = S.x - S.w / 2, top = S.y - S.h, w = S.w;
-    let out = 0;
-    world.patrons.forEach(function (p) { if (p.hasShelfBook) out++; });
+    const out = world.patrons.filter(function (p) { return p.hasShelfBook; });
     // ground shadow, carcass, crown, plinth
     px(g, left - 4, S.y, w + 8, 3, 'rgba(20,12,8,0.22)');
     px(g, left, top, w, S.h, '#5a3d28');
@@ -540,7 +539,7 @@
       while (cx < lim - 4) {
         if (loan && !loanDone && cx >= left + loan.off) {
           loanDone = true;
-          if (LOAN_SLOTS.indexOf(loan) >= out) {            // still on the shelf
+          if (!out.some(function (p) { return p.bookColor === loan.col; })) {
             px(g, cx, bot - 20, 7, 20, loan.col);
             px(g, cx, bot - 20, 7, 2, shade(loan.col, -0.2));
             px(g, cx + 2, bot - 12, 3, 2, 'rgba(240,232,213,0.6)');

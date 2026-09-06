@@ -296,7 +296,7 @@
     }
     if (seat.armchair || seat.nook) {
       p.reading = true;
-      p.hasShelfBook = !!seat.nook;   // the nook regular borrowed theirs
+      if (seat.nook) borrowBook(world, p);
     }
     world.patrons.push(p);
   }
@@ -332,12 +332,23 @@
     }
     if (seat.armchair || seat.nook) {
       p.reading = true;
-      p.hasShelfBook = !!seat.nook;
+      if (seat.nook) borrowBook(world, p);
     }
     world.patrons.push(p);
     const r = world.regulars[spec.id];
     if (r) r.lastDay = dayIndex(world);     // done for today: no double arrival
     return p;
+  }
+
+  function borrowBook(world, p) {
+    const slots = SCENE.bookLoans;
+    const slot = slots.find(function (s) {
+      return !world.patrons.some(function (other) {
+        return other !== p && other.hasShelfBook && other.bookColor === s.col;
+      });
+    });
+    p.bookColor = (slot || slots[1]).col;
+    p.hasShelfBook = true;
   }
 
   function makePatron(world, requestedName) {
@@ -1362,7 +1373,7 @@
     PATRON_NAMES: PATRON_NAMES, SEAT_PREFS: SEAT_PREFS,
     DAY_MS: DAY_MS,
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor, specLine: specLine,
-    makePatron: makePatron, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
+    makePatron: makePatron, borrowBook: borrowBook, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
     arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
     arcStages: arcStages, arcRows: arcRows, arcBeat: arcBeat, arcFlag: arcFlag,
     advanceArcs: advanceArcs, updateNarrative: updateNarrative,

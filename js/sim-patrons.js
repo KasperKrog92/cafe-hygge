@@ -396,7 +396,7 @@
         if (!walker(p, dt)) { p.stateT = 0; break; }
         p.facing = 1;
         if (p.stateT > p.browseDur) {
-          p.hasShelfBook = true;
+          R.borrowBook(world, p);
           SND.pageTurn();
           if (R.random() < 0.6) caption(world, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
           const seat = p.seat || freeSeat(world, p);
@@ -418,7 +418,7 @@
         if (!walker(p, dt)) { p.stateT = 0; break; }
         p.facing = 1;
         if (p.stateT > p.browseDur) {
-          p.hasShelfBook = true;
+          R.borrowBook(world, p);
           p.holding = 'book';
           SND.pageTurn();
           if (R.random() < 0.5) caption(world, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
