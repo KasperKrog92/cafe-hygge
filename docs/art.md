@@ -638,3 +638,12 @@ Her new kneeling pose keeps one knee down and one foot planted while the brush
 moves at the hearth lip. Ash patches disappear by remembered phase; the clean
 stone lip remains. Fire, glow and sparks stay off during the chosen cleaning.
 The untouched furnished café remains the prototype baseline; this is not C0.
+
+## Temporary savings display
+
+Mouse movement reveals the current saved balance 18 CSS pixels from the stage's
+upper-right corner, in both the café and apartment. A small gold pixel-art coin
+and Jersey 10 numerals sit on a translucent dark panel. This DOM overlay stays
+inside fullscreen, allows clicks through to the scene, and fades over 0.6 seconds
+after 3.2 seconds at rest, alongside the controls. It is hidden on the entry
+screen; earnings and purchases update its number without revealing it.

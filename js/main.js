@@ -78,6 +78,9 @@
 
   const overlay = document.getElementById('overlay');
   const controls = document.getElementById('controls');
+  const savings = document.getElementById('savings');
+  const savingsAmount = document.getElementById('savings-amount');
+  let shownSavings = null;
   const btnMute = document.getElementById('btn-mute');
   const btnSettings = document.getElementById('btn-settings');
   const settings = document.getElementById('settings');
@@ -95,6 +98,10 @@
   const planner = document.getElementById('planner'), buyPlant = document.getElementById('buy-plant');
   function refreshLife() {
     const l = world.memory.life;
+    if (shownSavings !== l.savings) {
+      shownSavings = l.savings;
+      savingsAmount.textContent = l.savings.toLocaleString('en-GB');
+    }
     btnMode.textContent = l.mode;
     btnMode.setAttribute('aria-label', 'presentation: ' + l.mode + '; switch to ' + (l.mode === 'idle' ? 'game' : 'idle'));
     btnPlan.hidden = l.mode !== 'game' || world.shop.phase !== 'home';
@@ -244,8 +251,15 @@
   let fadeTimer = null;
   function pokeControls() {
     controls.classList.remove('faded');
+    if (overlay.classList.contains('gone')) {
+      refreshLife();
+      savings.classList.add('visible');
+    }
     clearTimeout(fadeTimer);
-    fadeTimer = setTimeout(function () { controls.classList.add('faded'); }, 3200);
+    fadeTimer = setTimeout(function () {
+      controls.classList.add('faded');
+      savings.classList.remove('visible');
+    }, 3200);
   }
   document.addEventListener('mousemove', pokeControls);
 

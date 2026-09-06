@@ -5,11 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Café Hygge — a cozy idle café</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css?v=projects-20260906-1">
+<link rel="stylesheet" href="style.css?v=savings-20260906-1">
 </head>
 <body>
 <div id="stage">
   <canvas id="cafe"></canvas>
+
+  <div id="savings" role="group" aria-label="Savings">
+    <svg class="gold-coin" viewBox="0 0 16 16" aria-hidden="true" focusable="false" shape-rendering="crispEdges">
+      <path fill="#805127" d="M5 1h6v1h2v2h1v8h-1v2h-2v1H5v-1H3v-2H2V4h1V2h2z"/>
+      <path fill="#e8b04a" d="M5 2h6v1h2v9h-2v2H5v-1H3V4h2z"/>
+      <path fill="#f6dc91" d="M5 2h6v1H5zM3 4h2v7H3zM5 3h1v1H5z"/>
+      <path fill="#b77b32" d="M11 4h1v7h-1zM6 12h5v1H6z"/>
+      <path fill="#f6dc91" d="M7 5h2v6H7z"/>
+    </svg>
+    <span id="savings-amount"></span>
+  </div>
 
   <div id="overlay">
     <div class="overlay-card">
@@ -97,6 +108,6 @@
 <script src="js/sim-characters.js?v=projects-20260906-1"></script>
 <script src="js/sim-life.js?v=projects-20260906-1"></script>
 <script src="js/dev.js?v=projects-20260906-1"></script>
-<script src="js/main.js?v=projects-20260906-1"></script>
+<script src="js/main.js?v=savings-20260906-1"></script>
 </body>
 </html>

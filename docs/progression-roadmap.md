@@ -221,8 +221,12 @@ deadlines or friendship upkeep chores.
 ## Savings and relationships
 
 **Recommended economy:** completed ordinary sales add modest savings in both
-modes. Show the balance and one-time purchase costs in the evening planner,
-not as a permanent HUD. No rent drain, wages drain, debt, spoilage, missed-day
+modes. Show the balance and one-time purchase costs in the evening planner.
+The owner's 6 September direction also adds a temporary upper-right savings
+display with a pixel-art gold coin: mouse movement reveals the current saved
+balance in either mode and room; after 3.2 seconds at rest it fades over 0.6 seconds.
+Sales and purchases update the amount without revealing it automatically.
+It remains hidden on the entry screen. No rent drain, wages drain, debt, spoilage, missed-day
 penalties or timed discounts. Exact prices, whether to abstract operating costs,
 and the first-hour earning pace are still open design questions.
 

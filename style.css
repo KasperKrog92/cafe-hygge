@@ -73,6 +73,28 @@ canvas#cafe {
 .overlay-card .hint { margin-top: 1.2rem; font-size: 0.95rem; line-height: 1.5; color: #d7c5a5; }
 
 /* ---- ambient controls ---- */
+#savings {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 14px 7px 10px;
+  color: #f6dc91;
+  background: rgba(20, 14, 10, 0.72);
+  border: 1px solid rgba(232, 176, 74, 0.28);
+  border-radius: 8px;
+  font: 28px/1 'Jersey 10', monospace;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  z-index: 5;
+}
+#savings.visible { opacity: 1; }
+.gold-coin { width: 28px; height: 28px; flex-shrink: 0; }
+
 #controls {
   position: absolute;
   right: 14px;
