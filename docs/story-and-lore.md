@@ -14,6 +14,12 @@ conversation about Lunafreya sitting down herself. The cutting has a chosen
 home; the book requires a shelf. These are ordinary new café objects, without
 an implied supernatural history. Their exact scope is in [game.md](game.md).
 
+**Room to grow, 6 September 2026:** Lunafreya can repot that cutting, watch
+leaves and flowers emerge across player-started mornings, and give Astrid a
+cutting back. The parent plant and its empty old pot remain in the café. This
+small exchange is implemented; the larger garden and botanical story seeds below
+remain possibilities.
+
 The opening now also includes three private reflections during slow cleanup:
 a folded shopping list with a window sketch recalls her hidden plans; worn
 floorboards let her admit that having the key has not made her certain; moonlit

@@ -49,6 +49,9 @@ relationship moments and story inspiration for future development.
 [game.md](game.md) records the playable restoration and **Coffee & company**
 chapter: returning Holger and Astrid, coffee and tea service, small room
 improvements, four relationship conversations and room traces. These mornings
-are player-paced; the wider growth described above remains open.
+now lead into **Room to grow**: repotting Astrid's cutting, leaves and flowers
+across player-started mornings, and a fifth conversation in which Lunafreya
+gives a cutting back. All mornings are player-paced; the wider growth described
+above remains open.
 The `idle` branch is preserved. `reference.html` retains the earlier café locally
 for comparison and reuse. Future features belong on the roadmap until built.

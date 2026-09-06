@@ -11,7 +11,7 @@ for(var i=0;i<=tasks.length;i++){
   var old={version:1,done:tasks.slice(0,i),introduced:i>=7,served:i===8};
   var migrated=plain(memory.normalize(old));
   assert.deepEqual(migrated.done,plain(old.done));
-  assert.equal(migrated.version,2);assert.equal(migrated.served,old.served);
+  assert.equal(migrated.version,3);assert.equal(migrated.served,old.served);
   assert.equal(migrated.coins,i===8?6:0);
   assert.deepEqual(plain(memory.normalize(migrated)),migrated,'Migration is idempotent');
 }
@@ -40,4 +40,13 @@ saved.day=21;assert.equal(context.FLEUR.invitation(saved),'cutting');
 saved.stories.cutting=true;assert.equal(context.FLEUR.invitation(saved),'ownCup');
 saved.lastStoryDay=saved.day;assert.equal(context.FLEUR.invitation(saved),null);
 assert.equal(memory.normalize(saved).lastStoryDay,saved.day,'Story pacing survives reload');
-console.log('Save checks passed: all v1 milestones, v2 in-progress service, malformed data, storage failure, persistent invitations.');
+var v2=plain(saved);v2.version=2;delete v2.gardenDay;
+assert.deepEqual(plain(memory.normalize(v2)),plain(saved),'v2 migration preserves the cafe');
+saved.day=23;saved.lastStoryDay=21;saved.gardenDay=21;saved.stories.ownCup=true;
+assert.equal(context.FLEUR.invitation(saved),'growing');
+saved.stories.growing=true;
+assert.deepEqual(plain(memory.normalize(saved)),saved,'Repotting and shared cutting survive reload');
+saved.gardenDay=0;assert.equal(memory.normalize(saved).stories.growing,undefined);
+saved.gardenDay=99;assert.equal(memory.normalize(saved).gardenDay,saved.day);
+saved.stories.cutting=false;assert.equal(memory.normalize(saved).gardenDay,0);
+console.log('Save checks passed: v1/v2 migration, v3 gardening, carried cups, malformed data, storage failure and persistent invitations.');

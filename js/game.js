@@ -9,10 +9,11 @@
     entry:{x:687,y:335}, seat:{x:438,y:411}, ownerSeat:{x:536,y:411},
     conversation:{x:540,y:420}, kettle:{x:620,y:349},
     shelf:{x:229,y:222}, lamp:{x:420,y:243}, plantSill:{x:320,y:281}, plantTable:{x:489,y:381},
-    rug:{x:405,y:396,w:150,h:51}, tasks:FLEUR.tasks,
+    rug:{x:405,y:396,w:150,h:51}, sparePot:{x:392,y:281}, tasks:FLEUR.tasks,
     workSites:{debris:[{x:360,y:390},{x:387,y:390}],sweep:[{x:300,y:370},{x:423,y:448},{x:553,y:400},{x:663,y:466}],window:[{x:337,y:310},{x:402,y:310}],walls:[{x:466,y:310},{x:606,y:310}]},
     workProps:{sack:{x:411,y:391},paper:{x:301,y:278},wear:{x:405,y:429},bucket:{x:367,y:323},plaster:{x:637,y:324}}
   };
+  L.workSites.repot = [{x:FLEUR.garden.x,y:FLEUR.garden.y}];
   var dev = new URLSearchParams(location.search).has('dev');
   var save = FLEUR_MEMORY.load(), notice = save.served ? 'Another cup whenever you are ready. This room can wait.' : '';
   var time = 0, target = null, working = null, keys = {}, talk = null, zoom = 1.45, resting = false, modal = null;
@@ -130,6 +131,22 @@
       b.onclick = function () { closeModal('notebook'); act(task('upgrade',u,u.name,{upgrade:u.id,duration:u.duration,verb:u.verb})); };
       body.appendChild(b);
     });
+    if (save.stories.cutting) {
+      h = document.createElement('h3'); h.textContent = 'Room to grow'; body.appendChild(h);
+      if (!save.gardenDay) {
+        paragraph('The cutting has roots now. A larger pot and fresh soil cost 6 coins. Repot it here, then return it to the place you chose.');
+        var repot = document.createElement('button'); repot.id = 'repot';
+        repot.textContent = 'Give the cutting room to grow · 6 coins';
+        repot.disabled = save.coins < FLEUR.garden.cost || save.stage !== 'served';
+        repot.onclick = function () { closeModal('notebook'); act(FLEUR.garden); };
+        body.appendChild(repot);
+        if (save.stage !== 'served') paragraph('First, finish this cup. Then there is time for soil.');
+      } else {
+        var age = save.day - save.gardenDay;
+        paragraph(save.stories.growing ? 'Astrid took a cutting home. The flowering plant stays here; its old pot is waiting on the sill.' : age < 1 ? 'Back in its place, in fresh soil. Let it settle.' : age < 2 ? 'New leaves, and a small bud. It seems to like the extra room.' : 'Pink flowers above the leaves. There is enough growth to share with Astrid.');
+      }
+      paragraph('It grows when you begin another morning. There is no watering schedule; it will keep while you are away.');
+    }
     h = document.createElement('h3'); h.textContent = 'Things I want to remember'; body.appendChild(h);
     paragraph('The first cup — Holger found the light. I told him there would be another tomorrow.');
     FLEUR.tasks.forEach(function(t){if(t.note&&has(t.id))paragraph(t.note);});
@@ -190,7 +207,10 @@
       startTalk(story.lines,function(choice){save.stories[t.story]=true;save.lastStoryDay=save.day;if(choice)save.plant=choice;notice=story.note;},story.choices,true);
     }else if(t.id==='choose'){el('order').textContent=name()+' asked for '+visit().drink+'.';openModal('drinks');}
     else if(t.id==='rest'){resting=true;player.facing=-1;player.heading=null;SND.chairScrape(false);notice='The kettle can wait. For a moment, this chair is mine.';}
-    else {working={task:t,elapsed:0};if(t.id==='serve')SND.kettlePour(1.5);}
+    else {
+      if(t.id==='repot'&&(!save.stories.cutting||save.gardenDay||save.coins<FLEUR.garden.cost||save.stage!=='served'))return;
+      working={task:t,elapsed:0};if(t.id==='serve')SND.kettlePour(1.5);
+    }
   }
   function finishWork(t) {
     if(t.id==='drink'){
@@ -200,6 +220,10 @@
       if(save.stage==='brewed'){save.stage='served';save.coins+=6;save.cups++;SND.cupDown();notice='A cup for '+name()+'. 6 coins set aside for the café.';}
     }else if(t.id==='tomorrow'){
       save.day++;save.stage='arriving';setPatron();SND.doorBell();notice='Clean cups. A fresh morning. Let us see who finds us today.';
+      if(save.gardenDay&&save.day-save.gardenDay===1)notice='A new leaf, and a small bud. The plant has been making itself at home.';
+      if(save.gardenDay&&save.day-save.gardenDay===2)notice='Pink flowers. I want to show Astrid when she next comes by.';
+    }else if(t.id==='repot'){
+      if(!save.gardenDay&&save.stories.cutting&&save.coins>=FLEUR.garden.cost){save.coins-=FLEUR.garden.cost;save.gardenDay=save.day;notice=FLEUR.garden.line;}
     }else if(t.id==='upgrade'){
       var u=FLEUR.upgrades.filter(function(item){return item.id===t.upgrade;})[0];
       if(!save.upgrades[u.id]&&save.coins>=u.cost){save.coins-=u.cost;save.upgrades[u.id]=true;notice=u.line;}
@@ -235,7 +259,7 @@
         working.moving=Math.hypot(player.x-site.x,player.y-site.y)>2;
         if(working.moving){move(player,site.x,site.y,dt*0.32);return;}
         var soundBeat=ph.index+':'+Math.floor(ph.elapsed/5.6);
-        if(ph.data.kind!=='rest'&&ph.elapsed%5.6>=0.9&&working.soundBeat!==soundBeat){working.soundBeat=soundBeat;SND.workStroke(ph.data.kind);}
+        if(ph.data.kind!=='rest'&&ph.elapsed%5.6>=0.9&&working.soundBeat!==soundBeat){working.soundBeat=soundBeat;if(working.task.id==='repot'&&ph.data.kind==='water')SND.kettlePour(0.5);else SND.workStroke(working.task.id==='repot'?'gather':ph.data.kind);}
       }
       working.elapsed=Math.min(working.task.duration,working.elapsed+dt);
       var moment=working.task.moment;
@@ -261,8 +285,14 @@
   function cup(x,y) { rect(x-2,y+7,15,2,'#493b3066');rect(x,y,10,8,'#eee2c8');rect(x+9,y+1,4,5,'#d5c6a5');rect(x+2,y,6,2,'#70513b'); }
   function plant(anchor) {
     var x=anchor.x,y=anchor.y,sway=Math.round(Math.sin(time*0.8));
+    if(working&&working.task.id==='repot')return;
     rect(x-9,y-2,20,3,'#493b3044');rect(x-7,y-11,14,10,'#a94f3f');rect(x-9,y-13,18,4,'#c08a58');rect(x-5,y-9,3,6,'#bc7951');
     rect(x,y-33,2,21,'#788b77');rect(x-8+sway,y-28,9,5,'#788b77');rect(x+2+sway,y-34,9,5,'#8d9d77');rect(x-6,y-19,8,4,'#4a7a5a');
+    if(save.gardenDay){
+      rect(x-10,y-13,20,12,'#a94f3f');rect(x-12,y-16,24,4,'#c08a58');rect(x-8,y-11,4,8,'#bc7951');rect(x-9,y-15,18,2,'#493b30');rect(x,y-26,2,12,'#788b77');
+      if(save.day>save.gardenDay){rect(x+3,y-43,2,23,'#4a7a5a');rect(x-9+sway,y-39,13,6,'#788b77');rect(x+5+sway,y-32,11,6,'#8d9d77');rect(x+3,y-46,4,5,'#a94f3f');}
+      if(save.day-save.gardenDay>=2){rect(x-2+sway,y-49,12,5,'#bc7951');rect(x+sway,y-52,7,11,'#c58e89');rect(x+3+sway,y-48,3,3,'#e6d8b9');rect(x-12,y-33,7,5,'#c58e89');rect(x-10,y-34,3,7,'#c58e89');}
+    }
   }
   function additions() {
     var x,y,i;
@@ -270,6 +300,7 @@
     if(save.upgrades.shelf){x=L.shelf.x;y=L.shelf.y;rect(x-2,y+8,44,5,'#493b3022');rect(x,y,42,5,'#c0aa84');rect(x,y+5,42,4,'#70513b');rect(x+5,y+9,4,16,'#70513b');rect(x+34,y+9,4,16,'#70513b');if(save.stories.book){rect(x+5,y-20,9,20,'#4a7a5a');rect(x+7,y-17,5,2,'#d7c08b');rect(x+11,y-21,2,12,'#eee2c8');rect(x+15,y-7,19,7,'#a94f3f');rect(x+17,y-5,15,3,'#d5c6a5');}}
     if(save.upgrades.lamp){x=L.lamp.x;y=L.lamp.y;var light=g.createRadialGradient(x,y+15,3,x,y+40,105);light.addColorStop(0,'#f4c87840');light.addColorStop(1,'#f4c87800');g.fillStyle=light;g.fillRect(x-105,y-65,210,210);rect(x-2,y+3,4,33,'#a48863');rect(x-9,y+35,18,4,'#d2b675');rect(x-8,y-5,16,4,'#c3ab78');rect(x-12,y-1,24,10,'#d2b675');rect(x-14,y+9,28,3,'#e6d8b9');}
     if(save.stories.cutting&&save.plant==='sill')plant(L.plantSill);
+    if(save.stories.growing){x=L.sparePot.x;y=L.sparePot.y;rect(x-5,y-7,10,7,'#a94f3f');rect(x-7,y-9,14,3,'#c08a58');rect(x-4,y-9,8,1,'#493b30');}
     if(has('open')){rect(659,305,55,18,'#8a6142');rect(664,309,45,2,'#a48863');rect(664,317,45,2,'#a48863');}
   }
   function room(){rect(0,0,960,600,'#201e24');rect(194,122,572,398,'#15191a');rect(208,132,544,178,has('walls')?'#a4967b':'#736f62');

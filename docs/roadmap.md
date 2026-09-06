@@ -7,12 +7,20 @@ sweeping, window and wall repair, second-hand table and chairs, kettle and coffe
 opening the door, Holger's arrival, first coffee and two focused conversations.
 Progress persists separately from the companion café. See [game.md](game.md).
 
+## Built: coffee, company and room to grow
+
+Player-paced return visits, Holger and Astrid's five neighborhood stories,
+coffee and tea preparation and delivery, a lamp, bookshelf and rug, and a
+chosen home for Astrid's cutting. Repotting adds hands-on plant care; leaves
+and flowers grow across deliberately begun mornings, leading to a cutting
+given back to Astrid. There are no watering deadlines or absence penalties.
+The opening also has phased work, hand rests and three private reflections.
+
 ## Next slices — proposed, not implemented
 
-- More tactile, task-specific restoration animation and selectable furnishing positions.
-- Repeat visits that develop Holger and introduce other character-specific relationships.
-- A small service loop with visible preparation and delivery; add menus and equipment
-  only when the room and its people give those systems a purpose.
+- Selectable furnishing positions and more room-specific restoration tasks.
+- Further visits that develop Holger and Astrid and introduce new relationships.
+- Add menus and equipment when the room and its people give those systems a purpose.
 - Unlock one adjoining space, bringing exploration and physical expansion into play.
 - Evolve focused dialogue into reusable relationship scenes with ambient background
   routines and an explicit suspension contract for future management systems.

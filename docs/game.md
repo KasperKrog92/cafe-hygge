@@ -78,10 +78,28 @@ work, movement and progress stop. Rain, breathing, cup gestures and quiet audio
 continue. Notebook and recipe browsing also pause progress. The notebook records
 Lunafreya's memories without relationship meters or collectible counters.
 
+### Room to grow
+
+After accepting Astrid's cutting, the notebook offers **Give the cutting room
+to grow** for 6 coins, available after serving the current guest. Lunafreya
+kneels beside a folded sheet and spends 24 seconds adding soil, supporting the
+roots and watering. The old pot and cutting, soil bag, larger pot and water
+are visible during the three phases. **Rest your hands** holds the work exactly;
+completion charges once and returns the plant to the chosen sill or table.
+Reloading unfinished repotting restarts the task without spending any coins.
+
+The next player-started morning brings leaves and a bud; the second brings pink
+flowers. Waiting, closing the game and absence never advance or harm the plant.
+There is no watering obligation or decay. After her earlier conversations,
+Astrid offers **Something to take home** on a served visit once the plant has
+flowered. Lunafreya gives her a cutting; the parent plant remains and the small
+empty pot stays on the sill. The invitation waits and returns on later visits
+if skipped. The notebook records both growth and the gift.
+
 The current slice has two guests, one room, two drinks, three purchasable
-improvements and four neighborhood stories. After those stories, service and
+furnishings, one repotting task and five neighborhood stories. After those stories, service and
 lingering remain available with recurring short greetings. Multiple simultaneous
-customers, helpers, other rooms, gardening and broader relationships remain
+customers, helpers, other rooms, a garden space and broader relationships remain
 future directions, not implemented features.
 
 ## Runtime and state
@@ -111,16 +129,21 @@ the collision model. The camera renders on the original 960×600 canvas with
 60px standing characters. Pointer input inverts the same camera transform.
 Chairs, table and people share baseline sorting.
 
-### Save version 2
+### Save version 3
 
 The separate `fleur-de-lune-save` contains the ordered `done` restoration IDs,
 `introduced` and first-cup `served` flags, plus `day`, visit `stage` (`arriving`,
 `ordered`, `brewed`, `served`), `coins`, `cups`, completed `upgrades` and
 `stories`, the cutting's `plant` placement, and `lastStoryDay` for story pacing.
+Version 3 adds `gardenDay` (zero until repotting completes, then the current
+morning number). The `growing` story flag records the cutting given back to Astrid.
+Version 2 migrates all previous progress with gardening unplayed. Validation
+requires the original cutting before repotting, and sufficient growth and earlier
+Astrid conversations before retaining the gift. Growth derives only from `day`.
 
 Version 1 migrates every valid opening milestone. A completed first cup starts
 with 6 coins and one cup served; reloading cannot award the payment repeatedly.
-Version 2 retains orders and brewed cups across reloads. Guest positions restart
+Versions 2 and 3 retain orders and brewed cups across reloads. Guest positions restart
 at the entry and walk to the seat. Movement, unfinished work and incomplete
 dialogue restart; completed deliveries, purchases and story choices persist.
 An unfinished purchase never deducts money. Work commits only at completion.
@@ -177,6 +200,8 @@ $opening = Get-Content -Raw tools/verify-game.js
 agent-browser --session fleur-check eval $opening
 $neighborhood = Get-Content -Raw tools/verify-neighborhood.js
 agent-browser --session fleur-check eval $neighborhood
+$garden = Get-Content -Raw tools/verify-garden.js
+agent-browser --session fleur-check eval $garden
 agent-browser --session fleur-check reload
 agent-browser --session fleur-check eval '__game.audit()'
 agent-browser --session fleur-check errors
@@ -213,3 +238,13 @@ resume boundaries, 300 seconds waiting at each reflection, and a 60-second
 hand-rest pause in each cleanup job. Run `tools/review-opening.js` with browser
 eval for a detached 24-frame PNG contact sheet (returned as a data URL).
 Inspect it alongside actual room screenshots; it leaves the live save alone.
+
+Verified 6 September 2026: the opening, eight-morning neighborhood check and
+`verify-garden.js` pass with empty audits. The garden check continues through
+morning 13, covering a 300-second hand rest, single payment, duplicate-task
+rejection, player-paced growth, a skipped and returning invitation, conversation
+suspension and save round trip. Real browser reloads during unfinished repotting
+and after the gift preserved funds and completed progress. Work, flowering plants
+in both placements, desktop and 390px layouts and the notebook were visually
+inspected. Browser errors were empty. The new quiet soil/water cues reuse existing
+sounds; this pass did not include listening review.

@@ -1,12 +1,12 @@
-/* Separate from the reference cafe save. Explicit v1 -> v2 migration. */
+/* Separate from the reference cafe save. Explicit v1 -> v2 -> v3 migration. */
 (function () {
   'use strict';
-  var KEY = 'fleur-de-lune-save', VERSION = 2;
-  function fresh() { return {version:VERSION,done:[],introduced:false,served:false,day:1,stage:'arriving',coins:0,cups:0,upgrades:{},stories:{},plant:'sill',lastStoryDay:0}; }
+  var KEY = 'fleur-de-lune-save', VERSION = 3;
+  function fresh() { return {version:VERSION,done:[],introduced:false,served:false,day:1,stage:'arriving',coins:0,cups:0,upgrades:{},stories:{},plant:'sill',lastStoryDay:0,gardenDay:0}; }
   function count(n, fallback) { return typeof n === 'number' && isFinite(n) && n >= 0 ? Math.min(1000000, Math.floor(n)) : fallback; }
   function normalize(s) {
     var n = fresh();
-    if (!s || (s.version !== 1 && s.version !== VERSION) || !Array.isArray(s.done)) return n;
+    if (!s || [1,2,VERSION].indexOf(s.version) < 0 || !Array.isArray(s.done)) return n;
     FLEUR.tasks.some(function (t) { if (s.done.indexOf(t.id) < 0) return true; n.done.push(t.id); return false; });
     n.introduced = n.done.indexOf('open') >= 0 && s.introduced === true;
     n.served = n.done.indexOf('serve') >= 0 && n.introduced && s.served === true;
@@ -23,6 +23,9 @@
     Object.keys(FLEUR.stories).forEach(function (id) { if (s.stories && s.stories[id] === true) n.stories[id] = true; });
     if (!n.upgrades.shelf) delete n.stories.book;
     if (!n.stories.cutting) delete n.stories.ownCup;
+    // v2 has no gardening progress; retain its entire cafe and start this chapter unplayed.
+    if (s.version === VERSION && n.stories.cutting) n.gardenDay = Math.min(n.day, count(s.gardenDay, 0));
+    if (!n.gardenDay || n.day - n.gardenDay < 2 || !n.stories.ownCup) delete n.stories.growing;
     n.plant = s.plant === 'table' ? 'table' : 'sill';
     return n;
   }

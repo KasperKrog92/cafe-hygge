@@ -22,6 +22,11 @@
       {id:'open',x:686,y:335,label:'Turn the sign to open',verb:'Opening',duration:1,line:'Fleur de Lune. Let us see who finds us.'},
       {id:'serve',x:620,y:349,label:'Brew the first coffee',verb:'Brewing',duration:4,line:'Slowly poured. A little courage in a cup.'}
     ],
+    garden: {
+      id:'repot',x:350,y:350,label:'Give the cutting room to grow',verb:'Repotting',cost:6,duration:24,
+      phases:[{seconds:8,kind:'soil',label:'Crumbling fresh soil into the larger pot',site:0},{seconds:8,kind:'roots',label:'Supporting the roots. Settling the cutting gently.',site:0},{seconds:8,kind:'water',label:'A little water, then back to its chosen place',site:0}],
+      line:'Fresh soil, a larger pot. Now it can take its time.'
+    },
     people: {
       holger: {name:'Holger',colors:{skin:'#d99c6b',hair:'#d9d2c0',top:'#4a7a5a',pants:'#4a3222',scarf:'#a94f3f',hairStyle:1,beard:true}},
       astrid: {name:'Astrid',colors:{skin:'#e4b68c',hair:'#654733',top:'#a94f3f',pants:'#514355',hairStyle:2}}
@@ -47,6 +52,10 @@
         guest:'holger',title:'A book with room inside',note:'The first shared book is a collection of walks. Holger left a train ticket between two pages.',
         lines:[['Holger','I brought a book for the shelf. Walks along the coast.'],['Lunafreya','You have marked quite a few pages.'],['Holger','Places I meant to go. I have been to some of them now.'],['Lunafreya','May I borrow it myself? I do occasionally leave this room.'],['Holger','I should hope so. Put your own ticket in when you do.']]
       },
+      growing: {
+        guest:'astrid',title:'Something to take home',note:'I gave Astrid a cutting from the plant she brought me. She has made room on her own sill. The little empty pot stays here for another.',
+        lines:[['Astrid','There are flowers on it. You found it a good spot.'],['Lunafreya','I kept lifting the pot to see if anything had happened. Then I got busy with the kettle.'],['Astrid','That is a perfectly respectable gardening method.'],['Lunafreya','I took a little cutting for you. Before you say yes: it is a plant.'],['Astrid','From my own plant?'],['Lunafreya','From mine. Yours was considerably smaller.'],['Astrid','Fair enough. I will make room on the sill.'],['Lunafreya','You can choose where it goes.']]
+      },
       ownCup: {
         guest:'astrid',title:'A cup for the owner',note:'Astrid noticed I had not sat down. We disagreed about a vase and finished our tea.',
         lines:[['Astrid','Have you had a cup yourself?'],['Lunafreya','I have been holding the idea of one since morning.'],['Astrid','That sounds difficult to drink. Sit down.'],['Lunafreya','Only if you stop suggesting that enormous blue vase.'],['Astrid','It is a very good vase.'],['Lunafreya','It is the size of my kettle.'],['Astrid','Fine. Tea first. Then I will draw it smaller.']]
@@ -65,6 +74,7 @@
       if (guest === 'astrid' && !s.stories.cutting) return 'cutting';
       if (guest === 'holger' && s.upgrades.shelf && !s.stories.book) return 'book';
       if (guest === 'astrid' && s.stories.cutting && !s.stories.ownCup) return 'ownCup';
+      if (guest === 'astrid' && s.gardenDay > 0 && s.day - s.gardenDay >= 2 && !s.stories.growing) return 'growing';
       return null;
     }
   };

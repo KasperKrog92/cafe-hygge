@@ -1,4 +1,4 @@
-/* The opening's physical work. Render-only: elapsed work owns every gesture. */
+/* Restoration and repotting. Render-only: elapsed work owns every gesture. */
 (function () {
   'use strict';
   function clamp(n) { return Math.max(0,Math.min(1,n)); }
@@ -21,7 +21,8 @@
     // Press, travel, lift, return, settle. The return never scrubs backwards.
     var stroke=cycle<0.16?0:cycle<0.64?ease((cycle-0.16)/0.48):1-ease((cycle-0.76)/0.24);
     if(still)stroke=0;
-    var low=['kneel','sort','gather','pan'].indexOf(kind)>=0;
+    var gardening=work.task.id==='repot';
+    var low=gardening||['kneel','sort','gather','pan'].indexOf(kind)>=0;
     var wash=['wipe','polish','wash','scrape','patch','unfasten'].indexOf(kind)>=0;
     var f=wash||kind==='rinse'||work.task.id==='window'?-1:1;
     var x=Math.round(player.x),y=Math.round(player.y),bend=low?17:kind==='rinse'?7:0;
@@ -40,6 +41,17 @@
     function r(a,b,w,h,c){g.fillStyle=c;g.fillRect(Math.round(a),Math.round(b),w,h);}
     function limb(ax,ay,bx,by,width,color){var n=Math.max(Math.abs(bx-ax),Math.abs(by-ay));for(var j=0;j<=n;j+=2)r(ax+(bx-ax)*j/Math.max(1,n)-width/2,ay+(by-ay)*j/Math.max(1,n),width,3,color);}
     r(x-16,y+1,34,3,'#28252b55');
+    if(gardening){
+      // Work stays on a folded sheet beside her knees, away from the serving table.
+      r(x+13,y-1,47,5,'#c0b498');r(x+17,y,37,1,'#977b54');
+      r(x+20,y-15,20,14,'#a94f3f');r(x+18,y-18,24,4,'#c08a58');r(x+21,y-17,18,2,'#493b30');r(x+22,y-12,3,8,'#bc7951');
+      r(x+44,y-20,13,19,'#977f59');r(x+46,y-17,9,3,'#493b30');
+      if(ph.index===0){r(x+59,y-9,10,9,'#a94f3f');r(x+57,y-11,14,3,'#c08a58');r(x+63,y-30,2,19,'#788b77');r(x+56,y-25,8,4,'#788b77');r(x+65,y-30,8,4,'#8d9d77');}
+      if(ph.index>0){var rise=kind==='roots'?Math.round((1-ease(t/5))*12):0;
+        r(x+29,y-38-rise,2,22,'#788b77');r(x+21,y-33-rise,9,5,'#788b77');r(x+31,y-38-rise,9,5,'#8d9d77');
+        if(rise>0){r(x+25,y-20-rise,10,6,'#493b30');r(x+27,y-15-rise,2,4,'#977f59');}
+      }
+    }
     if(bend>10){r(x-13,y-12,12,12,'#514355');r(x-13,y-4,23,5,'#514355');r(x+5,y-10,13,9,'#635365');r(x-16,y,13,3,'#3a2a1c');r(x+13,y-3,8,4,'#3a2a1c');}
     else {r(x-10,y-17,8,17,'#514355');r(x+3,y-17,7,17,'#514355');r(x-10,y-3,10,3,'#3a2a1c');r(x+3,y-3,11,3,'#3a2a1c');}
     var bodyY=y-40+bend;
@@ -61,7 +73,10 @@
     }else if(!still&&kind==='sweep'){
       limb(x-f*7+lean,bodyY+5,handX-4,handY-12,4,'#687d67');r(handX-6,handY-12,5,4,'#e4b68c');
     }else {limb(x-f*7+lean,bodyY+5,x-f*11,bodyY+20,4,'#687d67');r(x-f*11-2,bodyY+20,4,4,'#e4b68c');}
-    if(kind==='sweep'&&!still){
+    if(gardening&&!still){
+      if(kind==='soil'){r(handX-2,handY+3,7,4,'#493b30');if(cycle>0.16&&cycle<0.64)r(x+27,y-22,2,4,'#70513b');}
+      if(kind==='water'){r(handX-5,handY-5,10,7,'#a6aaa0');r(handX+5,handY-2,5,2,'#b5b7a8');if(cycle>0.16&&cycle<0.64){r(x+31,y-23,1,5,'#afbbb3');r(x+33,y-20,1,3,'#afbbb3');}}
+    }else if(kind==='sweep'&&!still){
       var bx=x+20+stroke*23,by=y-1;
       limb(handX-4,handY-14,bx,by-4,3,'#c7ae7b');r(bx-9,by-5,19,6,'#b49a65');
       for(var k=0;k<6;k++)r(bx-8+k*3,by-2,1,5,'#80634c');
