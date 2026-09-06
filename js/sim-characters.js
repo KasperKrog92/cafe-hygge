@@ -27,32 +27,36 @@
 
   const PREP_STEPS = {
     coffee_milk: [
-      { x: 664, act: 'grind', dur: 1.5 },
-      { x: 664, act: 'tamp', dur: 0.55 },
-      { x: 678, act: 'pull', dur: 2.4 },
-      { x: 706, act: 'steam', dur: 1.8 }
+      { x: L.machine.x + 8, act: 'grind', dur: 1.5 },
+      { x: L.machine.x + 8, act: 'tamp', dur: 0.55 },
+      { x: L.machine.x + 22, act: 'pull', dur: 2.4 },
+      { x: L.machine.x + 50, act: 'steam', dur: 1.8 }
     ],
     coffee: [
-      { x: 664, act: 'grind', dur: 1.5 },
-      { x: 664, act: 'tamp', dur: 0.55 },
-      { x: 678, act: 'pull', dur: 2.4 }
+      { x: L.machine.x + 8, act: 'grind', dur: 1.5 },
+      { x: L.machine.x + 8, act: 'tamp', dur: 0.55 },
+      { x: L.machine.x + 22, act: 'pull', dur: 2.4 }
     ],
-    tea: [{ x: 700, act: 'kettle', dur: 2.0 }],
-    milk: [{ x: 706, act: 'steam', dur: 1.8 }],
+    tea: [{ x: L.machine.x + 44, act: 'kettle', dur: 2.0 }],
+    milk: [{ x: L.machine.x + 50, act: 'steam', dur: 1.8 }],
     matcha_hot: [
       { x: L.matchaBar.x, act: 'scoop', dur: 0.8 },
-      { x: 700, act: 'kettle', dur: 1.4 },
+      { x: L.machine.x + 44, act: 'kettle', dur: 1.4 },
       { x: L.matchaBar.x, act: 'whisk', dur: 2.2 },
-      { x: 706, act: 'steam', dur: 1.8 }
+      { x: L.machine.x + 50, act: 'steam', dur: 1.8 }
     ],
     matcha_iced: [
       { x: L.matchaBar.x, act: 'scoop', dur: 0.8 },
-      { x: 700, act: 'kettle', dur: 1.0 },
+      { x: L.machine.x + 44, act: 'kettle', dur: 1.0 },
       { x: L.matchaBar.x, act: 'whisk', dur: 2.2 },
       { x: L.matchaBar.x, act: 'ice', dur: 1.0 }
     ],
     food: [{ x: 858, act: 'fetch', dur: 1.4 }]
   };
+
+  function prepTarget(step) {
+    return { x: step.x, y: MACHINE_STAGES.indexOf(step.act) >= 0 ? L.backBar.workY : L.baristaHome.y };
+  }
 
   function startStep(world, b) {
     const s = b.steps[b.stepIdx];
@@ -95,7 +99,7 @@
           b.steps = PREP_STEPS[order.drink.prep].slice();
           b.stepIdx = -1;
           b.state = 'prepWalk';
-          b.path = [{ x: b.steps[0].x, y: L.baristaHome.y }];
+          b.path = [prepTarget(b.steps[0])];
           break;
         }
         // stay ready at the till if anyone is queueing
@@ -155,7 +159,7 @@
             b.path = [{ x: L.serveSpot.x - 8, y: L.baristaHome.y }];
           } else {
             b.state = 'prepWalk';
-            b.path = [{ x: b.steps[b.stepIdx].x, y: L.baristaHome.y }];
+            b.path = [prepTarget(b.steps[b.stepIdx])];
             b.stepIdx--;
           }
         }

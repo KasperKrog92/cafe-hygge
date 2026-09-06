@@ -64,7 +64,7 @@ requestAnimationFrame:
     SCENE.composeFrame(g, world)       // the whole frame, in one shared call:
       SCENE.drawScene(g, world)        //   blit static-background cache, then the
                                        //   incident floor light, then window/door/wall frame/
-                                       //   lamps/flames/clock hands/candles/machine
+                                       //   lamps/flames/clock hands/candles
       drawables = SCENE.furnitureDrawables(world)  // tables, stools, wing chairs,
                    ++ SIM.entityDrawables(world)   // bookshelf, lamps, counter,
                                                    // plants + people, cat
@@ -264,3 +264,7 @@ waits for the harness, saves PNGs and audit JSON under ignored `.art-review/`,
 and closes the session. `-Verify` runs `tools/verify-art.js`: deterministic
 images, capture side effects, all seat groups at day/night, and warm frame
 composition timings. Commands and limits: [art-workflow.md](art-workflow.md).
+
+The rear coffee cabinet and animated espresso machine share a depth-sorted
+furniture drawable (`SCENE.drawCoffeeStation`, defined in scene-bg.js and
+registered by scene-furniture.js), behind Nora and the serving counter.

@@ -12,8 +12,7 @@
 
   /* Static background cache: everything wall-mounted that never changes is
      rendered once into an offscreen canvas and blitted per frame. Dynamic
-     elements (window, door, lamps, flames, clock hands, candle flames,
-     machine) are painted on top each frame — in the same relative order the
+     elements (window, door, lamps, flames, clock hands, candle flames) are painted on top each frame — in the same relative order the
      one-pass renderer used, so nothing overlaps wrongly. */
   let bgCache = null;
   let menuDoodle = 0;
@@ -43,7 +42,6 @@
     drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
     L.pendants.forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
-    drawMachine(g, world);
   };
 
   function drawFloorLight(g, world) {
@@ -925,6 +923,35 @@
   }
 
   /* ---------- espresso machine (behind the counter) ---------- */
+  // One depth-sorted station: its worktop must paint below the machine,
+  // and both must paint behind Nora when she approaches from the aisle.
+  SCENE.drawCoffeeStation = function (g, world) {
+    const B = L.backBar, m = L.machine;
+    px(g, B.x - 2, B.baseY, B.w + 4, 3, 'rgba(20,12,8,0.22)');
+    px(g, B.x, B.frontY, B.w, B.baseY - B.frontY, '#6e4a33');
+    px(g, B.x, B.frontY, 4, B.baseY - B.frontY, '#4a3222');
+    px(g, B.x + B.w - 4, B.frontY, 4, B.baseY - B.frontY, '#4a3222');
+    for (let x = B.x + 6; x < B.x + B.w - 8; x += 36) {
+      px(g, x, B.frontY + 3, 32, 8, '#5f402c');
+      px(g, x + 2, B.frontY + 5, 28, 6, '#7d5334');
+      px(g, x + 22, B.frontY + 5, 6, 2, '#c9b28a');
+    }
+    px(g, B.x + 4, B.baseY - 2, B.w - 8, 2, '#4a3222');
+    // Broad top plane and overhanging nose; the bare right end shows depth.
+    px(g, B.x - 4, B.slabY, B.w + 8, B.frontY - B.slabY, '#a8764a');
+    px(g, B.x - 4, B.slabY, B.w + 8, 2, '#c08a58');
+    px(g, B.x - 4, B.frontY - 4, B.w + 8, 2, '#c08a58');
+    px(g, B.x - 4, B.frontY - 2, B.w + 8, 2, '#5f402c');
+    px(g, m.x - 2, m.y + 38, m.w + 5, 3, 'rgba(20,12,8,0.28)');
+    // Folded linen and stacked saucers keep the prep end quietly useful.
+    px(g, B.x + 106, B.slabY + 7, 24, 7, '#d9d2c0');
+    px(g, B.x + 108, B.slabY + 9, 20, 2, '#e8e0d0');
+    px(g, B.x + 110, B.slabY + 7, 2, 7, '#8a6142');
+    ell(g, B.x + 88, B.slabY + 11, 10, 3, '#c9b28a');
+    ell(g, B.x + 88, B.slabY + 8, 10, 3, '#e8e0d0');
+    drawMachine(g, world);
+  };
+
   function drawMachine(g, world) {
     const m = L.machine;
     // body with edge light/shade

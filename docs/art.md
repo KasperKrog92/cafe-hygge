@@ -154,7 +154,7 @@ y=36  ── 16:9 crop top
           32+ px right-end cat gap, with its displaced books on shelf 2 and
           tiny plant beside the pastry case — two matching counter pendants
           (L.pendants) hang above the shelves and menu — wainscot, espresso
-          machine (L.machine — drawn in the background layer)
+          machine (L.machine) on its own rear cabinet (L.backBar)
 y=232 ── wall meets floor (L.wallY — kept high so the floor, the life layer,
           dominates the frame)
           counter along the right (L.counter: slab → front face → baseline;
@@ -238,19 +238,19 @@ sorted by baseline `y` (feet / front edge) each frame and drawn in order.
 Rules that keep it looking right:
 
 - **Background layer** (drawScene) = anything wall-mounted or behind
-  everything: wall, windows, door, fireplace, menu, shelves, machine, rugs.
+  everything: wall, windows, door, fireplace, menu, shelves, rugs.
   Static parts render once into an offscreen cache; the two windows, door,
   Lunafreya's two flag-keyed paintings (above fireplace / above
-  door), hanging lamps, flames, clock hands, candle flames and machine
+  door), hanging lamps, flames, clock hands and candle flames
   are painted over it every frame (in that order — it preserves the old
   overlap behavior). The small entrance print is cached with the static wall.
 - **Stools** get baseline just *under* their sitter (stable sort + furniture-
   first push order breaks the tie), so sitters overlap the stool.
 - **Tables** get baseline `cy+32` so tabletops overlap a sitter's knees.
 - **The counter** is one drawable at baseline 306: it hides the lower body of
-  anyone standing behind it. That is why **Nora's y must stay 286** — she
+  anyone standing behind it. That is why **Nora's service-line y stays 286** — she
   reads hip-up above the slab (y 264–278), legs hidden. Lower and she
-  vanishes; higher and she floats above it.
+  vanishes. At the rear worktop she steps up to `L.backBar.workY`.
 - **Each armchair is drawn from the SIDE, facing `dir`** (fireside pair and
   nook pair share one construction, `wingChairBack`/`wingChairFront` with a
   color swatch). The **backrest is the only vertical element**; it stands at
@@ -474,3 +474,17 @@ Sketching keeps a support hand at the pad and joins the pencil hand to its
 elbow. Painting and mixing retain canvas/tray contact with connected wrists.
 Knitting uses crossed needle shafts, attached grips and sparse stitch marks
 across the scarf, retaining its saved progress-driven size.
+
+## Rear coffee station (September 2026)
+
+`L.backBar` is a separate wooden cabinet against the wall, with a broad top
+plane, overhanging edge, recessed cupboard fronts and a floor contact shadow.
+The espresso machine sits 28 px farther back than before, its base visibly
+resting on the worktop; stacked saucers and a folded towel show the clear prep
+end. A strip of floor remains between the cabinet and the serving slab.
+`SCENE.drawCoffeeStation` paints cabinet then machine as one furniture drawable
+at the cabinet baseline, before Nora and the front counter. Its solid footprint
+participates in routing. Nora approaches `L.backBar.workY` for machine stages
+and returns to `L.baristaHome.y` for front-counter work and service. Machine
+station x positions derive from `L.machine`; the cat transit anchor follows
+the relocated warming tray.

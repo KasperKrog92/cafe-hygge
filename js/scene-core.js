@@ -130,7 +130,7 @@
       },
       topShelf: {
         id: 'topShelf', stand: { x: 700, y: 314 }, counter: { x: 700, y: 266 },
-        machine: { x: 684, y: 228 }, anchor: { x: 782, y: 104 }, surface: 'backShelf'
+        machine: { x: 684, y: 200 }, anchor: { x: 782, y: 104 }, surface: 'backShelf'
       },
       piano: {
         id: 'piano', stand: { x: 48, y: 532 },
@@ -194,7 +194,8 @@
     counterPlant: { x: 900, y: 264 },
     menu: { x: 808, y: 112, w: 116, h: 100 },  // chalkboard on the wall behind the counter
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
-    machine: { x: 656, y: 224, w: 56 },       // hero prop: kept a notch above scale
+    backBar: { x: 646, w: 152, slabY: 222, frontY: 240, baseY: 254, workY: 274 },
+    machine: { x: 656, y: 196, w: 56 },       // base rests on the rear worktop
     matchaBar: { x: 726, y: 264 },   // caddy/chawan/chasen corner and Nora's whisking station
     serveSpot: { x: 744, y: 266 },   // where finished cups land on the counter
     orderSpot: { x: 696, y: 316 },
@@ -261,6 +262,8 @@
      __dev.audit()'s journey sweep. The counter and bookshelf are already
      occluders and stay out of this list. */
   L.footprints = [];
+  L.footprints.push({ name: 'back bar', x0: L.backBar.x, x1: L.backBar.x + L.backBar.w,
+    y0: L.wallY, y1: L.backBar.baseY });
   L.tables.forEach(function (t, i) {
     L.footprints.push({ name: 'table ' + i, x0: t.x - 34, x1: t.x + 34, y0: t.y - 8, y1: t.y + 34, passable: true });
     [-1, 1].forEach(function (side) {

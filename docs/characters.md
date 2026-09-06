@@ -40,10 +40,10 @@ station and works through timed steps (each with its own sound):
 | `food` (bun, croissant) | 858 fetch from pastry case 1.4 s |
 
 Where she stands sets which way she faces. The espresso-machine steps (grind,
-tamp, pull, steam, kettle — `MACHINE_STAGES`) are worked on the back wall above
-her standing line, so she's shown from **behind** (`heading: 'up'` — apron ties
+tamp, pull, steam, kettle — `MACHINE_STAGES`) bring her forward to the rear
+cabinet at `L.backBar.workY`, with station x positions derived from `L.machine`, so she's shown from **behind** (`heading: 'up'` — apron ties
 and bow to the room). The matcha bar and pastry case sit on the front counter,
-so scoop, whisk, ice and fetch face the room (**front**); she walks between
+so scoop, whisk, ice and fetch use `L.baristaHome.y` and face the room (**front**); she walks between
 stations in profile, and serves from the front. Then
 she carries the cup/glass/plate to the pass (`L.serveSpot` = 744, 266),
 sets it down (clink), and rings the counter bell (*ding*). During machine-stage

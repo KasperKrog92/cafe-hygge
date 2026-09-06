@@ -201,6 +201,7 @@
       px(g, LP.x - 9, LP.y - 18, 20, 6, '#6b4429'); ell(g, LP.x - 9, LP.y - 15, 3, 3, '#8a6142');
     } });
 
+    out.push({ y: L.backBar.baseY, draw: function (g) { SCENE.drawCoffeeStation(g, world); } });
     // the counter itself
     out.push({ y: C.baseY, draw: function (g) { drawCounter(g, world); } });
 
