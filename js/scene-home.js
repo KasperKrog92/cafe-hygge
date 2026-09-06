@@ -53,10 +53,12 @@
         if(p.stage==='installed') return; // normal furniture renderer + real seats
         draws.push({y:a.y+32,draw:g=>{
           const x=a.x,y=a.y;
-          ell(g,x,y+28,34,8,'rgba(20,12,8,.18)');
           if(p.stage==='scheduled') return;
           if(p.stage==='arrived' && !carried) { box(g,x,y+20,false); return; }
           if(p.stage!=='working') return;
+          // The reserved site casts nothing. The carton has its own shadow;
+          // the table's broad shadow belongs to its assembled pedestal/top.
+          if(p.step>=2) ell(g,x,y+28,34,8,'rgba(20,12,8,.18)');
           // Parts stay within the final set's reserved floor area.
           if(p.step<2) {
             box(g,x-16,y+22,true);

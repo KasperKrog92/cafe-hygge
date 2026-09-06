@@ -632,6 +632,9 @@ that envelope, away from the main lane. Completed art uses the ordinary dining
 table/chair/stool renderer and is derived from the same state as usable seats.
 The intermediate renderer in `scene-home.js` shows the carton, loose wood,
 pedestal/top and assembled seats; a cloth and screwdriver rest during pauses.
+The empty reserved site casts no shadow while scheduled or being carried in.
+The carton uses its own contact shadow; the broad table shadow appears only
+with the assembled pedestal/top, from the fitting phase onward.
 
 `L.projects.fireplace` puts the supplies at (390,246) and Nora at (390,274).
 Her new kneeling pose keeps one knee down and one foot planted while the brush
