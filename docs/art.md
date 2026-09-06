@@ -405,8 +405,6 @@ and a faint radius-18 glow scaled by darkness. The screen faces its sitter;
 The keyboard sits near the table edge. Working arms draw with the tabletop
 after the props, while bodies retain their seated baseline behind the table.
 Cups sit nine pixels forward beside a laptop; their steam uses the same offset.
-Near-side drinks render after the laptop and typing hands, independent of item
-insertion order, so the overlap matches their position on the tabletop.
 These near-plane drinks draw after the laptop and typing hands, regardless of
 the order in which the items were placed on the table.
 
