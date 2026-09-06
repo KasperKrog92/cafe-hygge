@@ -24,7 +24,19 @@
   const L = (SCENE.L = {
     W: W, H: H,
     home: {
-      wallY: 266, lane: 430,
+      wallY: 266, floorBottom: 550, lane: 430,
+      // Low cutaway partitions keep the existing evening lane visible behind
+      // the utility rooms. Door gaps open onto that lane; fixtures stay inside.
+      kitchen: {
+        x: 128, y: 454, w: 226, h: 96, doorX: 258, doorW: 42,
+        counter: { x: 144, y: 496, w: 106 }, fridge: { x: 309, y: 516 },
+        box: { x: 276, y: 532 }
+      },
+      bathroom: {
+        x: 354, y: 454, w: 194, h: 96, doorX: 424, doorW: 40,
+        basin: { x: 379, y: 491 }, toilet: { x: 424, y: 524 },
+        shower: { x: 478, y: 464, w: 54, h: 62 }
+      },
       door: { x: 180, y: 164, w: 54, h: 102 },
       entry: { x: 207, y: 294 }, bag: { x: 258, y: 310 },
       desk: { x: 366, y: 294 }, deskSeat: { x: 370, y: 325 },

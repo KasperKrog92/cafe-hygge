@@ -42,18 +42,113 @@
     }});
     return draws;
   };
+  function utilityRoom(g,r,bath) {
+    // The foreground rooms are cut away at low wall height, including their
+    // rear partitions: Nora and the cat remain visible on the lane behind.
+    px(g,r.x,r.y,r.w,r.h,bath?'#9aa79e':'#b5ada0');
+    for(let y=r.y;y<r.y+r.h;y+=16) {
+      px(g,r.x,y,r.w,2,bath?'#84958e':'#a19888');
+      for(let x=r.x;x<r.x+r.w;x+=24) px(g,x,y,2,16,bath?'#84958e':'#a19888');
+    }
+    const end=r.x+r.w, gap=r.doorX+r.doorW;
+    [[r.x,r.doorX-r.x],[gap,end-gap]].forEach(a=>{
+      px(g,a[0],r.y-12,a[1],17,'#b5a18a');
+      px(g,a[0],r.y-16,a[1],4,'#e8dfc9');
+      px(g,a[0],r.y+3,a[1],3,'#825638');
+      px(g,a[0],r.y+6,a[1],4,'rgba(20,12,8,.12)');
+    });
+    px(g,r.doorX,r.y,r.doorW,4,'#c08a58');
+    px(g,r.x,r.y-12,8,r.h+12,'#b5a18a');
+    px(g,r.x,r.y-16,4,r.h+16,'#e8dfc9');
+    px(g,end-8,r.y-12,8,r.h+12,'#b5a18a');
+    px(g,end-8,r.y-16,4,r.h+16,'#e8dfc9');
+  }
+  function kitchenDrawables(draws) {
+    const k=H.kitchen, c=k.counter, f=k.fridge;
+    draws.push({y:c.y,draw:g=>{
+      ell(g,c.x+c.w/2,c.y+2,c.w/2+3,6,'rgba(20,12,8,.22)');
+      px(g,c.x,c.y-28,c.w,26,'#b5a18a');
+      px(g,c.x,c.y-4,c.w,4,'#5a3d28');
+      px(g,c.x+3,c.y-26,47,21,'#c7c0a9');
+      px(g,c.x+22,c.y-23,10,2,'#825638');
+      px(g,c.x+55,c.y-26,48,22,'#64706d');
+      px(g,c.x+61,c.y-19,35,12,'#353b40');
+      px(g,c.x+64,c.y-17,29,3,'#4c5d61');
+      px(g,c.x+61,c.y-24,4,2,'#d9d2c0'); px(g,c.x+91,c.y-24,4,2,'#d9d2c0');
+      px(g,c.x-2,c.y-40,c.w+4,12,'#d9d2c0');
+      px(g,c.x-2,c.y-28,c.w+4,4,'#a19888');
+      // One sink, a two-ring hob and a single unpacked mug.
+      px(g,c.x+7,c.y-38,35,9,'#84958e'); px(g,c.x+10,c.y-36,29,5,'#647b83');
+      px(g,c.x+22,c.y-47,3,12,'#b8bfc7'); px(g,c.x+22,c.y-49,11,3,'#d3d9de');
+      px(g,c.x+31,c.y-47,3,4,'#b8bfc7');
+      px(g,c.x+56,c.y-39,43,10,'#3c414d');
+      ell(g,c.x+66,c.y-34,6,3,'#84958e'); ell(g,c.x+87,c.y-34,6,3,'#84958e');
+      ell(g,c.x+66,c.y-34,3,1,'#3c414d'); ell(g,c.x+87,c.y-34,3,1,'#3c414d');
+      px(g,c.x+45,c.y-45,6,7,'#e8dfc9'); px(g,c.x+50,c.y-44,3,4,'#e8dfc9');
+      px(g,c.x+5,c.y-27,12,17,'#7a89a5'); px(g,c.x+8,c.y-26,2,14,'#94a1b4');
+    }});
+    draws.push({y:f.y,draw:g=>{
+      ell(g,f.x+15,f.y+2,21,5,'rgba(20,12,8,.22)');
+      px(g,f.x,f.y-57,34,55,'#d9d2c0'); px(g,f.x+28,f.y-57,6,55,'#b5ada0');
+      px(g,f.x,f.y-62,34,5,'#f5efdf'); px(g,f.x+2,f.y-56,24,16,'#e8dfc9');
+      px(g,f.x,f.y-39,28,2,'#a19888');
+      px(g,f.x+4,f.y-47,3,6,'#64706d'); px(g,f.x+4,f.y-33,3,11,'#64706d');
+      px(g,f.x+3,f.y-2,4,3,'#4a3222'); px(g,f.x+25,f.y-2,4,3,'#4a3222');
+    }});
+    draws.push({y:k.box.y,draw:g=>{
+      box(g,k.box.x,k.box.y,true);
+      px(g,k.box.x-7,k.box.y-27,14,3,'#e8dfc9');
+      px(g,k.box.x-5,k.box.y-30,10,3,'#d9d2c0');
+    }});
+  }
+  function bathroomDrawables(draws) {
+    const b=H.bathroom, s=b.basin, t=b.toilet, sh=b.shower;
+    draws.push({y:s.y,draw:g=>{
+      ell(g,s.x+10,s.y,17,4,'rgba(20,12,8,.22)');
+      px(g,s.x+6,s.y-22,9,22,'#d9d2c0'); px(g,s.x+8,s.y-21,4,20,'#b5ada0');
+      px(g,s.x-5,s.y-30,31,8,'#f5efdf'); px(g,s.x-2,s.y-22,25,4,'#d9d2c0');
+      ell(g,s.x+10,s.y-26,11,3,'#84958e');
+      px(g,s.x+9,s.y-37,3,10,'#b8bfc7'); px(g,s.x+9,s.y-39,8,3,'#d3d9de');
+    }});
+    draws.push({y:t.y,draw:g=>{
+      ell(g,t.x,t.y,17,5,'rgba(20,12,8,.22)');
+      px(g,t.x-12,t.y-37,24,17,'#d9d2c0'); px(g,t.x-14,t.y-40,28,4,'#f5efdf');
+      px(g,t.x+5,t.y-35,5,2,'#b8bfc7');
+      px(g,t.x-7,t.y-17,14,16,'#d9d2c0');
+      ell(g,t.x,t.y-15,14,10,'#e8dfc9'); ell(g,t.x,t.y-19,14,8,'#f5efdf');
+      ell(g,t.x,t.y-20,9,5,'#84958e'); ell(g,t.x,t.y-19,6,3,'#647b83');
+    }});
+    draws.push({y:sh.y+sh.h,draw:g=>{
+      px(g,sh.x-2,sh.y+sh.h,sh.w+4,4,'rgba(20,12,8,.18)');
+      px(g,sh.x,sh.y,sh.w,sh.h,'#e8dfc9');
+      px(g,sh.x+4,sh.y+4,sh.w-8,sh.h-10,'#b5ada0');
+      px(g,sh.x+6,sh.y+6,sh.w-12,sh.h-14,'#c7c0b4');
+      px(g,sh.x+sh.w-15,sh.y+sh.h-19,6,4,'#84958e');
+      px(g,sh.x,sh.y+sh.h-5,sh.w,5,'#d9d2c0');
+      // Exposed shower pipe and a curtain bunched against the outside wall.
+      px(g,sh.x+sh.w-10,sh.y-10,3,38,'#b8bfc7');
+      px(g,sh.x+sh.w-21,sh.y-12,14,3,'#d3d9de');
+      px(g,sh.x+sh.w-24,sh.y-10,9,4,'#b8bfc7');
+      px(g,sh.x+sh.w-15,sh.y+23,12,3,'#647b83');
+      px(g,sh.x+sh.w-3,sh.y-12,3,sh.h+10,'#b8bfc7');
+      px(g,sh.x+sh.w-10,sh.y-6,9,sh.h-2,'#7a89a5');
+      px(g,sh.x+sh.w-7,sh.y-4,2,sh.h-6,'#94a1b4');
+      px(g,sh.x+sh.w-10,sh.y+20,9,3,'#d9d2c0');
+    }});
+  }
   SCENE.drawHome = function(g,w) {
     px(g,0,0,960,600,'#29242b');
     px(g,128,70,704,H.wallY-70,'#b5a18a');
     px(g,128,70,704,8,'#6e4a33');
-    px(g,128,H.wallY,704,260,'#9c6b43');
-    for(let y=H.wallY;y<526;y+=20) {
+    px(g,128,H.wallY,704,H.floorBottom-H.wallY,'#9c6b43');
+    for(let y=H.wallY;y<H.floorBottom;y+=20) {
       px(g,128,y,704,2,'#7d5334');
       for(let x=128+(y%40?55:0);x<832;x+=110) {
-        px(g,x,y,2,20,'#825638'); px(g,x+12,y+11,36,1,'#a8764a');
+        px(g,x,y,2,Math.min(20,H.floorBottom-y),'#825638');
+        if(y+11<H.floorBottom) px(g,x+12,y+11,36,1,'#a8764a');
       }
     }
-    px(g,128,H.wallY-8,704,8,'#6e4a33'); px(g,128,526,704,8,'#4a3222');
+    px(g,128,H.wallY-8,704,8,'#6e4a33'); px(g,128,H.floorBottom,704,8,'#4a3222');
     // Quiet architecture frames an intentionally unfilled room.
     const d=H.door, win=H.window;
     px(g,d.x-5,d.y-5,d.w+10,d.h+5,'#6e4a33'); px(g,d.x,d.y,d.w,d.h,'#825638');
@@ -76,7 +171,14 @@
     px(g,win.x+62,win.y,4,win.h,'#6e4a33'); px(g,win.x,win.y+57,win.w,4,'#6e4a33');
     px(g,win.x-10,win.y+win.h,win.w+20,7,'#c08a58');
     ell(g,420,347,115,33,'rgba(232,176,74,.09)');
+    utilityRoom(g,H.kitchen,false); utilityRoom(g,H.bathroom,true);
     const draws=[];
+    kitchenDrawables(draws); bathroomDrawables(draws);
+    [H.kitchen,H.bathroom].forEach(r=>draws.push({y:r.y+r.h,draw:g=>{
+      px(g,r.x,r.y+r.h-8,r.w,8,'#b5a18a');
+      px(g,r.x,r.y+r.h-12,r.w,4,'#e8dfc9');
+      px(g,r.x,r.y+r.h,r.w,4,'#6e4a33');
+    }}));
     H.boxes.forEach((b,i)=>draws.push({y:b.y,draw:g=>box(g,b.x,b.y,i===4)}));
     draws.push({y:H.bag.y,draw:g=>{
       ell(g,H.bag.x,H.bag.y+1,15,4,'rgba(20,12,8,.22)');

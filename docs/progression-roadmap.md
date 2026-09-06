@@ -198,7 +198,7 @@ a particular milestone. Purchases, unpacking and remembered moments add to it.
 
 | State | Visible room | Autonomous evening life |
 | --- | --- | --- |
-| H0 — Just moved in | Bed, basic desk and chair, PC, reading light, suitcase, lots of moving boxes and one accessible book. Sparse furnishings but comfortable, with clear walking routes. | Arrive, put away coat/bag, use PC, read on bed, wind down and sleep; the cat wanders and investigates boxes. |
+| H0 — Just moved in | Bed, basic desk and chair, PC, reading light, suitcase, lots of moving boxes and one accessible book. Small kitchen and bathroom in the bottom left, with basic fixtures and an open dishes box. Sparse furnishings but comfortable, with clear walking routes. | Arrive, put away coat/bag, use PC, read on bed, wind down and sleep; the cat wanders and investigates boxes. The utility rooms are scenery for now. |
 | H1 — Unpacking | Moving boxes gradually opened, emptied and folded away over several days; folded clothes, personal books and a mug find their places. | Short unpacking sessions mixed with evening activities; the cat explores the changing room and remaining boxes. |
 | H2 — Making it comfortable | Optional rug, curtains, bedside table and plant. | Arrange purchases, water plant and enjoy softer evening lighting. |
 | H3 — A place to linger | Small bookcase and reading chair, more books and a personal wall picture. | Choose between desk, bed and reading corner; occasionally rearrange books. |
