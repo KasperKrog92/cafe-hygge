@@ -1483,7 +1483,7 @@
   }
 
   function shopRoute(world, kind, index) {
-    if (kind === 'table' || kind === 'cakes') return busRoute(world, index);
+    if (kind === 'table') return busRoute(world, index);
     if (kind === 'curtain') return busRoute(world, L.tables.length + L.library.sideTables.length + index);
     if (kind === 'hearth') return fireTendRoute();
     if (kind === 'bowls' || kind === 'cat' || kind === 'putCat') return refillRoute();
@@ -1498,8 +1498,7 @@
   function shopTasks(world, opening) {
     if (opening) return [{ kind: 'lights' }, { kind: 'putCat' }, { kind: 'bowls' },
       { kind: 'curtain', index: 0 }, { kind: 'hearth' }, { kind: 'curtain', index: 1 },
-      { kind: 'stock' }, { kind: 'welcome' }]
-      .concat(L.tables.map(function (_, i) { return { kind: 'cakes', index: i }; }));
+      { kind: 'stock' }, { kind: 'welcome' }];
     return [{ kind: 'greet' }, { kind: 'wipe' }, { kind: 'wait' }]
       .concat(world.tables.map(function (_, i) { return { kind: 'table', index: i }; }))
       .concat([{ kind: 'stock' }, { kind: 'curtain', index: 0 }, { kind: 'curtain', index: 1 },
@@ -1583,13 +1582,13 @@
       if (task.kind === 'table') {
         const tb = world.tables[task.index];
         tb.items = tb.items.filter(function (it) { return it.owner !== null; });
-        tb.candle = tb.candleTarget = 0; tb.cake = false; SND.swish();
+        tb.candle = tb.candleTarget = 0; SND.swish();
       } else if (task.kind === 'putCat') {
         s.carryingCat = false; cat.x = b.x; cat.y = b.y;
         cat.surface = 'floor'; cat.state = 'sit'; cat.stateT = 2; cat.path = null;
         cat.target = { id: 'free', x: cat.x, y: cat.y, kind: 'floor' };
         b.holding = null;
-      } else if (task.kind === 'cakes') { world.tables[task.index].cake = true; SND.cupDown(); }
+      }
       else if (task.kind === 'stock') { s.stocked = opening; SND.clink(0.5, 0.025); }
       else if (task.kind === 'lights') s.lights = opening ? 1 : 0;
       else if (task.kind === 'hearth') {
@@ -1624,7 +1623,7 @@
           }
           s.step++;
           s.task = { kind: next.kind, index: next.index, time: 0, route: route };
-          b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : next.kind === 'cakes' ? 'plate' : null;
+          b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : null;
         }
       }
       return true;
@@ -1648,7 +1647,7 @@
     if (b.state !== 'idle' || b.orders.length || world.queue.length) return false;
     s.task = { kind: next.kind, index: next.index, time: 0, route: shopRoute(world, next.kind, next.index) };
     b.state = 'shop'; b.path = s.task.route.slice(); b.pose = 'stand';
-    b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : next.kind === 'cakes' ? 'plate' : null;
+    b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : null;
     return true;
   }
 

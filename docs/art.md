@@ -7,8 +7,7 @@ The existing red curtains now draw across each window independently from
 seam. Curtain state also attenuates the corresponding incident daylight pool.
 `SCENE.lampLevel(world)` applies the interior switch without changing the
 street's lighting. Lamp glows disappear when Nora turns the switch off.
-The pastry-case shelves empty during closing and refill during opening;
-covered cakes appear on dining tables as Nora visits each one.
+The counter pastry-case shelves empty during closing and refill during opening.
 
 Nora carries the existing sleeping-cat sprite in the same depth-sorted
 drawable as her body, with hands beneath it and no floating contact shadow.

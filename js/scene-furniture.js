@@ -110,14 +110,6 @@
           if (!it.hidden && offset) drawTableItem(g, cx, cy + offset, it);
         });
         // candle jar stays visible while its flame follows the ritual state
-        if (tb.cake) {
-          ell(g, cx + 13, cy - 4, 8, 3, '#e8dfc9');
-          px(g, cx + 7, cy - 11, 12, 6, '#c98f4a');
-          px(g, cx + 7, cy - 11, 12, 2, '#f0e0c8');
-          px(g, cx + 11, cy - 13, 3, 2, '#a94f3f');
-          ell(g, cx + 13, cy - 10, 9, 8, 'rgba(210,225,235,0.16)');
-          px(g, cx + 12, cy - 20, 3, 2, '#c9a04a');
-        }
         px(g, cx - 4, cy - 14, 8, 8, '#c9b28a');
         px(g, cx - 3, cy - 12, 6, 3, '#f0e0c8');
         if (tb.candle > 0.3) {

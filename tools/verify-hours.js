@@ -26,7 +26,7 @@
       __dev.arc('gerda-scarf', { ready: true });
       const arcBefore = JSON.stringify(w.memory.arcs['gerda-scarf']);
       __dev.hour(21.5);
-      let closed = false, reopened = false, early = false, elapsed = 0;
+      let closed = false, reopened = false, elapsed = 0;
       const phases = [], audits = [];
       const storyBefore = w.memory.arcs['lunafreya-paintings'].progress;
       for (let i = 0; i < 4800; i++) {
@@ -46,7 +46,7 @@
           check(!w.patrons.length && !w.queue.length && !w.counterCups.length && !w.umbrellaStand.length, scenario + ': orphaned service at night');
           check(w.tables.every(function (t) { return !t.items.length && !t.candle && !t.cake; }), scenario + ': untidied table');
         }
-        if (s.phase === 'opening' && w.patrons.length) early = true;
+        if (s.accepting) check(s.stocked && s.curtains.every(function (n) { return n === 0; }), scenario + ': admitted guests before the counter and room were ready');
         if (scenario === 'busy') {
           const key = s.phase === 'closing' && s.carryingCat ? 'carrying' :
             s.phase === 'closing' && s.curtains[0] > 0 && s.curtains[0] < 1 ? 'curtains' :
@@ -57,13 +57,13 @@
         if (closed && s.phase === 'open') { reopened = true; break; }
       }
       check(reopened, scenario + ': did not reopen');
-      check(early, scenario + ': no guests during opening');
+      check(w.shop.accepting && w.shop.stocked, scenario + ': counter not ready for guests');
       check(JSON.stringify(w.memory.arcs['gerda-scarf']) === arcBefore, scenario + ': pending story changed');
       const progress = w.memory.arcs['lunafreya-paintings'].progress - storyBefore;
       check(Math.abs(progress - elapsed / SIM._.DAY_SECONDS) < 0.00001, scenario + ': skipped hours advanced story');
       check(!audits.length, scenario + ': ' + audits.join('; '));
-      check(w.tables.slice(0, SCENE.L.tables.length).every(function (t) { return t.cake; }), scenario + ': missing morning cakes');
-      results.push({ scenario: scenario, seconds: elapsed, phases: phases, earlyGuests: early, auditProblems: audits.length });
+      check(w.tables.every(function (t) { return !t.cake; }), scenario + ': unexpected table cakes');
+      results.push({ scenario: scenario, seconds: elapsed, phases: phases, auditProblems: audits.length });
     });
     // Natural clock repeats: no dev time jumps between two full overnight runs.
     const w = SIM.create(); window.__world = w; __dev.hour(21.5);

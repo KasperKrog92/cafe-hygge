@@ -498,7 +498,6 @@
     w.clockOffset = 0;
     w.shop = { phase: 'open', elapsed: 0, step: 0, task: null, fade: 0, lights: 1, lastCall: false,
       curtains: [0, 0], stocked: true, accepting: true, carryingCat: false, away: false };
-    w.tables.forEach(function (tb) { tb.cake = false; });
     w.t = 180; w.hour = opts.hour == null ? 12 : Number(opts.hour);
     w.pal = SCENE.dayPalette(w.hour); w.daylight = w.pal.daylight;
     w.rain = w.rainTarget = opts.rain == null ? 0.35 : opts.rain;
@@ -1132,7 +1131,7 @@
       if (morning) {
         w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = []; w.sleeper = null;
         w.seats.forEach(function (s) { s.taken = false; });
-        w.tables.forEach(function (tb) { tb.items = []; tb.cake = false; tb.candle = tb.candleTarget = 0; });
+        w.tables.forEach(function (tb) { tb.items = []; tb.candle = tb.candleTarget = 0; });
         // Boot normally marks a seeded regular as already present today.
         Object.keys(w.regulars).forEach(function (id) { w.regulars[id].lastDay = -1; });
         w.candles.mantel = w.candles.mantelTarget = 0;

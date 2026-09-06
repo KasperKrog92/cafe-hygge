@@ -131,7 +131,7 @@ would benefit from them.
 For the daily shop lifecycle, run `tools/verify-hours.js` through
 `agent-browser --session <disposable-session> eval` on a fresh `?dev` page.
 It exercises empty/busy evenings, laptop/book/umbrella departures, cat perches,
-early arrivals, pending-story preservation and two consecutive natural nights.
+opening admissions, pending-story preservation and two consecutive natural nights.
 It checks invariants during the journeys, not just after reopening, and leaves
 PNG captures in `window.hoursFrames` for inspection/export. The normal
 `art-review.ps1 -Verify` still checks the ten repeatable scenes and eight

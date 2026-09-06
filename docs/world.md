@@ -17,9 +17,9 @@ with the cat and turns on the lamps at the entrance first. She puts the cat
 down by its bowls, refills them, opens the left curtains, tends the hearth,
 then opens the right curtains before reaching the counter to stock the pastry
 case. She works across the room without returning to the till between these
-chores. Guests may enter once the counter is ready; service takes priority
-between placing small covered cakes on the four dining tables. These are shared table decorations, separate
-from guest-owned service items. The shop then returns to its usual routines.
+chores. Cakes belong only in the counter display: Nora puts them away at night
+and refills that display in the morning. Once it is ready, guests may enter
+and the shop returns to its usual routines.
 
 `world.shop` holds the transient phase, current chore and visual state.
 `world.clockOffset` skips the sleeping hours without jumping `world.t`, so
