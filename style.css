@@ -93,6 +93,10 @@ canvas#cafe {
   z-index: 5;
 }
 #savings.visible { opacity: 1; }
+#savings:focus-within { opacity: 1; }
+#add-money { display: flex; padding: 0; border: 0; background: none; color: inherit; border-radius: 3px; }
+#savings.visible #add-money:enabled, #savings:focus-within #add-money:enabled { pointer-events: auto; cursor: pointer; }
+#add-money:enabled:hover { filter: brightness(1.15); }
 .gold-coin { width: 28px; height: 28px; flex-shrink: 0; }
 
 #controls {

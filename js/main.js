@@ -80,6 +80,18 @@
   const controls = document.getElementById('controls');
   const savings = document.getElementById('savings');
   const savingsAmount = document.getElementById('savings-amount');
+  const addMoney = document.getElementById('add-money');
+  if (new URLSearchParams(location.search).has('dev')) {
+    addMoney.disabled = false;
+    addMoney.addEventListener('click', function (e) {
+      if (MEMORY.readOnly || restarting) return;
+      world.memory.life.savings += 100;
+      world.context.memory.save();
+      if (e.detail) addMoney.blur();
+      pokeControls();
+    });
+    savings.addEventListener('focusin', pokeControls);
+  }
   let shownSavings = null;
   const btnMute = document.getElementById('btn-mute');
   const btnSettings = document.getElementById('btn-settings');

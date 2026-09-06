@@ -35,6 +35,11 @@ same session; it does not need a separate branch by default.
 
 ## Verification commands
 
+With `?dev`, click the upper-right gold coin to add 100 to the current saved
+balance. Repeat clicks add another 100 each; the balance persists on reload.
+The coin can also be focused and activated with the keyboard. Ordinary URLs
+keep the coin decorative and cannot add money.
+
 For apartment development, click **apartment (dev)** in the ordinary control
 bar after stepping inside (or call `__dev.home()` in the console). It jumps to
 closing time and fast-forwards the real closing routine into the apartment,
