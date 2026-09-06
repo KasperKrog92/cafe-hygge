@@ -68,7 +68,7 @@ architecture textures, retuned atmosphere and real typography.
 - **The café ruler** (tuned values; ratios between neighbors matter more than
   absolutes): door 102 h (1.7 CH), window glass 176×140, fireplace brickwork 120 h
   with a plastered chimney continuing to the ceiling (firebox 48), counter 42 total (slab 14 + front 28), menu board 116×100,
-  floor lamp 68, coat stand ~70, table top at ~32 above the floor (Ø 64),
+  floor lamp 68, entrance screen 42, table top at ~32 above the floor (Ø 64),
   stool seat at ~18, armchair ~70, bookshelf 120 (2 CH, plus crown), nook
   side-table top ~26, window-perch cushions 24, window poseur tables ~52 to
   the top (tall on purpose: the top must meet the sill so a perched sitter
@@ -89,7 +89,7 @@ architecture textures, retuned atmosphere and real typography.
   crown now shows a 6 px top; the piano keeps a narrower 3 px lid plane
   appropriate to its side profile and existing cat anchor.
 - **Grounding shadows.** Every floor-standing thing (tables, seats, armchair,
-  lamp, coat stand, umbrella crock, plants, baskets — and every character) gets a soft
+  lamp, entrance screen, umbrella crock, plants, baskets — and every character) gets a soft
   `rgba(20,12,8,~0.2)` contact ellipse. Furniture without one looks unmoored.
 - **Warm limited palette.** Woods and creams dominate; color accents come from
   clothing, the red armchair, plants, and pastry pinks. Reuse existing hexes
@@ -207,15 +207,17 @@ y=232 ── wall meets floor (L.wallY — kept high so the floor, the life laye
           approach open. Each carries its own sitter's cup or pastry plate;
           on dining and side tables, candle jars and flames draw before the
           serving items, so drinks and plates overlap them in front;
-          under window 1, `L.catCorner` holds a worn red cushion plus
-          terracotta food and blue-grey water bowls (quantized visible levels)
+          under window 1, `L.catCorner` gathers a red cushion in a wicker bed
+          and terracotta food / blue-grey water bowls on a woven pad
+          (quantized visible levels)
 y=368 ── the walking lane (L.lane — keep this corridor clear
           between the wall furniture and the tables)
           four round tables (L.tables, tagged "by the window" / "near the
           fire"); each seats two at ±L.stoolDX facing inward — chair (with
           back) on the left, stool on the right; a candle jar on every
-          table; coat stand and slatted umbrella crock by the door
-          (L.coatStand / L.umbrellaStand), a woven coir doormat across the
+          table; a low timber entrance screen with brass pegs and a scarf,
+          and a sage ceramic umbrella crock by the door
+          (L.entranceScreen / L.umbrellaStand), a woven coir doormat across the
           threshold (L.doormat, centred on doorSpot — damp arrivals wipe their
           shoes on it; darkens with world.rain), plants at the
           counter's ends (L.plants), rugs
@@ -582,3 +584,19 @@ and its SIL Open Font License live in `assets/fonts/`; no external font service
 is contacted. The caption cache rebuilds after the font loads so a temporary
 fallback never remains cached. Chunky, blocky shapes retain ordinary
 uppercase/lowercase and Danish letters, with 26 px line spacing.
+
+## Entrance bay — 6 September 2026
+
+A side-on, 42 px timber screen separates the door aisle from the cat corner.
+Its receding cap, recessed near post, brass pegs and hanging sage scarf replace
+the tall freestanding coat stand. Two-pixel slices sort by their own floor
+baselines; four conservative footprint boxes derive from `L.entranceScreen`
+and keep the real routes clear, including the cat's bowl approach. The screen
+is lower than a standing character and does not need a full-height occluder.
+
+The umbrella stand keeps its real drop-off/pickup position and live contents,
+inside a smaller sage ceramic crock. The cat's existing cushion and bowls stay
+at their established anchors, gathered on one muted woven pad; a wicker rim
+locates the red cushion. The door retains its hinged animation, with recessed
+lower panels, a brass lever and a beveled frame/threshold. No save or simulation
+state changes are part of this art pass.

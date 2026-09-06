@@ -146,20 +146,39 @@
     // the bookshelf — spines thin out while borrowed books are on loan
     out.push({ y: L.library.shelf.y, draw: function (g) { drawBookshelf(g, world); } });
 
-    // coat stand just inside the door
-    const CS = L.coatStand;
-    out.push({ y: CS.y, draw: function (g) {
-      ell(g, CS.x, CS.y - 2, 12, 4, SHADOW);
-      px(g, CS.x - 2, CS.y - 62, 4, 58, '#5a3d28');
-      px(g, CS.x - 10, CS.y - 56, 20, 4, '#5a3d28');
-      px(g, CS.x - 12, CS.y - 72, 16, 10, '#6b5a3a');
-      px(g, CS.x - 10, CS.y - 74, 12, 4, '#7d6a45');
-      px(g, CS.x + 4, CS.y - 50, 7, 26, '#a94f3f');
-      px(g, CS.x + 6, CS.y - 24, 5, 8, '#8f4035');
-      px(g, CS.x - 10, CS.y - 4, 20, 4, '#4a3222');
+    // A low paneled screen replaces the freestanding hat/scarf silhouette.
+    // Two-pixel floor slices let a walker pass either end at the right depth.
+    const E = L.entranceScreen;
+    for (let sy = 0; sy < E.depth; sy += 2) {
+      const sx = E.x + Math.floor(E.dx * sy / E.depth), base = E.y + sy + 2;
+      out.push({ y: base, draw: function (g) {
+        px(g, sx - 2, base, E.w + 6, 2, SHADOW);
+        px(g, sx, base - E.h, E.w, E.h, '#6e4c30');
+        px(g, sx, base - E.h + 7, 2, E.h - 14, '#8a6142');
+        px(g, sx, base - 5, E.w, 5, '#5a3d28');
+        px(g, sx - 2, base - E.h - 2, E.w + 4, 3, '#b18a5c');
+        px(g, sx - 2, base - E.h + 1, 2, 3, '#94684a');
+        if (sy === 20 || sy === 40) {
+          px(g, sx - 4, base - E.h + 10, 4, 2, '#b5832a');
+          px(g, sx - 4, base - E.h + 7, 2, 3, '#d9a33c');
+          if (sy === 20) {
+            px(g, sx - 7, base - E.h + 12, 5, 20, '#657568');
+            px(g, sx - 7, base - E.h + 14, 2, 14, '#829080');
+            px(g, sx - 6, base - E.h + 31, 4, 3, '#4d6052');
+          }
+        }
+      } });
+    }
+    out.push({ y: E.y + E.depth + 1, draw: function (g) {
+      const x = E.x + E.dx, y = E.y + E.depth;
+      // Near end post and recessed panel, with a broad, visible cap.
+      px(g, x - 2, y - E.h, E.w + 2, E.h, '#7d5334');
+      px(g, x, y - E.h + 6, 4, E.h - 12, '#5a3d28');
+      px(g, x - 4, y - E.h - 4, E.w + 6, 4, '#b18a5c');
+      px(g, x - 2, y - 4, E.w + 2, 4, '#4a3222');
     } });
 
-    // A small slatted crock for rainy arrivals. The state is intentionally
+    // A small glazed crock for rainy arrivals. The state is intentionally
     // only the umbrellas currently visible in the room, never inventory UI.
     const US = L.umbrellaStand;
     out.push({ y: US.y, draw: function (g) {
@@ -173,12 +192,12 @@
         px(g, ux, top - 3, 5, 2, '#3a2a1c');
         px(g, ux + 3, top - 2, 2, 4, '#3a2a1c');
       });
-      px(g, US.x - 9, US.y - 20, 18, 18, '#6b4529');
-      px(g, US.x - 11, US.y - 21, 22, 4, '#8a6142');
-      px(g, US.x - 6, US.y - 18, 2, 14, '#4a3222');
-      px(g, US.x - 1, US.y - 18, 2, 14, '#4a3222');
-      px(g, US.x + 4, US.y - 18, 2, 14, '#4a3222');
-      px(g, US.x - 9, US.y - 5, 18, 3, '#4a3222');
+      px(g, US.x - 8, US.y - 17, 16, 14, '#657568');
+      px(g, US.x - 6, US.y - 15, 3, 10, '#829080');
+      px(g, US.x + 5, US.y - 15, 3, 12, '#4d6052');
+      ell(g, US.x, US.y - 18, 9, 3, '#829080');
+      ell(g, US.x, US.y - 18, 6, 2, '#3a4036');
+      px(g, US.x - 6, US.y - 3, 12, 2, '#4d6052');
     } });
 
     // potted plants anchoring the counter: one against the wall at its left
@@ -660,8 +679,11 @@
   function drawCatCushion(g) {
     const C = L.catCorner.cushion;
     ell(g, C.x, C.y, 22, 6, 'rgba(20,12,8,0.2)');
-    ell(g, C.x, C.y - 3, 22, 8, '#8f4035');
-    ell(g, C.x, C.y - 5, 19, 6, '#a94f3f');
+    ell(g, C.x, C.y - 3, 22, 8, '#8a6142');
+    ell(g, C.x, C.y - 4, 21, 7, '#b18a5c');
+    ell(g, C.x, C.y - 5, 18, 5, '#a94f3f');
+    for (let bx = -16; bx <= 16; bx += 8)
+      px(g, C.x + bx, C.y, 3, 2, '#8a6142');
     px(g, C.x - 13, C.y - 6, 6, 2, '#7a3535');
     px(g, C.x + 8, C.y - 4, 5, 2, '#7a3535');
     px(g, C.x - 2, C.y - 3, 4, 2, 'rgba(90,35,30,0.35)');

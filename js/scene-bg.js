@@ -40,6 +40,12 @@
     drawDoor(g, world);
     drawLunafreyaGallery(g, world);
     drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
+    // A single quiet woven pad gathers the cat's bed and bowls on the room
+    // side of the entrance screen; all interaction anchors remain visible.
+    const cc = L.catCorner;
+    px(g, cc.cushion.x - 24, cc.cushion.y - 10, 50, 35, '#8a7958');
+    px(g, cc.cushion.x - 22, cc.cushion.y - 8, 46, 31, '#9b8965');
+    px(g, cc.cushion.x - 20, cc.cushion.y + 20, 42, 2, '#b19b73');
     L.pendants.forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
   };
@@ -456,6 +462,9 @@
     g.fillRect(d.x - 6, d.y - 6, d.w + 12, 6);
     g.fillRect(d.x - 6, d.y, 6, d.h + 6);
     g.fillRect(d.x + d.w, d.y, 6, d.h + 6);
+    px(g, d.x - 4, d.y - 4, d.w + 8, 2, '#94684a');
+    px(g, d.x - 4, d.y, 2, d.h, '#7d5334');
+    px(g, d.x - 2, d.y + d.h, d.w + 4, 3, '#b18a5c');
     // dark opening behind
     px(g, d.x, d.y, d.w, d.h, '#15100b');
     // Rotate the leaf continuously about its left hinge, rasterized first so
@@ -470,7 +479,14 @@
       g = doorLeaf.getContext('2d'); g.clearRect(d.x, d.y, d.w, d.h);
       // closed leaf
       px(g, d.x, d.y, d.w, d.h, '#6b4a30');
-      for (let i = 12; i < d.w - 4; i += 14) px(g, d.x + i, d.y + 4, 2, d.h - 8, '#5a3d26');
+      px(g, d.x + 2, d.y + 2, d.w - 4, 2, '#8a6142');
+      // Two recessed lower panels read as joinery rather than loose planks.
+      [8, 28].forEach(function (dx) {
+        px(g, d.x + dx, d.y + 50, 16, 42, '#4a3020');
+        px(g, d.x + dx + 2, d.y + 52, 14, 40, '#7d5334');
+        px(g, d.x + dx + 2, d.y + 52, 12, 2, '#5a3d26');
+        px(g, d.x + dx + 2, d.y + 90, 14, 2, '#94684a');
+      });
       // little window in the door showing the sky
       px(g, d.x + 8, d.y + 12, d.w - 16, 30, world.pal.skyBot);
       if (world.flash > 0) {
@@ -481,7 +497,8 @@
       px(g, d.x + 8, d.y + 25, d.w - 16, 4, '#4a3020');
       g.strokeStyle = '#4a3020'; g.lineWidth = 3;
       g.strokeRect(d.x + 8, d.y + 12, d.w - 16, 30);
-      px(g, d.x + d.w - 10, d.y + 54, 4, 9, '#d9a33c'); // handle
+      px(g, d.x + d.w - 8, d.y + 53, 4, 12, '#b5832a');
+      px(g, d.x + d.w - 10, d.y + 56, 6, 3, '#d9a33c'); // brass lever
     }
     g = room;
     const width = Math.max(10, Math.round(d.w * Math.cos(Math.max(0, Math.min(1, world.door.open)) * 1.38)));

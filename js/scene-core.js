@@ -112,7 +112,9 @@
       { x: 216, y: 222, base: 274 },
       { x: 536, y: 222, base: 274 }
     ],
-    coatStand: { x: 96, y: 298 },
+    // Low side-on timber screen: its near end shelters the cat corner from
+    // the entrance aisle. Slices share the floor planner and painter baselines.
+    entranceScreen: { x: 84, y: 234, dx: 14, depth: 58, w: 8, h: 42 },
     umbrellaStand: { x: 74, y: 296 },
     umbrellaSpot: { x: 74, y: 312 },
     patronRoutes: {
@@ -317,8 +319,17 @@
   L.winTables.forEach(function (t, i) {
     L.footprints.push({ name: 'window table ' + i, x0: t.x - 16, x1: t.x + 16, y0: t.base - 8, y1: t.base + 4, passable: true });
   });
-  L.footprints.push({ name: 'coat stand', x0: L.coatStand.x - 12, x1: L.coatStand.x + 10, y0: L.coatStand.y - 6, y1: L.coatStand.y + 2 });
-  L.footprints.push({ name: 'umbrella stand', x0: 66, x1: 82, y0: 288, y1: 298 });
+  for (let sy = 0; sy < L.entranceScreen.depth; sy += 16) {
+    const E = L.entranceScreen, end = Math.min(sy + 16, E.depth);
+    // Four conservative boxes cover the stepped side without adding a
+    // path-planning obstacle for every painted two-pixel slice.
+    L.footprints.push({ name: 'entrance screen ' + sy,
+      x0: E.x + Math.floor(E.dx * sy / E.depth) - 2,
+      x1: E.x + Math.floor(E.dx * end / E.depth) + E.w + 2,
+      y0: E.y + sy, y1: E.y + end });
+  }
+  L.footprints.push({ name: 'umbrella stand', x0: L.umbrellaStand.x - 9, x1: L.umbrellaStand.x + 9,
+    y0: L.umbrellaStand.y - 8, y1: L.umbrellaStand.y + 2 });
   L.footprints.push({ name: 'cat corner', x0: 102, x1: 152, y0: 248, y1: 284, catOnly: true });
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
