@@ -1,5 +1,12 @@
 # Narrative — the design contract for the story layer
 
+> **Planning note (6 September 2026):**
+> [The shared progression roadmap](progression-roadmap.md) proposes purchased
+> improvements that finish autonomously in either idle or game mode. Their
+> practical installation is distinct from a personal story payoff, which still
+> waits for the player. The detailed rules below describe the current narrative
+> implementation; update them alongside that future job system.
+
 The automatic closing/opening ritual is distinct from closing the app.
 Stories accrue only the actual `dt` spent running, including Nora's chores;
 the wall-clock skip from night to morning adds no progress. Ready invitations

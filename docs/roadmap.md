@@ -1,5 +1,13 @@
 # Roadmap
 
+> **New progression direction (6 September 2026):**
+> [One life, two ways to spend time with it](progression-roadmap.md) records the
+> owner's proposed shared idle/game world: autonomous café and apartment life,
+> evening purchases, animated improvements, deliveries and relationships.
+> It contains explicit room stages and an ordered prototype plan. It supersedes
+> this backlog's blanket ban on currencies and upgrades for that direction;
+> patient pacing and no absence penalties remain. These features are not built.
+
 Unordered ideas, roughly grouped, each judged against the one bar that
 matters: *does it make the café cozier or more glanceable?* (overview.md).
 Nothing here is committed; the owner picks what sounds lovely next.
@@ -216,7 +224,7 @@ and branching conversations whose choices *color* a moment. All governed by the
 one rule in [narrative.md](narrative.md): *arcs advance on their own; their
 payoffs never fire on their own, and never expire.*
 
-**Still out, permanently:** scores, currencies, upgrades, and any timer,
+**Still out:** scores and any timer,
 streak, decay, unread count, badge, or notification that *demands* the reader's
 attention, penalizes absence, or makes reading straight through feel like
 missing out. A beat you can lose by being away is out; a beat that waits is in.

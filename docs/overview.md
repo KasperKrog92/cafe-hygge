@@ -1,5 +1,11 @@
 # Overview — what Café Hygge is
 
+> **Scope:** this page describes the current café. The proposed next direction
+> is [shared idle/game progression](progression-roadmap.md): one persistent life,
+> autonomous café and home routines, and optional evening planning. Its purchases
+> and presentation modes revise the no-economy/no-mode assumptions below when
+> implemented; they do not introduce pressure or absence penalties.
+
 Café Hygge is a **soft narrative game that is also a companion app**. It can sit
 in the corner of a screen while its owner reads a physical book — a warm room,
 small lives unfolding, soft sounds, lovely at a glance and whole if you never
