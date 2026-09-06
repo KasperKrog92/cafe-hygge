@@ -13,10 +13,12 @@ carries it to the door, switches off the interior lamps and leaves.
 
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
 one-second dark pause and two-second fade in lead to 07:30. Nora comes back
-with the cat, puts it down, turns on the lamps, opens the curtains and stocks
-the pastry case. Guests may enter once that is ready; service takes priority
-between the remaining chores: fresh firewood, full bowls and small covered
-cakes on the four dining tables. These are shared table decorations, separate
+with the cat and turns on the lamps at the entrance first. She puts the cat
+down by its bowls, refills them, opens the left curtains, tends the hearth,
+then opens the right curtains before reaching the counter to stock the pastry
+case. She works across the room without returning to the till between these
+chores. Guests may enter once the counter is ready; service takes priority
+between placing small covered cakes on the four dining tables. These are shared table decorations, separate
 from guest-owned service items. The shop then returns to its usual routines.
 
 `world.shop` holds the transient phase, current chore and visual state.

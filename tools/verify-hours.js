@@ -32,6 +32,14 @@
       for (let i = 0; i < 4800; i++) {
         SIM.update(w, 0.25); elapsed += 0.25;
         const s = w.shop;
+        if ((s.phase === 'entering' || s.phase === 'opening') && !s.lights) {
+          check(w.barista.x === SCENE.L.doorSpot.x && s.carryingCat,
+            scenario + ': Nora left the entrance or put down the cat before switching on the lights');
+        }
+        if (s.phase === 'opening' && w.barista.x >= SCENE.L.baristaExitX) {
+          check(s.lights === 1 && s.curtains.every(function (n) { return n === 0; }) && !s.carryingCat,
+            scenario + ': Nora visited the counter before finishing the opening round');
+        }
         if (!phases.length || phases[phases.length - 1] !== s.phase) phases.push(s.phase);
         if (s.phase === 'night') {
           closed = true;

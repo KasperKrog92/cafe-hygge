@@ -1486,7 +1486,7 @@
     if (kind === 'table' || kind === 'cakes') return busRoute(world, index);
     if (kind === 'curtain') return busRoute(world, L.tables.length + L.library.sideTables.length + index);
     if (kind === 'hearth') return fireTendRoute();
-    if (kind === 'bowls' || kind === 'cat') return refillRoute();
+    if (kind === 'bowls' || kind === 'cat' || kind === 'putCat') return refillRoute();
     if (kind === 'stock') return [{ x: L.shop.pastry.x, y: L.baristaHome.y }];
     if (kind === 'lights' || kind === 'greet') return [
       { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
@@ -1496,9 +1496,10 @@
   }
 
   function shopTasks(world, opening) {
-    if (opening) return [{ kind: 'lights' }, { kind: 'curtain', index: 0 },
-      { kind: 'curtain', index: 1 }, { kind: 'stock' }, { kind: 'welcome' },
-      { kind: 'hearth' }, { kind: 'bowls' }].concat(L.tables.map(function (_, i) { return { kind: 'cakes', index: i }; }));
+    if (opening) return [{ kind: 'lights' }, { kind: 'putCat' }, { kind: 'bowls' },
+      { kind: 'curtain', index: 0 }, { kind: 'hearth' }, { kind: 'curtain', index: 1 },
+      { kind: 'stock' }, { kind: 'welcome' }]
+      .concat(L.tables.map(function (_, i) { return { kind: 'cakes', index: i }; }));
     return [{ kind: 'greet' }, { kind: 'wipe' }, { kind: 'wait' }]
       .concat(world.tables.map(function (_, i) { return { kind: 'table', index: i }; }))
       .concat([{ kind: 'stock' }, { kind: 'curtain', index: 0 }, { kind: 'curtain', index: 1 },
@@ -1531,7 +1532,9 @@
       if (s.elapsed >= 2) {
         s.phase = 'entering'; s.elapsed = 0; s.away = false;
         b.x = L.doorSpot.x; b.y = L.doorSpot.y; b.pose = 'stand';
-        b.path = [L.entryApproach].concat(shopPath(L.entryApproach, L.catCorner.noraSpot));
+        // The switch is beside the threshold: use the clear entrance column
+        // before joining any of the café's floor routes.
+        b.path = [L.shop.switchSpot];
         R.ringDoor(world);
         caption(world, 'a new morning; Nora brings the cat in from the quiet street.');
       }
@@ -1540,13 +1543,11 @@
     if (s.phase === 'entering') {
       b.animT += dt;
       if (walker(b, dt)) {
-        s.carryingCat = false; cat.x = L.catCorner.noraSpot.x; cat.y = L.catCorner.noraSpot.y;
-        cat.surface = 'floor'; cat.state = 'sit'; cat.stateT = 2; cat.path = null;
-        cat.target = { id: 'free', x: cat.x, y: cat.y, kind: 'floor' };
-        b.holding = null; b.state = 'shop';
+        b.holding = 'cat'; b.state = 'shop';
         s.phase = 'opening'; s.step = 0;
-        s.task = { kind: 'home', returning: true, time: 0 };
-        b.path = refillRoute().slice(0, -1).reverse().concat([L.baristaHome]);
+        // Start working where she is. The ordinary chore continuation will
+        // take her to the cat corner, then across the room toward the counter.
+        s.task = { kind: 'lights', time: 0, route: shopRoute(world, 'lights') };
       }
       return true;
     }
@@ -1583,6 +1584,11 @@
         const tb = world.tables[task.index];
         tb.items = tb.items.filter(function (it) { return it.owner !== null; });
         tb.candle = tb.candleTarget = 0; tb.cake = false; SND.swish();
+      } else if (task.kind === 'putCat') {
+        s.carryingCat = false; cat.x = b.x; cat.y = b.y;
+        cat.surface = 'floor'; cat.state = 'sit'; cat.stateT = 2; cat.path = null;
+        cat.target = { id: 'free', x: cat.x, y: cat.y, kind: 'floor' };
+        b.holding = null;
       } else if (task.kind === 'cakes') { world.tables[task.index].cake = true; SND.cupDown(); }
       else if (task.kind === 'stock') { s.stocked = opening; SND.clink(0.5, 0.025); }
       else if (task.kind === 'lights') s.lights = opening ? 1 : 0;

@@ -19,7 +19,10 @@ Nora collects the cat after the guests leave. A perched cat first descends
 through its existing hop sequence, then walks to her (`shopWalk`). While
 carried, it is rendered asleep in her arms with its saved scarf and no floor
 shadow; its independent behavior pauses. In the morning she sets it down
-near its bowls and its usual routines resume. The cat can be petted again
+near its bowls after switching on the entrance lights; its usual routines resume.
+She fills the bowls while there, then works across the left window, hearth,
+right window and pastry counter. No preliminary trip to the till is needed.
+The cat can be petted again
 once it is on its own feet.
 
 The café's cast: one barista, a rotating pool of patrons, and a cat. All
