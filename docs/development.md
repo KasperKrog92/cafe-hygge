@@ -6,6 +6,12 @@ being changed. The [pre-development audit](predevelopment-audit.md) records the
 6 September baseline and the remaining preparation. Older handoffs and archived
 branches are reference material, not competing specifications.
 
+## Compatibility scope
+
+Desktop browsers are the current target, including Chrome and Safari. Mobile
+compatibility, responsive mobile layouts and mobile verification are deferred
+until the owner explicitly requests them (6 September 2026).
+
 ## One session, one reviewable change
 
 1. Read `git status` and the relevant implementation; preserve unrelated work.

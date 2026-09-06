@@ -50,6 +50,10 @@ milestone on the current café foundation, keeping later ideas out of that slice
 
 ## Running & testing
 
+- **Desktop compatibility only until the owner says otherwise.** Target desktop
+  browsers, including Chrome and Safari. Mobile layouts, mobile friendliness
+  and mobile verification are deferred; do not expand a desktop task into them.
+
 - **Browser cleanup is part of every verification run.** Keep at most one
   project-owned automated browser session active at a time; reuse it for
   related checks and close it before starting a fresh one. Put every ad hoc

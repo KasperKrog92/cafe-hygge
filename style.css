@@ -45,7 +45,7 @@ canvas#cafe {
 .overlay-card .sub {
   margin-top: 0.5rem;
   font-style: italic;
-  opacity: 0.75;
+  opacity: 1;
   font-size: clamp(0.9rem, 2.2vw, 1.1rem);
 }
 #enter {
@@ -62,7 +62,7 @@ canvas#cafe {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 #enter:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(232, 176, 74, 0.5); }
-.overlay-card .hint { margin-top: 1.2rem; font-size: 0.8rem; opacity: 0.45; }
+.overlay-card .hint { margin-top: 1.2rem; font-size: 0.95rem; line-height: 1.5; color: #d7c5a5; }
 
 /* ---- ambient controls ---- */
 #controls {

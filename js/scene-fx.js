@@ -132,36 +132,39 @@
   };
 
   /* ---------- captions ----------
-     Pixel-look without assets: the caption renders once (per text) at 10 px
-     into a small offscreen canvas, gets thresholded to crisp 1-bit glyphs in
-     the caption cream + shadow colors, and is blitted ×2 nearest-neighbour —
-     a 20 px bitmap-style line that matches the art. */
-  let capCache = { text: null, fill: null, back: null, w: 0, h: 0 };
+     Keep normal antialiased letterforms: thresholding a tiny platform font
+     can erase strokes differently across platform fonts. Cache the measured,
+     wrapped text with its quiet backing, independent of the floor lighting. */
+  let capCache = { text: null, canvas: null };
 
   function buildCaption(text) {
-    const fs = 10, baseline = 10, ch = 14, pad = 2;
-    const meas = document.createElement('canvas');
-    let mg = meas.getContext('2d');
-    mg.font = fs + 'px monospace';
-    const cw = Math.ceil(mg.measureText(text).width) + pad * 2;
-    meas.width = cw; meas.height = ch;             // resizing resets the ctx state
-    mg = meas.getContext('2d');
-    mg.font = fs + 'px monospace';
-    mg.fillStyle = '#fff';
-    mg.fillText(text, pad, baseline);
-    const src = mg.getImageData(0, 0, cw, ch).data;
-    const fill = document.createElement('canvas'); fill.width = cw; fill.height = ch;
-    const back = document.createElement('canvas'); back.width = cw; back.height = ch;
-    const fg = fill.getContext('2d'), bg = back.getContext('2d');
-    const fi = fg.createImageData(cw, ch), bi = bg.createImageData(cw, ch);
-    for (let i = 0; i < cw * ch; i++) {
-      if (src[i * 4 + 3] > 100) {
-        fi.data[i * 4] = 240; fi.data[i * 4 + 1] = 225; fi.data[i * 4 + 2] = 195; fi.data[i * 4 + 3] = 255;
-        bi.data[i * 4] = 10; bi.data[i * 4 + 1] = 6; bi.data[i * 4 + 2] = 4; bi.data[i * 4 + 3] = 255;
-      }
-    }
-    fg.putImageData(fi, 0, 0); bg.putImageData(bi, 0, 0);
-    capCache = { text: text, fill: fill, back: back, w: cw, h: ch };
+    const pad = 10, lineHeight = 23, maxWidth = 540;
+    const card = document.createElement('canvas');
+    let g = card.getContext('2d');
+    const font = '17px Arial, Helvetica, sans-serif';
+    g.font = font;
+    const lines = [], words = text.split(/\s+/);
+    let line = '';
+    words.forEach(function (word) {
+      const next = line ? line + ' ' + word : word;
+      if (line && g.measureText(next).width > maxWidth) {
+        lines.push(line); line = word;
+      } else line = next;
+    });
+    if (line) lines.push(line);
+    const width = Math.ceil(Math.max(0, ...lines.map(function (row) { return g.measureText(row).width; })));
+    card.width = width + pad * 2;
+    card.height = lines.length * lineHeight + pad * 2;
+    g = card.getContext('2d');
+    g.fillStyle = 'rgba(20, 16, 14, 0.9)';
+    g.fillRect(0, 0, card.width, card.height);
+    g.font = font;
+    g.textBaseline = 'middle';
+    g.fillStyle = '#f0e1c3';
+    lines.forEach(function (row, i) {
+      g.fillText(row, pad, pad + i * lineHeight + lineHeight / 2);
+    });
+    capCache = { text: text, canvas: card };
   }
 
   SCENE.drawCaption = function (g, world) {
@@ -173,11 +176,10 @@
     let a = 1;
     if (age < 0.4) a = age / 0.4;
     else if (age > dur - 0.8) a = Math.max(0, (dur - age) / 0.8);
-    g.globalAlpha = a * 0.75;
-    g.drawImage(capCache.back, 18, 542, capCache.w * 2, capCache.h * 2);
-    g.globalAlpha = a * 0.95;
-    g.drawImage(capCache.fill, 16, 540, capCache.w * 2, capCache.h * 2);
-    g.globalAlpha = 1;
+    g.save();
+    g.globalAlpha = a;
+    g.drawImage(capCache.canvas, 24, 568 - capCache.canvas.height);
+    g.restore();
   };
 
   /* Compose one full frame of the world into `g` (a 960×600 master context):

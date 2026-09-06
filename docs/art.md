@@ -399,11 +399,12 @@ back-shelf/piano-lid tail that hangs and sways below the board or lid.
   sprig, umbrella, or bamboo whisk). The doodle id invalidates the static
   background cache only when Nora finishes chalking. Glyph set is caps A–Y
   subset + É; extend the map when a new word needs a missing letter.
-- **Captions render as bitmap text**: each caption is drawn once at 10 px
-  into an offscreen canvas, thresholded to crisp 1-bit glyphs in the caption
-  cream (+ dark shadow copy), then blitted ×2 nearest-neighbour — a 20 px
-  pixel-look line with zero font assets. Cached per caption text; fades via
-  `globalAlpha`.
+- **Captions use readable, antialiased text**: 17 px Arial/Helvetica/sans-serif,
+  warm cream on a 90% opaque dark backing, cached per text. No tiny-font
+  thresholding or offset duplicate glyphs. Lines wrap at 540 master pixels;
+  the padded card sits at x=24 with its bottom at y=568, inside desktop crops.
+  The existing caption fade applies to the whole card. The welcome subtitle
+  is fully opaque and its sound hint uses larger, higher-contrast text.
 
 ## Lighting & effects
 

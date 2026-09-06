@@ -262,7 +262,8 @@ meters. Nora restores a low bowl to 1 through her normal dt-driven idle loop.
 
 ## Captions (the narrator)
 
-The single line of text, bottom-left, that makes a glance feel like a story.
+The quiet caption, bottom-left, that makes a glance feel like a story.
+Long captions wrap on a dark backing so the floor cannot obscure the words.
 
 - Pipeline: `caption(world, text)` → `captionQueue` (cap 2) → shown for 4.4 s
   with fade in/out → minimum 6 s gap between captions.
