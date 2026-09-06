@@ -2,8 +2,10 @@
 
 Planning direction recorded 6 September 2026. This is a proposed roadmap,
 not a description of shipped features or authorization to build every item.
-It grows from the current `idle` café. The separate `game` experiment is a
-source of reusable ideas, not the implementation baseline.
+It grows from the former `idle` café, now the canonical `main` branch. The
+separate `game` experiment is archived reference material, not the implementation
+baseline. The old tips are preserved in `archive/idle-2026-09-06` and
+`archive/game-2026-09-06` tags.
 
 ## Direction from the owner
 
@@ -272,12 +274,12 @@ at the roadmap stage.
 
 ## Build order and evidence for moving on
 
-1. **Keep the current café as the foundation.** Save an archive tag for the
-   `game` experiment before retiring it. Consolidate on the current `idle` code;
-   moving it to canonical `main` must include the Pages branch setting and
-   project instructions. Branch deletion and deployment changes are separate
-   work, not performed by this document. Reuse selected prose/art from the
-   experiment where appropriate; do not merge its control and day-loop model.
+1. **Keep the current café as the foundation — completed 6 September 2026.**
+   Consolidated the `idle` code into canonical `main`, with GitHub Pages and
+   project instructions following `main`. Old `idle` and `game` tips are retained
+   in the archive tags above; their branches are retired. Reuse selected
+   prose/art from the experiment where appropriate; do not merge its control
+   and day-loop model.
 2. **Prove one shared life with one plant.** Add the sparse home scene, automatic
    café → home → café transitions, idle/game presentation switching, one evening
    purchase, morning carry/unpack/place animation and a persistent result. Keep

@@ -23,6 +23,13 @@ own; their payoffs never fire on their own and never expire* — lives in
 [docs/narrative.md](docs/narrative.md). See [docs/overview.md](docs/overview.md)
 for the full design ethos.
 
+**Next development direction:** read [docs/progression-roadmap.md](docs/progression-roadmap.md)
+before progression work. It records the owner's shared idle/game life, autonomous
+café and apartment routines, evening purchases and animated improvements. Its
+explicit direction supersedes older bans on money/upgrades; the no-pressure
+principle remains. These features are planned, not yet shipped. Build the named
+milestone on the current café foundation, keeping later ideas out of that slice.
+
 ## Working with the owner
 
 - **Explicit direction is a spec, not a suggestion.** When the owner says how
@@ -80,8 +87,8 @@ for the full design ethos.
   (`__dev.shot('fireside')`), an entity (`__dev.shot('nora')`), or a
   `{x,y,w,h,scale}` crop; regions live in `__dev.regions`.
 
-- Live at <https://hygge.kasper-krog.dk> (GitHub Pages, `idle` + `CNAME`) —
-  pushes to `idle` publish there.
+- Live at <https://hygge.kasper-krog.dk> (GitHub Pages, `main` + `CNAME`) —
+  pushes to `main` publish there.
 - No build step, no dependencies, no TypeScript, no modules. Plain script tags.
 - Open `index.html` directly (file:// works — this is why there are no ES
   modules), or serve: `python -m http.server 8137` (there is a `.claude/launch.json`
@@ -124,8 +131,12 @@ for the full design ethos.
 
 ## Git workflow
 
-- Commit and push directly to `idle` unless the owner explicitly asks for a
+- Commit and push directly to `main` unless the owner explicitly asks for a
   different branch or a pull request.
+- `main` is the shared café foundation, consolidated from `idle` on 6 September
+  2026. Retired branch tips remain in `archive/idle-2026-09-06` and
+  `archive/game-2026-09-06` tags. The game experiment is reference material;
+  do not resume its separate engine or merge it wholesale.
 - When changing a shipped script, bump its `?v=` tag in `index.html`. The live
   Cloudflare cache can retain the previous URL for four hours even after a
   successful Pages deployment. Verify the live HTML and its exact script URLs.
