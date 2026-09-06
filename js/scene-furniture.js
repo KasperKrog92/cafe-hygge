@@ -94,15 +94,20 @@
         px(g, cx + 4, cy - 6, 16, 2, 'rgba(90,58,34,0.3)');
         px(g, cx - 8, cy - 2, 13, 2, 'rgba(90,58,34,0.22)');
         px(g, cx + 10, cy - 9, 2, 2, '#6e4c30');                  // a knot
-        // items left on the table
+        // Back-plane props first, regardless of their insertion/service order.
         tb.items.forEach(function (it) {
-          if (!it.hidden) drawTableItem(g, cx, cy + SCENE.tableItemOffsetY(tb, it), it);
+          if (!it.hidden && !SCENE.tableItemOffsetY(tb, it)) drawTableItem(g, cx, cy, it);
         });
         // Only the working arms cross the tabletop depth plane, not the body.
         world.patrons.forEach(function (p) {
           if (p.pose === 'sit' && p.typing && p.seat && p.seat.table === i &&
               tb.items.some(function (it) { return it.kind === 'laptop' && it.open && !it.hidden && it.owner === p.id; }))
             SCENE.drawTypingArms(g, p, SCENE.laptopGeometry(cx, cy, p.seat.side));
+        });
+        // Drinks beside laptops stand on the near plane, in front of deck and hands.
+        tb.items.forEach(function (it) {
+          const offset = SCENE.tableItemOffsetY(tb, it);
+          if (!it.hidden && offset) drawTableItem(g, cx, cy + offset, it);
         });
         // candle jar stays visible while its flame follows the ritual state
         px(g, cx - 4, cy - 14, 8, 8, '#c9b28a');
