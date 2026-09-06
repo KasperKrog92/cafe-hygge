@@ -43,25 +43,40 @@
     return draws;
   };
   function utilityRoom(g,r,bath) {
-    // The foreground rooms are cut away at low wall height, including their
-    // rear partitions: Nora and the cat remain visible on the lane behind.
+    // Only the side/front walls are cut away. The rear elevation is drawn
+    // separately at its floor baseline, with room above the plumbed fixtures.
     px(g,r.x,r.y,r.w,r.h,bath?'#9aa79e':'#b5ada0');
     for(let y=r.y;y<r.y+r.h;y+=16) {
       px(g,r.x,y,r.w,2,bath?'#84958e':'#a19888');
       for(let x=r.x;x<r.x+r.w;x+=24) px(g,x,y,2,16,bath?'#84958e':'#a19888');
     }
-    const end=r.x+r.w, gap=r.doorX+r.doorW;
-    [[r.x,r.doorX-r.x],[gap,end-gap]].forEach(a=>{
-      px(g,a[0],r.y-12,a[1],17,'#b5a18a');
-      px(g,a[0],r.y-16,a[1],4,'#e8dfc9');
-      px(g,a[0],r.y+3,a[1],3,'#825638');
-      px(g,a[0],r.y+6,a[1],4,'rgba(20,12,8,.12)');
-    });
-    px(g,r.doorX,r.y,r.doorW,4,'#c08a58');
+    const end=r.x+r.w;
     px(g,r.x,r.y-12,8,r.h+12,'#b5a18a');
     px(g,r.x,r.y-16,4,r.h+16,'#e8dfc9');
     px(g,end-8,r.y-12,8,r.h+12,'#b5a18a');
     px(g,end-8,r.y-16,4,r.h+16,'#e8dfc9');
+  }
+  function utilityBackWall(g,r,bath) {
+    const top=r.y-r.wallH, gap=r.doorX+r.doorW, end=r.x+r.w;
+    [[r.x,r.doorX-r.x],[gap,end-gap]].forEach(a=>{
+      px(g,a[0],top,a[1],r.wallH,bath?'#c7c0b4':'#b5a18a');
+      px(g,a[0],top-4,a[1],4,'#e8dfc9');
+      // A modest tiled splash zone; the upper wall stays bare for future
+      // shelves and a mirror. Its bottom is the same floor line as the props.
+      const tileH=bath?36:32;
+      px(g,a[0],r.y-tileH,a[1],tileH,bath?'#b5ada0':'#c7c0a9');
+      for(let y=r.y-tileH;y<r.y;y+=12) px(g,a[0],y,a[1],2,'#a19888');
+      for(let x=a[0];x<a[0]+a[1];x+=24) px(g,x,r.y-tileH,2,tileH,'#a19888');
+      px(g,a[0],r.y-3,a[1],3,'#825638');
+      px(g,a[0],r.y,a[1],4,'rgba(20,12,8,.12)');
+    });
+    // Open doorway with a full lintel and jamb depth, beside the fixture run.
+    px(g,r.doorX,top-4,r.doorW,4,'#e8dfc9');
+    px(g,r.doorX,top,r.doorW,8,'#b5a18a');
+    px(g,r.doorX,top+8,4,r.wallH-8,'#825638');
+    px(g,gap-4,top+8,4,r.wallH-8,'#6e4a33');
+    px(g,r.doorX,top+8,r.doorW,4,'#6e4a33');
+    px(g,r.doorX,r.y,r.doorW,4,'#c08a58');
   }
   function kitchenDrawables(draws) {
     const k=H.kitchen, c=k.counter, f=k.fridge;
@@ -89,8 +104,8 @@
     }});
     draws.push({y:f.y,draw:g=>{
       ell(g,f.x+15,f.y+2,21,5,'rgba(20,12,8,.22)');
-      px(g,f.x,f.y-57,34,55,'#d9d2c0'); px(g,f.x+28,f.y-57,6,55,'#b5ada0');
-      px(g,f.x,f.y-62,34,5,'#f5efdf'); px(g,f.x+2,f.y-56,24,16,'#e8dfc9');
+      px(g,f.x,f.y-50,34,48,'#d9d2c0'); px(g,f.x+28,f.y-50,6,48,'#b5ada0');
+      px(g,f.x,f.y-62,34,12,'#f5efdf'); px(g,f.x+2,f.y-49,24,10,'#e8dfc9');
       px(g,f.x,f.y-39,28,2,'#a19888');
       px(g,f.x+4,f.y-47,3,6,'#64706d'); px(g,f.x+4,f.y-33,3,11,'#64706d');
       px(g,f.x+3,f.y-2,4,3,'#4a3222'); px(g,f.x+25,f.y-2,4,3,'#4a3222');
@@ -106,14 +121,17 @@
     draws.push({y:s.y,draw:g=>{
       ell(g,s.x+10,s.y,17,4,'rgba(20,12,8,.22)');
       px(g,s.x+6,s.y-22,9,22,'#d9d2c0'); px(g,s.x+8,s.y-21,4,20,'#b5ada0');
-      px(g,s.x-5,s.y-30,31,8,'#f5efdf'); px(g,s.x-2,s.y-22,25,4,'#d9d2c0');
-      ell(g,s.x+10,s.y-26,11,3,'#84958e');
-      px(g,s.x+9,s.y-37,3,10,'#b8bfc7'); px(g,s.x+9,s.y-39,8,3,'#d3d9de');
+      px(g,s.x-5,s.y-34,31,12,'#f5efdf'); px(g,s.x-2,s.y-22,25,4,'#d9d2c0');
+      ell(g,s.x+10,s.y-28,11,3,'#84958e');
+      px(g,s.x+9,s.y-41,3,12,'#b8bfc7'); px(g,s.x+9,s.y-43,8,3,'#d3d9de');
     }});
     draws.push({y:t.y,draw:g=>{
       ell(g,t.x,t.y,17,5,'rgba(20,12,8,.22)');
-      px(g,t.x-12,t.y-37,24,17,'#d9d2c0'); px(g,t.x-14,t.y-40,28,4,'#f5efdf');
-      px(g,t.x+5,t.y-35,5,2,'#b8bfc7');
+      // Cistern against the rear wall; the bowl projects forward onto the
+      // floor, leaving the whole front of the room free to approach it.
+      px(g,t.x-12,t.y-54,24,20,'#d9d2c0'); px(g,t.x-14,t.y-60,28,6,'#f5efdf');
+      px(g,t.x+5,t.y-51,5,2,'#b8bfc7');
+      px(g,t.x-3,t.y-34,6,13,'#d9d2c0');
       px(g,t.x-7,t.y-17,14,16,'#d9d2c0');
       ell(g,t.x,t.y-15,14,10,'#e8dfc9'); ell(g,t.x,t.y-19,14,8,'#f5efdf');
       ell(g,t.x,t.y-20,9,5,'#84958e'); ell(g,t.x,t.y-19,6,3,'#647b83');
@@ -126,14 +144,15 @@
       px(g,sh.x+sh.w-15,sh.y+sh.h-19,6,4,'#84958e');
       px(g,sh.x,sh.y+sh.h-5,sh.w,5,'#d9d2c0');
       // Exposed shower pipe and a curtain bunched against the outside wall.
-      px(g,sh.x+sh.w-10,sh.y-10,3,38,'#b8bfc7');
-      px(g,sh.x+sh.w-21,sh.y-12,14,3,'#d3d9de');
-      px(g,sh.x+sh.w-24,sh.y-10,9,4,'#b8bfc7');
-      px(g,sh.x+sh.w-15,sh.y+23,12,3,'#647b83');
-      px(g,sh.x+sh.w-3,sh.y-12,3,sh.h+10,'#b8bfc7');
-      px(g,sh.x+sh.w-10,sh.y-6,9,sh.h-2,'#7a89a5');
-      px(g,sh.x+sh.w-7,sh.y-4,2,sh.h-6,'#94a1b4');
-      px(g,sh.x+sh.w-10,sh.y+20,9,3,'#d9d2c0');
+      px(g,sh.x+sh.w-18,sh.y-66,3,52,'#b8bfc7');
+      px(g,sh.x+sh.w-29,sh.y-68,14,3,'#d3d9de');
+      px(g,sh.x+sh.w-32,sh.y-66,9,4,'#b8bfc7');
+      px(g,sh.x+sh.w-23,sh.y-17,12,3,'#647b83');
+      px(g,sh.x,sh.y-72,sh.w,3,'#b8bfc7');
+      px(g,sh.x+sh.w-3,sh.y-72,3,sh.h+69,'#b8bfc7');
+      px(g,sh.x+sh.w-12,sh.y-66,9,sh.h+56,'#7a89a5');
+      px(g,sh.x+sh.w-9,sh.y-64,2,sh.h+52,'#94a1b4');
+      px(g,sh.x+sh.w-12,sh.y-12,9,3,'#d9d2c0');
     }});
   }
   SCENE.drawHome = function(g,w) {
@@ -173,6 +192,8 @@
     ell(g,420,347,115,33,'rgba(232,176,74,.09)');
     utilityRoom(g,H.kitchen,false); utilityRoom(g,H.bathroom,true);
     const draws=[];
+    draws.push({y:H.kitchen.y,draw:g=>utilityBackWall(g,H.kitchen,false)});
+    draws.push({y:H.bathroom.y,draw:g=>utilityBackWall(g,H.bathroom,true)});
     kitchenDrawables(draws); bathroomDrawables(draws);
     [H.kitchen,H.bathroom].forEach(r=>draws.push({y:r.y+r.h,draw:g=>{
       px(g,r.x,r.y+r.h-8,r.w,8,'#b5a18a');

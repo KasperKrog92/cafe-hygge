@@ -6,20 +6,27 @@
 floorboards, a night window, basic desk/chair/PC and reading light, a bed and
 light, suitcase and seven moving boxes. A compact kitchen and adjoining bathroom
 occupy the bottom left, bringing one extra open box of dishes. Cream-gray kitchen
-tiles and muted sage bathroom tiles distinguish the rooms; low plaster cutaway
-walls have rear doorway gaps onto the existing walking lane. The kitchen has
-a sink, two-ring cooker/oven, small fridge, one mug and a towel. The bathroom has
-a pedestal basin, toilet and shower tray with its curtain tied to one side.
+tiles and muted sage bathroom tiles distinguish the rooms. The rear walls are
+96 px tall, with a low tiled splash zone and bare upper plaster reserved for
+future shelves and a mirror; only the side/front walls are cut away. Doorways
+sit to the right of each fixture run. The kitchen sink, two-ring cooker/oven
+and small fridge share the rear wall, with no floor strip behind them; one mug
+and a towel are unpacked. The bathroom basin and toilet cistern sit against
+the back wall, with the bowl facing open floor and clear approach space in
+front. The shower tray meets that same wall, with a standing-height shower
+head and its curtain tied to one side. The bathroom extends 30 px farther
+right to give its doorway a clear route past the shower.
 Bare counters and walls keep the just-moved-in feel. No image assets or second rendering
 engine are used. Nora's existing sprite is shown without her apron at home;
 the same cat sprite/scarf is reused. Props retain top/front/side tones and
-contact shadows. Home anchors and the clear lower walking lane live in
+contact shadows. Home anchors and the clear walking lane live in
 `L.home`, including both utility-room bounds, door gaps and fixture anchors;
 the bed has an explicit side approach. The floor now ends at y=550, within the
-desktop crop. Room partitions start below the y=430 walking lane; fixtures and
-foreground walls never cover its passing characters. These rooms are scenery
-in this art slice; the existing PC/reading/sleep routes remain in use.
-Small rain streaks and a warm
+desktop crop. The walking lane is at y=350, above the rear wall tops, keeping
+passing characters visible. Rear walls are sorted at their y=454 floor line;
+fixture baselines include their projected depth from that wall. These rooms
+are scenery in this art slice; the existing PC/reading/sleep routine remains
+in use. Small rain streaks and a warm
 bedside light keep the scene alive. Boxes remain owned scenery in this slice;
 gradual unpacking belongs to H1.
 
