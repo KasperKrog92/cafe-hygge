@@ -277,8 +277,13 @@ at the roadmap stage.
 **Save/isolation preparation completed 6 September 2026:** the pure codec,
 injectable persistence and private simulation worlds address findings 1–2 in
 [the pre-development audit](predevelopment-audit.md). Regression coverage and
-commands are in [the development workflow](development.md). Extract the opening/closing boundary immediately
-before apartment work, with unchanged behavior verified first.
+commands are in [the development workflow](development.md).
+
+**Opening/closing preparation completed 6 September 2026:** `js/sim-shop.js`
+now owns the existing daily lifecycle through a small explicit contract. Hours,
+Nora routing, terrace/ship closing and save/isolation regressions pass before
+and after extraction. Gameplay, timing, cat handling and appearance are unchanged.
+Apartment features, currency and upgrades remain planned.
 
 1. **Keep the current café as the foundation — completed 6 September 2026.**
    Consolidated the `idle` code into canonical `main`, with GitHub Pages and

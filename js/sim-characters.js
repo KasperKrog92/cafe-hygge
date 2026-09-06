@@ -1477,205 +1477,13 @@
 
   /* ---------- main update ---------- */
 
-  // Shop rituals own Nora only for one out-and-back chore at a time. Service
-  // retains priority between chores, so an early visitor can already order.
-  function shopPath(from, to) {
-    const walker = { x: from.x, y: from.y, kind: from.kind };
-    R.makePath(walker, to.x, to.y);
-    return walker.path;
-  }
-
-  function shopRoute(world, kind, index) {
-    if (kind === 'table') return busRoute(world, index);
-    if (kind === 'curtain') return busRoute(world, L.tables.length + L.library.sideTables.length + index);
-    if (kind === 'hearth') return fireTendRoute();
-    if (kind === 'bowls' || kind === 'cat' || kind === 'putCat') return refillRoute();
-    if (kind === 'stock') return [{ x: L.shop.pastry.x, y: L.baristaHome.y }];
-    if (kind === 'lights') return [
-      { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
-      { x: L.entryApproach.x, y: L.lane }, L.entryApproach, L.shop.switchSpot
-    ];
-    return [{ x: L.baristaHome.x, y: L.baristaHome.y }];
-  }
-
-  function shopTasks(world, opening) {
-    if (opening) return [{ kind: 'lights' }, { kind: 'putCat' }, { kind: 'bowls' },
-      { kind: 'curtain', index: 0 }, { kind: 'hearth' }, { kind: 'curtain', index: 1 },
-      { kind: 'stock' }, { kind: 'welcome' }];
-    // One floor circuit from the counter: reading nook, lower dining tables,
-    // piano/artist corner, then the upper tables/windows from left to right.
-    // Keep table identity in world.tables; only the visit order changes.
-    const dining = world.tables.filter(function (tb) { return !tb.small && !tb.tall && !tb.piano && !tb.artist; });
-    const middleY = (Math.min.apply(null, dining.map(function (tb) { return tb.y; })) +
-      Math.max.apply(null, dining.map(function (tb) { return tb.y; }))) / 2;
-    function zone(tb) {
-      if (tb.small) return 0;
-      if (!tb.tall && !tb.piano && !tb.artist && tb.y > middleY) return 1;
-      if (tb.piano) return 2;
-      if (tb.artist) return 3;
-      return 4;
-    }
-    const tables = world.tables.map(function (tb, i) { return { kind: 'table', index: i, zone: zone(tb), x: tb.x }; });
-    tables.sort(function (a, b) { return a.zone - b.zone || (a.zone < 2 ? b.x - a.x : a.x - b.x); });
-    return [{ kind: 'greet' }, { kind: 'wipe' }, { kind: 'wait' }]
-      .concat(tables)
-      .concat([{ kind: 'stock' }, { kind: 'curtain', index: 1 }, { kind: 'hearth' },
-        { kind: 'curtain', index: 0 }, { kind: 'cat' }, { kind: 'lights' }]);
-  }
-
-  function updateShop(world, dt) {
-    const s = world.shop, b = world.barista, cat = world.cat;
-    if (!s) return false;
-    if (s.phase === 'open') {
-      if (dt <= 0 || (world.hour < 21.5 && world.hour >= 6)) return false;
-      s.phase = 'closing'; s.accepting = false; s.elapsed = 0; s.step = 0;
-      s.lastCall = false;
-      caption(world, 'the last cups of the evening; Nora begins to tidy.');
-    }
-    s.elapsed += dt;
-    if (s.phase === 'night') {
-      s.fade = Math.min(1, s.elapsed / 2);
-      if (s.elapsed >= 3) {
-        // Only the wall clock skips. All dt timers and saved arc progress keep
-        // their real elapsed time, and every ready invitation stays pending.
-        world.clockOffset += ((7.5 - world.hour + 24) % 24) / 24 * R.DAY_SECONDS;
-        updateClock(world, 0);
-        s.phase = 'dawn'; s.elapsed = 0;
-      }
-      return true;
-    }
-    if (s.phase === 'dawn') {
-      s.fade = Math.max(0, 1 - s.elapsed / 2);
-      if (s.elapsed >= 2) {
-        s.phase = 'entering'; s.elapsed = 0; s.away = false;
-        b.x = L.doorSpot.x; b.y = L.doorSpot.y; b.pose = 'stand';
-        // The switch is beside the threshold: use the clear entrance column
-        // before joining any of the café's floor routes.
-        b.path = [L.shop.switchSpot];
-        R.ringDoor(world);
-        caption(world, 'a new morning; Nora brings the cat in from the quiet street.');
-      }
-      return true;
-    }
-    if (s.phase === 'entering') {
-      b.animT += dt;
-      if (walker(b, dt)) {
-        b.holding = 'cat'; b.state = 'shop';
-        s.phase = 'opening'; s.step = 0;
-        // Start working where she is. The ordinary chore continuation will
-        // take her to the cat corner, then across the room toward the counter.
-        s.task = { kind: 'lights', time: 0, route: shopRoute(world, 'lights') };
-      }
-      return true;
-    }
-    if (s.task) {
-      const task = s.task;
-      b.animT += dt;
-      if (b.path && b.path.length) { walker(b, dt); return true; }
-      if (task.returning) {
-        s.task = null; b.state = 'idle'; b.pose = 'stand'; b.holding = s.carryingCat ? 'cat' : null;
-        if (task.kind !== 'home') s.step++;
-        return true;
-      }
-      b.pose = task.kind === 'wipe' || task.kind === 'table' ? 'wipe' : 'reach';
-      b.heading = 'up';
-      if (task.kind === 'greet') { b.pose = 'stand'; b.heading = 'down'; }
-      if (task.kind === 'cat' && !s.carryingCat) {
-        b.pose = 'stand';
-        if (cat.surface !== 'floor' || cat.state === 'hop') {
-          leavePerch(world, cat); return true;
-        }
-        if (!task.called) {
-          task.called = true; cat.state = 'shopWalk';
-          cat.path = shopPath(cat, b); SND.meow();
-        }
-        if (cat.path && cat.path.length) return true;
-        s.carryingCat = true; b.holding = 'cat'; SND.purr(2);
-        caption(world, 'one sleepy cat, tucked into Nora’s arms.');
-      }
-      task.time += dt;
-      b.stateT = task.time;
-      const progress = Math.min(1, task.time / 2.5), opening = s.phase === 'opening';
-      if (task.kind === 'curtain') s.curtains[task.index] = opening ? 1 - progress : progress;
-      if (task.time < 2.5) return true;
-      if (task.kind === 'table') {
-        const tb = world.tables[task.index];
-        tb.items = tb.items.filter(function (it) { return it.owner !== null; });
-        tb.candle = tb.candleTarget = 0; SND.swish();
-      } else if (task.kind === 'putCat') {
-        s.carryingCat = false; cat.x = b.x; cat.y = b.y;
-        cat.surface = 'floor'; cat.state = 'sit'; cat.stateT = 2; cat.path = null;
-        cat.target = { id: 'free', x: cat.x, y: cat.y, kind: 'floor' };
-        b.holding = null;
-      }
-      else if (task.kind === 'stock') { s.stocked = opening; SND.clink(0.5, 0.025); }
-      else if (task.kind === 'lights') s.lights = opening ? 1 : 0;
-      else if (task.kind === 'hearth') {
-        world.candles.mantel = world.candles.mantelTarget = 0;
-        if (opening) addLog(world);
-        else { world.fire.target = 0.16; world.fire.wantsLog = false; }
-      } else if (task.kind === 'bowls') { world.catBowls.food = world.catBowls.water = 1; SND.kibblePour(0.9); }
-      else if (task.kind === 'greet') {
-        s.lastCall = true;
-        if (world.patrons.length) caption(world, 'Nora wishes everyone a good night — time for the last sip.');
-      } else if (task.kind === 'wipe') SND.swish();
-      task.returning = true; b.pose = 'stand'; b.heading = null;
-      b.path = task.route.slice(0, -1).reverse().concat([L.baristaHome]);
-      // With the cat in her arms, switch off by the door and leave directly.
-      if (task.kind === 'lights' && !opening) {
-        s.step++; s.task = null;
-        b.path = shopPath(b, L.doorSpot); R.ringDoor(world);
-        s.phase = 'leaving';
-      } else {
-        const next = shopTasks(world, opening)[s.step + 1];
-        if (next && ['wait', 'welcome'].indexOf(next.kind) < 0 && !b.orders.length && !world.queue.length) {
-          const route = shopRoute(world, next.kind, next.index);
-          let common = 0;
-          while (common < task.route.length && common < route.length &&
-              task.route[common].x === route[common].x && task.route[common].y === route[common].y) common++;
-          // Retrace only to the shared aisle junction, then continue the round.
-          b.path = common ? task.route.slice(common - 1, -1).reverse().concat(route.slice(common))
-            : task.route.slice(0, -1).reverse().concat([L.baristaHome], route);
-          if (['stock', 'wipe'].indexOf(task.kind) < 0 && ['stock', 'wipe'].indexOf(next.kind) < 0) {
-            const direct = shopPath(b, route[route.length - 1]);
-            if (direct.length) b.path = direct;
-          }
-          s.step++;
-          s.task = { kind: next.kind, index: next.index, time: 0, route: route };
-          b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : null;
-        }
-      }
-      return true;
-    }
-    if (s.phase === 'leaving') {
-      b.animT += dt;
-      if (walker(b, dt)) { s.away = true; s.phase = 'night'; s.elapsed = 0; b.path = null; }
-      return true;
-    }
-    const tasks = shopTasks(world, s.phase === 'opening'), next = tasks[s.step];
-    if (!next) { s.phase = 'open'; s.accepting = true; b.state = 'idle'; b.idleT = 6; return false; }
-    if (next.kind === 'wait') {
-      const terraceDirty = world.waterfront.tables.some(function (tb) { return tb.dirty || tb.cleaning; });
-      if (terraceDirty) { R.startTerraceClear(world, b); return false; }
-      if (!world.patrons.length && !b.orders.length && !world.queue.length && b.state === 'idle') s.step++;
-      return false;
-    }
-    if (next.kind === 'welcome') {
-      s.accepting = true; world.spawnT = 1; s.step++;
-      caption(world, 'fresh cakes, open curtains — the first guests are welcome.');
-      return false;
-    }
-    if (b.state !== 'idle' || b.orders.length || world.queue.length) return false;
-    s.task = { kind: next.kind, index: next.index, time: 0, route: shopRoute(world, next.kind, next.index) };
-    b.state = 'shop'; b.path = s.task.route.slice(); b.pose = 'stand';
-    b.holding = s.carryingCat ? 'cat' : ['table', 'wipe'].indexOf(next.kind) >= 0 ? 'cloth' : null;
-    return true;
-  }
+  const shop = R.createShopLifecycle({
+    busRoute: busRoute, fireTendRoute: fireTendRoute,
+    refillRoute: refillRoute, leavePerch: leavePerch
+  });
 
   SIM.update = function (world, dt) {
-    // Let the last evening linger while Nora finishes; a long cleanup must
-    // never turn into a morning shift before the overnight fade has played.
-    if (world.shop && world.shop.phase === 'closing' && (world.hour >= 22.5 || world.hour < 6)) world.clockOffset -= dt;
+    shop.beforeClock(world, dt);
     world.t += dt;
     updateClock(world, dt);
     updateNarrative(world, dt);
@@ -1685,7 +1493,7 @@
     updatePassersby(world, dt);
     R.updateWaterfront(world, dt);
     updateDoor(world, dt);
-    const shopBusy = updateShop(world, dt);
+    const shopBusy = shop.update(world, dt);
     updateSpawning(world, dt);
     if (!shopBusy) updateBarista(world, world.barista, dt);
     world.patrons.forEach(function (p) { updatePatron(world, p, dt); });
@@ -1734,7 +1542,7 @@
   };
 
   R.updateBarista = updateBarista;
-  R.shopRoute = shopRoute;
+  R.shopRoute = shop.route;
   R.updateCat = updateCat;
   R.busRoute = busRoute;
   R.pianoRoute = pianoRoute;
@@ -1748,7 +1556,6 @@
 
   // World-first public/debug entry points also select the private services.
   R.updateBarista = R.bindWorld(R.updateBarista);
-  R.shopRoute = R.bindWorld(R.shopRoute);
   R.updateCat = R.bindWorld(R.updateCat);
   R.busRoute = R.bindWorld(R.busRoute);
   R.candleRoute = R.bindWorld(R.candleRoute);

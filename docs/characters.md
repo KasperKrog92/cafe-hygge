@@ -2,7 +2,7 @@
 
 ## Daily shop rituals
 
-`updateShop` in `sim-characters.js` coordinates Nora's evening and morning
+`updateShop` in `sim-shop.js` coordinates Nora's evening and morning
 rounds. Phases are `open → closing → leaving → night → dawn → entering →
 opening → open`; each chore has an outbound path, a 2.5-second interaction
 and an optional return to the till. Consecutive floor chores use the furniture
@@ -42,7 +42,7 @@ once it is on its own feet.
 
 The café's cast: one barista, a rotating pool of patrons, and a cat. All
 behavior is dt-driven state machines in `js/sim-patrons.js` and
-`js/sim-characters.js`; all drawing is
+`js/sim-characters.js`, with opening/closing in `js/sim-shop.js`; all drawing is
 `SCENE.drawPerson` / `SCENE.drawCat` in `js/scene-people.js`.
 
 The September 2026 material pass adds derived skin/jaw shading and profile

@@ -160,7 +160,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
   Cloudflare cache can retain the previous URL for four hours even after a
   successful Pages deployment. Verify the live HTML and its exact script URLs.
 
-## Architecture (15 scripts, deliberate order)
+## Architecture (16 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -176,16 +176,17 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
 | `js/sim-waterfront.js` | `SIM` | Dt-driven boats, birds and planes; real terrace reservations, guests and Nora cleanup journeys. |
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
+| `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes; character helpers supplied explicitly. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
 Load order matters: audio → scene-core → scene-waterfront → scene-bg → scene-furniture →
 scene-people → scene-fx → characters-roster → memory → sim-core → sim-waterfront → sim-patrons →
-sim-characters → dev → main. Scene-core creates `SCENE`; the five renderer
+sim-shop → sim-characters → dev → main. Scene-core creates `SCENE`; the five renderer
 siblings extend it. `characters-roster` then defines `CAST` (the regulars
 roster + story arcs) as pure data, and `memory` loads the `MEMORY` save. The
-four sim scripts then build `SIM`, reading `CAST` for its regulars and
+five sim scripts then build `SIM`, reading `CAST` for its regulars and
 reconciling `MEMORY` on boot (`SIM.create` → `reconcileNarrative`); dev consumes
 its `SIM._` debug contract and decorates the boot, and main reads all.
 

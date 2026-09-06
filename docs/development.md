@@ -67,7 +67,7 @@ the full [browser lifecycle rules](art-workflow.md#browser-session-lifecycle).
 Run relevant suites only from a PowerShell prompt:
 
 ```powershell
-./tools/verify-project.ps1 -Suite hours,nora-routing -Label lifecycle
+./tools/verify-project.ps1 -Suite hours,nora-routing,waterfront,ship -Label lifecycle
 ./tools/verify-project.ps1 -Suite pathing,waterfront -Label layout
 ./tools/verify-project.ps1 -Suite animations,animation-journeys -Label motion
 ./tools/verify-project.ps1 -Suite ship -Label ship
@@ -113,20 +113,18 @@ while page reloads also isolate dev controls and audio settings.
    round trips, storage/persist failures, exit flushes, story reloads, seeded
    repeatability and isolation of memory, IDs, timers and audio. This also runs
    in GitHub Actions. No schema expansion or gameplay feature was added.
-2. **Opening/closing boundary:** immediately before home work, move the current
-   shop lifecycle into a focused simulation file with a small explicit contract.
-   Keep timing, routes, cat handling and appearance unchanged. Verify hours,
-   routing and outdoor closing before adding the home transition.
+2. **Opening/closing boundary — complete 6 September 2026:** extracted to
+   `js/sim-shop.js`, with four supplied character helpers and three world-bound
+   methods ([contract](architecture.md#shop-lifecycle-contract)). The existing
+   hours, Nora-routing, waterfront and ship suites pass before and after the
+   split, alongside all nine save/isolation groups. Timing, routes, cat handling,
+   appearance and save schema remain unchanged.
 3. **Then milestone 2:** build the apartment/plant loop from the roadmap. Define
    its persisted phase and scene routing with a real use case. Delay general
    furniture availability, staff scheduling and a large job catalogue.
 
-A useful next-session prompt:
-
-> Read AGENTS.md, docs/development.md and docs/progression-roadmap.md. Extract
-> the current opening/closing lifecycle into a focused simulation file, keeping
-> gameplay and appearance unchanged. Verify hours, routing and outdoor closing,
-> update the docs, commit and publish. Do not add apartment features yet.
+The opening/closing preparation is finished. Apartment features, currency and
+upgrades remain future milestone work; none shipped with this extraction.
 
 For each later session, name the one milestone or visual result, add any exact
 preferences, and ask for a rendered review and updated implementation status.

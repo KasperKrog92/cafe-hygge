@@ -139,7 +139,12 @@ its save, its storage or audio; demonstrate repeatability with a seeded random
 source; retain all existing tests and production boot behavior. The new runner's
 fresh saves between suites are an interim safeguard, not this refactor itself.
 
-## 3. Extract the shop lifecycle at the apartment boundary — medium priority
+## 3. Extract the shop lifecycle at the apartment boundary — completed
+
+**Resolved 6 September 2026:** the behavior-preserving `js/sim-shop.js` split
+now exposes the [lifecycle contract](architecture.md#shop-lifecycle-contract).
+Hours, Nora routing, waterfront/ship closing and save/isolation regressions
+pass before and after extraction. The original finding follows for context.
 
 [sim-characters.js](../js/sim-characters.js) is approximately 1,749 lines and
 mixes service, care chores, cat behavior, narrative beats, shop opening/closing,

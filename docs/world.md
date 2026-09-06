@@ -24,6 +24,8 @@ and refills that display in the morning. Once it is ready, guests may enter
 and the shop returns to its usual routines.
 
 `world.shop` holds the transient phase, current chore and visual state.
+`js/sim-shop.js` owns its lifecycle and late-closing clock hold through the
+[explicit simulation contract](architecture.md#shop-lifecycle-contract).
 `world.clockOffset` skips the sleeping hours without jumping `world.t`, so
 caption, weather, movement and story timers receive only actual simulated
 time. The normal arrival schedule rolls into the new café day. This sequence

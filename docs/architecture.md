@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Fifteen IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Sixteen IIFE scripts expose the production globals
 (`SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -17,6 +17,7 @@ js/memory.js            → window.MEMORY  (persistent cross-visit save; version
 js/sim-core.js          → window.SIM     (world + shared simulation systems)
 js/sim-waterfront.js    → extends SIM    (boat/bird/plane timers, terrace guests and Nora journeys)
 js/sim-patrons.js       → extends SIM    (patron state machine)
+js/sim-shop.js          → extends SIM    (opening/closing lifecycle factory)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
@@ -24,6 +25,28 @@ js/main.js              → (none)         (boot, loop, UI; orchestrates the oth
 
 There are **no ES modules on purpose**: `file://` + `<script>` tags means the
 app runs by double-clicking `index.html` with zero tooling. Keep it that way.
+
+## Shop lifecycle contract
+
+`js/sim-shop.js` loads before `sim-characters.js`. The latter constructs one
+`SIM._.createShopLifecycle({busRoute, fireTendRoute, refillRoute, leavePerch})`
+using its existing private character helpers. The factory closes over helpers,
+never a world; state remains in `world.shop` and the existing world entities.
+It returns three synchronous, world-bound methods:
+
+- `beforeClock(world, dt)` applies the late-closing clock hold before `world.t`
+  advances and `updateClock` runs. Narrative and activity timers still receive dt.
+- `update(world, dt)` runs after waterfront and door updates, before spawning.
+  It advances rituals and the overnight skip, returning whether it owns Nora
+  for this tick. Ordinary service runs only when it returns false.
+- `route(world, kind, index)` preserves `SIM._.shopRoute` for the dev audit.
+
+Shared layout, movement, clock, captions, fire, sound and terrace cleanup come
+from `SIM._`; the character file retains ordinary service/cat updates and all
+entity drawing. Cat walking to Nora and pausing while carried keep their
+original position after patron updates. Every entry selects the supplied
+world's services with `bindWorld`, including direct route inspection. No save
+fields, phase names, task timing, paths or render behavior changed in this split.
 
 ## The world object
 
