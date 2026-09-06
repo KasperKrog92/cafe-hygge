@@ -138,7 +138,7 @@
   let capCache = { text: null, canvas: null };
   // Canvas does not reflow when a webfont arrives: rebuild any fallback caption.
   if (document.fonts) {
-    document.fonts.load('20px "Patrick Hand"').then(function () {
+    document.fonts.load('24px "Jersey 10"').then(function () {
       capCache.text = null;
     }).catch(function () { /* A local fallback keeps captions available. */ });
   }
@@ -147,7 +147,7 @@
     const pad = 10, lineHeight = 26, maxWidth = 540;
     const card = document.createElement('canvas');
     let g = card.getContext('2d');
-    const font = '20px "Patrick Hand", "Comic Sans MS", cursive';
+    const font = '24px "Jersey 10", monospace';
     g.font = font;
     const lines = [], words = text.split(/\s+/);
     let line = '';
