@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="game.css?v=neighborhood-2">
 </head>
 <body>
-<header><div><div class="eyebrow" id="chapter">Lunafreya's café · chapter one</div><h1>Fleur de Lune</h1></div><nav aria-label="Café controls"><button id="journal" hidden>My notebook</button><button id="sound">Enable sound</button></nav></header>
+<header><div><div class="eyebrow" id="chapter">Lunafreya's café · chapter one</div><h1>Fleur de Lune</h1></div><nav aria-label="Café controls"><button id="skip-cleaning" class="quiet" hidden>Skip cleaning (dev)</button><button id="journal" hidden>My notebook</button><button id="sound">Enable sound</button></nav></header>
 <main><canvas id="cafe" aria-label="Lunafreya's café. Move with arrow keys or WASD; use the action button to restore the room, welcome guests, and serve drinks."></canvas><section id="dialogue" role="dialog" aria-modal="true" aria-labelledby="speaker" aria-describedby="line" hidden><div id="speaker"></div><p id="line"></p><button id="continue">Continue</button></section></main>
 <footer><div><p id="objective">An abandoned room. A small beginning.</p><div id="hint">WASD / arrows to move · click to walk · E to interact</div><p id="status" role="status"></p></div><div class="actions"><button id="invitation" hidden></button><button id="action">Clear the fallen plaster</button><button id="tomorrow" class="quiet" hidden>Tidy up & begin another morning</button></div></footer>
 <dialog id="notebook" aria-labelledby="notebook-title"><div class="panel-heading"><div><div class="eyebrow">Fleur de Lune</div><h2 id="notebook-title">A place taking shape</h2></div><button id="close-notebook" aria-label="Close notebook">Close</button></div><div id="notebook-body"></div></dialog>
@@ -18,6 +18,6 @@
 <script src="js/game-content.js?v=opening-20260905-1"></script>
 <script src="js/game-memory.js?v=neighborhood-2"></script>
 <script src="js/game-restoration.js?v=opening-20260905-1"></script>
-<script src="js/game.js?v=opening-20260905-1"></script>
+<script src="js/game.js?v=skip-cleaning-20260906-1"></script>
 </body>
 </html>

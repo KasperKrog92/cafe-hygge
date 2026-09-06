@@ -157,6 +157,13 @@ restoration and service prerequisites, funds and conversation/work exclusion.
 `inspect()` reports active work, dialogue, modal, arrival, rest and invitation.
 It also reports `workElapsed`, `workPhase`, `workPaused` and `reflection`.
 
+At `/?dev`, **Skip cleaning (dev)** completes restoration, furniture, kettle
+setup and opening, then seats Holger immediately for the first welcome and
+coffee. It also works during an unfinished cleaning job, saves the completed
+setup, and disappears once the café is open. `__game.skipCleaning()` exposes
+the same shortcut. It does not reset later progress or award a cup or coins.
+The button is hidden outside dev mode.
+
 ```powershell
 node --check js/game.js
 node --check js/game-content.js

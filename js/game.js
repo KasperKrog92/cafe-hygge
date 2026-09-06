@@ -13,6 +13,7 @@
     workSites:{debris:[{x:360,y:390},{x:387,y:390}],sweep:[{x:300,y:370},{x:423,y:448},{x:553,y:400},{x:663,y:466}],window:[{x:337,y:310},{x:402,y:310}],walls:[{x:466,y:310},{x:606,y:310}]},
     workProps:{sack:{x:411,y:391},paper:{x:301,y:278},wear:{x:405,y:429},bucket:{x:367,y:323},plaster:{x:637,y:324}}
   };
+  var dev = new URLSearchParams(location.search).has('dev');
   var save = FLEUR_MEMORY.load(), notice = save.served ? 'Another cup whenever you are ready. This room can wait.' : '';
   var time = 0, target = null, working = null, keys = {}, talk = null, zoom = 1.45, resting = false, modal = null;
   var saveFailed = false, arrived = false, lastFocus = null, selectedDrink = 'coffee';
@@ -48,6 +49,21 @@
     return L.tasks[save.done.length];
   }
   function stop() { target = null; keys = {}; resting = false; player.pose = 'stand'; }
+  function skipCleaning() {
+    if (!dev || has('open')) return;
+    stop(); working = null; heldWork = null; talk = null;
+    document.body.classList.remove('conversing'); el('dialogue').hidden = true;
+    // Complete setup only; the first welcome and cup remain playable.
+    FLEUR.tasks.some(function (t) {
+      if (!has(t.id)) save.done.push(t.id);
+      return t.id === 'open';
+    });
+    player.x = L.conversation.x; player.y = L.conversation.y; player.heading = null;
+    setPatron(); patron.x = L.seat.x; patron.y = L.seat.y; patron.pose = 'sit'; arrived = true;
+    notice = 'Dev: cleaning and setup skipped. Holger is ready for his first coffee.';
+    persist(); render(); el('action').focus();
+  }
+  el('skip-cleaning').onclick = skipCleaning;
   function startTalk(lines, complete, choices, seated) {
     stop(); player.heading = null; player.facing = -1; patron.facing = 1; patron.reading = false;
     lastFocus = document.activeElement;
@@ -311,6 +327,7 @@
     if(FLEUR.invitation(save)&&arrived&&!talk&&!modal){text('···',patron.x,patron.y-70,'#e6d8b9',17);}
   }
   function render(){
+    el('skip-cleaning').hidden = !dev || has('open');
     g.save();g.translate(480,cameraScreenY);g.scale(zoom,zoom);g.translate(-cameraX,-cameraY);room();g.restore();
     var n=next(), busy=!!talk||!!working||!!modal;
     uiText('chapter',save.served?'Coffee & company · morning '+save.day:'Lunafreya’s café · chapter one');
@@ -336,7 +353,7 @@
   document.getElementById('sound').textContent='Enable sound';
   var soundStarted=false;document.getElementById('sound').onclick=function(){if(!soundStarted){SND.init();soundStarted=true;SND.settings.muted=false;SND.settings.fire=false;}else SND.settings.muted=!SND.settings.muted;SND.applyVolume();this.textContent=SND.settings.muted?'Sound off':'Sound on';};
   var last=performance.now();function frame(now){var dt=Math.min((now-last)/1000,0.25);last=now;update(dt);render();requestAnimationFrame(frame);}requestAnimationFrame(frame);
-  if(new URLSearchParams(location.search).has('dev'))window.__game={state:save,player:player,patron:patron,layout:L,update:update,act:act,
+  if(dev)window.__game={state:save,player:player,patron:patron,layout:L,update:update,act:act,skipCleaning:skipCleaning,
     inspect:function(){return {working:working&&working.task.id,workElapsed:(working||heldWork)?(working||heldWork).elapsed:null,workPhase:FLEUR_WORK.phase(working||heldWork),workPaused:!!(working&&working.paused),reflection:heldWork&&heldWork.task.id,talking:!!talk,modal:modal,arrived:arrived,resting:resting,invitation:FLEUR.invitation(save)};},
     audit:function(){var errors=[];if(blocked(player.x,player.y))errors.push('Player inside furniture');if(has('open')&&blocked(patron.x,patron.y))errors.push('Guest inside furniture');if(save.served&&!has('serve'))errors.push('Coffee served before brewing');if(has('serve')&&!save.introduced)errors.push('Service before introduction');if(new Set(save.done).size!==save.done.length)errors.push('Duplicate restoration');if(save.coins<0||save.coins%1)errors.push('Invalid cafe funds');if(save.day>1&&!save.served)errors.push('Neighborhood before first cup');if(talk&&working)errors.push('Work during conversation');return errors;},
     shot:function(){render();return canvas.toDataURL();}};
