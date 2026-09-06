@@ -171,6 +171,26 @@ or conversation is open. UI text changes only when its value changes, keeping
 the live status region from being rewritten every animation frame. Desktop and
 narrow layouts preserve full action-button access.
 
+The interface uses a moonlit sage and parchment palette, a crescent header,
+and a gold primary action. The room scales into the available desktop space;
+phone layouts place the room above the objective and full-width actions.
+Notebook, recipe and conversation panels share readable spacing, bordered
+surfaces and visible keyboard focus. Long panels scroll within the viewport.
+
+**Settings → Start over…** is available from the first evening. Settings pauses
+active work and movement without discarding the current route or elapsed work.
+The restart confirmation focuses **Keep my café** by default. Cancelling or
+pressing Escape preserves progress; confirming replaces only `fleur-de-lune-save`
+with a fresh version-3 state and reloads the game. The reference café save and
+audio preferences are untouched. If the write fails, the current game remains
+open with an error and can be resumed. Restart does not require a save migration.
+
+Verified 6 September 2026: the presentation pass passes opening, neighborhood,
+garden and memory checks. Desktop and 390px layouts, notebook, dialogue and
+restart confirmation were inspected. Restart cancellation, storage failure,
+successful reset/reload, unrelated-save isolation, Settings work suspension,
+Escape and focus restoration were checked in a disposable browser.
+
 ## Verification
 
 Serve the checkout on port 8137 and use a **disposable** browser at `/?dev`.

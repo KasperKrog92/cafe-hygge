@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fleur de Lune — coffee & company</title>
-<link rel="stylesheet" href="game.css?v=neighborhood-2">
+<meta name="theme-color" content="#1b2020">
+<link rel="stylesheet" href="game.css?v=presentation-20260906-1">
 </head>
 <body>
-<header><div><div class="eyebrow" id="chapter">Lunafreya's café · chapter one</div><h1>Fleur de Lune</h1></div><nav aria-label="Café controls"><button id="skip-cleaning" class="quiet" hidden>Skip cleaning (dev)</button><button id="journal" hidden>My notebook</button><button id="sound">Enable sound</button></nav></header>
+<header><div class="brand"><span class="moon" aria-hidden="true"></span><div><div class="eyebrow" id="chapter">Lunafreya's café · chapter one</div><h1>Fleur de Lune</h1></div></div><nav aria-label="Café controls"><button id="skip-cleaning" class="quiet" hidden>Skip cleaning (dev)</button><button id="journal" hidden>My notebook</button><button id="sound">Enable sound</button><button id="settings-button" aria-haspopup="dialog">Settings</button></nav></header>
 <main><canvas id="cafe" aria-label="Lunafreya's café. Move with arrow keys or WASD; use the action button to restore the room, welcome guests, and serve drinks."></canvas><section id="dialogue" role="dialog" aria-modal="true" aria-labelledby="speaker" aria-describedby="line" hidden><div id="speaker"></div><p id="line"></p><button id="continue">Continue</button></section></main>
-<footer><div><p id="objective">An abandoned room. A small beginning.</p><div id="hint">WASD / arrows to move · click to walk · E to interact</div><p id="status" role="status"></p></div><div class="actions"><button id="invitation" hidden></button><button id="action">Clear the fallen plaster</button><button id="tomorrow" class="quiet" hidden>Tidy up & begin another morning</button></div></footer>
+<footer><div class="current-task"><p id="objective">An abandoned room. A small beginning.</p><div id="hint">WASD / arrows to move · click to walk · E to interact</div><p id="status" role="status"></p></div><div class="actions"><button id="invitation" hidden></button><button id="action">Clear the fallen plaster</button><button id="tomorrow" class="quiet" hidden>Tidy up & begin another morning</button></div></footer>
+<dialog id="settings" aria-labelledby="settings-title"><div class="panel-heading"><div><div class="eyebrow">Make yourself at home</div><h2 id="settings-title">Settings</h2></div><button id="close-settings" aria-label="Close settings" autofocus>Close</button></div><div id="settings-home"><p>Your completed progress is saved automatically in this browser. Take your time; the café will wait.</p><div class="settings-section"><h3>A fresh beginning</h3><p>Return to the very first evening and restore the café again.</p><button id="restart" class="quiet">Start over…</button></div></div><div id="restart-confirmation" hidden><h3>Begin again?</h3><p>This replaces your saved café, including all repairs, coins, furnishings and conversations. You’ll return to Lunafreya’s first evening in the empty room.</p><p>This cannot be undone.</p><p id="restart-error" role="alert" hidden></p><div class="dialog-actions"><button id="cancel-restart">Keep my café</button><button id="confirm-restart" class="danger">Start over</button></div></div></dialog>
 <dialog id="notebook" aria-labelledby="notebook-title"><div class="panel-heading"><div><div class="eyebrow">Fleur de Lune</div><h2 id="notebook-title">A place taking shape</h2></div><button id="close-notebook" aria-label="Close notebook">Close</button></div><div id="notebook-body"></div></dialog>
 <dialog id="drinks" aria-labelledby="drinks-title"><div class="eyebrow">At the kettle</div><h2 id="drinks-title">What shall I make?</h2><p id="order"></p><div class="drink-options"><button data-drink="coffee">Pour-over coffee <small>Ground coffee · slow pour</small></button><button data-drink="tea">Steep a pot of tea <small>Loose leaves · a little patience</small></button></div><button id="close-drinks" class="quiet">Back to the room</button></dialog>
 <script src="js/audio.js?v=opening-20260905-1"></script>
@@ -18,6 +20,6 @@
 <script src="js/game-content.js?v=growing-20260906-1"></script>
 <script src="js/game-memory.js?v=growing-20260906-1"></script>
 <script src="js/game-restoration.js?v=growing-20260906-1"></script>
-<script src="js/game.js?v=growing-20260906-1"></script>
+<script src="js/game.js?v=presentation-20260906-1"></script>
 </body>
 </html>

@@ -100,10 +100,33 @@
     stop(); modal = id; el(id).showModal();
   }
   function closeModal(id) { modal = null; el(id).close(); keys = {}; }
-  ['notebook','drinks'].forEach(function (id) {
+  ['notebook','drinks','settings'].forEach(function (id) {
     el(id).addEventListener('close',function () { if(!el(id).open&&modal===id)modal=null; keys = {}; });
     el('close-' + id).onclick = function () { closeModal(id); };
   });
+  function resetSettings() {
+    el('settings-home').hidden = false; el('restart-confirmation').hidden = true;
+    el('restart-error').hidden = true;
+  }
+  el('settings-button').onclick = function () {
+    if (talk || modal) return;
+    // Suspend work and walking exactly where they are, including a pending route.
+    keys = {}; resetSettings(); modal = 'settings'; el('settings').showModal();
+  };
+  el('restart').onclick = function () {
+    el('settings-home').hidden = true; el('restart-confirmation').hidden = false;
+    el('cancel-restart').focus();
+  };
+  el('cancel-restart').onclick = function () { resetSettings(); el('restart').focus(); };
+  el('confirm-restart').onclick = function () {
+    if (modal !== 'settings' || el('restart-confirmation').hidden) return;
+    // Replace only this game's save. If storage refuses, keep the current game intact.
+    if (!FLEUR_MEMORY.save(FLEUR_MEMORY.fresh())) {
+      el('restart-error').textContent = 'Your browser could not save a fresh beginning. Your current café is still here. Please try again.';
+      el('restart-error').hidden = false; return;
+    }
+    location.reload();
+  };
   function act(chosen) {
     if (talk || working || modal) return;
     var n = chosen && chosen.id ? chosen : next(); if (!n) return;
@@ -303,7 +326,7 @@
     if(save.stories.growing){x=L.sparePot.x;y=L.sparePot.y;rect(x-5,y-7,10,7,'#a94f3f');rect(x-7,y-9,14,3,'#c08a58');rect(x-4,y-9,8,1,'#493b30');}
     if(has('open')){rect(659,305,55,18,'#8a6142');rect(664,309,45,2,'#a48863');rect(664,317,45,2,'#a48863');}
   }
-  function room(){rect(0,0,960,600,'#201e24');rect(194,122,572,398,'#15191a');rect(208,132,544,178,has('walls')?'#a4967b':'#736f62');
+  function room(){rect(0,0,960,600,'#1b2020');rect(194,122,572,398,'#15191a');rect(208,132,544,178,has('walls')?'#a4967b':'#736f62');
     for(var row=0;row<11;row++){var yy=310+row*18;rect(208,yy,544,18,row%2?'#775b46':'#80634c');rect(208,yy,544,1,'#493e34');for(var col=0;col<6;col++){var xx=208+col*108+(row%2)*47;if(xx<752)rect(xx,yy,1,18,'#554335');if(xx+12<752)rect(xx+12,yy+7,Math.min(42,752-xx-12),1,'#896c52');}}
     rect(208,300,544,10,'#493f33');rect(202,132,8,382,'#514639');rect(750,132,8,382,'#514639');rect(202,510,556,10,'#a08663');
     var activeWork=working||heldWork;
