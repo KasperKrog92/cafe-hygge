@@ -18,7 +18,7 @@ one-second dark pause lead into the apartment. In idle mode, Nora spends a
 90-second unattended evening there before the two-second dawn fade leads to
 07:30. After the one-time arrival, game mode repeats only the indoor desk,
 reading and resting routine until **go to sleep** is chosen;
-closing the notebook does not start a new day. The apartment renderer applies
+closing the evening thoughts does not start a new day. The apartment renderer applies
 no timer-based fade in game mode, including at indoor loop boundaries; only
 explicit sleep starts the morning transition. Sleep jumps to 07:30 and the
 same dawn entrance, saving the transition immediately. Reloading a game evening
@@ -49,7 +49,10 @@ A normal open-café reload retains the existing seeded-room behavior.
 
 Savings begin at 30 kr. Removing a finished cup at pickup adds 1 kr, once;
 seeded drinks and unfinished orders add nothing. Home offers a 30 kr plant, 60 kr table set or 30 kr fireplace cleaning. One
-choice per evening is optional; savings and unfinished jobs never expire. The
+choice per evening is optional. The planner appears as Nora’s floating thoughts over
+the apartment: a short first-person question and three simple choices with pixel
+gold-coin prices. Chosen items show “chosen”; completed items show a checkmark.
+There are no item descriptions, instructions or notebook panel; savings and unfinished jobs never expire. The
 plant has no floor footprint; the table uses a reserved area until complete. No costs accrue from absence.
 New captions: “home, with a book and a familiar little shadow.” and
 “a little green by the window.” Both use the ordinary caption queue.

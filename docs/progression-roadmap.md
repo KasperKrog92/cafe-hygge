@@ -49,7 +49,7 @@ who never buys anything still has a pleasant, functioning place indefinitely.
 
 **Evening rule (updated 6 September 2026):** idle mode automatically finishes
 its 90-second apartment routine and starts the next morning. Game mode stays
-at home until the player chooses **go to sleep**, whether the notebook is open
+at home until the player chooses **go to sleep**, whether the evening thoughts are open
 or closed. After arriving once, Nora and the cat relax on continuous indoor
 routes without returning to the entrance. Reloading
 preserves the evening. Sleep immediately advances to 07:30 and the existing
@@ -59,7 +59,7 @@ routine finishes. Confirmed purchases proceed the following morning; nothing
 expires while the player lingers.
 
 Already authorized practical work may finish while unattended. Its result
-persists, with an optional quiet note in the plan book. Important conversations,
+persists, with an optional quiet note among the evening thoughts. Important conversations,
 relationship choices and ceremonial unveilings wait until invited by the player.
 An installed bookshelf can become usable immediately without automatically
 playing a meaningful conversation about it. This distinction deliberately

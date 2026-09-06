@@ -121,20 +121,20 @@
     btnHome.hidden = world.shop.phase === 'home';
     if (!world.plannerOpen && planner.open) planner.close();
     if (!planner.open) return;
-    document.getElementById('plan-balance').textContent = 'savings · ' + l.savings + ' kr';
-    const status = l.plant.stage === 'installed' ? 'Already settled by the café window.' :
-      l.plant.stage !== 'available' ? 'Chosen and paid for. Nora will take care of the rest.' : 'one plant · 30 kr';
-    document.getElementById('plan-status').textContent = status;
-    buyPlant.hidden = l.plant.stage !== 'available';
-    buyPlant.disabled = l.plannedTonight || l.savings < SIM.plantProject.price;
+    function refreshChoice(button, stage, price) {
+      const available = stage === 'available';
+      button.disabled = !available || l.plannedTonight || l.savings < price;
+      button.querySelector('.thought-price').hidden = !available;
+      const state = button.querySelector('.thought-state');
+      state.hidden = available;
+      state.textContent = stage === 'installed' ? '✓' : 'chosen';
+      button.setAttribute('aria-label', button.firstElementChild.textContent + ', ' +
+        (available ? price + ' coins' : stage === 'installed' ? 'complete' : 'chosen'));
+    }
+    refreshChoice(buyPlant, l.plant.stage, SIM.plantProject.price);
     Object.keys(SIM.projects).forEach(function (id) {
-      const p = l.projects[id], d = SIM.projects[id], button = document.getElementById('buy-' + id);
-      button.hidden = p.stage !== 'available';
-      button.disabled = l.plannedTonight || l.savings < d.price;
-      document.getElementById('status-' + id).textContent = p.stage === 'installed' ? 'Settled in the café.' :
-        p.stage === 'available' ? '' : p.stage === 'working' ? 'Underway: ' + d.phases[p.step] + '. It can wait.' : 'Chosen and paid for. Nora will take care of it.';
+      refreshChoice(document.getElementById('buy-' + id), l.projects[id].stage, SIM.projects[id].price);
     });
-    document.getElementById('plan-choice').textContent = l.plannedTonight ? 'Something chosen for tomorrow. The rest can wait for another evening.' : 'One small plan this evening, if you like.';
   }
   btnMode.addEventListener('click', function () {
     SIM.setMode(world, world.memory.life.mode === 'idle' ? 'game' : 'idle'); refreshLife();

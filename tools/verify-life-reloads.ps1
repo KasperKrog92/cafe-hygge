@@ -60,7 +60,7 @@ try {
   Eval-Life 'lifeTestFrame(performance.now()); true' | Out-Null
   & $browser --session $testSession screenshot (Join-Path $output 'evening-planner.png')
   if($LASTEXITCODE -ne 0){throw 'Screenshot failed'}
-  & $browser --session $testSession find role button click --name 'choose the plant'
+  & $browser --session $testSession find role button click --name 'A plant by the window, 30 coins'
   if($LASTEXITCODE -ne 0){throw 'Purchase UI failed'}
   Eval-Life "(()=>{let s=__world.memory.life.savings;document.getElementById('buy-plant').click();if(s!==__world.memory.life.savings)throw Error('double charge');lifeTestFrame(performance.now());return true})()" | Out-Null
   & $browser --session $testSession press Escape
@@ -109,4 +109,3 @@ try {
   if($LASTEXITCODE -ne 0 -or ($sessions -match $testSession)){throw 'Cleanup not confirmed'}
   Write-Output $sessions
 }
-

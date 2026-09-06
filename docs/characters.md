@@ -12,7 +12,7 @@ chosen scarf. Home uses authored routes through `L.home.lane`, below the desk
 and bed, with a side approach onto the bed. The cat investigates boxes and
 rests beside her. Arrival at the door happens once. Game mode loops only the indoor desk,
 reading and resting routine until the player chooses **go to sleep**, with or
-without an open notebook. Nora and the cat join matching positions at the loop
+without open evening thoughts. Nora and the cat join matching positions at the loop
 boundary, without replaying arrival or jumping across the room. Idle mode finishes the routine
 automatically. Sleep advances directly to the short dawn transition and café entrance.
 

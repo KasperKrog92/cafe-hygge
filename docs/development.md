@@ -137,7 +137,7 @@ URL. It stops automatic frame/interval drivers and explicitly ticks the real
 production world, allowing exact persisted phases to be inspected after page
 reload. The regular life suite proves automatic idle cycling and game evenings that
 wait for sleep separately.
-Reports and the actual notebook screenshot go to `.art-review/life-reloads/`.
+Reports and the actual evening-planner screenshot go to `.art-review/life-reloads/`.
 This does not claim a Safari execution or full browser-process restart test. `SIM.create({})` creates a private simulated café;
 `SIM.create()` retains production boot behavior. The suites use private worlds,
 while page reloads also isolate dev controls and audio settings.
