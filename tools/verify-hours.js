@@ -10,6 +10,11 @@
   try {
     ['empty', 'busy', 'topShelf', 'piano'].forEach(function (scenario) {
       const w = SIM.create(); window.__world = w;
+      // Remove boot's already-seated cast before adding the scenario's guests.
+      // Otherwise the five forced arrivals overfill the seven-person café.
+      w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];
+      w.seats.forEach(function (s) { s.taken = false; });
+      w.tables.forEach(function (t) { t.items = []; });
       if (scenario === 'busy') {
         __dev.spawn({ couple: true, umbrella: true, ownBook: true });
         __dev.spawn({ laptop: true, umbrella: true });
