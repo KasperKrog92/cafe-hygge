@@ -94,6 +94,15 @@
         px(g, cx + 4, cy - 6, 16, 2, 'rgba(90,58,34,0.3)');
         px(g, cx - 8, cy - 2, 13, 2, 'rgba(90,58,34,0.22)');
         px(g, cx + 10, cy - 9, 2, 2, '#6e4c30');                  // a knot
+        // candle jar stays visible while its flame follows the ritual state
+        px(g, cx - 4, cy - 14, 8, 8, '#c9b28a');
+        px(g, cx - 3, cy - 12, 6, 3, '#f0e0c8');
+        if (tb.candle > 0.3) {
+          g.globalAlpha = tb.candle * (0.6 + 0.4 * Math.sin(world.t * 9 + i * 2.1));
+          px(g, cx - 1, cy - 17, 2, 4, '#f5b942');
+          px(g, cx - 1, cy - 19, 2, 2, '#f8dc8a');
+          g.globalAlpha = 1;
+        }
         // Back-plane props first, regardless of their insertion/service order.
         tb.items.forEach(function (it) {
           if (!it.hidden && !SCENE.tableItemOffsetY(tb, it)) drawTableItem(g, cx, cy, it);
@@ -109,15 +118,7 @@
           const offset = SCENE.tableItemOffsetY(tb, it);
           if (!it.hidden && offset) drawTableItem(g, cx, cy + offset, it);
         });
-        // candle jar stays visible while its flame follows the ritual state
-        px(g, cx - 4, cy - 14, 8, 8, '#c9b28a');
-        px(g, cx - 3, cy - 12, 6, 3, '#f0e0c8');
-        if (tb.candle > 0.3) {
-          g.globalAlpha = tb.candle * (0.6 + 0.4 * Math.sin(world.t * 9 + i * 2.1));
-          px(g, cx - 1, cy - 17, 2, 4, '#f5b942');
-          px(g, cx - 1, cy - 19, 2, 2, '#f8dc8a');
-          g.globalAlpha = 1;
-        }
+
       } });
     });
 
@@ -455,7 +456,7 @@
     px(g, x - 6, y - 6, 12, 2, '#8a6142');
   }
 
-  /* a low round table beside each nook chair — just big enough for a cup */
+  /* a low round table beside each reading chair — just big enough for a cup */
   function drawSideTable(g, sx, sy, tb, world) {
     ell(g, sx, sy + 10, 15, 4, 'rgba(20,12,8,0.2)');
     px(g, sx - 3, sy, 6, 10, '#5a3d28');             // pedestal
@@ -465,7 +466,6 @@
     ell(g, sx, sy - 2, 16, 6, '#8a6142');
     ell(g, sx, sy - 3, 12, 4, '#96704c');
     px(g, sx - 6, sy - 5, 10, 2, 'rgba(90,58,34,0.3)');   // grain
-    tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, sx, sy - 2, it); });
     const cx = sx + 7;
     px(g, cx - 3, sy - 12, 6, 6, '#c9b28a');
     px(g, cx - 2, sy - 10, 4, 2, '#f0e0c8');
@@ -475,6 +475,8 @@
       px(g, cx - 1, sy - 17, 2, 2, '#f8dc8a');
       g.globalAlpha = 1;
     }
+    // Crockery sits on the near plane, in front of the candle.
+    tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, sx, sy - 2, it); });
   }
 
   /* a slim poseur table under each window, tall enough that its top meets

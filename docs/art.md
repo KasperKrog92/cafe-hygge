@@ -181,6 +181,11 @@ y=232 ── wall meets floor (L.wallY — kept high so the floor, the life laye
           in front (L.orderSpot, L.pickupSpot; the queue fans back-left)
           fireside armchair pair flanking the hearth rug, facing in toward
           it (L.armchairs; dir ±1, the right chair is the mirrored art);
+          two round wooden side tables at the inner arms (L.fireTables),
+          reusing the nook pedestal and candle, leave the cat's rug and hearth
+          approach open. Each carries its own sitter's cup or pastry plate;
+          on dining and side tables, candle jars and flames draw before the
+          serving items, so drinks and plates overlap them in front;
           under window 1, `L.catCorner` holds a worn red cushion plus
           terracotta food and blue-grey water bowls (quantized visible levels)
 y=368 ── the walking lane (L.lane — keep this corridor clear

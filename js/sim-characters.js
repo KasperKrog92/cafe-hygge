@@ -496,7 +496,7 @@
     const tb = world.tables[ti];
     const busX = tb.piano ? L.piano.bench.x : tb.x + (tb.small ? -28 : 24);
     // tall window tables live on the wall; Nora stands at their floor line
-    const busY = tb.piano ? L.piano.bench.y : (tb.tall || tb.artist) ? tb.base + 2 : tb.y + 20;
+    const busY = tb.piano ? L.piano.bench.y : (tb.tall || tb.artist) ? tb.base + 2 : tb.y + (tb.fireside ? 34 : 20);
     const dropX = (tb.piano || tb.small || tb.artist) ? tb.busVia : busX;
     const route = [
       { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },

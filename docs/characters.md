@@ -239,7 +239,10 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
      pick it back up. Steam rises while a drink is hot (first ~45 s); the iced
      matcha never steams. Either matcha may earn one first-sip caption check
      per visitor.
-     Nook sitters rest their drink on their own little side table.
+     Nook and fireside sitters rest drinks or pastry plates on their own
+     little side tables. Fireside cups use the same hide/lift/replace sip
+     sequence as other tables; Nora clears abandoned crockery from the
+     front, below the chair footprints, via each table's declared `busVia`.
    - **Reading** (readers): page-turn sound every 12–26 s; occasional caption.
    - **Laptop work** (day-weighted non-readers at dining tables): an open
      16 px laptop shares the tabletop with the drink. Every 6–14 s they type

@@ -902,11 +902,13 @@
         else if (s.artist && !tb.artist) problems.push('seat[' + i + '] is an artist seat but table ' + s.table + ' is not the paint table');
         else if (!s.artist && tb.artist) problems.push('seat[' + i + '] points at the paint table but is not the artist stool');
         else if (s.nook && !tb.small) problems.push('seat[' + i + '] is a nook seat but table ' + s.table + ' is not a small side table');
-        else if (!s.nook && tb.small) problems.push('seat[' + i + '] points at small side table ' + s.table + ' but is not a nook seat');
+        else if (s.armchair && !tb.fireside) problems.push('seat[' + i + '] has no fireside table');
+        else if (!s.armchair && tb.fireside) problems.push('seat[' + i + '] uses a fireside table but is not an armchair');
+        else if (!s.nook && !s.armchair && tb.small) problems.push('seat[' + i + '] points at small side table ' + s.table + ' but is not a reading chair');
         else if (s.window && !tb.tall) problems.push('seat[' + i + '] is a window seat but table ' + s.table + ' is not a tall window table');
         else if (!s.window && tb.tall) problems.push('seat[' + i + '] points at tall window table ' + s.table + ' but is not a window seat');
-      } else if (!s.armchair) {
-        problems.push('seat[' + i + '] has no table and is not an armchair');
+      } else {
+        problems.push('seat[' + i + '] has no serving table');
       }
     });
     // window seats must perch on whole pixels inside content-safe bounds

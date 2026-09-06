@@ -67,6 +67,7 @@
     },
     // fireside pair flanking the hearth rug; dir = facing (+1 right, -1 left),
     // seat sits at x + 6*dir. Backs top out at y-52 = 244, just under the wall line.
+    fireTables: [{ x: 346, y: 298, busVia: 346 }, { x: 430, y: 298, busVia: 430 }],
     armchairs: [
       { x: 298, y: 296, dir: 1 },
       { x: 478, y: 296, dir: -1 }
@@ -279,7 +280,10 @@
   L.armchairs.concat(L.library.chairs).forEach(function (A, i) {
     L.footprints.push({ name: 'wing chair ' + i, seat: true, frontClearance: 48, x0: A.x - 32, x1: A.x + 32, y0: A.y - 16, y1: A.y + 14 });
   });
-  L.library.sideTables.forEach(function (s, i) {
+    L.fireTables.forEach(function (s, i) {
+      L.footprints.push({ name: 'fireside table ' + i, x0: s.x - 16, x1: s.x + 16, y0: s.y - 4, y1: s.y + 12, passable: true });
+    });
+    L.library.sideTables.forEach(function (s, i) {
     L.footprints.push({ name: 'side table ' + i, x0: s.x - 16, x1: s.x + 16, y0: s.y - 4, y1: s.y + 12, passable: true });
   });
   L.library.lamps.forEach(function (p, i) {

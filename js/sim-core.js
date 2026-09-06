@@ -191,6 +191,15 @@
       piano: true, taken: false
     });
 
+    // Append serving surfaces after the historical table/seat bindings so
+    // window, artist and piano indices stay stable.
+    const firesideSeats = world.seats.filter(function (s) { return s.armchair; });
+    L.fireTables.forEach(function (st, i) {
+      firesideSeats[i].table = world.tables.length;
+      world.tables.push({ x: st.x, y: st.y, tag: 'by the fire', small: true,
+        fireside: true, busVia: st.busVia, items: [], candle: 0, candleTarget: 0 });
+    });
+
     // a few patrons are already settled in
     // (seat 10 = the first nook chair, 12 = the first window perch)
     seedPatron(world, 1);
