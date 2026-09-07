@@ -105,17 +105,24 @@ The starting café must already meet its standard of warmth and believable life.
 
 | State | Room and equipment | Life it supports |
 | --- | --- | --- |
-| C0 — First opening | Boarded-over windows, small counter and coffee equipment, a tiny cake stand, warm lighting and entrance equipment. No room rugs, drapes, wall menu, matcha or mantel decoration; hearth unused. Nora arrives carrying the cat, sets out the entrance and counter equipment, then visibly assembles two tables and their chairs. | Setup starts on the player's first entry, runs autonomously and saves its progress. Customers enter only after both table sets are ready. Simple coffee, chamomile tea and cardamom buns support complete service; patrons bring their own books. |
+| C0 — First opening | A smaller room matching the tighter reference framing; boarded-over windows, small counter and coffee equipment, a tiny cake stand, warm lighting and entrance equipment. No room rugs, drapes, wall menu, matcha or mantel decoration; hearth unused. Nora arrives carrying the cat, sets out the entrance and counter equipment, then visibly assembles two tables and their chairs. | Setup starts on the player's first entry, runs autonomously and saves its progress. Customers enter only after both table sets are ready. Simple coffee, chamomile tea and cardamom buns support complete service; patrons bring their own books. |
 | C1 — Settling in | First plant, small table assembled, cleaned hearth, a few personal touches. | More places to settle; watering, fire tending and improvement work become part of the day. |
 | C2 — A reading place | Delivered bookshelf, then partially and eventually fully stocked shelves; an optional reading chair and lamp. | Browsing and borrowed-book reading become available as their furniture and contents are ready. Holger's familiarity can support a reading-corner story. |
 | C3 — A cared-for café | Repainted walls, repaired window frames, coordinated small furnishings; the room keeps its familiar layout. | Contractor visits provide temporary daytime activity; completed work improves appearance without making the previous room feel like failure. |
 | C4 — A neighborhood gathering place | Optional piano, art display and developed planting. | Music, exhibited work and deeper regular relationships, each supported by its own small sequence. |
-| C5 — Room beyond the windows | Furnished terrace, outdoor planting and the equipment needed to serve it. | Existing waterfront ambience and terrace service join the developed café. The view and passing life remain visible from the beginning. |
+| C5 — Room beyond the windows | Furnished terrace, outdoor planting and the equipment needed to serve it. | Existing waterfront ambience and terrace service join the developed café. The view becomes visible when the boarded windows are opened. |
 
 Do not remove all charming details to create things to sell back. Weather,
 sound, expressive characters and appealing light belong in C0. Every optional
 seat, shelf and activity must be conditional in both rendering and simulation.
 Absent furniture must never leave a patron walking toward an invisible target.
+
+The first room is 832×516 master pixels, with tighter right and front boundaries
+and a 832×468 desktop crop. Objects retain their original pixel dimensions.
+A later **room expansion upgrade** opens the full 960×600 café, adding space
+at the right and front. Expansion is separate from furnishing purchases; it
+does not grant decorations or equipment. Its price, construction sequence and
+purchase option remain future work. Existing furnished saves keep the full room.
 
 ## Menu, counter and kitchen progression
 

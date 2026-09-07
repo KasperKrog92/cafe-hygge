@@ -5,7 +5,7 @@
   function start() {
   /* ---------- canvases ----------
      Everything renders into an offscreen 960×600 master canvas; the visible
-     canvas shows either the full 16:10 master or its 960×540 16:9 crop,
+     canvas shows the current room's extent (small café or full room),
      scaled by a whole number of *device* pixels (never fractional) so art
      pixels stay uniform. */
 
@@ -24,7 +24,7 @@
   window.__world = world; // handy for tinkering in the console
 
   /* ---------- viewport manager ----------
-     Cover-fit: the master has croppable overscan (visible height 540–600,
+     Cover-fit: each room has croppable overscan (full-room height 540–600,
      visible width 936–960), so any window aspect between ~1.56 and 16:9 is
      filled edge-to-edge with zero letterbox. Exact integer device-pixel
      scales (e.g. fullscreen 1920×1080 / 1920×1200 → ×2) present through the
@@ -35,6 +35,7 @@
      portrait) get the minimal letterbox on one axis only. */
 
   const view = { x: 0, y: SCENE.VIEW_Y, w: SCENE.VIEW_W, h: SCENE.VIEW_H };
+  let shownRoom = null;
 
   function fit() {
     const dpr = window.devicePixelRatio || 1;
@@ -44,14 +45,15 @@
     const A = vw / vh;
 
     // choose the crop window inside the overscan budgets
-    let mw = SCENE.W;
-    let mh = Math.max(SCENE.VIEW_H, Math.min(SCENE.H, Math.round(SCENE.W / A)));
-    if (mw / mh > A) mw = Math.max(SCENE.VIEW_MIN_W, Math.min(SCENE.W, Math.round(mh * A)));
+    const room = SCENE.presentation(world); shownRoom = room;
+    let mw = room.w;
+    let mh = Math.max(room.minH, Math.min(room.h, Math.round(room.w / A)));
+    if (mw / mh > A) mw = Math.max(room.minW, Math.min(room.w, Math.round(mh * A)));
     view.w = mw;
     view.h = mh;
-    view.x = (SCENE.W - mw) >> 1;
+    view.x = (room.w - mw) >> 1;
     // distribute vertical crop like the designed 16:9 crop (36 top / 24 bottom)
-    view.y = Math.round((SCENE.H - mh) * (SCENE.VIEW_Y / (SCENE.H - SCENE.VIEW_H)));
+    view.y = Math.round((room.h - mh) * (room.top / (room.h - room.minH)));
 
     const scale = Math.min(vw / mw, vh / mh);
     const sInt = Math.round(scale);
@@ -291,6 +293,7 @@
   /* ---------- render ---------- */
 
   function render() {
+    if (shownRoom !== SCENE.presentation(world)) fit();
     // the whole depth-sorted frame — shared with __dev.shot so a headless
     // capture renders the exact same list (js/scene-fx.js)
     SCENE.composeFrame(g, world);

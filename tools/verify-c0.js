@@ -12,6 +12,7 @@
         Object.values(w.regulars).forEach(r=>{r.day=SIM._.dayIndex(w);r.hour=23;r.force=false;});
       }
       SIM.update(w,.25);
+      bounds(w);
     }
     throw Error('C0 timeout: '+w.shop.phase+'/'+w.barista.state);
   }
@@ -27,6 +28,14 @@
     check(SCENE.catSpotAvailable(w,(w.cat.target||{}).id||''),'absent cat destination');
     check(!w.barista.state.startsWith('piano'),'Nora seeks missing piano');
   }
+  function bounds(w) {
+    if(w.shop.phase==='home')return;
+    const room=SCENE.room(w);
+    [w.barista,w.cat].concat(w.patrons).forEach(e=>{
+      check(e.x>=0&&e.x<=room.w-12&&e.y<=room.floorBottom+1,
+        'outside small room: '+e.name+' '+e.state+' '+e.x+','+e.y);
+    });
+  }
   // Exercise all installed subsets, including interleaved private worlds;
   // no shared navigation/background cache may leak the other room's layout.
   for(let mask=0;mask<8;mask++) {
@@ -38,6 +47,7 @@
     const full=__dev.furnishedWorld({random:SIM.seededRandom(90+mask)});
     for(let n=0;n<4800;n++) {
       SIM.update(w,.25);SIM.update(full,.25);
+      bounds(w);
       if(n%240===0) { shape(w);audit(w); }
     }
     shape(w);audit(w);audit(full);

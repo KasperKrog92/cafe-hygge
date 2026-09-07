@@ -172,7 +172,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v4; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v5; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -260,3 +260,8 @@ the real splash pause and click/audio entry, advances setup, then observes a
 real-time cappuccino cycle. Use `__dev.furnishedWorld()` for legacy full-room
 fixtures and `__dev.modestWorld()` for a private café after its real initial
 setup; neither changes production persistence.
+
+`tools/verify-room.ps1` verifies the small-room save through a real reload,
+captures the 16:9 viewport, checks the future full-room presentation switch,
+and checks apartment framing. `verify-c0.js` checks every simulated actor
+against the smaller floor boundaries during service and all existing jobs.

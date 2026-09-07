@@ -192,7 +192,8 @@
     else if (age > dur - 0.8) a = Math.max(0, (dur - age) / 0.8);
     g.save();
     g.globalAlpha = a;
-    g.drawImage(capCache.canvas, 24, 568 - capCache.canvas.height);
+    const room = SCENE.presentation(world);
+    g.drawImage(capCache.canvas, 24, room.h - 32 - capCache.canvas.height);
     g.restore();
   };
 

@@ -24,7 +24,15 @@
   };
   SCENE.layoutKey = function (world) {
     const life = world && world.memory && world.memory.life;
-    return life ? JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'hearth') : 'full';
+    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'hearth') : 'full';
+  };
+  // Room extent is independent of furnishing ownership: a later expansion
+  // exposes more usable floor without changing the size of the pixel art.
+  SCENE.room = function(world) {
+    return world.memory && world.memory.life.room === 'small' ? L.rooms.small : L.rooms.full;
+  };
+  SCENE.presentation = function(world) {
+    return world.shop.phase === 'home' ? L.rooms.full : SCENE.room(world);
   };
   SCENE.activeGeometry = function (world, list) {
     return list.filter(function (item) { return SCENE.hasFurniture(world, item.furniture); }).map(function (item) {
@@ -74,6 +82,10 @@
       catStops: [{ x: 278, y: 320 }, { x: 490, y: 320 }, { x: 655, y: 374 }]
     },
     firstPlant: { x: 250, y: 210, pickup: { x: 54, y: 300 }, work: { x: 250, y: 268 } },
+    rooms: {
+      small: {w:832,h:516,minW:824,minH:468,top:36,floorBottom:496},
+      full: {w:960,h:600,minW:936,minH:540,top:36,floorBottom:566}
+    },
     basic: {
       counter:{x:640,w:176,slabY:264,frontY:278,baseY:306},
       backBar:{x:646,w:84,slabY:222,frontY:240,baseY:254},

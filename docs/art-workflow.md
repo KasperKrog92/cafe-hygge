@@ -254,3 +254,8 @@ bare hearth, two table sets and no optional room furnishings. Art audits found
 zero problems. All twelve browser suites passed (the animation fixture rerun
 is in `first-opening-animation-final`), alongside 75 real setup/project reloads,
 seven home/plant reloads, two-tab takeover and a real-time cappuccino order.
+
+The compact-room pass is in `.art-review/compact-after/`; `viewport-small.png`
+shows the actual 16:9 canvas and `viewport-expanded.png` verifies the future
+full-room presentation with the same furnishings. Default `__dev.shot()` now
+exports the active room extent; explicit regions still use master coordinates.

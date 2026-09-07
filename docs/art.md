@@ -660,3 +660,8 @@ Entrance equipment includes the doormat, umbrella stand and cat corner. Two
 table sets appear in assembly stages, then join the usual depth-sorted furniture.
 Optional furniture and its floor geometry share saved availability flags.
 Existing saves retain the fully furnished room.
+
+
+C0 now occupies 832×516 master pixels (832×468 at 16:9), matching the tighter
+reference. The counter ends just inside the right edge and the floor ends
+shortly beyond the two tables. Full-room art remains 960×600 for expansion.

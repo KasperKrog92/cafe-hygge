@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 4;
+  const KEY = 'cafe-hygge-save', VERSION = 5;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -63,6 +63,7 @@
         if(first.step===12) requireShape(first.time===0 && s.life.furniture['table-window'] &&
           s.life.furniture['table-hearth'], 'unfinished starting tables');
       }
+      if (version >= 5) requireShape(s.life.room === 'small' || s.life.room === 'full', 'invalid room size');
       return s;
     }
     function migrate(input) {
@@ -92,7 +93,7 @@
   function freshLife() {
     return { mode: 'idle', savings: 30, hour: 8.4, homeTime: 0,
       plant: { stage: 'available', time: 0 }, projects: freshProjects(), furniture: furnishings(false),
-      firstOpening:{step:0,time:0}, plannedTonight: false, checkpoint: null };
+      firstOpening:{step:0,time:0}, room:'small', plannedTonight: false, checkpoint: null };
   }
   function freshProjects() {
     return { table: { stage: 'available', step: 0, time: 0 }, fireplace: { stage: 'available', step: 0, time: 0 } };
@@ -144,6 +145,9 @@
   }, 3: function (s) {
     createCodec(3, {}).validate(s);
     s.version = 4; s.life.furniture = furnishings(true); s.life.firstOpening={step:12,time:0}; return s;
+  }, 4: function (s) {
+    createCodec(4, {}).validate(s);
+    s.version = 5; s.life.room = s.life.furniture['full-counter'] ? 'full' : 'small'; return s;
   } });
   MEMORY.VERSION = VERSION;
   MEMORY.furnishings = furnishings;

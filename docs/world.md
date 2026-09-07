@@ -428,3 +428,7 @@ hearth stays cold until its existing improvement is installed. Boarded windows
 have no curtain routine or window light beams. Optional furniture controls
 its associated paths, activities and perches; absent furniture is never a target.
 The initial menu offers espresso, cappuccino, chamomile tea and cardamom buns.
+
+The starting room ends at x=832 and y=516; navigation corners stay within
+x=810 and y=496. Saved room size keeps future expansion independent of furniture.
+The full café retains its old bounds. Apartment framing remains unchanged.

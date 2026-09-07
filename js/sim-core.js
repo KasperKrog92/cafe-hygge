@@ -567,7 +567,8 @@
       [b.x0 - 1, b.x1 + 1].forEach(function (x) {
         [b.y0 - 1, b.y1 + 1].forEach(function (y) {
           const p = { x: x, y: y };
-          if (x >= 22 && x <= L.W - 22 && y >= L.wallY && y <= 566 &&
+          const room = SCENE.room({memory:(activeContext || productionContext).memory.state});
+          if (x >= 22 && x <= room.w - 22 && y >= L.wallY && y <= room.floorBottom &&
               !boxes.some(function (box) { return insideWalkBox(p, box); })) corners.push(p);
         });
       });

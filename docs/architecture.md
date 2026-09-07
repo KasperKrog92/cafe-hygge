@@ -65,7 +65,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v4, migrated through v1/v2/v3) contains `mode`, integer `savings`, `hour`,
+`memory.life` (v5, migrated through v1/v2/v3/v4) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `plant: {stage,time}`, `projects`, `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Nora's position/path. Initial savings and the plant price are
 30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -269,7 +269,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v4; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v5; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -447,3 +447,9 @@ a resumable shop checkpoint. `sim-life.js` commits setup progress and furniture
 together. `SCENE.activeGeometry` and layout keys rebuild private-world navigation
 and background caches when availability changes. Tables and seats are installed
 before ordinary simulation starts; optional routines share the same flags.
+
+Version 5 adds `life.room` (`small` or `full`) independently of furniture.
+Version 4 saves migrate according to their existing counter variant; earlier
+furnished saves retain full size. `SCENE.room` supplies the navigation bounds,
+while `SCENE.presentation` keeps the apartment full-size. Main refits on a room
+change. Captions and default dev shots follow the active room extent.

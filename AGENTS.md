@@ -185,7 +185,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes; character helpers supplied explicitly. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
-| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v4 checkpoints. |
+| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v5 checkpoints. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
@@ -202,6 +202,10 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 
 ## Invariants & gotchas (learned the hard way)
 
+- **C0 uses a smaller 832×516 room (832×468 at 16:9)** with floor bounds in
+  `SCENE.L.rooms.small`. The full room remains available for a future expansion;
+  its size is saved separately as `life.room`. The apartment always uses full
+  framing.
 - **The master canvas is 960×600 (16:10)**; everything renders there in
   master coordinates. A 16:9 window shows the 960×540 crop (rows 36–576);
   other aspects get a variable crop (visible height 540–600, width 936–960 —

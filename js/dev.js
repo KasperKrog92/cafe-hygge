@@ -516,6 +516,7 @@
     if (!o.memory) {
       const state = MEMORY.codec.fresh(); state.life.furniture = MEMORY.furnishings(true);
       state.life.firstOpening={step:12,time:0};
+      state.life.room='full';
       o.memory = MEMORY.createStore({state:state});
     }
     return SIM.create(o);
@@ -649,7 +650,7 @@
      and upscale by an integer with nearest-neighbour (pixel art). Returns a
      `data:image/png` URL and logs its length. Works with the tab hidden and
      the preview pane closed — this is the supported headless capture.
-       __dev.shot()                  whole 960×600 scene
+       __dev.shot()                  current room extent
        __dev.shot('fireside')        a named region (D.regions)
        __dev.shot('nora')            cropped around a named entity
        __dev.shot({x,y,w,h,scale})   an arbitrary crop
@@ -662,7 +663,8 @@
 
     let box, name;
     if (target == null) {
-      box = { x: 0, y: 0, w: SCENE.W, h: SCENE.H }; name = 'scene';
+      const room = SCENE.presentation(w);
+      box = { x: 0, y: 0, w: room.w, h: room.h }; name = 'scene';
     } else if (typeof target === 'string') {
       name = target;
       box = regions[target] || entityBox(w, target);
@@ -832,6 +834,7 @@
     walkTargets(w).forEach(function (t) {
       if (/^busSpot/.test(t.name) || t.name === 'umbrellaSpot') return;
       const scratch = { x: L.doorSpot.x, y: L.lane, path: null, pose: 'stand', facing: 1, speed: 0 };
+      if (/^project /.test(t.name)) scratch.kind = 'barista';
       SIM._.makePath(scratch, t.x, t.y);
       if (!scratch.path.length) problems.push('no walking route to ' + t.name);
       const route = [{ x: scratch.x, y: scratch.y }].concat(scratch.path);

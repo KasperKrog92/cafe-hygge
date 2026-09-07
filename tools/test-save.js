@@ -32,19 +32,28 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
-  await test('v4 starts small and preserves every furnished v3 job/history record', () => {
+  await test('v5 starts small and preserves every furnished v3 job/history record', () => {
     const b=boot();
     b.run(`var fresh=MEMORY.codec.fresh(),small=SIM.create({memory:MEMORY.createStore({state:fresh})});
       if(small.tables.length||small.seats.length||small.shop.phase!=='settling')throw Error('first arrival skipped');
       for(let i=0;i<4000&&small.shop.phase==='settling';i++)SIM.update(small,.25);
       if(small.tables.length!==2||small.seats.length!==4||small.fire.level!==0||small.shop.phase!=='open')throw Error('first setup failed');
+      if(SCENE.room(small).w!==832||SCENE.room(small).floorBottom!==496)throw Error('starting room is full size');
+      for(const fullCounter of [false,true]) {
+        var v4=MEMORY.codec.fresh();v4.version=4;delete v4.life.room;v4.life.furniture['full-counter']=fullCounter;
+        var migrated=MEMORY.codec.decode(JSON.stringify(v4));
+        if(migrated.error||migrated.state.life.room!==(fullCounter?'full':'small'))throw Error('v4 room migration');
+      }
+      small.memory.life.room='full';
+      if(SCENE.room(small).w!==960||small.tables.length!==2)throw Error('expansion changes furniture');
+      small.memory.life.room='small';
       for(const stage of ['available','purchased','scheduled','arrived','working','installed']) {
         var old=MEMORY.codec.fresh();old.version=3;delete old.life.furniture;
         old.life.savings=173;old.flags.kept=true;old.bonds.gerda={visits:9};
         old.arcs['gerda-scarf']={stage:0,progress:2,pendingBeat:'finished'};
         old.life.projects.table={stage,step:stage==='installed'?6:stage==='working'?3:0,time:stage==='working'?1.25:0};
         var before=JSON.stringify(old),next=MEMORY.codec.decode(before);
-        if(next.error||JSON.stringify(old)!==before||next.state.version!==4)throw Error('migration failed');
+        if(next.error||JSON.stringify(old)!==before||next.state.version!==MEMORY.VERSION)throw Error('migration failed');
         if(JSON.stringify(next.state.life.projects)!==JSON.stringify(old.life.projects)||next.state.life.savings!==173||
            JSON.stringify(next.state.arcs)!==JSON.stringify(old.arcs)||!next.state.flags.kept||next.state.bonds.gerda.visits!==9)throw Error('history lost');
         var full=SIM.create({memory:MEMORY.createStore({state:next.state})});
@@ -105,7 +114,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
   });
   await test('borrowed covers keep their colors when books return out of order', () => {
     const b = boot();
-    b.run(`var state=MEMORY.codec.fresh();state.life.furniture=MEMORY.furnishings(true);state.life.firstOpening={step:12,time:0};
+    b.run(`var state=MEMORY.codec.fresh();state.life.furniture=MEMORY.furnishings(true);state.life.room="full";state.life.firstOpening={step:12,time:0};
       var w = SIM.create({random:SIM.seededRandom(42),memory:MEMORY.createStore({state})});
       w.patrons = [];
       var readers = [{}, {}, {}];
@@ -224,8 +233,8 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
     const b = boot();
     b.run(`var writesA=0,writesB=0,storeA=MEMORY.createStore(),storeB=MEMORY.createStore();
       storeA.save=()=>writesA++;storeB.save=()=>writesB++;
-      storeA.state.life.furniture=MEMORY.furnishings(true);storeA.state.life.firstOpening={step:12,time:0};
-      storeB.state.life.furniture=MEMORY.furnishings(true);storeB.state.life.firstOpening={step:12,time:0};
+      storeA.state.life.furniture=MEMORY.furnishings(true);storeA.state.life.room="full";storeA.state.life.firstOpening={step:12,time:0};
+      storeB.state.life.furniture=MEMORY.furnishings(true);storeB.state.life.room="full";storeB.state.life.firstOpening={step:12,time:0};
       var a=SIM.create({memory:storeA}),b=SIM.create({memory:storeB});writesA=writesB=0;
       SIM._.updateNarrative(a,59);SIM._.updateNarrative(b,1);
       if(writesA||writesB)throw Error('shared cadence');SIM._.updateNarrative(a,1);
