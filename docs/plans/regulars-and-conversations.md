@@ -1,5 +1,11 @@
 # Plan: regulars & conversations — a roster with habits, then voices
 
+**Historical implementation plan.** Its remaining sequence, old protagonist
+names and conversation assumptions are superseded by the
+[accepted ensemble direction](community-and-character-stories.md),
+[story bible](../story-bible.md) and [current progression roadmap](../progression-roadmap.md).
+Retain this as implementation history; do not use it to select the next task.
+
 Executes the roadmap's new **Regulars & conversations** section: a narrative
 layer that starts with a roster of established regulars (fixed looks, habits,
 usual seats and orders) and grows toward legible overheard talk and — later,

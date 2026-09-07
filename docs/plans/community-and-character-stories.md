@@ -1,18 +1,25 @@
 # A place in one another's lives
 
-Character and story proposal for Café Hygge, 7 September 2026.
+Character and story direction for Café Hygge, 7 September 2026.
 
-**Status: proposed for the owner's review.** This is an overall writing and
-production plan, not shipped behavior or approved new canon. Established facts
-and saved choices remain authoritative in the [story bible](../story-bible.md).
-The [progression roadmap](../progression-roadmap.md) remains the implementation
-sequence; this proposal gives its improvements people, motives and consequences.
-New names, histories, romances and scenes below are recommendations.
+**Status: largely accepted by the owner as the working creative direction.**
+Use the ensemble, connected progression, remembered choices and emotional
+ambition below when planning new work. Detailed biographies, dialogue, scene
+order and relationship outcomes remain revisable as each slice is authored.
+Acceptance does not mean every recommendation is immutable or already shipped.
+
+The [story bible](../story-bible.md) distinguishes existing facts from planned
+writing; the [narrative contract](../narrative.md) owns the shared rules. The
+[progression roadmap](../progression-roadmap.md) owns the current build order.
+The next bounded brief is [First books, first connection](first-books.md).
+This larger document remains the durable ensemble direction at its existing
+path; it is not a disposable execution checklist to delete after one release.
 
 **Naming revision, 7 September:** the owner wants the seven earlier names
 Søren, Poul, Mikkel, Signe, Rikke, Malthe and Freya replaced, a more unusual name
 for Lunafreya's sister, and a broader naming palette. The replacements below
-are proposed; this document does not change the runtime cast or saved IDs.
+are the current working names; this document does not change the runtime cast
+or saved IDs.
 
 ## 1. The story we are telling
 
@@ -135,7 +142,7 @@ mixture of people and backgrounds. Danish names belong alongside international
 and unusual literary names. The owner's reference list is inspiration, not a
 required selection or a constraint on the cast's genders or origins.
 
-| Earlier name | Proposed name | Role and naming intention |
+| Earlier name | Working name | Role and naming intention |
 | --- | --- | --- |
 | Søren | Tomas | The builder; a grounded, understated name alongside his practical voice |
 | Poul | Marcel | The painter across the lake; distinct from Nora and easy to recognize in conversation |
@@ -161,7 +168,7 @@ funny, established, contented and simply at home here. Lunafreya is not the only
 person who has moved, and moving need not mean the same thing to everyone.
 
 The rest of this proposal uses the revised names. The existing evening reader
-is still displayed as **Freya** in the shipped game; **Antonia** is the proposed
+is still displayed as **Freya** in the shipped game; **Antonia** is the planned
 display-name change for that same person. Preserve her `freya` save identity,
 habits and history when that change is implemented. This is parallel to keeping
 Nora's legacy internal ID while using her proper displayed name.
@@ -585,9 +592,8 @@ or require another paid booking to speak to him.
 
 ### Choices that have a future
 
-The older narrative document says choices never gate content. The owner's new
-direction calls for visible variants and potentially larger consequences.
-**Proposed replacement when this direction is approved:** choices are never
+The accepted direction is recorded in [the narrative contract](../narrative.md#6-conversations-and-the-shape-of-branching).
+Choices are never
 graded and never punish absence; they may meaningfully select what happens,
 what is made and which relationship develops. A single save need not contain
 every mutually exclusive variant. Core friendships and ordinary equipment
@@ -741,9 +747,10 @@ what she said. Let some emotionally important lines remain plain.
 
 ## 8. A feasible sequence of releases
 
-These are proposed content releases, not in-game levels. The next engineering
-milestone remains the bookshelf; the larger plan should make that slice useful
-without smuggling the whole ensemble into its implementation.
+These are working content releases, not in-game levels. The next engineering
+milestone remains the bookshelf. [First books, first connection](first-books.md)
+splits the first release into three reviewable passes: Nico's empty-shelf
+delivery, usable purchased books, then the attended character conversations.
 
 | Release | Complete player-facing result | Preparation at that boundary |
 | --- | --- | --- |
@@ -818,18 +825,19 @@ owned, disposable and cleaned up under the repository's normal workflow.
 
 ## 10. Editorial decisions and success criteria
 
-The principal recommendations for review are Lunafreya's bookshop/café past
-and withdrawn promotion; Calandra as her sister; Erik as Gerda's late husband; the
-new named recurring cast; and Nico/Nora/Kasper/Saira as possible adult romance
-routes. These are deliberately written concretely so the owner can change
-particular ideas. Approval of this plan would establish a writing direction,
-not authorize building every release at once.
+The owner largely accepted this plan and its revised naming direction. Its
+working assumptions include Lunafreya's bookshop/café past and withdrawn
+promotion, Calandra as her sister, Erik as Gerda's late husband, the expanded
+cast and Nico/Nora/Kasper/Saira as possible adult romance routes. These remain
+specific, editable writing decisions rather than a requirement to implement
+every biography or romance exactly as first drafted.
 
-Before authoring each release, move only its settled facts into the story bible
-as **planned**, and reconcile the old no-consequence wording in the narrative
-contract with the approved choice rules. Record shipped facts only when their
-scenes actually land. Keep unknown histories out of ambient lines until the
-writing has made a deliberate decision about them.
+The story bible records concise planned direction alongside shipped facts;
+this document keeps the longer arcs and cross-character reasoning. Before a
+release, write only its needed scenes and settle their exact facts, choices
+and consequences in the implementation brief. When it ships, update the bible
+and roadmap with what actually landed. Keep unshared personal history out of
+ambient lines and other characters' knowledge until the relevant scene permits it.
 
 Judge the result by a few observable questions:
 

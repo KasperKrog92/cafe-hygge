@@ -124,8 +124,11 @@ Rough order (each slice ships something lovely on its own):
 > weather- and recognition-aware openers backed by persisted `bonds`, and a
 > boot-seeded familiar face). *Recurring pairs* within slice 3 are deferred — no
 > two current regulars share a table for the chat path to fire on. Slices 4–6
-> remain. Execution is tracked in
-> [plans/regulars-and-conversations.md](plans/regulars-and-conversations.md).
+> remain in that historical sequence. Current attended conversations and their
+> shipped status are in [story-bible.md](story-bible.md). The owner largely
+> accepted [the larger community direction](plans/community-and-character-stories.md);
+> current execution order lives in [progression-roadmap.md](progression-roadmap.md),
+> superseding [the older regulars plan](plans/regulars-and-conversations.md).
 
 1. **A roster of regulars.** Generalize Holger's one-off `makeRegular` into a
    data-driven `REGULARS` table (fixed appearance, drink, arrival window, seat
@@ -149,8 +152,9 @@ Rough order (each slice ships something lovely on its own):
    chapter) they may choose a short exchange or just keep reading; the invitation
    *waits* rather than drifting away — it never expires and nothing is lost by
    never engaging (the invitation-waits rule, [narrative.md](narrative.md) §1).
-   Branching is welcome as choices that *color* the moment, never gate content
-   (§6). Open design question: how the invitation reads as inviting-not-nagging.
+   Under the accepted direction, choices can select remembered dialogue, gifts,
+   activities and explicit relationship outcomes without grading the player or
+   penalizing absence ([narrative.md](narrative.md) §6).
 6. **Backstories, in drips.** A per-regular backstory surfaced as rare solo
    captions over many visits — a slow reveal assembled just by being present,
    rewarding the long reading sessions the app is built around.

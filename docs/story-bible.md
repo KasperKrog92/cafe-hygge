@@ -5,10 +5,13 @@ This is the continuing writing reference for Café Hygge. Updated 7 September
 not a promise that a trigger or scene already exists. The invitation-waits rule
 in [narrative.md](narrative.md) applies to every character.
 
-The [community and character story proposal](plans/community-and-character-stories.md)
-sets out a larger possible ensemble, Lunafreya's backstory, connected progression,
-gifts and romance. It is for owner review; its new histories and names are not
-established canon, and this bible remains authoritative for existing facts.
+The owner **largely accepted** the [community and character direction](plans/community-and-character-stories.md)
+on 7 September 2026. It supplies the working ensemble, backstory and connected
+arcs. This bible keeps concise continuity facts and distinguishes **shipped**
+content from **planned direction**. Planned details remain editable when scenes
+are authored; they must not be mistaken for events the player has experienced.
+The [progression roadmap](progression-roadmap.md) owns build order, with
+[First books, first connection](plans/first-books.md) as the next bounded brief.
 
 ## Names and the neighborhood
 
@@ -18,9 +21,9 @@ international or unusually literary. The owner's name list is inspiration,
 not a restriction. Write cultural and family details as part of individual
 lives; names alone do not establish nationality or background.
 
-The larger proposal now recommends Tomas, Marcel, Nico, Saira, Elody, Ezra and
+The current working names are Tomas, Marcel, Nico, Saira, Elody, Ezra and
 Antonia in place of its earlier seven names, with Calandra as Lunafreya's sister
-and Ida as the librarian. These replacements remain proposed. Freya's shipped
+and Ida as the librarian. These names guide new writing. Freya's shipped
 display name and `freya` save identity are unchanged; a future display rename
 must preserve the same character and history.
 
@@ -35,7 +38,11 @@ a boundary, a piece of her past or a decision that someone can remember. Most
 lines need no menu. Both answers deserve a warm, specific response. There are
 no correct answers, approval scores, locked friendships or missed deadlines.
 Choices describe her at this moment; they do not prescribe every future reply.
-Never invent a chosen background in later writing unless its saved flag exists.
+They may select a real gift variant, activity or explicitly chosen relationship.
+Follow [the choice contract](narrative.md#6-conversations-and-the-shape-of-branching).
+Distinguish fixed biography, the player's chosen interpretation, and what a
+particular person has been told. Never invent a selected answer or shared
+confidence when its saved evidence does not exist.
 
 Conversations are attended, manually advanced moments. The camera moves closer,
 ordinary controls and speech icons recede, and the café holds its obligations.
@@ -52,7 +59,17 @@ short arc moments restart when reopened and award their result only at the end.
 places with the cat. Nervous, practical and quietly hopeful. She wants guests
 to feel welcome and is learning what her own place will become. Her name and
 role are fixed. She moved to a new city and apartment and opened the café within
-a few days, and admits how exhausted she is on the first evening; her reasons and aspirations have room for the reader.
+a few days, and admits how exhausted she is on the first evening. Her existing
+answers about belonging/new beginnings and books/neighbors remain authoritative.
+
+**Planned direction:** she previously worked in a bookshop with a café and events
+room. After years of organizing other people's occasions, she accepted then
+withdrew from a promotion and prepared a place of her own. Planning took months;
+the actual move/opening took days. Calandra is her sister in the old city.
+Reveal this gradually through patron conversations, with ordinary pleasures,
+humor and agency alongside her difficulty feeling welcome without being useful.
+The exact scenes and wording remain to be authored. Her first new disclosure
+in the books milestone is only her former bookshop/café work, not the whole history.
 
 **Voice:** concrete observations, little admissions, affection without speeches.
 She can ask a direct question, admit uncertainty and set a boundary. She should
@@ -65,7 +82,7 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | Bedtime: teeth, curtains, bed and a whispered goodnight to the cat | Shipped | Saved bedtime cursor; same cat settles on the pillow |
 | Why this café: a place to belong / a new beginning | Shipped, Holger introduction | `luna-beginning-belonging` / `luna-beginning-new-start` |
 | First hope: a reading corner / learning neighbours' names | Shipped, Holger introduction | `luna-cafe-books` / `luna-cafe-neighbours` |
-| What came before the move | Open | A new beginning does not establish trauma, a former job or a relationship |
+| What came before the move | Planned direction | Bookshop/café work, withdrawn promotion and a prepared move; not yet disclosed in shipped dialogue, and no invented traumatic cause |
 | Naming the café | Planned | Find its name through lived experience; Fleur de Lune remains provisional |
 
 The reading-corner answer makes no purchase, price commitment or upgrade gate.
@@ -124,6 +141,10 @@ across the water can accompany the street-house story.
 
 **Planned:** introduce her through an ordinary act of care; let Lunafreya ask
 about a pattern or a garden before reaching for a more personal subject.
+The accepted plan's working history makes Erik her late husband; the exact
+history remains unauthored, and current lines do not yet identify him that way.
+A later blanket remembers Lunafreya's pattern choice. Gerda also learns to ask
+what people want and makes something for herself. Preserve the shipped cat scarf.
 
 ## Nora — attention through painting
 
@@ -136,7 +157,9 @@ save IDs still use `lunafreya-paintings` and regular ID `lunafreya`; that is
 compatibility history, never the artist's displayed name.
 
 **Planned:** an introduction about what she noticed; later a choice about what
-Lunafreya wants a painting to remember. Do not specify Nora's past career yet.
+Lunafreya wants a painting to remember. The working background is commissioned
+paintings of grand rooms, alongside an interest in the café's lived spaces.
+A later portrait asks Lunafreya's permission and respects private/public display.
 
 ## Kasper — the unfinished chapter
 
@@ -147,15 +170,43 @@ availability; he remains welcome in the small café with its simpler menu.
 **Shipped:** autonomous writing, hesitation and occasional backstory musings.
 **Planned:** introductions without demanding to read his work; a later invitation
 to share a paragraph. Finishing a manuscript must never become a timed task.
+The working arc builds on an earlier successful short story, his fear of not
+repeating that success, and an offered small piece shaped by a remembered
+preference about endings. Sharing Lunafreya's private history requires permission.
 
-## Freya — a familiar ending
+## Antonia — a familiar ending (shipped as Freya)
 
 **Established:** evening reader, returning to a book she knows, fond of the
 hearth. Quiet is comfortable to her; it is not automatically shyness or sadness.
 
 **Shipped:** reading, dozing and small observations about her familiar book.
 **Planned:** a book conversation that permits keeping the ending private.
-Her life beyond these habits remains open.
+The working background is a city bus driver, comfortable in her quiet and
+familiar with the neighborhood. Her display rename to Antonia is still pending;
+retain the `freya` identity and existing history when implementing it.
+
+## The wider ensemble — planned direction
+
+The longer arcs and relationship connections live in the
+[accepted ensemble plan](plans/community-and-character-stories.md#3-the-ensemble).
+Use this table to distinguish identities from what the runtime currently contains.
+
+| Name | Working direction | Current implementation boundary |
+| --- | --- | --- |
+| Nico | Recurring delivery person; learns to stay off duty; possible romance | New character, introduced with the shelf delivery milestone; conversations follow in its story pass |
+| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Existing window worker is unnamed; naming and off-duty life remain to implement |
+| Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
+| Marcel | Painter across the lake; recognizes changing places and people | Existing `street-house` arc stays intact; personal identity and café visits remain to implement |
+| Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |
+| Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | New character; existing plants remain independent of her friendship |
+| Ida | Librarian; welcoming book exchange and learning when to organize less | New character; not required for the first usable shelf or Holger's gift |
+| Ezra | Young adult student with imaginary bus maps; possible later colleague | New character; friendship precedes any future shared-work implementation |
+| Calandra | Lunafreya's sister; brings old and new lives together through an invited visit | New character; messages, visits and shared home scenes remain to implement |
+
+Nico, Nora, Kasper and Saira are the working adult romance candidates. Specific
+routes and household outcomes remain later writing work. Friendship, employment,
+housing and romance are separate decisions; no current interaction is reclassified
+as a date or commitment by adopting this plan.
 
 ## The cat — company without explanation
 

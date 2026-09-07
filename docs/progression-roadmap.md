@@ -5,18 +5,40 @@ Shared home life, the plant/table/hearth jobs, C0, the identity swap, first
 introduction and left-window repair are implemented. The build-order section
 and first-day update below distinguish these from proposed later stages.
 Shared improvement preparation is complete (7 September); bookshelf delivery
-and separate books remain for the next session. See the
+and separate books are the next practical milestone. See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
 the remaining ideas are not authorization to build every item.
-The [community and character story proposal](plans/community-and-character-stories.md)
-connects those stages to a larger cast, remembered choices, gifts and optional
-romance. It is a writing proposal for review, not a change to the build order
-or approval of its new backstories.
+The owner largely accepted the [community and character direction](plans/community-and-character-stories.md).
+It connects those stages to a larger cast, remembered choices, gifts and optional
+romance. It guides new writing; details remain revisable as slices are authored.
+Acceptance of the direction does not make its later features implemented.
 It grows from the former `idle` café, now the canonical `main` branch. The
 separate `game` experiment is archived reference material, not the implementation
 baseline. The old tips are preserved in `archive/idle-2026-09-06` and
 `archive/game-2026-09-06` tags.
+
+## Current next milestone — First books, first connection
+
+The [implementation brief](plans/first-books.md) translates the accepted story
+direction into one complete near-term experience, delivered in reviewable passes:
+
+1. **Next implementation task: Nico delivers an empty bookshelf.** Ordinary
+   evening purchase, trolley delivery, safe reserved work area, unpacking and
+   a persistent empty shelf. Nico is a named recurring identity. Personal
+   conversations and books are separate following passes.
+2. **Books become usable.** Purchased books, gradual interruptible shelving,
+   visible contents and browsing only when usable books are present.
+3. **The shelf acquires a history.** Nico's optional hello/return, Holger's
+   remembered offer and attended gift, and Lunafreya's first disclosure about
+   her former bookshop/café work. Gift books share the established stocking path.
+
+The current status/next task lives here; the brief owns scope and acceptance
+checks, the story bible owns continuity, and the larger plan owns ensemble arcs.
+Build only the next requested pass. General conversation extraction belongs
+immediately before new multi-scene writing, with old behavior verified first.
+Verification automation and save export/import remain preparation for substantial
+public play; helper scheduling and shared households stay at their later boundaries.
 
 ## Direction from the owner
 

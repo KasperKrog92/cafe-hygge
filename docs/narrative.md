@@ -34,8 +34,10 @@ thing hygge. Read it before adding any arc, beat, memory, or conversation.
 > days, its brush invitation waits in the window, and the finished warm house
 > persists after the chosen beat. `CAST.arcs` carries arc
 > definitions; the audit guards the save shape and the arc invariants (§7.3).
-> The passive roster layers (regulars, overheard lines) also exist; the
-> conversation phases (roadmap §4–5) are still ahead. Where this
+> The passive roster layers and attended Holger introduction also exist.
+> The owner largely accepted the [community story direction](plans/community-and-character-stories.md)
+> on 7 September 2026; its larger cast, consequential choices and shared scenes
+> remain future implementation. Where this
 > doc still names a shape that does not exist yet, it is *proposed* — match it
 > when you build, or update this doc if you diverge.
 
@@ -229,8 +231,9 @@ a lot of small questions:
 - **Memory is Lunafreya's memory.** The café "knows" a regular because *Lunafreya* has
   come to know them. `bonds` is what Lunafreya remembers about a person, and it only
   deepens by her (the reader) being present and choosing the small exchanges.
-- **Conversations are with Lunafreya.** When a beat is a talk, the other side is a
-  patron and Lunafreya's side is the reader's — chosen, never scripted at them.
+- **Conversations are with Lunafreya.** She has authored dialogue and a consistent
+  history. The reader chooses meaningful preferences, boundaries and decisions;
+  most of her ordinary replies need no choice menu.
 - **Getting to know the café is the arc.** The long game is not a plot to
   finish; it is a room full of people who become familiar. Beats should feel
   like *recognition* accruing — Gerda greeting Lunafreya by name, Holger leaving his
@@ -238,21 +241,36 @@ a lot of small questions:
 
 ## 6. Conversations, and the shape of "branching"
 
-Conversations are beats (§2) whose content is a short exchange. Branching is
-welcome — with one hard reframe that keeps it hygge:
+Conversations are attended beats. The community plan's accepted direction
+extends the earlier dialogue-color-only rule:
 
-> **Choices add; they never gate.** A branch is a way to *color* a moment (which
-> warm thing Lunafreya says), not a fork where one path locks away content on the
-> others. There is no wrong answer, no missed line you can only get by having
-> chosen differently, no path that ends the friendship. Every branch lands
-> somewhere kind.
+> **Choices can change the future; they are never graded and absence never
+> chooses for the player.** A preference may determine a gift, a shared activity
+> or later words. A clear mutual decision may establish a relationship or home
+> arrangement. One save need not contain every mutually exclusive variant.
 
-This preserves "reading straight through misses nothing": a companion user never
-opens a conversation and loses nothing; an invested user makes choices that
-flavor the café's memory of them (`bonds.warmth`, a remembered preference)
-without ever being graded. Keep exchanges short (a few beats), lowercase-cozy,
-and — as today — the only quoted dialogue in the app; ambient captions stay
-narrated ([characters.md](characters.md) voice rules still hold).
+Core friendships and ordinary equipment remain available without a correct
+answer. Essential understanding of Lunafreya must have alternate openings when
+an optional purchase or relationship is not pursued. Privacy and "not yet"
+answers deserve natural continuations; an explicit friendship boundary stops
+repeated romantic prompting. Major commitments must be named, never inferred
+from one friendly or flirtatious answer.
+
+Fixed biography, the player's interpretation and what a particular character
+knows are different facts. Read the saved answer before writing a callback;
+do not reveal a private conversation through an uninformed character. Persist
+selected replies and apply lasting effects once, including across reload.
+
+An attended gift handover or first sharing waits indefinitely. After acceptance,
+already authorized carrying, shelving or placement is ordinary practical work
+that may finish autonomously. Purchased alternatives keep the café functional
+when a personal invitation is ignored. A worker finishes and leaves independently
+of a pending conversation, which can follow them into a later off-duty visit.
+
+Keep ordinary exchanges short, with rare longer invited scenes. Lunafreya has
+authored lines and choices only where they matter. Ambient captions stay narrated
+and sparse. These are design rules for new content; the wider gift, relationship
+and knowledge systems are not claimed to be implemented by this document update.
 
 ## 7. Can the plain-JS / no-build stack carry this? Yes.
 

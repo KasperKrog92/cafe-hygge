@@ -315,6 +315,12 @@ with verification automation and save export/import before substantial public
 play. Defer helper scheduling until the menu/task work actually reaches that
 boundary, but do not build the helper by copying the single-worker state machine.
 
+The subsequently accepted [community direction](plans/community-and-character-stories.md)
+gives this milestone Nico's delivery and Holger's books. Follow the current
+pass status in [the progression roadmap](progression-roadmap.md) and the bounded
+[First books brief](plans/first-books.md); the audit's measurements above remain
+historical evidence, not verification of those future features.
+
 The remaining unknown is mainly how much authored content and animation the
 owner wants to produce, and how pleasant its pacing feels over ordinary reading
 sessions. Automated checks can establish continuity and correctness; a few full

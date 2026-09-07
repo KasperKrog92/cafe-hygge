@@ -7,6 +7,22 @@ being changed. The [pre-development audit](predevelopment-audit.md) records the
 7 September recheck, observed closing deadlock and next preparation priorities. Older handoffs and archived
 branches are reference material, not competing specifications.
 
+## Turning the accepted story direction into work
+
+The owner largely accepted [the ensemble plan](plans/community-and-character-stories.md).
+It is the long-term creative direction. Read the [story bible](story-bible.md)
+for concise shipped/planned continuity and [narrative.md](narrative.md) for shared
+rules; avoid rereading or duplicating the whole ensemble for an isolated change.
+The [progression roadmap](progression-roadmap.md) owns current implementation
+status. [First books, first connection](plans/first-books.md) is the next brief.
+
+Write only the current slice's scene packets: trigger, known facts, actual
+bubbles, choices, lasting effects, reload/leave behavior and ordinary life
+afterward. Establish the smallest reusable contract that the slice needs.
+Separate a behavior-preserving extraction from the feature that uses it and
+pass the existing checks before changing behavior. Mark only implemented
+results shipped, and update the roadmap before declaring the slice complete.
+
 ## Compatibility scope
 
 Desktop browsers are the current target, including Chrome and Safari. Mobile
