@@ -684,3 +684,5 @@ Existing saves retain the fully furnished room.
 C0 now occupies 832×516 master pixels (832×468 at 16:9), matching the tighter
 reference. The counter ends just inside the right edge and the floor ends
 shortly beyond the two tables. Full-room art remains 960×600 for expansion.
+
+Conversation framing uses a gentle maximum 1.3× zoom (reduced from 1.9×), keeping more of the café visible. The camera still includes the complete dialogue bubble and both speakers.

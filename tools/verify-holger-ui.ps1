@@ -1,4 +1,4 @@
-param([string]$Label='holger-ui')
+param([string]$Label='holger-ui',[string]$Url='http://127.0.0.1:8137/')
 $ErrorActionPreference='Stop'
 $OutputEncoding=[Text.UTF8Encoding]::new($false)
 $browser=(Get-Command agent-browser.cmd).Source
@@ -11,7 +11,7 @@ function Eval-H([string]$Code) {
  return ($payload | ConvertFrom-Json)
 }
 try {
- & $browser --session $testSession --init-script (Join-Path $PSScriptRoot 'life-browser-init.js') open 'http://127.0.0.1:8137/?life-test'
+ & $browser --session $testSession --init-script (Join-Path $PSScriptRoot 'life-browser-init.js') open ($Url+'?life-test')
  if($LASTEXITCODE -ne 0){throw 'Launch failed'}
  & $browser --session $testSession wait --fn '!!window.__world'
  if($LASTEXITCODE -ne 0){throw 'Boot failed'}
