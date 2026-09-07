@@ -176,3 +176,15 @@ A chosen cleaning project suppresses fire crackles while scheduled or underway,
 matching the cold hearth, absent glow and absent sparks. Finishing the work
 uses the existing quiet `fireCatch` via `addLog`; ordinary tending then resumes.
 No new work sound or audio layer is introduced.
+
+## Character speech variants
+
+`SND.dialogueSyllable(index, voice)` accepts an optional profile from
+`CAST.voices`: base pitch, low-pass warmth and duration multiplier. Omission
+retains the first-morning voice. All use the same quiet triangle synthesis,
+0.032 peak envelope, dialogue bus and volume/mute controls. Holger uses a
+155 Hz base with a 1.12 duration multiplier; Lunafreya retains 205 Hz and 1.0.
+Profiles for Gerda, Nora, Kasper and Freya are authored alongside the roster.
+The moment simulation triggers syllables only while revealing attended text;
+reveal, advance, cancellation, Settings and hiding stop the current syllable.
+Instant text emits no speech. Narrator-only arc captions remain unvoiced.

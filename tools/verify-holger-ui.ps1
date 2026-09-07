@@ -43,10 +43,21 @@ window.uiNow=performance.now();lifeTestFrame(uiNow);return !!SIM.holgerAvailable
  if($LASTEXITCODE -ne 0){throw 'Reload failed'}
  & $browser --session $testSession wait --fn '!!window.__world'
  if($LASTEXITCODE -ne 0){throw 'Reload boot failed'}
+ & $browser --session $testSession find role button click --name 'step inside'
+ if($LASTEXITCODE -ne 0){throw 'Reload entry failed'}
  Eval-H @'
 (()=>{const w=__world;window.uiNow=performance.now();lifeTestFrame(uiNow);document.getElementById('meet-holger').click();
+if(w.moment.phase!=='approach'||!document.getElementById('conversation').hidden)throw Error('remote conversation did not wait for approach');
+for(let n=0;n<3000&&w.moment.phase==='approach';n++)SIM.update(w,.05);
+if(w.moment.phase!=='talk')throw Error('approach failed');SIM.advanceMoment(w);lifeTestFrame(uiNow+=50);return true;})()
+'@ | Out-Null
+ for($i=0;$i -lt 16;$i++){ Start-Sleep -Milliseconds 100; Eval-H 'lifeTestFrame(uiNow+=100);true' | Out-Null }
+ & $browser --session $testSession screenshot (Join-Path $output 'seated.png')
+ if($LASTEXITCODE -ne 0){throw 'Seated capture failed'}
+ Eval-H @'
+(()=>{const w=__world;
 if(SIM.momentLine(w).text!==CAST.holgerIntroduction[6].choices[0].reply)throw Error('real reload lost reply');
-while(w.moment)SIM.advanceMoment(w,SIM.momentLine(w).choices?1:undefined);lifeTestFrame(uiNow+=30);
+for(let n=0;n<3000&&w.moment;n++){if(w.moment.phase==='talk')SIM.advanceMoment(w,SIM.momentLine(w).choices?1:undefined);else SIM.update(w,.1);}lifeTestFrame(uiNow+=30);
 const problems=__dev.audit();if(problems.length)throw Error(JSON.stringify(problems));return {reload:true,audit:problems};})()
 '@ | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $output 'reload.json')
  $pageErrors=& $browser --session $testSession errors

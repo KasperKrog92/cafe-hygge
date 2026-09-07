@@ -254,12 +254,13 @@
     if(dialogueVoice) {try{dialogueVoice.stop();}catch(e){} dialogueVoice=null;}
     dialogueUntil=0;
   };
-  SND.dialogueSyllable=guard(function(index) {
+  SND.dialogueSyllable=guard(function(index,voice) {
     if(!S.dialogueVolume || S.instantText || ctx.currentTime<dialogueUntil)return;
-    const t=ctx.currentTime,dur=.075+(index%4)*.009;
-    const o=ctx.createOscillator(),g=gainNode(0),f=filt('lowpass',720+(index%5)*110);
-    o.type='triangle';o.frequency.setValueAtTime(205+(index%7)*7,t);
-    o.frequency.linearRampToValueAtTime(195+(index%5)*9,t+dur);
+    const v=voice||{},pitch=v.pitch||205,warmth=v.filter||720;
+    const t=ctx.currentTime,dur=(.075+(index%4)*.009)*(v.pace||1);
+    const o=ctx.createOscillator(),g=gainNode(0),f=filt('lowpass',warmth+(index%5)*110);
+    o.type='triangle';o.frequency.setValueAtTime(pitch+(index%7)*7,t);
+    o.frequency.linearRampToValueAtTime(pitch-10+(index%5)*9,t+dur);
     o.connect(f);f.connect(g);g.connect(dialogueBus);
     g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.032,t+.015);
     g.gain.linearRampToValueAtTime(0,t+dur);

@@ -289,3 +289,9 @@ included in the full runner. Art captures remain repeatable with zero audit
 problems. These are Chromium desktop results, not native Safari execution.
 
 Temporary intro shortcut: **skip unpacking (dev)** completes the remaining real setup immediately, including both tables and the outside sign, and stops at opening before Holger arrives. It is available on ordinary URLs too, remains available after skipping dialogue, and saves the completed opening. Remove this development control when it is no longer needed.
+
+Conversation bubble checks extend the Holger suite: counter proximity, actual
+approach and return, cancellation during walking, hidden-tab holds, gradual text,
+distinct speaker profiles, both branches and durable replies. The UI runner
+captures 16:10/16:9 choice bubbles and a seated conversation after a real reload.
+Reports and inspected captures are in `.art-review/shared-bubbles-ui/`.

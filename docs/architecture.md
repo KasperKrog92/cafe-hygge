@@ -473,4 +473,22 @@ active; main presents the camera crop and keyboard-accessible DOM choices.
 The shared scene renderer suppresses transient speech/order bubbles and draws
 standing idle poses during moments without changing saved actor positions.
 The full-scene `__dev.shot()` remains uncropped; use a browser screenshot to
-capture the presentation camera and DOM dialogue together.
+capture the presentation camera and dialogue together.
+
+### Bubble presentation and rendezvous
+
+Moment phases are `approach`, `talk`, `return`. Only the selected staff walk
+runs during travel; the normal simulation remains held. A snapshot of the
+interrupted staff position/path/pose is restored after a real return journey.
+Targets derive from the existing table service route or nearby clear points;
+all walks go through `makePath`/`walker` in the correct world context. Failed
+approach planning does not consume an invitation.
+
+`SIM.updateMoment` uses the intro's shared `SIM.revealDialogue` timing and voice
+cadence. `SCENE.dialogueLayout` and `SCENE.drawIntroDialogue` render both the
+first morning and conversations: same font, border, fill and stepped tail, with
+extra rows for choices. `main.js` maps those exact canvas rectangles through
+the presentation camera into transparent native button hit areas. There is no
+separate HTML dialogue design. A sentence-level transcript supports screen
+readers. Full-scene shots include the actual dialogue and choice bubble;
+browser captures also show the camera crop and the put-aside control.

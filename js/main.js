@@ -35,6 +35,7 @@
      portrait) get the minimal letterbox on one axis only. */
 
   const view = { x: 0, y: SCENE.VIEW_Y, w: SCENE.VIEW_W, h: SCENE.VIEW_H };
+  const camera=Object.assign({},view);
   let shownRoom = null;
 
   function fit() {
@@ -118,27 +119,49 @@
   let momentKey=null,returnFocus=null;
   meetHolger.addEventListener('click',function(){SIM.startHolger(world);refreshMoment();});
   document.getElementById('conversation-later').addEventListener('click',function(){SIM.leaveMoment(world);refreshMoment();});
+  function screenPoint(x,y) {
+    const r=canvas.getBoundingClientRect(),stageRect=stage.getBoundingClientRect();
+    return {x:r.left-stageRect.left+(x-camera.x)/camera.w*r.width,
+      y:r.top-stageRect.top+(y-camera.y)/camera.h*r.height,scale:r.width/camera.w};
+  }
+  function placeHit(button,x,y,width,height) {
+    const at=screenPoint(x,y);
+    Object.assign(button.style,{left:at.x+'px',top:at.y+'px',width:width*at.scale+'px',height:height*at.scale+'px'});
+  }
   function refreshMoment() {
-    meetHolger.hidden=!SIM.holgerAvailable(world);
-    const m=world.moment,line=SIM.momentLine(world);
-    momentPanel.hidden=!m;
+    const invited=SIM.holgerAvailable(world);
+    meetHolger.hidden=!invited;
+    if(invited)placeHit(meetHolger,invited.x-24,invited.y+(invited.pose==='sit'?6:0)-102,48,42);
+    const m=world.moment,line=m&&m.phase==='talk'?SIM.momentLine(world):null;
+    momentPanel.hidden=!line;
     stage.classList.toggle('in-conversation',!!m);
     btnMode.disabled=!!m;btnHome.disabled=!!m;
-    const key=m?String(m.index)+line.text:null;
-    if(key===momentKey)return;
-    const entering=momentKey===null && !!m;
-    momentKey=key;
-    if(!m) {if(returnFocus && !returnFocus.hidden)returnFocus.focus();else canvas.focus();return;}
-    if(entering)returnFocus=document.activeElement;
-    document.getElementById('conversation-speaker').textContent=line.speaker;
-    document.getElementById('conversation-text').textContent=line.text;
-    const answers=document.getElementById('conversation-answers');answers.replaceChildren();
-    (line.choices || [{text:m.index===m.lines.length-1?'back to the café':'continue'}]).forEach(function(c,i){
-      const button=document.createElement('button');button.type='button';button.textContent=c.text;
-      button.addEventListener('click',function(){SIM.advanceMoment(world,line.choices?i:undefined);refreshMoment();});
-      answers.appendChild(button);
-    });
-    answers.firstElementChild.focus();
+    const key=line?String(m.index)+line.text:null;
+    if(key!==momentKey) {
+      const entering=momentKey===null && !!line;momentKey=key;
+      if(!line) {if(!m){if(returnFocus && !returnFocus.hidden)returnFocus.focus();else canvas.focus();}}
+      else {
+        if(entering)returnFocus=document.activeElement;
+        document.getElementById('conversation-transcript').textContent=line.speaker+': '+line.text;
+        const answers=document.getElementById('conversation-answers');answers.replaceChildren();
+        (line.choices || [{text:'reveal or continue dialogue'}]).forEach(function(c,i){
+          const button=document.createElement('button');button.type='button';button.setAttribute('aria-label',c.text);
+          button.addEventListener('click',function(){SIM.advanceMoment(world,line.choices?i:undefined);refreshMoment();});
+          button.addEventListener('pointerenter',function(){if(world.moment)world.moment.hover=i;});
+          button.addEventListener('pointerleave',function(){if(world.moment)world.moment.hover=null;});
+          button.addEventListener('focus',function(){if(world.moment)world.moment.hover=i;});
+          answers.appendChild(button);
+        });
+        answers.firstElementChild.focus();
+      }
+    }
+    if(!line)return;
+    const r=SCENE.dialogueLayout(g,world),buttons=document.getElementById('conversation-answers').children;
+    for(let i=0;i<buttons.length;i++) {
+      buttons[i].disabled=!!line.choices && m.visible<line.text.length;
+      const c=r.choices[i];
+      placeHit(buttons[i],r.x,c?r.y+c.top:r.y,r.w,c?c.height:r.h);
+    }
   }
   function refreshIntro() {
     const active=SIM.introActive(world) && world.firstEntryReady;
@@ -309,6 +332,7 @@
     if(e.code==='Space' && e.target.tagName!=='BUTTON' && SIM.introActive(world)) {
       e.preventDefault();SIM.advanceIntro(world);return;
     }
+    if(e.key==='Escape' && world.moment){SIM.leaveMoment(world);refreshMoment();return;}
     if (e.key === 'm') btnMute.click();
     if (e.key === 'f') btnFull.click();
   });
@@ -337,6 +361,8 @@
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
+    const invited=SIM.holgerAvailable(world);
+    if(invited && Math.abs(x-invited.x)<26 && y>invited.y-104 && y<invited.y-58){SIM.startHolger(world);return;}
     if (world.memory.life.mode === 'game' && world.shop.phase !== 'home' && SIM.beatAt(world, x, y)) return;
     const cat = world.cat;
     if (Math.hypot(x - cat.x, y - (cat.y - 10)) < 36) SIM.petCat(world);
@@ -352,17 +378,28 @@
     SCENE.composeFrame(g, world);
     // present: blit the chosen view of the master at an integer scale
     const now=performance.now(),delta=Math.min(.1,(now-focusLast)/1000);focusLast=now;
-    focusAmount+=(world.moment?1-focusAmount:-focusAmount)*Math.min(1,delta*5);
+    focusAmount+=(world.moment && world.moment.phase==='talk'?1-focusAmount:-focusAmount)*Math.min(1,delta*5);
     if(world.moment) {
       const owner=world.moment.owner || world.barista,b=world.barista;
       focusPoint={x:(owner.x+b.x)/2,y:Math.min(owner.y,b.y)-28};
     }
-    const zoom=1+focusAmount*.9,cw=view.w/zoom,ch=view.h/zoom;
-    const cx=Math.max(view.x,Math.min(view.x+view.w-cw,focusPoint.x-cw/2));
-    const cy=Math.max(view.y,Math.min(view.y+view.h-ch,focusPoint.y-ch*.38));
-    out.drawImage(master,Math.round(view.x+(cx-view.x)*focusAmount),Math.round(view.y+(cy-view.y)*focusAmount),
-      Math.round(cw),Math.round(ch),0,0,canvas.width,canvas.height);
-    if(focusAmount>.01){out.fillStyle='rgba(24,17,26,'+(focusAmount*.16)+')';out.fillRect(0,0,canvas.width,canvas.height);}
+    const bubble=world.moment && world.moment.phase==='talk'?SCENE.dialogueLayout(g,world):null;
+    let targetZoom=1.9;
+    if(bubble) {
+      const bottom=Math.max(world.barista.y,world.moment.owner?world.moment.owner.y:world.barista.y)+20;
+      targetZoom=Math.max(1,Math.min(targetZoom,view.h/(bottom-bubble.y+20),view.w/(bubble.w+40)));
+    }
+    const zoom=1+focusAmount*(targetZoom-1),cw=view.w/zoom,ch=view.h/zoom;
+    let cx=Math.max(view.x,Math.min(view.x+view.w-cw,focusPoint.x-cw/2));
+    let cy=Math.max(view.y,Math.min(view.y+view.h-ch,focusPoint.y-ch*.68));
+    if(bubble) {
+      cx=Math.max(view.x,Math.min(cx,bubble.x-12));
+      cx=Math.min(view.x+view.w-cw,Math.max(cx,bubble.x+bubble.w+12-cw));
+      cy=Math.max(view.y,Math.min(cy,bubble.y-12));
+    }
+    Object.assign(camera,{x:Math.round(view.x+(cx-view.x)*focusAmount),y:Math.round(view.y+(cy-view.y)*focusAmount),w:Math.round(cw),h:Math.round(ch)});
+    out.drawImage(master,camera.x,camera.y,camera.w,camera.h,0,0,canvas.width,canvas.height);
+
   }
 
   /* ---------- loop ----------
@@ -417,6 +454,8 @@
   requestAnimationFrame(frame);
   setInterval(function () { if (document.hidden) advance(performance.now()); }, 250);
   document.addEventListener('visibilitychange', function () {
+    world.momentHidden=document.hidden;
+    if(world.moment){SND.stopDialogue();last=performance.now();return;}
     if(SIM.introActive(world)) {
       world.introHidden=document.hidden;SND.stopDialogue();last=performance.now();return;
     }

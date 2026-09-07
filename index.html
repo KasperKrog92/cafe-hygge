@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Café Hygge — a cozy idle café</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css?v=holger-20260907-1">
+<link rel="stylesheet" href="style.css?v=bubbles-20260907-1">
 </head>
 <body>
 <div id="stage">
   <canvas id="cafe" tabindex="-1"></canvas>
-  <button id="meet-holger" hidden type="button">a word with Holger</button>
+  <button id="meet-holger" hidden type="button" aria-label="Talk with Holger" title="Talk with Holger"></button>
   <section id="conversation" hidden aria-label="A quiet conversation">
-    <div aria-live="polite" aria-atomic="true"><h2 id="conversation-speaker"></h2><p id="conversation-text"></p></div>
+    <p id="conversation-transcript" class="sr-only" aria-live="polite" aria-atomic="true"></p>
     <div id="conversation-answers"></div>
     <button id="conversation-later" type="button">continue another time</button>
   </section>
@@ -119,7 +119,7 @@
   </div>
 </div>
 
-<script src="js/audio.js?v=intro-20260907-1"></script>
+<script src="js/audio.js?v=bubbles-20260907-1"></script>
 <script src="js/scene-core.js?v=intro-20260907-1"></script>
 <script src="js/scene-waterfront.js?v=first-opening-20260907-1"></script>
 <script src="js/scene-bg.js?v=intro-20260907-1"></script>
@@ -127,17 +127,17 @@
 <script src="js/scene-people.js?v=hands-20260907-1"></script>
 <script src="js/scene-fx.js?v=intro-20260907-1"></script>
 <script src="js/scene-home.js?v=identity-20260907-1"></script>
-<script src="js/scene-intro.js?v=intro-20260907-1"></script>
-<script src="js/characters-roster.js?v=holger-20260907-1"></script>
+<script src="js/scene-intro.js?v=bubbles-20260907-1"></script>
+<script src="js/characters-roster.js?v=bubbles-20260907-1"></script>
 <script src="js/memory.js?v=intro-20260907-1"></script>
 <script src="js/sim-core.js?v=holger-20260907-1"></script>
 <script src="js/sim-waterfront.js?v=identity-20260907-1"></script>
 <script src="js/sim-patrons.js?v=identity-20260907-1"></script>
 <script src="js/sim-shop.js?v=identity-20260907-1"></script>
-<script src="js/sim-characters.js?v=holger-20260907-1"></script>
+<script src="js/sim-characters.js?v=bubbles-20260907-1"></script>
 <script src="js/sim-life.js?v=intro-20260907-1"></script>
-<script src="js/sim-intro.js?v=skip-unpacking-20260907-1"></script>
+<script src="js/sim-intro.js?v=bubbles-20260907-1"></script>
 <script src="js/dev.js?v=identity-20260907-1"></script>
-<script src="js/main.js?v=skip-unpacking-20260907-1"></script>
+<script src="js/main.js?v=bubbles-20260907-1"></script>
 </body>
 </html>

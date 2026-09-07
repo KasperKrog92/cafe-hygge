@@ -204,7 +204,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
       if(rec.pendingBeat!=='finished'||rec.stage!==0)throw Error('pending boot');
       SIM.update(w,.25);if(rec.stage!==0||rec.pendingBeat!=='finished')throw Error('autoplay');
       SIM.skipIntro(w);for(let n=0;n<8000&&w.shop.phase==='settling';n++)SIM.update(w,.25);
-      SIM.beatAt(w,arc.anchor.x,arc.anchor.y+10);while(w.moment)SIM.advanceMoment(w);if(rec.stage!==1||!w.memory.flags[arc.flag])throw Error('tap');`);
+      SIM.beatAt(w,arc.anchor.x,arc.anchor.y+10);for(let n=0;n<1000&&w.moment;n++){if(w.moment.phase==='talk')SIM.advanceMoment(w);else SIM.update(w,.25);}if(rec.stage!==1||!w.memory.flags[arc.flag])throw Error('tap');`);
     reloaded.events.pagehide();
     const completed = boot(reloaded.data.get('cafe-hygge-save'));
     completed.run(`var w=SIM.create(),arc=CAST.arcs.find(a=>a.anchor);if(w.memory.arcs[arc.id].pendingBeat!==null||w.memory.arcs[arc.id].stage!==1)throw Error('completed reload');`);

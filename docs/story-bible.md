@@ -142,3 +142,20 @@ When shipping a beat, add its trigger, saved decisions and any new established
 facts here. Keep implementation details in narrative/architecture documentation.
 Read earlier choices before writing callbacks. Separate possibilities from
 canon, and never describe planned content as already playable.
+
+### Conversation presentation and voices
+
+Invitations are icon bubbles above the other character. Lunafreya walks over
+before speaking unless they are already close. Dialogue and both reply choices
+use the intro's actual canvas bubble renderer, attached to the current speaker.
+A chosen reply is spoken by Lunafreya before its acknowledgement. There is no
+bottom dialogue panel. Text reveals gradually, with a manual reveal/continue
+control; choices, revealing and leaving never auto-select a reply.
+
+Voice differences are deliberately small synthesized variations, not recorded
+speech or caricatures: Lunafreya retains the intro voice; Holger is lower,
+warmer and slightly slower. Gerda is gently lower and slower; Nora slightly
+brighter and quicker; Kasper lower and nearly the same pace; Freya softly muted.
+These profiles are ready for their authored conversations. Existing third-person
+arc narration remains unvoiced. Speech shares the existing dialogue volume,
+mute and instant-text settings, and stops when the page is hidden.

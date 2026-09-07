@@ -98,15 +98,20 @@
       if(d.hold>=Math.max(current(w).hold||2.4,d.text.length*.045))finishLine(w);
       return;
     }
-    d.clock+=dt;
-    let syllable=false;
-    while(d.clock>=0 && d.visible<d.text.length) {
-      const ch=d.text[d.visible++];
-      d.clock-= /[.!?]/.test(ch)?.32:/[,;]/.test(ch)?.18:1/28;
+    SIM.revealDialogue(w,d,d.text,dt,CAST.voices.Lunafreya);
+  };
+  // Shared first-morning and character-dialogue reveal cadence.
+  SIM.revealDialogue=function(w,d,text,dt,voice) {
+    if(w.context.sound.settings.instantText){d.visible=text.length;return;}
+    if(d.visible>=text.length)return;
+    d.clock+=dt;let syllable=false;
+    while(d.clock>=0 && d.visible<text.length) {
+      const ch=text[d.visible++];
+      d.clock-=/[.!?]/.test(ch)?.32:/[,;]/.test(ch)?.18:((voice&&voice.pace)||1)/28;
       if(/[a-z]/i.test(ch) && ++d.syllable%3===0)syllable=true;
     }
-    if(syllable && /[a-z]/i.test(d.text[d.visible-1]) && d.visible<d.text.length)
-      w.context.sound.dialogueSyllable(d.syllable);
+    if(voice!==false && syllable && /[a-z]/i.test(text[d.visible-1]) && d.visible<text.length)
+      w.context.sound.dialogueSyllable(d.syllable,voice);
   };
   R.restoreIntro=function(w) {
     const i=w.memory.life.intro,b=w.barista;
@@ -169,7 +174,24 @@
   };
   SIM.beginMoment=function(w,lines,owner,finish) {
     if(w.moment || w.shop.phase!=='open')return false;
-    w.moment={lines:lines,index:0,owner:owner,finish:finish};
+    const b=w.barista,saved={x:b.x,y:b.y,path:b.path,pose:b.pose,heading:b.heading,facing:b.facing};
+    let route=null;
+    if(owner && Math.hypot(owner.x-b.x,owner.y-b.y)>85) {
+      SIM.withWorld(w,function(){
+        const candidates=[];
+        if(owner.seat && owner.seat.table>=0)candidates.push(SIM._.busRoute(w,owner.seat.table).slice(-1)[0]);
+        [[-48,0],[48,0],[0,48],[0,-48]].forEach(d=>candidates.push({x:owner.x+d[0],y:owner.y+d[1]}));
+        for(let n=0;n<candidates.length;n++) {
+          const probe=Object.assign({},b),at=candidates[n];
+          if(w.patrons.some(p=>!p.outside && Math.hypot(p.x-at.x,p.y-at.y)<28))continue;
+          SIM._.makePath(probe,at.x,at.y);
+          if(probe.path && probe.path.length){route=probe.path;break;}
+        }
+      });
+      if(!route)return false;
+    }
+    w.moment={lines:lines,index:0,owner:owner,finish:finish,saved:saved,phase:route?'approach':'talk',visible:0,clock:0,syllable:0};
+    if(route)b.path=route;
     w.activeCaption=null; w.captionQueue=[];
     return true;
   };
@@ -187,11 +209,11 @@
     let index=0;
     while(index<lines.length && w.memory.flags[prefix+index])index++;
     index=Math.min(index,lines.length-1);
-    SIM.beginMoment(w,lines,owner,function() {
+    if(!SIM.beginMoment(w,lines,owner,function() {
       w.memory.flags['holger-introduced']=true;
       const b=w.memory.bonds.holger;
       if(b)b.warmth=(b.warmth||0)+1;
-    });
+    }))return false;
     w.moment.index=index; w.moment.holger=true;
     return true;
   };
@@ -199,26 +221,53 @@
     const m=w.moment;
     if(!m)return null;
     const line=m.lines[m.index];
+    if(!line)return null;
     if(line.choices) {
       const chosen=line.choices.find(c => w.memory.flags[c.flag]);
-      if(chosen)return {speaker:'Holger',text:chosen.reply};
+      if(chosen)return m.chosenSpeaking?{speaker:'Lunafreya',text:chosen.text}:{speaker:'Holger',text:chosen.reply};
     }
     return line;
   };
   SIM.advanceMoment=function(w,choice) {
     const m=w.moment;
-    if(!m || w.introModal)return false;
+    if(!m || m.phase!=='talk' || w.introModal || w.momentHidden)return false;
     const line=SIM.momentLine(w);
+    w.context.sound.stopDialogue();
+    if(m.visible<line.text.length){m.visible=line.text.length;return true;}
     if(line.choices) {
       if(!Number.isInteger(choice) || !line.choices[choice])return false;
       w.memory.flags[line.choices[choice].flag]=true;
+      m.chosenSpeaking=true;
+    } else if(m.chosenSpeaking) {
+      m.chosenSpeaking=false;
     } else {
       if(m.holger)w.memory.flags[prefix+m.index]=true;
       m.index++;
-      if(m.index===m.lines.length) {m.finish();w.moment=null;}
+      if(m.index===m.lines.length) {m.finish();SIM.leaveMoment(w);}
     }
+    m.visible=0;m.clock=0;m.syllable=0;
     w.context.memory.save();
     return true;
   };
-  SIM.leaveMoment=function(w) {w.moment=null;};
+  SIM.leaveMoment=function(w) {
+    const m=w.moment;if(!m || m.phase==='return')return;
+    w.context.sound.stopDialogue();
+    const b=w.barista;
+    if(Math.hypot(b.x-m.saved.x,b.y-m.saved.y)<1) {Object.assign(b,m.saved);w.moment=null;return;}
+    m.phase='return';
+    SIM.withWorld(w,function(){SIM._.makePath(b,m.saved.x,m.saved.y);});
+  };
+  SIM.updateMoment=function(w,dt) {
+    const m=w.moment,b=w.barista;
+    if(w.momentHidden || w.introModal){w.context.sound.stopDialogue();return;}
+    if(m.phase!=='talk') {
+      if(SIM._.walker(b,dt)) {
+        if(m.phase==='return'){Object.assign(b,m.saved);w.moment=null;return;}
+        m.phase='talk';b.pose='stand';b.heading='';b.facing=m.owner.x>b.x?1:-1;
+      }
+      return;
+    }
+    const line=SIM.momentLine(w);
+    SIM.revealDialogue(w,m,line.text,dt,CAST.voices[line.speaker]||false);
+  };
 })();

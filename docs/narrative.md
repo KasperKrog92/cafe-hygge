@@ -374,3 +374,29 @@ container. Their pending arc remains pending until the final line is accepted;
 leaving or reloading restarts that short moment without awarding it. Their
 lasting effects and existing save IDs remain unchanged. This supersedes the
 older caption-run-only interaction described above.
+
+## Character bubbles and voices — 7 September 2026
+
+Conversations are invited through an icon bubble above the other character.
+Holger's introduction uses a dots bubble in both presentations; existing arc
+icons keep their game-mode visibility. A transparent, keyboard-accessible hit
+button follows Holger's rendered bubble; there is no separate invitation bar.
+
+On invitation, the moment first holds guest obligations. If the characters are
+already within speaking distance (including ordering at the counter), dialogue
+begins there. Otherwise Lunafreya takes a real obstacle-planned route to a table
+service position or a clear nearby standing point. Dialogue waits for arrival.
+When finished or put aside she walks back to the interrupted task's position,
+then resumes its original state and path. Cancelling during approach also returns
+her safely. The moment's approach/talk/return phases are transient: reload leaves
+the durable invitation and acknowledged choices ready for another meeting.
+
+The cream dialogue bubble follows the speaker through the camera zoom. Text
+reveals gradually with punctuation pauses and quiet character-specific syllables.
+Reveal completes the current sentence; continue acknowledges it. Both reply
+options appear together inside Lunafreya's bubble and become selectable when
+the prompt is revealed. The selected answer is spoken before the other person's
+response. A reload after selection retains the answer and resumes the response.
+Hidden tabs and Settings hold speaking and walking, and stop the current voice.
+Instant text retains its existing silent behavior. Escape puts a moment aside.
+Existing third-person arc narration reveals gradually but has no character voice.

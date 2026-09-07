@@ -1512,6 +1512,7 @@
   SIM.update = function (world, dt) {
     if (world.moment) {
       // Hold all obligations and deadlines; only ambient animation breathes.
+      SIM.updateMoment(world,dt);
       [world.barista, world.cat].concat(world.patrons).forEach(p => {p.animT += dt;});
       updateParticles(world, dt);
       return;
@@ -1559,16 +1560,18 @@
     // (docs/narrative.md §2) — it waits across sessions and never expires. It
     // takes the owner's bubble slot so it never fights their ambient chatter.
     const invited = world.memory.life.mode === 'game' ? pendingInvites(world) : {};
+    const holger=SIM.holgerAvailable(world);if(holger)invited[holger.id]='dots';
     world.patrons.forEach(function (p) {
       if (p.outside) return;
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment ?
-        Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null}) : p); } });
+        Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null},
+          world.moment.phase==='talk' && world.moment.owner===p ? {heading:'',facing:world.barista.x>p.x?1:-1} : {}) : p); } });
       if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id] });
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;
     if (!b.introOutside && !b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {
-      SCENE.drawPerson(g, world.moment ? Object.assign({},b,{pose:'stand',path:null,heading:'down'}) : b);
+      SCENE.drawPerson(g, world.moment && world.moment.phase==='talk' ? Object.assign({},b,{pose:'stand',path:null}) : b);
       if (world.shop && world.shop.carryingCat) {
         const lift=b.pose==='hug'?6+Math.round(Math.sin(Math.min(1,b.stateT/3)*Math.PI/2)*3)
           : b.pose==='gather'?Math.round(9*(1-Math.min(1,b.stateT/3))):0;
