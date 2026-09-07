@@ -1522,6 +1522,12 @@
       world.t+=dt;world.clockOffset-=dt;
       R.updateFirstOpening(world,dt);updateCaptions(world,dt);R.saveLife(world,dt);return;
     }
+    // One mandatory first hello teaches the invitation. Waiting costs no café
+    // time, sales or closing deadline, including when the tab is unattended.
+    if(SIM.holgerRequired(world) && SIM.holgerAvailable(world)) {
+      [world.barista,world.cat].concat(world.patrons).forEach(p=>{p.animT+=dt;});
+      updateParticles(world,dt);updateCaptions(world,dt);R.saveLife(world,dt);return;
+    }
     shop.beforeClock(world, dt);
     world.t += dt;
     updateClock(world, dt);
@@ -1538,6 +1544,7 @@
     const shopBusy = shop.update(world, dt);
     if (world.shop.phase === 'home') { R.saveLife(world, dt); return; }
     updateSpawning(world, dt);
+    R.updateWindowWorker(world,dt);
     if (!shopBusy) updateBarista(world, world.barista, dt);
     world.patrons.forEach(function (p) { updatePatron(world, p, dt); });
     world.patrons = world.patrons.filter(function (p) { return !p.gone; });
@@ -1555,6 +1562,15 @@
 
   SIM.entityDrawables = function (world) {
     const draws = [];
+    if(world.windowWorker) {
+      const a=world.windowWorker;
+      draws.push({y:a.y,draw:function(g) {
+        SCENE.drawPerson(g,a);
+        const x=Math.round(a.x),y=Math.round(a.y);
+        g.fillStyle='#6b4a30';g.fillRect(x+13,y-11,15,10);
+        g.fillStyle='#b18d62';g.fillRect(x+17,y-14,7,3);
+      }});
+    }
     const bubbles = [];
     // A pending beat raises a soft, persistent invitation over its seated owner
     // (docs/narrative.md §2) — it waits across sessions and never expires. It
@@ -1566,7 +1582,9 @@
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment ?
         Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null},
           world.moment.phase==='talk' && world.moment.owner===p ? {heading:'',facing:world.barista.x>p.x?1:-1} : {}) : p); } });
-      if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id] });
+      if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id],
+        alpha:p===holger && SIM.holgerRequired(world) && !world.memory.flags['holger-invitation-opened'] && !world.reducedMotion
+          ? .45+.55*(.5+.5*Math.cos(p.animT*Math.PI)) : 1 });
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;

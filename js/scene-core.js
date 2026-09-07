@@ -26,6 +26,10 @@
     const life = world && world.memory && world.memory.life;
     return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'hearth') : 'full';
   };
+  SCENE.windowOpen = function(world,w) {
+    return SCENE.hasFurniture(world,'open-windows') ||
+      w.x===SCENE.L.win.x && world.memory.life.projects.window.stage==='installed';
+  };
   // Room extent is independent of furnishing ownership: a later expansion
   // exposes more usable floor without changing the size of the pixel art.
   SCENE.room = function(world) {
@@ -95,6 +99,7 @@
     },
     projects: {
       pickup: { x: 54, y: 300 },
+      window: {work: {x:210,y:254}},
       table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
       fireplace: { x: 390, y: 246, work: { x: 390, y: 274 } }
     },

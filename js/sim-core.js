@@ -272,7 +272,7 @@
 
     // a few patrons are already settled in
     // (seat 10 = the first nook chair, 12 = the first window perch)
-    if(world.memory.life.firstOpening.step===12 && (world.memory.bonds.holger || world.memory.life.furniture['full-counter'])) {
+    if(world.memory.life.firstOpening.step===12 && world.memory.life.furniture['full-counter']) {
       seedPatron(world, 1); seedPatron(world, 10); seedPatron(world, 12);
     }
 
@@ -286,7 +286,15 @@
     // you recognise. His schedule is marked done-for-today inside seedRegular so
     // updateRegulars never brings a second Holger the same café day.
     const holger = CAST.regulars.find(function (r) { return r.id === 'holger'; });
-    if (holger && world.memory.life.firstOpening.step===12 && (world.memory.bonds.holger || world.memory.life.furniture['full-counter']))
+    if(holger && world.memory.life.firstOpening.step===12 && world.memory.bonds.holger &&
+        !world.memory.life.furniture['full-counter'] && !world.memory.flags['holger-introduced']) {
+      // Restore the unfinished first hello at the counter, without another
+      // visit, sale or random seated crowd. The dialogue cursor lives in flags.
+      const p=makeRegular(world,holger);p.umbrella=null;
+      enqueueArrival(world,p,0,false);p.x=L.orderSpot.x;p.y=L.orderSpot.y;
+      p.path=null;p.state='ordering';p.stateT=0;p.facing=1;p.heading='up';
+      world.regulars.holger.lastDay=dayIndex(world);
+    } else if (holger && world.memory.life.firstOpening.step===12 && world.memory.life.furniture['full-counter'])
       seedRegular(world, holger, !world.memory.flags['holger-introduced'] && !world.memory.life.furniture.fireside ? world.seats.find(s => !s.taken) : null);
 
     if (SIM._.restoreLife) SIM._.restoreLife(world);
@@ -1041,8 +1049,19 @@
   /* ---------- spawning ---------- */
 
   function spawnCap(world) {
-    if (world.hour >= 23 || world.hour < 6) return 2;
-    return world.daylight > 0.3 ? 7 : 4;
+    const established=SCENE.hasFurniture(world,'full-counter');
+    const familiarity=established ? 7 : Math.min(7,2+Math.floor(world.memory.life.daysCompleted/2));
+    return Math.min(world.seats.length,familiarity,world.daylight > 0.3 ? 7 : 4);
+  }
+  function arrivalRoom(world) {
+    const clean=world.seats.filter(s => !s.taken && (s.table<0 ||
+      !world.tables[s.table].items.some(it => it.owner===null && it.side===s.side))).length;
+    const waiting=world.patrons.filter(p => !p.seat && !p.outside).length;
+    return Math.max(0,Math.min(spawnCap(world)-world.patrons.length,clean-waiting));
+  }
+  function arrivalGap(world) {
+    const days=SCENE.hasFurniture(world,'full-counter') ? 7 : world.memory.life.daysCompleted;
+    return days===0 ? rnd(90,130) : rnd(1,1.35)*(Math.max(40,85-days*7)+(1-world.daylight)*25);
   }
 
   function applyArrivalTraits(world, p) {
@@ -1194,44 +1213,55 @@
 
   function updateRegulars(world) {
     const day = dayIndex(world);
+    let arrived=false;
     CAST.regulars.forEach(function (spec) {
+      if(arrived)return;
       const r = world.regulars[spec.id];
       if (!r) return;
       if (day !== r.day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
       // one visit at a time per regular; never two of the same face
       if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return;
       const due = r.force || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
-      if (!due || world.patrons.length >= spawnCap(world)) return;   // force holds until the room has room
+      const firstDay=!SCENE.hasFurniture(world,'full-counter') && world.memory.life.daysCompleted===0;
+      if (!due || arrivalRoom(world)<1 || (firstDay && spec.id!=='holger' && !r.force)) return;
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
       const info = noteRegularVisit(world, spec);
       caption(world, regularArrivalLine(world, spec, info));
+      arrived=true;
     });
+    return arrived;
   }
 
   function updateSpawning(world, dt) {
     if (world.shop && !world.shop.accepting) return;
+    // A resumed mandatory hello must not block the last opening chores, which
+    // still need an empty queue even after the ordinary welcome step.
+    if(SIM.holgerRequired(world) && world.shop.phase!=='open')return;
     // On a new café's first opening, the neighbour enters through the real door
     // before random arrivals or other regulars. Existing histories stay intact.
-    if (!world.memory.bonds.holger && !world.memory.life.furniture['full-counter'] && world.regulars.holger) {
+    const resumeHello=SIM.holgerRequired(world) && !world.patrons.some(p=>p.regularId==='holger');
+    if ((!world.memory.bonds.holger || resumeHello) && !world.memory.life.furniture['full-counter'] && world.regulars.holger) {
+      if(arrivalRoom(world)<1)return;
       world.regulars.holger.force = true;
       const spec = CAST.regulars.find(r => r.id === 'holger');
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
       world.regulars.holger.lastDay = dayIndex(world);
       world.regulars.holger.force = false;
-      noteRegularVisit(world, spec);
-      world.spawnT = 22;
+      if(!world.memory.bonds.holger)noteRegularVisit(world, spec);
+      world.spawnT = arrivalGap(world);
       caption(world, 'A neighbour pauses by the new sign, then steps inside.');
       return;
     }
-    updateRegulars(world);
+    if(SIM.holgerRequired && SIM.holgerRequired(world))return;
     world.spawnT -= dt;
     if (world.spawnT > 0) return;
-    world.spawnT = rnd(1, 1.4) * (26 + (1 - world.daylight) * 55);
-    if (world.patrons.length >= spawnCap(world)) return;
-    if (world.patrons.length + 2 <= spawnCap(world) && random() < 0.22) {
+    world.spawnT = arrivalGap(world);
+    if (arrivalRoom(world)<1) return;
+    if(updateRegulars(world))return;
+    if (world.memory.life.daysCompleted>0 && arrivalRoom(world)>=2 && random() < 0.22) {
       spawnCouple(world);
       return;
     }

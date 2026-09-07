@@ -182,8 +182,9 @@ Each row specifies a visible journey, not an instant menu toggle.
 | Dishwasher | Sink area and installation space | Delivered and fitted; she begins loading and unloading dishes during normal service. | A new dishwashing routine that reduces hands-on washing. |
 | Larger oven | Sufficient counter/kitchen space | Larger unit delivered and installed; any replaced oven is visibly removed. | Larger batches and additional supported baked dishes. |
 
-For the initial system, allow one new project per evening and retain unfinished
-jobs in a small queue. This is a simplicity recommendation, not a daily reward
+Allow the left-window repair and extra table together on an evening; other
+projects retain the one-choice evening pace, with unfinished work saved.
+This is a simplicity recommendation, not a daily reward
 or something lost by skipping an evening. Larger scheduling can wait.
 
 Work states: **available → purchased → scheduled → arrived → in progress →
@@ -333,9 +334,10 @@ The first apartment/plant milestone below subsequently added the minimal life an
    Routes, perches, service equipment and optional routines follow what is
    installed. The existing plant, extra-table and hearth jobs work in C0.
    H1 unpacking and the first returning-patron conversation remain separate work.
-5. **Prove a visitor job.** Build bookshelf delivery, then a separate book
-   purchase and gradual stocking. Reuse the visitor/job structure for a painter
-   or window worker after the delivery loop is convincing.
+5. **First visitor job — left-window repair implemented 7 September 2026.**
+   The worker arrives, removes boards, repairs and cleans the left pane, then
+   leaves. Partial work resumes after closing or reload. Bookshelf delivery,
+   separate books and gradual stocking remain later milestones.
 6. **Grow both places and their stories.** Add reading corner, home comforts,
    relationship gifts, music, art and terrace in small complete sequences.
    Extend the menu and counter through the K stages, proving visible food sales
@@ -406,3 +408,26 @@ locks an improvement. Conversations use close framing and hold café obligations
 until finished or put aside. The [story bible](story-bible.md) is the cast and
 continuity reference; Holger's later encouragement and deeper stories remain
 planned beats there, separate from the upgrade milestones above.
+
+
+## Quiet first day and first improvements — shipped 7 September 2026
+
+The owner’s updated order puts the left-window repair and one additional table
+with two chairs first. They cost 30 and 60 coins and can both be chosen on the
+first evening, in either order. Starting savings are 90 so affordability never
+requires attracting a crowd; ordinary served pickups still add one coin.
+Other catalogue ideas and the room expansion remain outside this slice.
+
+First setup ends at 17:30, leaving four active service minutes until 21:30.
+Holger is the first arrival and stays at the counter for a mandatory introduction
+to dialogues. His invitation gently blinks until opened. Service and time wait
+without penalty until completion; acknowledged replies survive reload. This
+one-time attended exception works in idle and game, as the owner requested.
+Later days return to ordinary hours and autonomous progression.
+
+The new café starts with a two-customer cap, grows gradually with completed café
+days and always respects usable seating. Walk-ins and regulars share one spaced
+arrival budget. No first-day couples or influx of overdue regulars. The extra
+table uses the existing interruptible assembly; window work belongs to the
+visiting craftsperson. Both installed improvements persist without an expiring
+payoff or required acknowledgement.

@@ -22,8 +22,14 @@
     while(w.moment.index<6)next(w);
     SIM.advanceMoment(w);check(!SIM.advanceMoment(w),'choice cannot advance itself');next(w,branch);
     check(SIM.momentLine(w).speaker==='Lunafreya','chosen answer not spoken');next(w);
-    const saved=MEMORY.codec.encode(w.memory);SIM.leaveMoment(w);travel(w);SIM.update(w,1);check(w.t>before.t,'cafe resumes');
-    const restored=SIM.create({memory:MEMORY.createStore({state:MEMORY.codec.decode(saved).state})});
+    const saved=MEMORY.codec.encode(w.memory);SIM.leaveMoment(w);travel(w);SIM.update(w,1);check(w.t===before.t,'mandatory hello released café');
+    const counter=SIM.create({memory:MEMORY.createStore({state:MEMORY.codec.decode(saved).state})});
+    check(counter.patrons[0].state==='ordering' && SIM.startHolger(counter),'counter greeting reload');
+    check(SIM.momentLine(counter).text===CAST.holgerIntroduction[6].choices[branch].reply,'counter reply lost');
+    finish(counter,branch);const released=counter.t;SIM.update(counter,1);check(counter.t>released,'finished tutorial holds café');
+    // Established-room invitations still exercise seated approach and return.
+    const seatedSave=MEMORY.codec.decode(saved).state;seatedSave.life.furniture=MEMORY.furnishings(true);seatedSave.life.room='full';
+    const restored=SIM.create({memory:MEMORY.createStore({state:seatedSave})});
     const start={x:restored.barista.x,y:restored.barista.y};
     check(SIM.startHolger(restored),'reload invitation');check(restored.moment.phase==='approach','seated guest needs approach');
     check(!SIM.advanceMoment(restored),'dialogue before arrival');

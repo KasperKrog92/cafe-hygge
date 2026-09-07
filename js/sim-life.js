@@ -5,6 +5,8 @@
   const PLANT = { price: 30, destination: 'cafe', delivery: 'carry', phases: ['scheduled','carry','unpack','place','installed'] };
   SIM.plantProject = PLANT;
   const PROJECTS = SIM.projects = {
+    window: { price: 30, destination: 'cafe', delivery: 'contractor', title: 'repair the left window',
+      phases: ['protect the sill','remove the boards','repair the frame','clean the glass'], duration: 18 },
     table: { price: 60, destination: 'cafe', delivery: 'carry', title: 'table and chairs',
       phases: ['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'], duration: 18 },
     fireplace: { price: 30, destination: 'cafe', delivery: 'carry', title: 'clean the fireplace',
@@ -14,7 +16,7 @@
   function pending(w) {
     // Finish the job already laid out before opening another kit.
     for (const stage of ['working','arrived','scheduled']) {
-      const id=Object.keys(PROJECTS).find(id => w.memory.life.projects[id].stage === stage);
+      const id=Object.keys(PROJECTS).find(id => PROJECTS[id].delivery !== 'contractor' && w.memory.life.projects[id].stage === stage);
       if(id) return id;
     }
     return null;
@@ -29,9 +31,18 @@
   SIM.buyProject = function (w, id) {
     const l = w.memory.life, d = PROJECTS[id], p = l.projects[id];
     if (!d || !p || !w.plannerOpen || w.shop.phase !== 'home' || l.mode !== 'game' ||
-        l.plannedTonight || p.stage !== 'available' || l.savings < d.price) return false;
+        !SIM.canPlanProject(w,id) || p.stage !== 'available' || l.savings < d.price) return false;
     l.savings -= d.price; p.stage = 'purchased'; l.plannedTonight = true;
     commit(w); return true;
+  };
+  // These two small first improvements can be booked together. Other evenings
+  // retain the existing one-project pace; repeat clicks never debit twice.
+  SIM.canPlanProject = function(w,id) {
+    const l=w.memory.life;
+    if(!l.plannedTonight)return true;
+    const other=id==='window'?'table':id==='table'?'window':null;
+    return !!other && l.projects[other].stage==='purchased' &&
+      l.plant.stage!=='purchased' && l.projects.fireplace.stage!=='purchased';
   };
   function projectHome(w) {
     const b = w.barista;
@@ -89,6 +100,36 @@
   };
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
   R.commitLife = commit;
+  // The booked craftsperson has a private walking actor, never a customer,
+  // order or seat. Durable progress uses the same project checkpoint as kits.
+  R.updateWindowWorker = function(w,dt) {
+    const p=w.memory.life.projects.window,site=L.projects.window.work;
+    let a=w.windowWorker;
+    if(w.shop.phase==='home') { w.windowWorker=null;return; }
+    if(!a) {
+      if(w.shop.phase!=='open' || ['scheduled','arrived','working'].indexOf(p.stage)<0)return;
+      a=w.windowWorker=R.makePatron(w,'Mikkel');
+      a.colors={skin:'#ddb58d',hair:'#6b4a30',top:'#718b91',pants:'#4b5260',scarf:null};
+      a.x=p.stage==='working'?site.x:L.doorSpot.x;a.y=p.stage==='working'?site.y:L.doorSpot.y;
+      a.pose='stand';a.holding=null;a.bubble=null;a.state='arriving';
+      R.makePath(a,site.x,site.y);
+      if(p.stage==='scheduled') {p.stage='arrived';R.ringDoor(w);R.caption(w,'a worker arrives to look after the left window.');commit(w);}
+    }
+    a.animT+=dt;
+    if(w.shop.phase!=='open' || p.stage==='installed') {
+      if(a.state!=='leaving') {a.state='leaving';R.makePath(a,L.doorSpot.x,L.doorSpot.y);}
+      if(R.walker(a,dt)) {w.windowWorker=null;R.ringDoor(w);}
+      return;
+    }
+    if(a.path && a.path.length) {R.walker(a,dt);return;}
+    a.state='working';a.pose=p.step===0?'kneel':'reach';a.heading='up';a.facing=1;
+    p.stage='working';const before=p.time;p.time=Math.min(18,p.time+dt);a.stateT=p.time;
+    if(p.time>=18) {
+      p.time=0;p.step++;
+      if(p.step===4) {p.stage='installed';R.caption(w,'the left window is clear; the lake comes into view.');}
+      commit(w);
+    } else if(Math.floor(before/3)!==Math.floor(p.time/3))commit(w);
+  };
   // First arrival is ordinary visible work, held before service. Every step
   // and partial hand action is saved; existing lives migrate past this once.
   const B=L.basic;
@@ -140,6 +181,10 @@
     f.step++;f.time=0;b.path=null;b.pose='stand';b.holding=null;
     if(f.step===FIRST.length) {
       w.memory.life.intro.complete=true;
+      // Preparation has taken most of this first day. Ordinary days keep their
+      // usual clock; this jump is committed with the one-time assembly finale.
+      w.clockOffset += (17.5-w.hour)/24*R.DAY_SECONDS;
+      R.updateClock(w,0);
       w.shop.phase='open';w.shop.accepting=true;w.shop.carryingCat=false;b.state='idle';b.idleT=2;
       w.spawnT=2;R.caption(w,'two little tables, fresh coffee. the door is open.');
     }
@@ -216,6 +261,9 @@
     commit(w); return true;
   };
   R.enterHome = function (w) {
+    if(w.shop.phase==='home')return;
+    w.memory.life.daysCompleted++;
+    w.windowWorker=null;
     w.shop.phase = 'home'; w.shop.elapsed = 0; w.shop.fade = 0;
     w.shop.carryingCat = false; w.memory.life.homeTime = 0;
     w.memory.life.plannedTonight = false;

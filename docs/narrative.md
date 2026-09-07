@@ -4,6 +4,12 @@
 > work autonomously in either mode. This is not a personal story payoff.
 > Story invitations remain saved until chosen in game mode; idle hides their
 > controls without consuming them. Both modes share the same progress and home.
+>
+> **Owner-directed tutorial exception (7 September 2026):** the new café’s first
+> Holger introduction is mandatory in both modes. He waits at the counter;
+> service, arrivals and café time wait until it is complete. Its invitation
+> blinks softly until opened, never expires, and restores on reload. Later
+> story arcs retain their ordinary optional invitation contract.
 
 
 The automatic closing/opening ritual is distinct from closing the app.
@@ -400,3 +406,10 @@ response. A reload after selection retains the answer and resumes the response.
 Hidden tabs and Settings hold speaking and walking, and stop the current voice.
 Instant text retains its existing silent behavior. Escape puts a moment aside.
 Existing third-person arc narration reveals gradually but has no character voice.
+
+
+Putting the mandatory first hello aside returns to the waiting counter encounter,
+with a steady invitation once opened. It does not release the café clock or
+serve Holger early. Completing it releases normal service; no later conversation
+inherits this tutorial requirement. The booked window repair, like table work,
+is a practical improvement that may finish autonomously in either mode.

@@ -129,13 +129,15 @@
     Object.assign(button.style,{left:at.x+'px',top:at.y+'px',width:width*at.scale+'px',height:height*at.scale+'px'});
   }
   function refreshMoment() {
+    world.reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const invited=SIM.holgerAvailable(world);
     meetHolger.hidden=!invited;
     if(invited)placeHit(meetHolger,invited.x-24,invited.y+(invited.pose==='sit'?6:0)-102,48,42);
     const m=world.moment,line=m&&m.phase==='talk'?SIM.momentLine(world):null;
     momentPanel.hidden=!line;
     stage.classList.toggle('in-conversation',!!m);
-    btnMode.disabled=!!m;btnHome.disabled=!!m;
+    btnMode.disabled=!!m;btnHome.disabled=!!m || SIM.holgerRequired(world);
+    document.getElementById('conversation-later').textContent=SIM.holgerRequired(world)?'pause conversation':'continue another time';
     const key=line?String(m.index)+line.text:null;
     if(key!==momentKey) {
       const entering=momentKey===null && !!line;momentKey=key;
@@ -191,9 +193,9 @@
     btnHome.hidden = world.shop.phase === 'home' || world.shop.phase==='settling';
     if (!world.plannerOpen && planner.open) planner.close();
     if (!planner.open) return;
-    function refreshChoice(button, stage, price) {
+    function refreshChoice(button, stage, price, id) {
       const available = stage === 'available';
-      button.disabled = !available || l.plannedTonight || l.savings < price;
+      button.disabled = !available || !SIM.canPlanProject(world,id) || l.savings < price;
       button.querySelector('.thought-price').hidden = !available;
       const state = button.querySelector('.thought-state');
       state.hidden = available;
@@ -203,7 +205,7 @@
     }
     refreshChoice(buyPlant, l.plant.stage, SIM.plantProject.price);
     Object.keys(SIM.projects).forEach(function (id) {
-      refreshChoice(document.getElementById('buy-' + id), l.projects[id].stage, SIM.projects[id].price);
+      refreshChoice(document.getElementById('buy-' + id), l.projects[id].stage, SIM.projects[id].price,id);
     });
   }
   btnMode.addEventListener('click', function () {
@@ -354,7 +356,7 @@
   document.addEventListener('mousemove', pokeControls);
 
   // a click (client coords → master-canvas coords): a waiting story invitation
-  // takes it first, otherwise say hello to the cat. Both are optional and soft.
+  // takes it first, otherwise say hello to the cat. The first hello teaches dialogue.
   canvas.addEventListener('click', function (e) {
     if(world.moment || focusAmount>.02)return;
     if(SIM.introActive(world)) {SIM.advanceIntro(world);return;}

@@ -29,7 +29,7 @@
     const sun = S.sunPosition(world.hour);
     return { shift: Math.round((w.x + w.w / 2 - sun.x) * 0.3),
       depth: Math.round(70 + (1 - sun.height) * 95),
-      strength: sun.visible ? world.daylight * (1 - world.rain * 0.9) : 0 };
+      strength: sun.visible && S.windowOpen(world,w) ? world.daylight * (1 - world.rain * 0.9) : 0 };
   };
 
   function sky(g, world) {

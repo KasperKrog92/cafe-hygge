@@ -20,6 +20,7 @@ try {
   if(!__world.firstEntryReady)throw Error('entry did not release setup');
   for(let i=0;i<5000&&__world.shop.phase==='settling';i++)SIM.update(__world,.25);
   if(__world.shop.phase!=='open'||__world.tables.length!==2)throw Error('first setup failed');
+  __dev.greetHolger(__world);
   __world.spawnT=999;
   __dev.spawn({drink:'cappuccino',wantsBook:false,ownBook:true});
   const p=__world.patrons[__world.patrons.length-1], w=__world;

@@ -74,16 +74,17 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v6, migrated through v1–v5) contains `mode`, integer `savings`, `hour`,
-`homeTime`, `plant: {stage,time}`, `projects`, `plannedTonight`, and a nullable lifecycle checkpoint containing
-shop state and Lunafreya's position/path. Initial savings and the plant price are
-30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
+`memory.life` (v7, migrated through v1–v6) contains `mode`, integer `savings`, `hour`,
+`homeTime`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window`), `plannedTonight`, and a nullable lifecycle checkpoint containing
+shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
+price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
 → unpack → place → installed. Purchase and stage transitions flush immediately;
 working checkpoints update in memory every tick and flush at most every ten
 seconds, plus pagehide/hidden. Abrupt process death can lose the latest partial
 seconds; completed committed stages cannot charge/install again. Boot adds no
 offline time. Transient guests/orders are omitted on ritual restoration, and
-ordinary open-café reloads retain the seeded café foundation.
+ordinary open-café reloads seed only established furnished rooms. New cafés
+restore an unfinished first greeting at the counter without another sale or visit.
 
 `SIM.setMode(world, mode)`, `SIM.plan(world, open)`, `SIM.goToSleep(world)` and
 `SIM.buyPlant(world)` are synchronous public actions. Sleep is accepted only
@@ -278,7 +279,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v6; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v7; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -492,3 +493,30 @@ the presentation camera into transparent native button hit areas. There is no
 separate HTML dialogue design. A sentence-level transcript supports screen
 readers. Full-scene shots include the actual dialogue and choice bubble;
 browser captures also show the camera crop and the put-aside control.
+
+
+## First-day admission, repair and required greeting
+
+`spawnCap`, `arrivalRoom` and `arrivalGap` in sim-core share one admission budget
+between walk-ins and regulars. The budget includes pending seat demand and dirty
+seats; familiarity derives from saved completed café days, never real-world age.
+The one-time setup finale commits 17:30 with its completed step, so reload never
+replays the afternoon jump. `enterHome` increments `daysCompleted` only once.
+
+`SIM.canPlanProject` is shared by purchase validation and planner button state.
+Window and table can be chosen together; every debit and purchase is committed
+once. `updateWindowWorker` owns a transient, world-bound actor separate from
+patrons and staff. Its durable phase/step/time is `life.projects.window`;
+Lunafreya’s pending-work selector excludes contractor jobs. Work checkpoints
+flush every three seconds and at phase transitions. On open-café reload, partial
+hand work resumes at the work anchor; a saved arrival restarts its doorway route.
+Closing preserves work and sends the actor out. `SCENE.windowOpen` is the shared
+left/right view predicate for glass, sunlight and ship-watching eligibility.
+
+`SIM.holgerRequired` identifies an unfinished introduction in the modest café.
+At the counter, SIM.update holds service, arrivals and café time while breathing,
+particles, captions and the invitation animation continue. Both modes expose the
+same accessible invitation. Its two-second opacity cycle stops after the saved
+`holger-invitation-opened` flag is set; reduced-motion users see a steady icon.
+Completing the existing dialogue sets `holger-introduced` and releases service.
+Putting it aside retains the counter hold and exact acknowledged choices.

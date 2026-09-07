@@ -179,7 +179,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v5; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v7; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -295,3 +295,37 @@ approach and return, cancellation during walking, hidden-tab holds, gradual text
 distinct speaker profiles, both branches and durable replies. The UI runner
 captures 16:10/16:9 choice bubbles and a seated conversation after a real reload.
 Reports and inspected captures are in `.art-review/shared-bubbles-ui/`.
+
+
+## First-days and mandatory greeting verification — 7 September 2026
+
+The `first-days` suite checks five first-day seeds, a ten-minute unattended
+counter hold, reload of the mandatory introduction, four active service minutes,
+the two-customer cap, 90-coin paired affordability, both purchase orders, every
+window hand-work checkpoint, worker departure at closing, overnight resumption,
+six usable seats and left-only view/light. `holger` also checks both preserved
+choice branches and release only after completion. `__dev.greetHolger(world)`
+is an explicit test helper that plays the real dialogue with its first choices;
+`__dev.modestWorld()` uses it to provide a private post-tutorial fixture.
+
+`./tools/verify-first-days-ui.ps1` exercises the real invitation and conversation
+buttons, verifies the blink stops after opening (and reduced motion is steady),
+buys window then table across a page reload, restores all four repair steps and
+the installed result, and captures 1440×900/1600×900 desktop views. It owns and
+closes one disposable session. `verify-holger-ui.ps1` additionally checks actual
+branch acknowledgement on counter reload. The entry smoke completes the tutorial
+before observing its real-time cappuccino journey.
+
+Schema-v7 Node regressions cover old-save migration, retained balances and
+partial jobs, first-morning funds, established windows and invalid new fields.
+All fifteen browser suites and fourteen Node save/isolation groups pass, plus
+the real UI/reload checks. Inspected captures and reports are in
+`.art-review/first-days-final/`, `.art-review/first-days-ui/` and
+`.art-review/first-days-art/`. No native Safari execution is claimed by these
+Chromium checks.
+
+The normal-entry cappuccino smoke passed in 31.7 seconds with audio initialized,
+pickup income and a zero-problem night audit. The first-days UI runner verified
+seven actual page reloads; the dedicated Holger UI runner also preserved a chosen
+reply at the counter. The final older-home-save resumption check passes in
+`.art-review/first-days-resume-fixed/`. All owned browser sessions were closed.

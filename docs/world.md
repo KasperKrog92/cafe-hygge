@@ -42,16 +42,20 @@ and the shop returns to its usual routines.
 caption, weather, movement and story timers receive only actual simulated
 time. The normal arrival schedule rolls into the new café day. This sequence
 needs no clicks, creates no obligations, and never consumes a story invitation.
-Schema v3 retains home time, wall-clock hour, presentation, savings, plant
+Schema v7 retains completed café days, left-window work, home time, wall-clock hour, presentation, savings, plant
 stage/time, partial table/hearth jobs, the evening choice and a lifecycle checkpoint. Reload holds time spent away and resumes
 rituals/partial work; transient patrons and incomplete orders are not serialized.
-A normal open-café reload retains the existing seeded-room behavior.
+Only established furnished saves keep the seeded-room behavior. New cafés reload
+without a crowd; an unfinished mandatory first hello restores Holger at the counter.
 
-Savings begin at 30 kr. Removing a finished cup at pickup adds 1 kr, once;
-seeded drinks and unfinished orders add nothing. Home offers a 30 kr plant, 60 kr table set or 30 kr fireplace cleaning. One
-choice per evening is optional. The planner appears as Lunafreya’s floating thoughts over
-the apartment: a short first-person question and three simple choices with pixel
-gold-coin prices. Chosen items show “chosen”; completed items show a checkmark.
+New cafés begin with 90 coins, enough for the first two planner choices: a
+30-coin left-window repair and 60-coin table with two chairs. Both can be chosen
+in one evening, in either order, including across a reload. Affordability never
+depends on a busy first day. Removing a finished cup at pickup adds 1 coin, once;
+seeded drinks and unfinished orders add nothing. Plant and fireplace choices
+remain 30 coins each, with the usual one-choice rule outside the window/table
+pair. The planner shows floating thoughts with pixel gold-coin prices, “chosen”,
+or a completion checkmark.
 There are no item descriptions, instructions or notebook panel; savings and unfinished jobs never expire. The
 plant has no floor footprint; the table uses a reserved area until complete. No costs accrue from absence.
 New captions: “home, with a book and a familiar little shadow.” and
@@ -64,7 +68,10 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 
 - The clock advances one hour per real minute (a base day is **1440 seconds**),
   with the late-closing hold and overnight skip described above. The sim boots
-  at 08:24 so a fresh visit opens onto morning light.
+  at 08:24 for preparation. The completed first setup advances to 17:30,
+  leaving four active service minutes until 21:30. Waiting for and attending
+  Holger’s first dialogue does not consume that time. Later mornings keep
+  their ordinary 07:30 arrival and normal hours.
 - `world.hour` (0–24 float) drives everything: the sky, the lighting, the
   mantel clock's hands, spawn rates, music sparseness.
 - Hour edges are tracked without replaying skipped time after `?hour=` or
@@ -444,3 +451,29 @@ explicitly paused, or while Settings is open. Refocus discards that interval;
 it never catches up missed speech. Skip dialogue releases the attendance hold
 and lets the real assembly/finale finish unattended. No furniture is granted
 by skipping. Ordinary days retain the existing elapsed-time background clock.
+
+
+## First days and the left-window repair — 7 September 2026
+
+Walk-ins and regulars share one arrival timer. On day one Holger enters first;
+other regulars and couples wait for later days. After the mandatory hello, the
+next arrival is 90–130 seconds away. Occupancy starts at two, rises by one for
+every two completed café days, and never exceeds actual indoor seating or the
+seven-daytime/four-evening limit. Admission counts people waiting for seats and
+excludes seats with abandoned dishes. Later arrival intervals shorten gradually,
+with extra spacing after dark; overdue regulars cannot enter on the same tick.
+A full café simply receives no new entrant.
+
+`life.daysCompleted` increases once on arriving home, persists through reload,
+and never accrues while the app is closed. Existing furnished saves migrate as
+established cafés; unfinished first mornings receive at least 90 savings.
+Already-open existing saves keep their balance and opening hour.
+
+The booked worker enters the following open café with a toolbox, walks to
+`L.projects.window.work`, protects the sill, removes boards, repairs the frame,
+and cleans the glass in four 18-second phases. Boards disappear in stages.
+Only the left view, its sunlight and its ship-watching spot become available;
+the right window remains boarded. The worker leaves when finished or at closing.
+Partial work survives nights, reloads and mode changes, independently of
+Lunafreya’s table assembly. Captions mark the arrival and the clear lake view;
+existing door sounds and the normal caption limiter apply.

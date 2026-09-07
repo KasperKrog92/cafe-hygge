@@ -47,13 +47,12 @@ window.uiNow=performance.now();lifeTestFrame(uiNow);return !!SIM.holgerAvailable
  if($LASTEXITCODE -ne 0){throw 'Reload entry failed'}
  Eval-H @'
 (()=>{const w=__world;window.uiNow=performance.now();lifeTestFrame(uiNow);document.getElementById('meet-holger').click();
-if(w.moment.phase!=='approach'||!document.getElementById('conversation').hidden)throw Error('remote conversation did not wait for approach');
-for(let n=0;n<3000&&w.moment.phase==='approach';n++)SIM.update(w,.05);
-if(w.moment.phase!=='talk')throw Error('approach failed');SIM.advanceMoment(w);lifeTestFrame(uiNow+=50);return true;})()
+if(w.patrons[0].state!=='ordering'||w.moment.phase!=='talk')throw Error('mandatory hello did not return to counter');
+SIM.advanceMoment(w);lifeTestFrame(uiNow+=50);return true;})()
 '@ | Out-Null
  for($i=0;$i -lt 16;$i++){ Start-Sleep -Milliseconds 100; Eval-H 'lifeTestFrame(uiNow+=100);true' | Out-Null }
- & $browser --session $testSession screenshot (Join-Path $output 'seated.png')
- if($LASTEXITCODE -ne 0){throw 'Seated capture failed'}
+ & $browser --session $testSession screenshot (Join-Path $output 'counter-reload.png')
+ if($LASTEXITCODE -ne 0){throw 'Counter capture failed'}
  Eval-H @'
 (()=>{const w=__world;
 if(SIM.momentLine(w).text!==CAST.holgerIntroduction[6].choices[0].reply)throw Error('real reload lost reply');

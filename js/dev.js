@@ -517,6 +517,7 @@
       const state = MEMORY.codec.fresh(); state.life.furniture = MEMORY.furnishings(true);
       state.life.firstOpening={step:12,time:0};
       state.life.room='full';
+      state.life.daysCompleted=7;state.life.projects.window={stage:'installed',step:4,time:0};
       o.memory = MEMORY.createStore({state:state});
     }
     return SIM.create(o);
@@ -525,7 +526,20 @@
     const w=SIM.create(options||{});
     for(let i=0;i<4000&&w.shop.phase==='settling';i++)SIM.update(w,.25);
     if(w.shop.phase==='settling')throw Error('first setup did not complete');
+    if(w.shop.phase==='open')D.greetHolger(w);
     return w;
+  };
+  // Explicit fixture helper: play the actual first dialogue with its first
+  // choices, so autonomous lifecycle suites start after the attended tutorial.
+  D.greetHolger = function(w) {
+    if(!SIM.holgerRequired(w))return;
+    for(let n=0;n<2400 && !SIM.holgerAvailable(w);n++)SIM.update(w,.25);
+    if(!SIM.startHolger(w))throw Error('first greeting unavailable');
+    for(let n=0;n<300 && w.moment;n++) {
+      if(w.moment.phase!=='talk')SIM.update(w,.25);
+      else SIM.advanceMoment(w,SIM.momentLine(w).choices?0:undefined);
+    }
+    if(SIM.holgerRequired(w))throw Error('first greeting unfinished');
   };
 
   /* A detached, repeatable art fixture. Never SIM.create/update: those can

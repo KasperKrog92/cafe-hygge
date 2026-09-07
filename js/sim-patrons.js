@@ -319,13 +319,14 @@
           if (p.partner && !p.orderCaptioned) {
             p.orderCaptioned = true; p.partner.orderCaptioned = true;
             caption(world, p.name + ' and ' + p.partner.name + ' order together.');
-          } else if (!p.orderCaptioned) {
+          } else if (!p.orderCaptioned && !(p.regularId==='holger' && SIM.holgerRequired(world))) {
             caption(world, p.name + ' orders ' + withArticle(p.drink.name) + '.');
           }
         }
         break;
       }
       case 'ordering': {
+        if(p.regularId==='holger' && SIM.holgerRequired(world))break;
         if (p.stateT > 2.0) {
           world.barista.orders.push({ patron: p, drink: p.drink });
           // leave the queue
@@ -907,13 +908,14 @@
       return;
     }
 
-    const ship = SCENE.hasFurniture(world,'open-windows') && R.visibleShip(world);
+    const ship = (SCENE.windowOpen(world,L.win) || SCENE.windowOpen(world,L.win2)) && R.visibleShip(world);
     if (ship && ship.watchers < 2 && p.shipSeen !== ship && world.shop.phase === 'open' &&
         !world.shop.lastCall && !p.isRegular && !p.partner && !p.seat.window && !p.seat.piano &&
         !p.seat.artist && !p.holding && !p.dozing && !p.laptopActive && !p.knitting &&
         world.cat.lapPatron !== p && p.sipPhase <= 0 && p.stay > 60 && R.random() < dt * 0.035) {
       const slot = L.waterfront.shipWatch.findIndex(function (a, i) {
-        return !world.patrons.some(function (q) { return q.shipWatchSlot === i; });
+        return SCENE.windowOpen(world,i===0?L.win:L.win2) &&
+          !world.patrons.some(function (q) { return q.shipWatchSlot === i; });
       });
       if (slot >= 0) {
         p.shipSeen = ship; ship.watchers++; p.shipWatchSlot = slot;

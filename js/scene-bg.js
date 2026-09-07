@@ -55,7 +55,7 @@
   function drawFloorLight(g, world) {
     const d = world.pal.daylight, lamp = SCENE.lampLevel(world);
     g.save();
-    if (d > 0.1 && SCENE.hasFurniture(world,'open-windows')) {
+    if (d > 0.1) {
       [L.win, L.win2].forEach(function (w, wi) {
         const beam = SCENE.windowLight(world, w);
         const y = L.wallY + 2, depth = beam.depth, shift = beam.shift;
@@ -223,10 +223,15 @@
   /* ---------- window with the world outside ----------
      Shared by both windows; both clip the same continuous waterfront.
      `alt` identifies the curtain and rain seed, never a second sun or moon. */
-  function drawBoardedWindow(g,w) {
+  function drawBoardedWindow(g,w,world) {
     px(g,w.x-8,w.y-8,w.w+16,w.h+16,'#5a3d28');
     px(g,w.x,w.y,w.w,w.h,'#292821');
-    for(let y=0;y<w.h;y+=24) {
+    const p=world.memory.life.projects.window;
+    const step=w.x===L.win.x && p.stage==='working' ? p.step : 0;
+    if(step>=2) {
+      g.save();g.beginPath();g.rect(w.x,w.y,w.w,w.h);g.clip();SCENE.drawWaterfront(g,world);g.restore();
+    }
+    for(let y=step>=3?w.h:step>=2?Math.ceil(w.h/48)*24:0;y<w.h;y+=24) {
       const h=Math.min(22,w.h-y),c=y%48?'#94724f':'#a27e56';
       px(g,w.x-2,w.y+y,w.w+4,h,c);
       px(g,w.x,w.y+y+2,w.w,2,'#b18d62');
@@ -238,7 +243,7 @@
   }
   function drawWindow(g, world, w, alt) {
     const pal = world.pal, t = world.t;
-    if(!SCENE.hasFurniture(world,'open-windows')) { drawBoardedWindow(g,w);return; }
+    if(!SCENE.windowOpen(world,w)) { drawBoardedWindow(g,w,world);return; }
     // Clip the entire exterior: rain and town silhouettes cannot spill onto the sill.
     g.save();
     g.beginPath(); g.rect(w.x, w.y, w.w, w.h); g.clip();

@@ -215,7 +215,9 @@
     all.forEach(function (d) { d.draw(g); });
     SCENE.drawParticles(g, world);
     SCENE.drawLighting(g, world);
-    ents.bubbles.forEach(function (b) { SCENE.drawBubble(g, b.x, b.y, b.icon); });
+    ents.bubbles.forEach(function (b) {
+      g.save();g.globalAlpha=b.alpha===undefined?1:b.alpha;SCENE.drawBubble(g,b.x,b.y,b.icon);g.restore();
+    });
     if(!world.dialogue)SCENE.drawCaption(g, world);
     if(SCENE.drawIntroDialogue)SCENE.drawIntroDialogue(g,world);
     if (world.shop && world.shop.fade > 0) {

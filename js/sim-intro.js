@@ -167,6 +167,10 @@
 (function () {
   'use strict';
   const prefix='holger-introduction-line-';
+  SIM.holgerRequired=function(w) {
+    return w.memory.life.firstOpening.step===12 && !w.memory.life.furniture['full-counter'] &&
+      !w.memory.flags['holger-introduced'];
+  };
   SIM.holgerAvailable=function(w) {
     if(w.moment || w.shop.phase!=='open' || w.memory.flags['holger-introduced'])return null;
     return w.patrons.find(p => p.regularId==='holger' && !p.outside &&
@@ -215,6 +219,7 @@
       if(b)b.warmth=(b.warmth||0)+1;
     }))return false;
     w.moment.index=index; w.moment.holger=true;
+    w.memory.flags['holger-invitation-opened']=true;w.context.memory.saveNow();
     return true;
   };
   SIM.momentLine=function(w) {

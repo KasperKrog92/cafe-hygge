@@ -21,8 +21,10 @@ Never invent a chosen background in later writing unless its saved flag exists.
 Conversations are attended, manually advanced moments. The camera moves closer,
 ordinary controls and speech icons recede, and the café holds its obligations.
 People breathe and blink; orders, new arrivals, departures and time wait.
-“Continue another time” releases the hold. Holger remembers the exact completed
-line and selected reply; his invitation returns when he is present. Existing
+Ordinary conversations can be put aside to release the hold. The owner’s
+mandatory first Holger introduction is the one-time exception: “pause conversation”
+returns to his counter invitation while café time and service keep waiting.
+Holger remembers the exact acknowledged line and selected reply across reloads. Existing
 short arc moments restart when reopened and award their result only at the end.
 
 ## Lunafreya — the keeper
@@ -52,7 +54,12 @@ The neighbours answer never prevents buying books later.
 **Established:** retired neighbour, formerly a seafarer on the Kattegat for
 thirty years. Grey hair and beard, green jumper, muted red scarf. Espresso,
 his own book, an unhurried pace. He tends the hearth when it is available.
-His first visit is the first arrival at a newly opened café.
+His first visit is the first arrival at a newly opened café. He stays at the
+counter until his mandatory introduction completes, teaching the player to open
+and advance dialogue. The dots invitation softly blinks until first opened,
+then stays steady, including on reload. Waiting consumes no café time, in idle
+or game. Established furnished saves retain their optional seated version;
+existing history and choices are preserved.
 
 **Purpose:** an early friend who makes the opening feel witnessed. He notices
 what Lunafreya has already done before suggesting what might come next. He

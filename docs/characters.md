@@ -308,16 +308,17 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    the return route is declared in `L.patronRoutes`, and the furled umbrella
    shares the off hand with a carried drink or closed laptop.
 
-**Spawning:** roughly every 26 s at full daylight stretching to ~80 s at
-night. Caps: 7 patrons in daytime, 4 in the evening, 2 between 23:00 and 06:00
-(the night owls). Four patrons are pre-seated at boot — among them **Holger**,
-already settled in his fireside armchair with a book (see *Boot-seeding a
-familiar face*), plus a reader in the nook and a sitter on the first window
-sill — so the café opens onto a recognisable, unhurried room.
+**Spawning:** new cafés start with at most two customers and 90–130 seconds
+between first-day arrivals after Holger’s mandatory greeting. The limit grows
+by one for every two completed days, capped by real seating and seven daytime /
+four evening guests. Regulars share the walk-in timer; waiting guests and dirty
+seats reduce admission. Later-day gaps shorten gradually. Only established
+furnished cafés pre-seat the familiar room at boot; a modest café restores only
+an unfinished first greeting at the counter. See world.md for the shared budget.
 
 ### Couples
 
-When a normal spawn fires with room for two, 22% are a linked pair. The
+After the first day, when a normal spawn fires with room for two, 22% are a linked pair. The
 second comes through the still-open door 1.2–1.8 s later without a second
 bell. In rain they share the first patron's umbrella. They remain FIFO queue
 neighbors and order individually, but the first pickup atomically reserves
@@ -717,3 +718,19 @@ introduction establishes him as a retired neighbour and retains his seafaring
 history. Two dialogue choices remember Lunafreya's motivation and first hope
 for the café. Character facts and later proposed beats live in the
 [story bible](story-bible.md). Other regulars retain their existing habits.
+
+
+## Mandatory first hello and window worker — 7 September 2026
+
+Holger’s first introduction teaches the dialogue mechanic. In a new café he
+stays in `ordering` at `L.orderSpot` until the dialogue completes. Lunafreya stays
+across the counter. A softly blinking dots invitation waits in idle and game;
+opening it stops the blinking permanently. Pausing the conversation keeps him
+there, without orders, other arrivals or the closing clock running. Reload
+restores the counter encounter and acknowledged lines/choices. Established
+furnished saves retain their optional seated introduction and approach/return.
+
+Mikkel’s booked left-window visit is a separate craftsperson actor, not a patron
+or a second staff member. He carries a toolbox, follows obstacle-aware routes,
+kneels by the sill, works with the existing reach pose, and leaves at completion
+or closing. His saved repair resumes peacefully the next morning if necessary.

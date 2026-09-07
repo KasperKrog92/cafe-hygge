@@ -32,6 +32,27 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v7 adds café days and left-window work without replaying established lives', () => {
+    const b=boot();
+    b.run(`for(const finished of [false,true]) {
+      var old=MEMORY.codec.fresh();old.version=6;delete old.life.daysCompleted;delete old.life.projects.window;
+      old.life.savings=37;old.flags.kept=true;old.bonds.holger={visits:1};
+      old.life.projects.table={stage:'working',step:2,time:1.25};
+      if(finished){old.life.firstOpening={step:12,time:0};old.life.furniture['table-window']=old.life.furniture['table-hearth']=true;}
+      var result=MEMORY.codec.decode(JSON.stringify(old));
+      if(result.error||!result.state.flags.kept||result.state.bonds.holger.visits!==1)throw Error('v6 history');
+      if(result.state.life.savings!==(finished?37:90)||result.state.life.daysCompleted!==(finished?1:0))throw Error('v6 opening funds/days');
+      if(result.state.life.projects.table.time!==1.25||result.state.life.projects.window.stage!=='available')throw Error('v6 jobs');
+      old.life.furniture=MEMORY.furnishings(true);old.life.firstOpening={step:12,time:0};
+      result=MEMORY.codec.decode(JSON.stringify(old));
+      if(result.error||result.state.life.projects.window.stage!=='installed'||result.state.life.daysCompleted!==7||result.state.life.savings!==37)throw Error('existing windows');
+    }
+    for(const mutate of [s=>s.life.daysCompleted=-1,s=>s.life.daysCompleted=.5,
+      s=>s.life.projects.window.time=18,s=>s.life.projects.window={stage:'installed',step:3,time:0}]) {
+      var state=MEMORY.codec.fresh();mutate(state);
+      if(!MEMORY.codec.decode(JSON.stringify(state)).error)throw Error('invalid v7 accepted');
+    }`);
+  });
   await test('v5 starts small and preserves every furnished v3 job/history record', () => {
     const b=boot();
     b.run(`var fresh=MEMORY.codec.fresh(),small=SIM.create({memory:MEMORY.createStore({state:fresh})});
@@ -54,7 +75,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         old.life.projects.table={stage,step:stage==='installed'?6:stage==='working'?3:0,time:stage==='working'?1.25:0};
         var before=JSON.stringify(old),next=MEMORY.codec.decode(before);
         if(next.error||JSON.stringify(old)!==before||next.state.version!==MEMORY.VERSION)throw Error('migration failed');
-        if(JSON.stringify(next.state.life.projects)!==JSON.stringify(old.life.projects)||next.state.life.savings!==173||
+        if(['table','fireplace'].some(id=>JSON.stringify(next.state.life.projects[id])!==JSON.stringify(old.life.projects[id]))||next.state.life.savings!==173||
            JSON.stringify(next.state.arcs)!==JSON.stringify(old.arcs)||!next.state.flags.kept||next.state.bonds.gerda.visits!==9)throw Error('history lost');
         var full=SIM.create({memory:MEMORY.createStore({state:next.state})});
         if(full.seats.length!==(stage==='installed'?20:18)||Object.values(full.memory.life.furniture).some(v=>!v))throw Error('furniture stripped');
@@ -93,6 +114,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
   await test('every shop boundary restores, and work/purchase never repeats', () => {
     const b=boot();
     b.run(`var w=SIM.create({random:SIM.seededRandom(84)}), captured={};
+      w.memory.flags['holger-introduced']=true;
       w.clockOffset+=(21.5-w.hour)/24*SIM._.DAY_SECONDS;
       for(let i=0;i<6500;i++) {
         SIM.update(w,.25);

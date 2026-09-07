@@ -30,6 +30,16 @@ explicit direction supersedes older bans on money/upgrades; the no-pressure
 principle remains. The apartment/plant and interruptible table/hearth milestones are shipped; later stages remain planned. Build the named
 milestone on the current café foundation, keeping later ideas out of that slice.
 
+**First-day direction (7 September 2026):** setup ends at 17:30, leaving four
+active service minutes. A new café starts with at most two customers; arrivals
+share a seat-aware timer and grow gradually across saved café days. The first
+planner choices are the left-window repair (30 coins) and table with two chairs
+(60), bookable together with 90 starting savings. The window worker is shipped.
+Holger's first introduction is mandatory in the modest café, in both modes:
+he waits at the counter, with a softly blinking invitation until first opened.
+Service and café time wait until completion; reload preserves the encounter and
+choices. This one-time tutorial exception does not make later story arcs mandatory.
+
 ## Working with the owner
 
 - **Explicit direction is a spec, not a suggestion.** When the owner says how

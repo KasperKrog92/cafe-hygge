@@ -689,3 +689,16 @@ reference. The counter ends just inside the right edge and the floor ends
 shortly beyond the two tables. Full-room art remains 960×600 for expansion.
 
 Conversation framing uses a gentle maximum 1.3× zoom (reduced from 1.9×), keeping more of the café visible. The camera still includes the complete dialogue bubble and both speakers.
+
+
+## First left-window repair — 7 September 2026
+
+The first repair opens `L.win` only. The right pane remains boarded, including
+its floor projection and ambient window glow. Saved work first reveals the upper
+view, then the rest of the glass; completion restores the existing full frame,
+reflection and sill drawing. The worker uses the 60 px character ruler, a muted
+blue work shirt, a small handled toolbox and the shared kneel/reach animations.
+His work anchor is `L.projects.window.work`; the original lane and tables stay clear.
+Holger’s first invitation uses the existing dots bubble with a slow opacity
+cycle (two seconds, never fully invisible). Its hit target stays fixed and active;
+opening it stops the cycle, and reduced-motion preference keeps it steady.
