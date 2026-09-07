@@ -635,7 +635,10 @@ and keep the real routes clear, including the cat's bowl approach. The screen
 is lower than a standing character and does not need a full-height occluder.
 
 The umbrella stand keeps its real drop-off/pickup position and live contents,
-inside a smaller sage ceramic crock. The cat's existing cushion and bowls stay
+inside a smaller sage ceramic crock.
+Umbrellas are centered as a group inside the recessed opening, drawn over its
+back rim and behind the near lip; their folded fabric continues into the crock.
+The cat's existing cushion and bowls stay
 at their established anchors, gathered on one muted woven pad; a wicker rim
 locates the red cushion. The door retains its hinged animation, with recessed
 lower panels, a brass lever and a beveled frame/threshold. No save or simulation

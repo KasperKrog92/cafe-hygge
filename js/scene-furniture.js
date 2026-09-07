@@ -190,21 +190,25 @@
     // only the umbrellas currently visible in the room, never inventory UI.
     const US = L.umbrellaStand;
     if(SCENE.hasFurniture(world,'entrance')) out.push({ y: US.y, draw: function (g) {
-      const umbrellas = world.umbrellaStand || [];
+      const umbrellas = (world.umbrellaStand || []).slice(-4);
       ell(g, US.x, US.y - 1, 10, 3, SHADOW);
-      umbrellas.slice(-4).forEach(function (u, i) {
+      // Back rim and recessed opening sit behind the contents; only the
+      // near wall/lip covers their lower ends.
+      ell(g, US.x, US.y - 18, 9, 3, '#829080');
+      ell(g, US.x, US.y - 18, 6, 2, '#3a4036');
+      umbrellas.forEach(function (u, i) {
         const col = typeof u === 'string' ? u : u.color;
-        const ux = US.x - 6 + i * 4, top = US.y - 30 - (i % 2) * 3;
+        const ux = US.x - 1 + i * 3 - Math.floor((umbrellas.length - 1) * 1.5);
+        const top = US.y - 30 - (i % 2) * 3;
         px(g, ux, top, 2, 25, '#3a2a1c');
-        px(g, ux - 1, top + 7, 4, 9, col);
+        px(g, ux - 1, top + 7, 4, US.y - 14 - (top + 7), col);
         px(g, ux, top - 3, 5, 2, '#3a2a1c');
         px(g, ux + 3, top - 2, 2, 4, '#3a2a1c');
       });
-      px(g, US.x - 8, US.y - 17, 16, 14, '#657568');
+      px(g, US.x - 8, US.y - 16, 16, 13, '#657568');
       px(g, US.x - 6, US.y - 15, 3, 10, '#829080');
       px(g, US.x + 5, US.y - 15, 3, 12, '#4d6052');
-      ell(g, US.x, US.y - 18, 9, 3, '#829080');
-      ell(g, US.x, US.y - 18, 6, 2, '#3a4036');
+      px(g, US.x - 7, US.y - 16, 14, 1, '#829080');
       px(g, US.x - 6, US.y - 3, 12, 2, '#4d6052');
     } });
 
