@@ -1,15 +1,16 @@
 # First books, first connection
 
-Implementation brief, 7 September 2026. **Status: ready for the next development
-task; no runtime behavior in this brief has shipped.** The owner largely accepted
+Implementation brief, 7 September 2026. **Status: follows
+[Second-day visitors](second-day-visitors.md); this milestone is not shipped.** The owner largely accepted
 the [ensemble direction](community-and-character-stories.md). This brief makes
 its first release concrete; it does not authorize the whole release at once.
-The [progression roadmap](../progression-roadmap.md#current-next-milestone--first-books-first-connection)
+The [progression roadmap](../progression-roadmap.md)
 is the single current next-task/status reference.
 
 ## The eventual player experience
 
-Lunafreya plans a bookshelf. Keira wheels it in, unpacks it and leaves a visibly
+After her first table delivery, Keira returns when Lunafreya plans a bookshelf.
+She wheels it in, unpacks it and leaves a visibly
 empty piece of furniture. Books are acquired separately and shelved between
 ordinary duties. Holger later offers a small collection in a conversation that
 remembers Lunafreya's opening answer. While looking through it, she mentions
@@ -19,7 +20,7 @@ shelf. The practical improvement now carries a shared memory.
 Keep three reviewable passes. Each should work through the real day/home loop
 and preserve existing saves before the following pass begins.
 
-## Pass 1 — next task: Keira delivers the empty bookshelf
+## Pass 1 — Keira returns with the empty bookshelf
 
 **Visible result:** an optional bookshelf purchase in an ordinary home planner
 causes Keira to arrive with a trolley during a later open café. She places and
@@ -28,9 +29,10 @@ empty and persists across days and reloads.
 
 The delivery person is a woman named **Keira** (she/her), per the owner's revised
 direction. Give her a consistent appearance/identity so
-later deliveries and off-duty visits can be the same person. A quiet arrival
-caption can name her. Her personal introduction is authored in pass 3; delivery
-must never wait for that conversation.
+later deliveries and off-duty visits can be the same person. Reuse her identity
+and introduction from the second-day visitor milestone. A completed greeting
+gets a returning line; an unfinished one remains available without holding
+delivery. Never replay her first meeting or replace it with a new introduction.
 
 Required behavior:
 
@@ -96,11 +98,12 @@ Review the visible empty-to-partial-to-stocked change as well as saved state.
 
 ## Pass 3 — the people and the first disclosure
 
-Author two small scene packets before implementing their consequences:
+Author Holger's scene packet and the relevant return callbacks before
+implementing their consequences:
 
 | Scene | Trigger and content | Lasting result |
 | --- | --- | --- |
-| Keira's hello | Her first delivery has happened; a waiting optional conversation gives her and Lunafreya a proper introduction. If ignored during work, it returns on an off-duty visit without another purchase. | Remembered introduction and eligibility for future ordinary visits; no free upgrade or romance commitment |
+| Keira's return | Reuse the second-day introduction's actual saved state; a familiar greeting after completion, or the existing pending hello otherwise. | Continuity of the same delivery woman; no repeated introduction or new relationship commitment |
 | Holger's first books | His introduction is complete. A continuation recalls the actual books/neighbors answer, offers a modest collection and lets Lunafreya mention her old bookshop/café work. The gift handover waits until the player attends. | A unique accepted gift, book source/stocking work and evidence that Holger heard this particular fact |
 
 Write the exact bubbles and any meaningful choice, with named scene/node IDs,

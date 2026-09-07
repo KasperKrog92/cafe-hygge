@@ -36,8 +36,11 @@ Use it as the working creative direction, with details revisable as scenes are
 authored. [The story bible](docs/story-bible.md) separates shipped facts from
 planned writing; [the narrative contract](docs/narrative.md) owns choices,
 attendance and lasting effects. The progression roadmap owns current status
-and build order. Its next brief is [First books, first connection](docs/plans/first-books.md),
-beginning with Keira delivering an empty bookshelf. Acceptance of the larger
+and build order. Its next brief is [Second-day visitors](docs/plans/second-day-visitors.md):
+Keira delivers the first table kit and Tomas repairs the left window, with
+optional saved introductions. Lunafreya retains table assembly. The current
+carry-based table arrival still needs this delivery change. Bookshelves follow
+as a return visit in [First books, first connection](docs/plans/first-books.md). Acceptance of the larger
 plan does not mean its full cast or later systems should be built in one task.
 
 **First-day direction (7 September 2026):** setup ends at 17:30, leaving four
@@ -387,7 +390,8 @@ from planned directions.
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/story-bible.md](docs/story-bible.md) | Cast identities and voices, Holger's introduction, remembered choices, shipped and planned story beats |
 | [docs/plans/community-and-character-stories.md](docs/plans/community-and-character-stories.md) | Accepted working ensemble direction, Lunafreya's history, shared arcs, gifts and romance; durable direction, not a disposable execution plan |
-| [docs/plans/first-books.md](docs/plans/first-books.md) | Next implementation brief: Keira's shelf delivery, separate stocking, then attended book conversations |
+| [docs/plans/second-day-visitors.md](docs/plans/second-day-visitors.md) | Next brief: Keira's first table delivery, Tomas's window repair and optional saved introductions |
+| [docs/plans/first-books.md](docs/plans/first-books.md) | Following brief: Keira returns with the shelf, separate stocking, then attended book conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
 | [docs/characters.md](docs/characters.md) | Lunafreya, patrons, the cat — identities and full behavior state machines |
 | [docs/world.md](docs/world.md) | Time, weather, lighting, spawning, captions/events |

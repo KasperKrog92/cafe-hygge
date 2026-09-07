@@ -11,7 +11,8 @@ Acceptance does not mean every recommendation is immutable or already shipped.
 The [story bible](../story-bible.md) distinguishes existing facts from planned
 writing; the [narrative contract](../narrative.md) owns the shared rules. The
 [progression roadmap](../progression-roadmap.md) owns the current build order.
-The next bounded brief is [First books, first connection](first-books.md).
+The next bounded brief is [Second-day visitors](second-day-visitors.md), followed
+by [First books, first connection](first-books.md).
 This larger document remains the durable ensemble direction at its existing
 path; it is not a disposable execution checklist to delete after one release.
 
@@ -24,6 +25,13 @@ or saved IDs.
 **Delivery character revision:** the owner wants the recurring delivery person
 to be a woman. Her working name is **Keira**, drawn from the owner's name list;
 use she/her throughout her scenes, appearance direction and future actor data.
+
+**First-meeting revision:** the owner places Keira's first table delivery and
+Tomas's first window repair on day two, as the natural time to introduce them.
+Their optional saved greetings do not block work or expire when they leave.
+Keira's bookshelf delivery is subsequently a return visit. The table currently
+uses Lunafreya's carry/assembly routine; implementing the delivery changes the
+arrival while preserving her assembly and existing saved progress.
 
 ## 1. The story we are telling
 
@@ -335,7 +343,8 @@ a request to be cheered up.
 
 ### Keira — invited to stay
 
-Keira is the woman who handles the bookshelf and later deliveries. She knows where a
+Keira first brings the day-two table kit, then returns for the bookshelf and
+later deliveries. She knows where a
 door sticks, folds packing blankets carefully and remembers the cat. Furniture
 has proper transport and work reservations; a piano uses appropriate additional
 help rather than making her carry it alone.
@@ -363,8 +372,9 @@ Voice sample: “Delivery for Lunafreya. The cat has already signed for the wrap
 
 ### Tomas — work that belongs to somebody
 
-Give the existing window worker this recurring identity without replaying
-completed repairs. He remains the familiar contact for later carpentry and
+Give the existing window worker this recurring identity and an optional
+introduction during the day-two repair, without replaying completed repairs.
+He remains the familiar contact for later carpentry and
 building jobs, with specialists when a job needs one. Marcel is the established
 painting specialist in that small network.
 
@@ -644,7 +654,8 @@ habit, an invitation or a person arriving without their work equipment.
 Keep existing admission and seat limits. More people in the writing catalogue
 means variety across days, not a larger crowd every afternoon. Introduce the
 five existing regulars properly before bringing everyone new through the door.
-Keira and Tomas can enter naturally through the next practical milestones.
+Keira and Tomas first appear through the second-day table delivery and window
+repair. Later jobs recall their actual introduction state.
 
 Use lightweight rotation for later arrivals, preserving early familiar faces.
 People have broad morning, afternoon or evening habits, not appointment timers
@@ -752,14 +763,17 @@ what she said. Let some emotionally important lines remain plain.
 ## 8. A feasible sequence of releases
 
 These are working content releases, not in-game levels. The next engineering
-milestone remains the bookshelf. [First books, first connection](first-books.md)
+milestone is [Second-day visitors](second-day-visitors.md), introducing Keira
+and Tomas through the first table delivery and window repair.
+[First books, first connection](first-books.md) then
 splits the first release into three reviewable passes: Keira's empty-shelf
 delivery, usable purchased books, then the attended character conversations.
 
 | Release | Complete player-facing result | Preparation at that boundary |
 | --- | --- | --- |
+| **Before the books: second-day visitors** | Keira brings the first table kit, Tomas repairs the left window, and both offer optional saved introductions | Preserve assembly and existing work, support safe overlapping jobs, resumable greetings and later visits without purchases |
 | **1. The shelf has people attached** | Keira delivers an empty shelf; purchased books stock it separately; Holger's next optional scene offers a small collection and reveals Lunafreya's former work | Delivery reservations, separate furniture/contents, stable IDs for the new conversation, resumable gift and stocking effects |
-| **2. Familiar faces become people** | Proper introductions for Gerda, Nora, Kasper and Antonia; Tomas acquires a name and an off-duty visit; first backstory callbacks | Extract general conversation execution before multiplying bespoke scenes; migrate positional history deliberately |
+| **2. Familiar faces become people** | Proper introductions for Gerda, Nora, Kasper and Antonia; further Keira/Tomas visits and first backstory callbacks | Reuse the conversation boundary proven by the second-day introductions and preserve historical node meaning |
 | **3. Things worth taking upstairs** | One selectable Gerda blanket, supported placement in either room, one apartment recollection and Calandra's first message | Saved gift variants, placement anchors, recipient knowledge, resumable home moments |
 | **4. The neighborhood meets itself** | Marcel's visit, Ida and Elody introductions, book exchange and one shared reading gathering | Identity across worker/patron/exterior roles, fair visit rotation and small group scene staging |
 | **5. A tune for the room** | Saira before and after an optional piano; delivery/setup, motif preference and an attended first sharing | Instrument capabilities, safe preparation work, bounded music and pause/reload checkpoints |

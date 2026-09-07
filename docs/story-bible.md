@@ -11,7 +11,8 @@ arcs. This bible keeps concise continuity facts and distinguishes **shipped**
 content from **planned direction**. Planned details remain editable when scenes
 are authored; they must not be mistaken for events the player has experienced.
 The [progression roadmap](progression-roadmap.md) owns build order, with
-[First books, first connection](plans/first-books.md) as the next bounded brief.
+[Second-day visitors](plans/second-day-visitors.md) as the next bounded brief,
+followed by [First books, first connection](plans/first-books.md).
 
 ## Names and the neighborhood
 
@@ -30,6 +31,13 @@ must preserve the same character and history.
 **Delivery character:** the owner subsequently chose a woman for this role.
 Her working name is Keira (she/her), from the owner's reference list. Carry this
 identity through future delivery art, actor data, dialogue and off-duty visits.
+
+**First meetings — planned owner direction:** meet Keira through the first
+table-kit delivery and Tomas through the left-window repair on the second day.
+Lunafreya still assembles the delivered kit. Both greetings are optional and
+saved; ignored invitations return on later visits without another booking.
+Neither job waits for a hello. Current runtime still uses Lunafreya's carry
+arrival for the kit and an unnamed window worker; this change is not shipped.
 
 ## Writing and choices
 
@@ -197,8 +205,8 @@ Use this table to distinguish identities from what the runtime currently contain
 
 | Name | Working direction | Current implementation boundary |
 | --- | --- | --- |
-| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | New character, introduced with the shelf delivery milestone; conversations follow in its story pass |
-| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Existing window worker is unnamed; naming and off-duty life remain to implement |
+| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Planned first meeting through day-two table-kit delivery; bookshelf is a later return visit |
+| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Existing unnamed window worker becomes Tomas, with a planned optional day-two introduction |
 | Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
 | Marcel | Painter across the lake; recognizes changing places and people | Existing `street-house` arc stays intact; personal identity and café visits remain to implement |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |

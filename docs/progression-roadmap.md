@@ -4,8 +4,9 @@ Direction recorded 6 September 2026, with shipped updates through 7 September.
 Shared home life, the plant/table/hearth jobs, C0, the identity swap, first
 introduction and left-window repair are implemented. The build-order section
 and first-day update below distinguish these from proposed later stages.
-Shared improvement preparation is complete (7 September); bookshelf delivery
-and separate books are the next practical milestone. See the
+Shared improvement preparation is complete (7 September). The next task is
+the second-day visitor introduction below, followed by bookshelf delivery
+and separate books. See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
 the remaining ideas are not authorization to build every item.
@@ -18,18 +19,32 @@ separate `game` experiment is archived reference material, not the implementatio
 baseline. The old tips are preserved in `archive/idle-2026-09-06` and
 `archive/game-2026-09-06` tags.
 
-## Current next milestone — First books, first connection
+## Current next milestone — Second-day visitors
+
+**Owner direction, 7 September:** introduce Keira through the first table-kit
+delivery and Tomas through the left-window repair on day two. The
+[Second-day visitors brief](plans/second-day-visitors.md) is the next task.
+In the current implementation Lunafreya still carries the table kit and the
+window worker is unnamed; the new delivery and personal greetings remain planned.
+
+Keira delivers the kit, Lunafreya retains the existing assembly, and Tomas repairs
+the window. Preserve first-evening bookings, prices and existing progress.
+Both introductions are optional, saved and available on later visits if ignored;
+jobs and departures do not wait for dialogue. Verify overlapping work and
+service, attendance/reloads and continuity for already established cafés.
+
+## Following milestone — First books, first connection
 
 The [implementation brief](plans/first-books.md) translates the accepted story
 direction into one complete near-term experience, delivered in reviewable passes:
 
-1. **Next implementation task: Keira delivers an empty bookshelf.** Ordinary
+1. **Keira returns with an empty bookshelf.** Ordinary
    evening purchase, trolley delivery, safe reserved work area, unpacking and
-   a persistent empty shelf. Keira is a woman with a consistent recurring identity. Personal
-   conversations and books are separate following passes.
+   a persistent empty shelf. Reuse Keira's established identity and remembered
+   greeting; book stocking and the Holger gift remain separate following passes.
 2. **Books become usable.** Purchased books, gradual interruptible shelving,
    visible contents and browsing only when usable books are present.
-3. **The shelf acquires a history.** Keira's optional hello/return, Holger's
+3. **The shelf acquires a history.** Keira's returning-visitor continuity, Holger's
    remembered offer and attended gift, and Lunafreya's first disclosure about
    her former bookshop/café work. Gift books share the established stocking path.
 

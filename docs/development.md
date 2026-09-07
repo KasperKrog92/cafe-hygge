@@ -14,7 +14,8 @@ It is the long-term creative direction. Read the [story bible](story-bible.md)
 for concise shipped/planned continuity and [narrative.md](narrative.md) for shared
 rules; avoid rereading or duplicating the whole ensemble for an isolated change.
 The [progression roadmap](progression-roadmap.md) owns current implementation
-status. [First books, first connection](plans/first-books.md) is the next brief.
+status. [Second-day visitors](plans/second-day-visitors.md) is the next brief;
+[First books, first connection](plans/first-books.md) follows it.
 
 Write only the current slice's scene packets: trigger, known facts, actual
 bubbles, choices, lasting effects, reload/leave behavior and ordinary life
