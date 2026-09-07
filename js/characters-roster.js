@@ -361,7 +361,8 @@
   };
   CAST.voices={Lunafreya:{pitch:205,filter:720,pace:1},Holger:{pitch:155,filter:620,pace:1.12},
     Gerda:{pitch:190,filter:670,pace:1.08},Nora:{pitch:220,filter:800,pace:.95},
-    Kasper:{pitch:180,filter:690,pace:1.02},Freya:{pitch:200,filter:650,pace:1.05}};
+    Kasper:{pitch:180,filter:690,pace:1.02},Freya:{pitch:200,filter:650,pace:1.05},
+    Keira:{pitch:215,filter:760,pace:.98},Tomas:{pitch:165,filter:640,pace:1.08}};
   CAST.holgerIntroduction = [
     {speaker:'Holger', text:"Good morning. I hoped that sign meant what I thought it meant."},
     {speaker:'Lunafreya', text:"It does. A café. As of about a minute ago."},

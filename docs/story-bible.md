@@ -265,6 +265,8 @@ Voice differences are deliberately small synthesized variations, not recorded
 speech or caricatures: Lunafreya retains the intro voice; Holger is lower,
 warmer and slightly slower. Gerda is gently lower and slower; Nora slightly
 brighter and quicker; Kasper lower and nearly the same pace; Freya softly muted.
+Keira is lightly brighter and quicker; Tomas lower and measured. Every named
+character has dialogue sounds through the same volume and mute controls.
 These profiles are ready for their authored conversations. Existing third-person
 arc narration remains unvoiced. Speech shares the existing dialogue volume,
 mute and instant-text settings, and stops when the page is hidden.

@@ -1,4 +1,4 @@
-/* Second-day working neighbours: full nights, independent invitations and legacy kits. */
+﻿/* Second-day working neighbours: full nights, independent invitations and legacy kits. */
 (function(){
   'use strict';
   const frames={},results=[];
@@ -7,7 +7,13 @@
   function until(w,fn,limit){for(let t=0;t<(limit||1800);t+=.25){if(fn())return;SIM.update(w,.25);}throw Error('visitor timeout '+JSON.stringify({phase:w.shop.phase,jobs:w.memory.life.projects,actors:SIM.visitorActors(w).map(a=>[a.visitorId,a.state,a.x,a.y,a.walkBlocked])}));}
   function restore(w){SIM._.saveLife(w,0);return SIM.create({random:SIM.seededRandom(17),memory:MEMORY.createStore({state:JSON.parse(MEMORY.codec.encode(w.memory))})});}
   function snap(w,id){check(!__dev.audit(w).length,'audit '+id+': '+__dev.audit(w));frames[id]=__dev.shot(null,{world:w});}
-  function talk(w,id){until(w,()=>SIM.visitorInvites(w).some(a=>a.visitorId===id));check(SIM.startVisitor(w,id),'start '+id);until(w,()=>w.moment.phase==='talk');check(w.barista.y<=SCENE.L.rooms[w.memory.life.room].floorBottom,'conversation outside room');w.moment.visible=999;snap(w,id+'-hello');}
+  function talk(w,id){until(w,()=>SIM.visitorInvites(w).some(a=>a.visitorId===id));check(SIM.startVisitor(w,id),'start '+id);until(w,()=>w.moment.phase==='talk');check(w.barista.y<=SCENE.L.rooms[w.memory.life.room].floorBottom,'conversation outside room');const voices=[],sound=w.context.sound.dialogueSyllable;
+    w.context.sound.dialogueSyllable=(n,v)=>voices.push(v);
+    for(let n=0;n<10;n++)SIM.update(w,.1);
+    check(voices.length>0&&voices.every(v=>v===CAST.voices[CAST.visitors[id].name]),id+' dialogue sound missing');
+    const count=voices.length;w.momentHidden=true;tick(w,1);w.momentHidden=false;
+    check(voices.length===count,id+' speech continued while hidden');
+    w.context.sound.dialogueSyllable=sound;w.moment.visible=999;snap(w,id+'-hello');}
   function finish(w){until(w,()=>{if(w.moment&&w.moment.phase==='talk'){w.moment.visible=999;SIM.advanceMoment(w);}return !w.moment;});}
   for(const mode of ['idle','game']) {
     let w=__dev.modestWorld({homeIntro:true,random:SIM.seededRandom(17)});SIM.setMode(w,mode);

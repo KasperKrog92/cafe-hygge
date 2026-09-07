@@ -1050,6 +1050,15 @@
     if (!window.CAST || !Array.isArray(CAST.regulars)) {
       problems.push('CAST.regulars roster is missing (js/characters-roster.js)');
     } else {
+      // Every named character needs a dialogue voice, including job visitors.
+      const speakers=['Lunafreya'].concat(CAST.regulars.map(r=>r.name),
+        Object.values(CAST.visitors).map(r=>r.name),CAST.holgerIntroduction.map(line=>line.speaker),
+        Object.values(CAST.visitors).flatMap(r=>r.hello.map(line=>line.speaker)));
+      speakers.forEach(function(name) {
+        const voice=CAST.voices[name];
+        if(!voice || ![voice.pitch,voice.filter,voice.pace].every(n=>Number.isFinite(n)&&n>0))
+          problems.push('missing or invalid dialogue voice for '+name);
+      });
       const drinkNames = {};
       SIM._.DRINKS.forEach(function (d) { drinkNames[d.name] = true; });
       const names = SIM._.PATRON_NAMES;
