@@ -16,8 +16,7 @@
     check(r.memory.life.intro.line===w.memory.life.intro.line,'completed line replayed '+key);
     check(r.memory.life.firstOpening.time===w.memory.life.firstOpening.time,'assembly progress lost '+key);
     check(r.memory.life.intro.finale===w.memory.life.intro.finale,'finale replayed '+key);
-    SIM.skipIntro(r);
-    for(let n=0;n<5000&&r.shop.phase==='settling';n++)SIM.update(r,.25);
+    SIM.skipUnpacking(r);
     check(r.shop.phase==='open' && r.tables.length===2 && r.memory.life.intro.sign==='outside','reload failed '+key);
     check(!r.shop.carryingCat && !r.barista.introOutside,'cat or owner stranded '+key);
     check(!__dev.audit(r).length,'reload audit '+key);reloads.push(key);

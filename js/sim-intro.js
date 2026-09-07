@@ -63,6 +63,21 @@
     w.memory.life.intro.skipped=true;w.dialogue=null;w.introPaused=false;w.introHidden=false;
     stop(w);R.commitLife(w);
   };
+  // Temporary dev shortcut: finish the real setup, including tables and sign,
+  // synchronously. Stop at opening so Holger still makes the first arrival.
+  SIM.skipUnpacking=function(w) {
+    if(w.shop.phase!=='settling')return false;
+    SIM.skipIntro(w);
+    const sound=w.context.sound,hidden=w.introHidden,modal=w.introModal;
+    w.context.sound=Object.assign({},sound,{softThump:function(){},doorUnlock:function(){},stopDialogue:function(){}});
+    w.firstEntryReady=true;w.introHidden=false;w.introModal=false;
+    try {
+      for(let n=0;n<8000 && w.shop.phase==='settling';n++)SIM.update(w,.25);
+      if(w.shop.phase==='settling')throw new Error('Unpacking did not reach opening');
+      R.commitLife(w);
+      return true;
+    } finally {w.context.sound=sound;w.introHidden=hidden;w.introModal=modal;}
+  };
   R.introWaiting=function(w) {
     return SIM.introActive(w) && eligible(w,current(w));
   };

@@ -85,6 +85,14 @@ try {
     & $browser --session $testSession screenshot (Join-Path $output "intro-$($size[0]).png")
     if($LASTEXITCODE -ne 0){throw 'Screenshot failed'}
   }
+  & $browser --session $testSession click '#intro-unpack'
+  if($LASTEXITCODE -ne 0){throw 'Skip unpacking click failed'}
+  Eval-Intro '(()=>{const w=__world;lifeTestFrame(uiNow);if(w.shop.phase!=="open"||w.tables.length!==2||w.memory.life.intro.sign!=="outside"||__dev.audit().length)throw Error("skip unpacking failed");MEMORY.saveNow();return true})()' | Out-Null
+  & $browser --session $testSession reload
+  if($LASTEXITCODE -ne 0){throw 'Skip reload failed'}
+  & $browser --session $testSession wait --fn '!!window.__world' | Out-Null
+  if($LASTEXITCODE -ne 0){throw 'Skip reload boot failed'}
+  Eval-Intro '(()=>{if(__world.shop.phase!=="open"||!__world.memory.life.intro.complete)throw Error("skip did not persist");SIM.update(__world,.25);if(__world.patrons[0].regularId!=="holger")throw Error("first customer changed");return true})()' | Out-Null
   $errors=& $browser --session $testSession errors
   if($LASTEXITCODE -ne 0 -or $errors){throw "Browser errors: $errors"}
   @{reloads=$saves.PSObject.Properties.Name.Count;passed=$true} | ConvertTo-Json | Set-Content (Join-Path $output 'report.json')

@@ -142,7 +142,8 @@
   }
   function refreshIntro() {
     const active=SIM.introActive(world) && world.firstEntryReady;
-    introControls.hidden=!active;
+    introControls.hidden=world.shop.phase!=='settling' || !world.firstEntryReady;
+    ['intro-next','intro-pause','intro-skip'].forEach(id=>{document.getElementById(id).hidden=!active;});
     introPause.textContent=world.introPaused?'continue':'pause';
     introPause.setAttribute('aria-pressed',String(!!world.introPaused));
     document.getElementById('intro-next').disabled=!world.dialogue || !!world.introPaused;
@@ -152,6 +153,7 @@
   document.getElementById('intro-next').addEventListener('click',()=>{SIM.advanceIntro(world);refreshIntro();});
   introPause.addEventListener('click',()=>{world.introPaused=!world.introPaused;SND.stopDialogue();refreshIntro();});
   document.getElementById('intro-skip').addEventListener('click',()=>{SIM.skipIntro(world);refreshIntro();});
+  document.getElementById('intro-unpack').addEventListener('click',()=>{SIM.skipUnpacking(world);refreshIntro();});
   instantText.addEventListener('change',()=>{SND.settings.instantText=instantText.checked;SND.stopDialogue();SND.save();});
   function refreshLife() {
     const l = world.memory.life;

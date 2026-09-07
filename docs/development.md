@@ -287,3 +287,5 @@ thirteen Node save/isolation groups passed, plus the dedicated Holger suite
 and actual UI/reload checks at 1440×900 and 1600×900. The Holger suite is now
 included in the full runner. Art captures remain repeatable with zero audit
 problems. These are Chromium desktop results, not native Safari execution.
+
+Temporary intro shortcut: **skip unpacking (dev)** completes the remaining real setup immediately, including both tables and the outside sign, and stops at opening before Holger arrives. It is available on ordinary URLs too, remains available after skipping dialogue, and saves the completed opening. Remove this development control when it is no longer needed.
