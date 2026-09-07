@@ -5,6 +5,11 @@ This is the continuing writing reference for Café Hygge. Updated 7 September
 not a promise that a trigger or scene already exists. The invitation-waits rule
 in [narrative.md](narrative.md) applies to every character.
 
+The [community and character story proposal](plans/community-and-character-stories.md)
+sets out a larger possible ensemble, Lunafreya's backstory, connected progression,
+gifts and romance. It is for owner review; its new histories and names are not
+established canon, and this bible remains authoritative for existing facts.
+
 ## Writing and choices
 
 The café is a place to belong. People have lives beyond its door, and reveal

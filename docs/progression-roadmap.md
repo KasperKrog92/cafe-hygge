@@ -9,6 +9,10 @@ and separate books remain for the next session. See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
 the remaining ideas are not authorization to build every item.
+The [community and character story proposal](plans/community-and-character-stories.md)
+connects those stages to a larger cast, remembered choices, gifts and optional
+romance. It is a writing proposal for review, not a change to the build order
+or approval of its new backstories.
 It grows from the former `idle` café, now the canonical `main` branch. The
 separate `game` experiment is archived reference material, not the implementation
 baseline. The old tips are preserved in `archive/idle-2026-09-06` and
