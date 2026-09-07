@@ -12,7 +12,7 @@
     fireplace: { price: 30, destination: 'cafe', delivery: 'carry', title: 'clean the fireplace',
       phases: ['brush the cooled hearth','gather the ash','wipe the stone','polish the hearth'], duration: 18 }
   };
-  function busy(w) { return w.barista.orders.length || w.queue.length || w.shop.phase !== 'open'; }
+  function busy(w) { return w.barista.orders.length || R.customerAtCounter(w) || R.needsTableClear(w) || w.shop.phase !== 'open'; }
   function pending(w) {
     // Finish the job already laid out before opening another kit.
     for (const stage of ['working','arrived','scheduled']) {

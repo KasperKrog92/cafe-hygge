@@ -81,6 +81,20 @@
     }
   }
 
+  // Queue membership starts at the door; service starts at the front slot.
+  R.customerAtCounter = function (world) {
+    const p = world.queue[0];
+    if (!p) return false;
+    if (p.state === 'ordering') return true;
+    const slot = R.queueSlot(0);
+    return p.state === 'queueing' && (!p.path || !p.path.length) &&
+      Math.hypot(p.x - slot.x, p.y - slot.y) <= 2;
+  };
+  R.needsTableClear = function (world) {
+    return world.tables.some(t => t.items.some(i => i.owner === null)) ||
+      world.waterfront.tables.some(t => t.dirty && t.owner === null && !t.cleaning);
+  };
+
   function updateBarista(world, b, dt) {
     b.animT += dt;
     b.stateT += dt;
@@ -97,6 +111,8 @@
 
     switch (b.state) {
       case 'idle': {
+        // Make room before accepting or starting another order.
+        if (world.shop.phase === 'open' && startTableClear(world, b)) break;
         // start an order?
         if (b.orders.length) {
           const order = b.orders[0];
@@ -111,8 +127,8 @@
           b.path = [prepTarget(b.steps[0])];
           break;
         }
-        // stay ready at the till if anyone is queueing
-        if (world.queue.length) break;
+        // Wait only once the front customer has reached the counter.
+        if (R.customerAtCounter(world)) break;
         if (R.startProject(world)) break;
         // otherwise, potter about
         b.idleT -= dt;
@@ -302,7 +318,7 @@
           b.pouring = false;
           const stops = waterStops(world), nextStop = stops[stops.indexOf(b.waterStop) + 1];
           if (nextStop !== undefined) {
-            if (b.orders.length || world.queue.length) {
+            if (b.orders.length || R.customerAtCounter(world)) {
               b.waterNext = nextStop;
               b.state = 'waterHome'; b.stateT = 0;
               b.path = waterHomeRoute(b.waterStop);
@@ -348,7 +364,7 @@
         }
         if (b.stateT >= 1.1) {
           const next = nextCandleStop(world);
-          const busy = b.orders.length || world.queue.length;
+          const busy = b.orders.length || R.customerAtCounter(world);
           if (busy || !next) {
             if (!next) {
               b.candlePending = false;
@@ -756,6 +772,21 @@
     if (R.random() < 0.7) caption(world, 'The café is empty; Lunafreya plays a little.');
   }
 
+  function startTableClear(world, b) {
+    // any abandoned cups to collect?
+    for (let ti = 0; ti < world.tables.length; ti++) {
+      const it = world.tables[ti].items.find(function (i) { return i.owner === null; });
+      if (it) {
+        b.busTarget = { table: ti, item: it };
+        b.state = 'busOut'; b.stateT = 0;
+        b.path = busRoute(world, ti);
+        if (R.random() < 0.5) caption(world, 'Lunafreya slips out to clear a table.');
+        return true;
+      }
+    }
+    return R.startTerraceClear(world, b);
+  }
+
   function startIdleTask(world, b) {
     if (world.shop && world.shop.phase !== 'open') return;
     if (b.forcedTask) {
@@ -768,18 +799,7 @@
       else if (forced === 'piano') startPiano(world, b);
       return;
     }
-    // any abandoned cups to collect?
-    for (let ti = 0; ti < world.tables.length; ti++) {
-      const it = world.tables[ti].items.find(function (i) { return i.owner === null; });
-      if (it) {
-        b.busTarget = { table: ti, item: it };
-        b.state = 'busOut'; b.stateT = 0;
-        b.path = busRoute(world, ti);
-        if (R.random() < 0.5) caption(world, 'Lunafreya slips out to clear a table.');
-        return;
-      }
-    }
-    if (R.startTerraceClear(world, b)) return;
+    if (startTableClear(world, b)) return;
     // Bowl care comes immediately after clearing tables: never urgent, but
     // Lunafreya notices before she invents another counter-polishing task.
     const refillKinds = [];

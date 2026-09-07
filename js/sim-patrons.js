@@ -311,7 +311,7 @@
         if (Math.hypot(p.x - slot.x, p.y - slot.y) > 2 && (!p.path || !p.path.length)) {
           makePath(p, slot.x, slot.y);
         }
-        if (p.queueIdx === 0 && (!p.path || !p.path.length) && world.barista.state === 'idle' && !world.barista.orders.length) {
+        if (p.queueIdx === 0 && (!p.path || !p.path.length) && world.barista.state === 'idle' && !world.barista.orders.length && !R.needsTableClear(world)) {
           p.state = 'ordering'; p.stateT = 0;
           p.facing = 1;
           p.heading = 'up';        // step up and face Lunafreya across the counter

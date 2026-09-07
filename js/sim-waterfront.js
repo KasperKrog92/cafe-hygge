@@ -158,7 +158,7 @@
 
   R.startTerraceClear = function (world, b) {
     const index = world.waterfront.tables.findIndex(function (tb) { return tb.dirty && tb.owner === null && !tb.cleaning; });
-    if (index < 0 || b.state !== 'idle' || b.orders.length || world.queue.length) return false;
+    if (index < 0 || b.state !== 'idle') return false;
     world.waterfront.tables[index].cleaning = true;
     b.terraceTable = index; b.state = 'terraceOut'; b.stateT = 0; b.pose = 'stand'; b.holding = null;
     R.makePath(b, L.doorSpot.x, L.doorSpot.y);

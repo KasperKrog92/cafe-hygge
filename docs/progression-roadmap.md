@@ -192,8 +192,9 @@ installed**. A job may pause between safe actions and resume without losing
 work. Optional story acknowledgement is separate from installation. A purchase
 charges once; reload or switching mode never charges again or repeats delivery.
 
-Serving, walking and work must coexist. Lunafreya safely puts down a tool when
-needed, serves, and returns later. Let her finish short atomic actions rather
+Serving, walking and work coexist. Lunafreya keeps working while customers
+approach; a customer at the counter or a table needing clearing prompts a safe
+pause. She clears tables before starting new service, then returns to work later. Let her finish short atomic actions rather
 than twitch between jobs. Contractors do not require her constant supervision.
 Most booked repairs target one day but carry over peacefully if necessary.
 Reserve usable work areas; never trap a patron, block the door or close every

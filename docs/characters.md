@@ -114,10 +114,15 @@ whisking instead animates the chasen and a pale-green surface in the chawan,
 with sparser steam there; the iced finish visibly fills a glass at the matcha
 bar.
 
-### Idle life (only when nobody is queueing)
+### Service priorities and idle life
 
-Every 6–15 s she picks a task. The priority ladder is service first, then
-daily care, then small counter-life:
+At each free moment she clears abandoned indoor cups and dirty terrace tables
+before starting another drink or accepting a new order. A drink already in
+progress finishes normally. Next come customers at the counter, improvement
+work, then daily care and small counter-life (chosen every 6–15 s).
+Customers still walking in do not interrupt improvement work; a customer at
+the front slot or a table needing clearing pauses work after the current
+three-second hand action, preserving progress:
 
 - **Bus a table** (priority if any table has an abandoned cup — `item.owner
   === null`): walks out and clears the whole table in one visit — every
@@ -137,12 +142,12 @@ daily care, then small counter-life:
   to 1. The cat may supervise. The route is shared with `__dev.audit()`.
 - **Light the candles** (next priority): when daylight falls below 0.5,
   carries one lit taper around every dining and nook table, then the mantel.
-  Each flame blooms over about 2 s. A queue arrival lets her finish the
+  Each flame blooms over about 2 s. A customer reaching the counter lets her finish the
   current candle, park the round, serve, and resume at the next unlit stop.
   The chained `candleRoute` is shared with `__dev.audit()`.
 - **Water the plants** (after candle and bowl care): once per café day between
   09:00 and 16:00, carries a copper can to the counter plant and both floor
-  plants. A queue arrival parks the round after the current plant. The three
+  plants. A customer reaching the counter parks the round after the current plant. The three
   cumulative `waterRoute` paths are shared with `__dev.audit()`.
 - **Feed the fire** (after plant care): when the hearth has burned low and no
   fireside regular is already tending it (`world.fire.wantsLog && !claimed`),
@@ -169,7 +174,8 @@ daily care, then small counter-life:
 - Otherwise just stands, watching the room (drawn in the front view, facing
   out from behind the counter).
 
-If anyone is waiting in the queue she stays at the till, facing the room;
+Once the front customer reaches the counter, and tables are clear, she stays
+at the till, facing the room;
 the patron at the front steps up and turns to face her across the counter
 (their back view meeting her front view).
 
@@ -632,7 +638,7 @@ terraceHome → idle`. She uses the normal furniture-aware planner inside,
 changes to the clipped exterior only at `L.doorSpot`, collects and wipes for
 2.8 seconds at the table, then walks home carrying a stack. Outdoor x positions
 live separately on the same entity; neither Lunafreya nor patrons are drawn twice.
-The ordinary idle-task priority handles clearing, while closing explicitly
+Clearing takes priority over new service, while closing explicitly
 waits for both outdoor tables to be clear before the indoor closing chores.
 
 The dev audit checks reservations, cup ownership, cleanup claims, indoor/outdoor
@@ -660,7 +666,8 @@ After opening, Lunafreya picks up a chosen kit and carries it to the reserved wo
 site. `projectOut` walks there, `projectWork` animates fastening/wiping or a
 kneeling brush stroke, and `projectHome` returns to the counter with empty
 hands. A held kit is put down at its site before responding; hand work finishes
-its current three-second action before orders or closing take over. Nine-second
+its current three-second action before table clearing, a customer at the counter,
+or closing takes over. Walking arrivals leave the work uninterrupted. Nine-second
 visits and an 18-second break leave room for the existing care routines.
 Partial phases persist across evenings, reloads and presentation changes.
 A finished table enables two normal seats with ordinary ordering, reading,

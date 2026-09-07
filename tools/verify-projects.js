@@ -13,6 +13,41 @@
   function audit(w) { const a=__dev.audit(w); check(!a.length,a.join('; ')); }
   function home(w) { SIM.setMode(w,'game');hour(w,21.5);until(w,()=>w.shop.phase==='home');SIM.plan(w,true); }
   function restore(w) { return __dev.furnishedWorld({memory:MEMORY.createStore({state:JSON.parse(MEMORY.codec.encode(w.memory))}),random:SIM.seededRandom(84)}); }
+  // Walking arrivals leave hand work alone; reached customers pause it safely.
+  {
+    const w=__dev.furnishedWorld({random:SIM.seededRandom(91)}), b=w.barista;
+    w.patrons=[];w.queue=[];w.spawnT=1e9;w.seats.forEach(s=>{s.taken=false;});
+    w.tables.forEach(t=>{t.items=[];});
+    const p=w.memory.life.projects.table;
+    p.stage='working';p.step=0;p.time=0;
+    b.state='projectWork';b.project='table';b.projectSession=0;
+    const guest=SIM._.makePatron(w,'Signe');
+    guest.state='enter';guest.queueIdx=0;guest.path=[SCENE.L.doorSpot];w.queue=[guest];
+    for(let i=0;i<16;i++) SIM._.updateBarista(w,b,.25);
+    check(b.state==='projectWork' && p.time===4,'walking arrival interrupted hand work');
+    const slot=SIM.withWorld(w,()=>SIM._.queueSlot(0));
+    guest.state='queueing';guest.path=[];guest.x=slot.x;guest.y=slot.y;
+    for(let i=0;i<8;i++) SIM._.updateBarista(w,b,.25);
+    check(b.state==='projectHome' && p.time===6,'reached customer did not pause at safe boundary');
+    results.push({walkingArrival:'work continued',counterArrival:'paused after hand action'});
+  }
+  // A real guest waits while both indoor and terrace space are cleared, then sits.
+  for(const terrace of [false,true]) {
+    const w=__dev.furnishedWorld({random:SIM.seededRandom(93)}),b=w.barista;
+    w.patrons=[];w.queue=[];w.spawnT=1e9;w.seats.forEach(s=>{s.taken=false;});w.tables.forEach(t=>{t.items=[];});
+    b.state='idle';b.orders=[];b.path=[];b.idleT=999;
+    const guest=SIM._.makePatron(w,'Mikkel');guest.wantsBook=false;guest.ownBook=true;guest.outdoor=false;
+    SIM._.enqueueArrival(w,guest,0,true);
+    const dirty=terrace?w.waterfront.tables[0]:w.tables[0];
+    if(terrace){dirty.dirty=true;dirty.owner=null;dirty.cup={kind:'coffee'};}
+    else dirty.items.push({kind:'coffee',owner:null});
+    SIM._.updateBarista(w,b,.25);
+    check(b.state===(terrace?'terraceOut':'busOut'),'arrival beat table clearing');
+    until(w,()=>guest.state==='seated',300);
+    check(terrace?!dirty.dirty:dirty.items.every(i=>i.owner!==null),'guest served before table cleared');
+    audit(w);
+    results.push({terrace,clearBeforeService:true});
+  }
   for(const id of ['table','fireplace']) {
     let w=__dev.furnishedWorld({random:SIM.seededRandom(id==='table'?84:42)});
     w.memory.life.savings=180;
@@ -36,11 +71,11 @@
     SIM._.enqueueArrival(w,guest,0,true);
     let queuedAt=null,homeAt=null,progressAtQueue=null;
     until(w,()=>{
-      if(w.queue.length && queuedAt===null) { queuedAt=w.t;progressAtQueue=p.step*18+p.time; }
-      if(queuedAt!==null && w.barista.state==='projectHome' && homeAt===null) homeAt=w.t;
+      if(SIM.withWorld(w,()=>SIM._.customerAtCounter(w)) && queuedAt===null) { queuedAt=w.t;progressAtQueue=p.step*18+p.time; }
+      if(queuedAt!==null && (w.barista.state==='projectHome' || w.barista.state==='idle') && homeAt===null) homeAt=w.t;
       return guest.state==='seated';
     },240);
-    check(queuedAt!==null,'guest never queued');
+    check(queuedAt!==null,'guest never reached the counter');
     check(homeAt!==null && homeAt-queuedAt<=3.5,'order did not safely interrupt');
     check(p.step*18+p.time>=before,'work lost during order');
     results.push({id,interruptSeconds:homeAt-queuedAt,progressAtQueue});
