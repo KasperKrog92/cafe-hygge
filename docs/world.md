@@ -2,7 +2,7 @@
 
 ## Closing time and the next morning
 
-At 21:30, new arrivals stop. Nora wishes the remaining guests a good night from the counter,
+At 21:30, new arrivals stop. Lunafreya wishes the remaining guests a good night from the counter,
 wipes the counter and makes a closing round. Existing orders are finished;
 seated guests have another 12–22 seconds for their last cup before following
 their usual departure (laptop, borrowed book, umbrella and lap cat included).
@@ -14,7 +14,7 @@ entrance: right curtain, hearth and mantel candles, then left curtain. She calls
 carries it to the door, switches off the interior lamps and leaves.
 
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
-one-second dark pause lead into the apartment. In idle mode, Nora spends a
+one-second dark pause lead into the apartment. In idle mode, Lunafreya spends a
 90-second unattended evening there before the two-second dawn fade leads to
 07:30. After the one-time arrival, game mode repeats only the indoor desk,
 reading and resting routine until **go to sleep** is chosen;
@@ -22,16 +22,16 @@ closing the evening thoughts does not start a new day. The apartment renderer ap
 no timer-based fade in game mode, including at indoor loop boundaries; only
 explicit sleep starts the morning transition. Sleep jumps to 07:30 and the
 same dawn entrance, saving the transition immediately. Reloading a game evening
-keeps Nora home. Switching to idle lets the current routine finish automatically.
+keeps Lunafreya home. Switching to idle lets the current routine finish automatically.
 The café clock holds during home time; elapsed story time still receives real
-dt. Nora comes back
+dt. Lunafreya comes back
 with the cat and turns on the lamps at the entrance first. She puts the cat
 down by its bowls and refills them. If a plant was chosen, she retrieves its
 parcel at the entrance, carries it to the left window, unwraps it for four
 seconds and lifts it onto the sill over four seconds. She then opens the left curtains, tends the hearth,
 then opens the right curtains before reaching the counter to stock the pastry
 case. She works across the room without returning to the till between these
-chores. Cakes belong only in the counter display: Nora puts them away at night
+chores. Cakes belong only in the counter display: Lunafreya puts them away at night
 and refills that display in the morning. Once it is ready, guests may enter
 and the shop returns to its usual routines.
 
@@ -49,7 +49,7 @@ A normal open-café reload retains the existing seeded-room behavior.
 
 Savings begin at 30 kr. Removing a finished cup at pickup adds 1 kr, once;
 seeded drinks and unfinished orders add nothing. Home offers a 30 kr plant, 60 kr table set or 30 kr fireplace cleaning. One
-choice per evening is optional. The planner appears as Nora’s floating thoughts over
+choice per evening is optional. The planner appears as Lunafreya’s floating thoughts over
 the apartment: a short first-person question and three simple choices with pixel
 gold-coin prices. Chosen items show “chosen”; completed items show a checkmark.
 There are no item descriptions, instructions or notebook panel; savings and unfinished jobs never expire. The
@@ -74,7 +74,7 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   19:00 and 21:30.
 - The **regulars** each keep their own once-per-day schedule (`world.regulars`,
   one slot per roster id). Every café day their arrival hour is rolled fresh
-  inside that regular's window — Holger ~09:00, Gerda ~10:00, Lunafreya
+  inside that regular's window — Holger ~09:00, Gerda ~10:00, Nora
   ~11:00, Kasper ~13:30, Freya ~18:30 — and `updateRegulars` brings each in once, never two of the same
   face at once. Spread across the day, they rarely all overlap; only Freya sits
   late enough for the after-dark doze. See characters.md for the roster.
@@ -94,7 +94,7 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
   rates; `lamp` scales the electric warm glows (hanging lamps, the two
   nook reading lamps, the studio floor lamp by the easel, and the little brass
   piano lamp) and the star/moon alpha. Candle light has its own
-  per-flame state, tended by Nora.
+  per-flame state, tended by Lunafreya.
 - Threshold captions: lamps crossing on → "The streetlamps flicker on, one by
   one."; off → "Morning light spills across the floorboards."
 
@@ -162,13 +162,13 @@ renderer clips it behind the glass, weather, mullions and curtains.
   their drink through the door. Fair-weather walk-ins sometimes choose them
   between 08:00 and 20:30; readers can take their own book. Regulars keep their
   authored indoor seats. Guests linger, sip and read, then stroll away, leaving
-  cups for Nora. A sustained shower brings the same guest and drink indoors;
+  cups for Lunafreya. A sustained shower brings the same guest and drink indoors;
   nobody is punished for rain or for the owner's absence.
-- Nora walks through the room to the door, crosses the terrace, collects the
+- Lunafreya walks through the room to the door, crosses the terrace, collects the
   abandoned cup, wipes, and carries the empties back to the counter. Table
   reservations prevent overlap or seating on an uncleared table. Queued orders
   take priority before a trip; a trip already started finishes before service
-  resumes. Closing waits for outdoor guests and Nora's final terrace cleanup
+  resumes. Closing waits for outdoor guests and Lunafreya's final terrace cleanup
   before the indoor closing round and curtains.
 - These tables and exterior positions are separate from indoor seats and the
   floor route planner. Outdoor people remain in `world.patrons` (the same total
@@ -239,7 +239,7 @@ midnight.
 
 ### Candle day cycle
 
-When `daylight` falls below 0.5, unlit candles make Nora's dusk round pending;
+When `daylight` falls below 0.5, unlit candles make Lunafreya's dusk round pending;
 the tables and mantel bloom one stop at a time as she reaches them. The round
 waits behind orders, bussing, and bowl care, and can park at a stop for a new
 queue. At dawn the targets drop to zero and the flames fade over about 60 s.
@@ -257,7 +257,7 @@ hearth dims together. Once it has sat below `FIRE_LOW` (0.34) a patient random
 grace (20–110 s), `wantsLog` goes up: it is fine for the fire to rest low a
 while, and nothing nags. A fireside regular who carries the `tendsFire` trait
 (Holger) gets first refusal, rising from the armchair to lay a log; otherwise
-Nora reaches it on an idle roll (see characters.md). `addLog` sets the target to
+Lunafreya reaches it on an idle roll (see characters.md). `addLog` sets the target to
 full so the fire climbs over ~2 s, throws a burst of sparks, and plays
 `fireCatch()`. `claimed` keeps the two tenders from both going. `__dev.fire(0.2)`
 drops it near embers to watch the loop; the burn is independent of the clock, so
@@ -275,7 +275,7 @@ jumps neither snap nor replay it.
   then, and a fresh log sends up a burst of a dozen as it catches.
 - **Dust mote** (`type: 'mote'`): a single 2-px cream fleck with slow drift,
   spawned for the cat's daylight pounce ritual and removed with that beat.
-- **Water drop** (`type: 'drop'`): tiny blue-grey pixels arc from Nora's
+- **Water drop** (`type: 'drop'`): tiny blue-grey pixels arc from Lunafreya's
   watering-can spout during plant care and fall from a shaken umbrella.
 - Spawned in `updateParticles` (sim), drawn in `SCENE.drawParticles`.
 
@@ -285,7 +285,7 @@ jumps neither snap nor replay it.
 is consumed in 0.34 steps (roughly three meals), water in 0.2 steps (roughly
 five drinks); the renderer quantizes those floats into glanceable kibble-pile
 and water-highlight art. The values are ambience state, never UI or failure
-meters. Nora restores a low bowl to 1 through her normal dt-driven idle loop.
+meters. Lunafreya restores a low bowl to 1 through her normal dt-driven idle loop.
 
 ## Captions (the narrator)
 
@@ -298,7 +298,7 @@ contrast against the floor, with no backing rectangle.
 - Voice: warm, understated, present tense, no exclamation-mark enthusiasm
   (one "tak!" allowed). British-cozy rather than game-y.
 - Current triggers: arrivals (rain-aware), orders (`withArticle` for correct
-  a/an), Nora serving/tidying/clearing, seat choices ("sinks into the armchair
+  a/an), Lunafreya serving/tidying/clearing, seat choices ("sinks into the armchair
   by the fire", "curls up in the reading nook", "perches on the window
   seat"), window gazes (20% of them, weather/hour-aware: rain on the glass,
   streetlamps, the street drifting by), a passer-by slowing at the glass
@@ -310,14 +310,14 @@ contrast against the floor, with no backing rectangle.
   shared orders and seats, a regular settling into (or finding taken) their
   usual seat, a regular's weather- or recognition-aware arrival opener,
   falling asleep and finding the line again, cat
-  movements and petting (including the cat's accidental piano plinks), Nora
+  movements and petting (including the cat's accidental piano plinks), Lunafreya
   stretching/chalking/watering, her rare empty-night piano tune, a pianist
   settling at the bench / beginning a sparse burst, and the dusk/dawn
   candle ritual, weather changes, noon church bells, the evening kettle, lamp
   threshold moments, and occasional tip-jar coins. Cat-life
-  lines cover the patient empty-bowl wait, Nora's refill/supervision, rain and
+  lines cover the patient empty-bowl wait, Lunafreya's refill/supervision, rain and
   streetlamp window watches, bookshelf survey, counter shoo, aborted ascent,
-  Nora ignoring the top shelf, kneading, dust-mote battle, and gentle lap
+  Lunafreya ignoring the top shelf, kneading, dust-mote battle, and gentle lap
   dislodging; every repeatable line remains probability-gated.
 - The **regulars' own voices** ride those same seams. `regularLine` (in
   `sim-patrons.js`) sits at the window-gaze, page-turn, laptop-bout, and
@@ -332,7 +332,7 @@ contrast against the floor, with no backing rectangle.
   brush; Gerda has three guarded painter musings of her own. They retire with
   the completed arc.
 - **Regular continuity (Phase 3).** Two more seams carry a regular's continuity,
-  driven by the persisted `bonds` count in the save (Nora's memory of them):
+  driven by the persisted `bonds` count in the save (Lunafreya's memory of them):
   `regularArrivalLine` chooses the **opener** — a wet-weather line, a
   recognition line for a face she already knows, or the plain arrival — and
   `specLine` supplies the once-per-visit **settle** line and the **usual-seat-
@@ -342,18 +342,18 @@ contrast against the floor, with no backing rectangle.
   `captionRun`): the few deliberate lines a chosen beat plays queue in order,
   drain **ahead of** the ambient queue, and are never dropped by its 2-line cap
   — still paced by the same 6 s limiter so a beat reads as an unhurried run. Only
-  the opt-in narrative beats use it (today Gerda's scarf, Lunafreya's two
+  the opt-in narrative beats use it (today Gerda's scarf, Nora's two
   gallery unveilings, and the street painter's finished facade); ambient
   captions keep to `caption()`. The soft-narrative layer also adds one always-on
   visual: a **pending invitation** draws a persistent bubble (e.g. a yarn ball)
   over its owner or a brush at a fixed scene anchor via the ordinary bubble
   system — the only new standing UI it introduces. See
-  [narrative.md](narrative.md), characters.md (Gerda's scarf and Lunafreya's
+  [narrative.md](narrative.md), characters.md (Gerda's scarf and Nora's
   gallery), and *The street* above (the painter).
 - Matcha adds three limiter-paced lines: the whisk step may note the bamboo
   patter and pale-green foam (30%); the ice step may note ice singing against
   glass (25%); and only the first matcha sip of a visit checks for a slow,
-  grassy-sweet sip line (20%). Nora's sixth chalk doodle, a bamboo whisk, may
+  grassy-sweet sip line (20%). Lunafreya's sixth chalk doodle, a bamboo whisk, may
   likewise be acknowledged when it appears beside the prices.
 - When adding events, prefer **occasional** captions (probability-gated) —
   the narrator should feel like she only speaks when something is worth
@@ -420,7 +420,7 @@ bars, deadlines or required acknowledgement clicks.
 
 ## First opening
 
-A fresh café waits behind the entry overlay. On entry, Nora brings the cat to
+A fresh café waits behind the entry overlay. On entry, Lunafreya brings the cat to
 its corner, sets out entrance equipment, coffee equipment and a small cake
 stand, then assembles both table sets. The clock and customer arrivals wait
 until setup finishes; setup costs nothing and resumes after reload. The bare

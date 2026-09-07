@@ -26,7 +26,7 @@
     check(w.seats.every(s=>SCENE.hasFurniture(w,s.furniture)),'absent seat');
     check(!w.patrons.some(p=>p.hasShelfBook||p.outside||['browse','fetchBook','toEasel'].includes(p.state)),'absent activity');
     check(SCENE.catSpotAvailable(w,(w.cat.target||{}).id||''),'absent cat destination');
-    check(!w.barista.state.startsWith('piano'),'Nora seeks missing piano');
+    check(!w.barista.state.startsWith('piano'),'Lunafreya seeks missing piano');
   }
   function bounds(w) {
     if(w.shop.phase==='home')return;

@@ -15,7 +15,7 @@
      knots, apron strings, a 4-frame walk and a subtle idle breathe.
      Standing/walking bodies come in three views: the classic side profile
      (facing ±1), a front view when `heading` is 'down' — walking toward
-     the room, or Nora watching it from the till — and a back view when
+     the room, or Lunafreya watching it from the till — and a back view when
      `heading` is 'up' — walking away up the room, or facing the counter
      to order. */
   function drawHead(g, x, hy, facing, c, closed) {

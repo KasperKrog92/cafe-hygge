@@ -22,7 +22,7 @@
     const phases=[]; let nights=0, prior='open';
     until(w,()=>{
       if(w.shop.phase!==prior) { phases.push(w.shop.phase); if(w.shop.phase==='home') nights++; prior=w.shop.phase; }
-      check(w.cat===cat && w.barista===nora,'replaced Nora or cat');
+      check(w.cat===cat && w.barista===nora,'replaced Lunafreya or cat');
       if(mode==='game' && w.shop.phase==='home') {
         const hour=w.hour;
         tick(w,20);

@@ -10,13 +10,13 @@
   // Construct once with the existing character helpers; keep all mutable state
   // on the supplied world. No character implementation is exported for this.
   // beforeClock runs before time advances. update runs after outdoor life/door,
-  // before spawning/service, and returns true only while rituals own Nora.
+  // before spawning/service, and returns true only while rituals own Lunafreya.
   // route is the existing world-first dev/audit route contract.
   R.createShopLifecycle = function (characters) {
     const busRoute = characters.busRoute, fireTendRoute = characters.fireTendRoute;
     const refillRoute = characters.refillRoute, leavePerch = characters.leavePerch;
 
-    // Shop rituals own Nora only for one out-and-back chore at a time. Service
+    // Shop rituals own Lunafreya only for one out-and-back chore at a time. Service
     // retains priority between chores, so an early visitor can already order.
     function shopPath(from, to) {
       const walker = { x: from.x, y: from.y, kind: from.kind };
@@ -74,7 +74,7 @@
         if (dt <= 0 || (world.hour < 21.5 && world.hour >= 6)) return false;
         s.phase = 'closing'; s.accepting = false; s.elapsed = 0; s.step = 0;
         s.lastCall = false;
-        caption(world, 'the last cups of the evening; Nora begins to tidy.');
+        caption(world, 'the last cups of the evening; Lunafreya begins to tidy.');
       }
       s.elapsed += dt;
       if (s.phase === 'night') {
@@ -95,7 +95,7 @@
           // before joining any of the café's floor routes.
           b.path = [L.shop.switchSpot];
           R.ringDoor(world);
-          caption(world, 'a new morning; Nora brings the cat in from the quiet street.');
+          caption(world, 'a new morning; Lunafreya brings the cat in from the quiet street.');
         }
         return true;
       }
@@ -140,7 +140,7 @@
           }
           if (cat.path && cat.path.length) return true;
           s.carryingCat = true; b.holding = 'cat'; SND.purr(2);
-          caption(world, 'one sleepy cat, tucked into Nora’s arms.');
+          caption(world, 'one sleepy cat, tucked into Lunafreya’s arms.');
         }
         task.time += dt;
         b.stateT = task.time;
@@ -166,7 +166,7 @@
         } else if (task.kind === 'bowls') { world.catBowls.food = world.catBowls.water = 1; SND.kibblePour(0.9); }
         else if (task.kind === 'greet') {
           s.lastCall = true;
-          if (world.patrons.length) caption(world, 'Nora wishes everyone a good night — time for the last sip.');
+          if (world.patrons.length) caption(world, 'Lunafreya wishes everyone a good night — time for the last sip.');
         } else if (task.kind === 'wipe') SND.swish();
         task.returning = true; b.pose = 'stand'; b.heading = null;
         b.path = task.route.slice(0, -1).reverse().concat([L.baristaHome]);
@@ -222,7 +222,7 @@
     }
 
     function beforeClock(world, dt) {
-      // Let the last evening linger while Nora finishes; a long cleanup must
+      // Let the last evening linger while Lunafreya finishes; a long cleanup must
       // never turn into a morning shift before the overnight fade has played.
       if (world.shop && world.shop.phase === 'home') world.clockOffset -= dt;
       if (world.shop && world.shop.phase === 'closing' && (world.hour >= 22.5 || world.hour < 6)) world.clockOffset -= dt;

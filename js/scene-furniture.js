@@ -40,7 +40,7 @@
     out.push({ y: L.piano.baseline, draw: function (g) { drawPiano(g, pianoTable, world); } });
     }
 
-    // Lunafreya's studio is a permanent part of the piano corner. The easel
+    // Nora's studio is a permanent part of the piano corner. The easel
     // sits behind her baseline; the little table lands just in front so a cup
     // can be shared with the normal service/bussing pipeline.
     if (SCENE.hasFurniture(world,'studio')) {

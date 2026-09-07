@@ -41,7 +41,7 @@ owner's everyday café session. Results are local, ignored files:
 | `empty.png` | Furniture silhouette, top planes and cushions without sitters |
 | `fireside.png`, `nook.png` | Both chair directions, lap occlusion, lamps and rug integration at ×3 |
 | `bookshelf.png`, `counter.png`, `artist.png`, `piano.png` | Material detail and depth at ×3 |
-| `people.png` | Nora and five regulars, both profiles, front, back and reading, at exact ×2 |
+| `people.png` | Lunafreya and five regulars, both profiles, front, back and reading, at exact ×2 |
 | `audit.json` | Live plus day/night fixture invariant failures (expect `[]`) |
 | `verification.json` with `-Verify` | Repeatability, side effects, eight occupancy scenarios, frame timing |
 
@@ -179,14 +179,14 @@ would benefit from them.
 
 ## Animation review
 
-For Nora routing, run `tools/verify-nora-routing.js` through the same disposable
+For Lunafreya routing, run `tools/verify-nora-routing.js` through the same disposable
 browser recipe. It walks all 625 ordered pairs of 25 work anchors, including
 obsolete intermediate waypoints, checking sampled body clearance against solid
 furniture. It also completes watering, candles, hearth care, chalk, piano,
 nook bussing and bowl refills, and checks unreachable/replacement destinations.
 `window.noraFrames` contains the rendered nook approach for export. Pair this
 with `tools/verify-hours.js` and the normal-page order cycle; the live audit now
-checks Nora's actual remaining planned path as well as the authored templates.
+checks Lunafreya's actual remaining planned path as well as the authored templates.
 
 For the daily shop lifecycle, run `tools/verify-hours.js` through
 `agent-browser --session <disposable-session> eval` on a fresh `?dev` page.
@@ -210,11 +210,11 @@ as well, and run actual simulation journeys separately from detached art worlds.
 Run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-waterfront.ps1 -Regression`
 with the local server running. Its single disposable session executes real
 coffee orders through two terrace visits, distinct reservations, guest departures,
-Nora's two cleanup trips, rain before/after seating, and closing/reopening with
+Lunafreya's two cleanup trips, rain before/after seating, and closing/reopening with
 a pending painter invitation. It also checks elapsed-time boat movement,
 clock-jump continuity, disposal and shared sun/light geometry, then simulates
 50 minutes of normal arrivals and weather. The optional regression flag adds
-the existing Nora-routing and shop-hours checks in that same browser.
+the existing Lunafreya-routing and shop-hours checks in that same browser.
 
 Snapshots and JSON reports are exported to `.art-review/waterfront-motion/`
 before the session closes in `finally`. Inspect `terrace-day.png`,

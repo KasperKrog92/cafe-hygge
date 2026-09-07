@@ -34,23 +34,23 @@
         const s = w.shop;
         if (s.phase === 'closing') {
           if (s.task && s.task.kind === 'greet') check(w.barista.x >= SCENE.L.baristaExitX,
-            scenario + ': goodnight sent Nora out of the counter area');
+            scenario + ': goodnight sent Lunafreya out of the counter area');
           if (s.curtains[0] > 0) check(s.curtains[1] === 1,
             scenario + ': closing crossed to the left window before finishing the right');
           if (s.curtains[1] > 0) check(w.barista.x < SCENE.L.baristaExitX,
             scenario + ': final closing round returned to the counter');
           if (s.curtains[0] > 0) check(w.barista.x <= SCENE.L.win.x + SCENE.L.win.w,
-            scenario + ': Nora doubled back across the room after the left curtain');
+            scenario + ': Lunafreya doubled back across the room after the left curtain');
           if (s.task && s.task.kind === 'hearth') check(s.curtains[1] === 1 && s.curtains[0] === 0,
             scenario + ': hearth was not handled between the right and left windows');
         }
         if ((s.phase === 'entering' || s.phase === 'opening') && !s.lights) {
           check(w.barista.x === SCENE.L.doorSpot.x && s.carryingCat,
-            scenario + ': Nora left the entrance or put down the cat before switching on the lights');
+            scenario + ': Lunafreya left the entrance or put down the cat before switching on the lights');
         }
         if (s.phase === 'opening' && w.barista.x >= SCENE.L.baristaExitX) {
           check(s.lights === 1 && s.curtains.every(function (n) { return n === 0; }) && !s.carryingCat,
-            scenario + ': Nora visited the counter before finishing the opening round');
+            scenario + ': Lunafreya visited the counter before finishing the opening round');
         }
         if (!phases.length || phases[phases.length - 1] !== s.phase) phases.push(s.phase);
         if (s.phase === 'night') {

@@ -129,7 +129,7 @@
       ['lastCall','stocked','accepting','carryingCat','away'].forEach(k => requireShape(typeof s[k] === 'boolean', 'invalid ritual flag'));
       function point(p) { return record(p) && finite(p.x) && finite(p.y) && p.x >= 12 && p.x <= 948 && p.y >= 36 && p.y <= 576; }
       function route(p) { return p === null || (Array.isArray(p) && p.every(point)); }
-      requireShape(point(b) && route(b.path) && ['idle','shop'].indexOf(b.state) >= 0, 'invalid Nora checkpoint');
+      requireShape(point(b) && route(b.path) && ['idle','shop'].indexOf(b.state) >= 0, 'invalid Lunafreya checkpoint');
       if (s.task !== null) requireShape(record(s.task) &&
         ['lights','putCat','bowls','curtain','hearth','stock','greet','wipe','table','cat','home','plant'].indexOf(s.task.kind) >= 0 &&
         finite(s.task.time) && s.task.time >= 0 && Array.isArray(s.task.route) && route(s.task.route), 'invalid ritual task');

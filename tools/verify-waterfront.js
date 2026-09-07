@@ -1,4 +1,4 @@
-/* Real order → terrace → departure → Nora cleanup; rain and overnight checks.
+/* Real order → terrace → departure → Lunafreya cleanup; rain and overnight checks.
    Run in one disposable ?dev session, export waterfrontFrames before closing. */
 (function () {
   'use strict';
@@ -45,11 +45,11 @@
     check(run(w, function () { return !w.patrons.length && w.waterfront.tables.every(function (t) { return !t.dirty && !t.cleaning; }) && w.barista.state === 'idle'; }, 260, function () {
       nora[w.barista.state] = true;
       if (w.barista.state === 'terraceClear' && !frames['nora-clears']) shot(w, 'nora-clears');
-      if (w.barista.outside) check(SIM.entityDrawables(w).draws.length === 1 + w.patrons.filter(function (p) { return !p.outside; }).length, 'Nora duplicated indoors while outside');
-    }), 'Nora did not clear both departed guests and return home');
-    ['terraceOut', 'terraceApproach', 'terraceClear', 'terraceBack', 'terraceHome'].forEach(function (s) { check(nora[s], 'Nora missed ' + s); });
+      if (w.barista.outside) check(SIM.entityDrawables(w).draws.length === 1 + w.patrons.filter(function (p) { return !p.outside; }).length, 'Lunafreya duplicated indoors while outside');
+    }), 'Lunafreya did not clear both departed guests and return home');
+    ['terraceOut', 'terraceApproach', 'terraceClear', 'terraceBack', 'terraceHome'].forEach(function (s) { check(nora[s], 'Lunafreya missed ' + s); });
     check(w.waterfront.tables.every(function (t) { return t.owner === null && !t.cup; }), 'outdoor cup/reservation leaked');
-    results.push('two complete coffee orders, distinct terrace seats, departures, two Nora cleanup journeys');
+    results.push('two complete coffee orders, distinct terrace seats, departures, two Lunafreya cleanup journeys');
 
     w = fresh(14); p = guest();
     check(run(w, function () { return p.state === 'terraceSit'; }, 140), 'rain setup failed');
@@ -76,7 +76,7 @@
     check(run(w, function () { return night && w.shop.phase === 'open'; }, 1400, function () {
       if (w.shop.away) {
         night = true;
-        check(!w.patrons.length && !w.barista.outside, 'Nora closed before terrace guests left');
+        check(!w.patrons.length && !w.barista.outside, 'Lunafreya closed before terrace guests left');
         check(w.waterfront.tables.every(function (t) { return !t.dirty && !t.cup && !t.cleaning && t.owner === null; }), 'closed with dirty terrace');
       }
     }), 'outdoor evening did not complete closing and reopening');
@@ -107,7 +107,7 @@
       shot(study, 'waterfront-' + h);
     });
     // Repeated complete days with normal admissions exercise spontaneous
-    // choices, delayed Nora availability, weather and the shared spawn cap.
+    // choices, delayed Lunafreya availability, weather and the shared spawn cap.
     w = fresh(10); w.spawnT = 1; w.regulars = __dev.furnishedWorld({ random: random }).regulars; w.weatherT = 20;
     run(w, function () { return false; }, 3000);
     results.push('50-minute simulation soak with ordinary arrivals and weather');

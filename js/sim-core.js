@@ -191,7 +191,7 @@
       wateredDay: -1,
       candles: { mantel: 0, mantelTarget: 0, wasDark: false, forceRound: false },
       // The hearth as a slow, living thing: a log burns down to embers over
-      // minutes (never fully out), then — after a patient grace — Nora or a
+      // minutes (never fully out), then — after a patient grace — Lunafreya or a
       // fireside regular lays a fresh one and it climbs again. `level` is the
       // live burn 0..1 (read by art, glow, and crackle audio); `target` is
       // what it eases toward (a log sets it to 1). See updateFire / addLog.
@@ -426,8 +426,8 @@
 
   function makeBarista() {
     return {
-      kind: 'barista', name: 'Nora',
-      colors: { skin: '#e8b48a', hair: '#4a2f1c', top: '#5a7a8a', pants: '#3d4a5c', apron: true, longHair: true, scarf: null, hairStyle: 1 },
+      kind: 'barista', name: 'Lunafreya',
+      colors: { skin: '#f0c49a', hair: '#e0b766', top: '#9c4848', pants: '#3d4a5c', apron: true, longHair: true, scarf: null, hairStyle: 4 },
       x: L.baristaHome.x, y: L.baristaHome.y,
       facing: -1, heading: '', pose: 'stand', animT: 0,
       speed: 60, path: null,
@@ -506,7 +506,7 @@
         y1: b.y1 + (b.frontClearance || depth), core: b };
     });
 
-    // Nora's feet are projected behind the counter at y=286. Keep that
+    // Lunafreya's feet are projected behind the counter at y=286. Keep that
     // working corridor open, but retain the counter front as a solid barrier.
     staffBoxes = walkBoxes.map(function (box) {
       // Staff use body clearance through the nook's service gaps.
@@ -991,7 +991,7 @@
   /* The fire lives on its own slow clock (docs/world.md): the burn eases toward
      a target that decays as the log spends itself, bottoming out at a warm
      ember floor rather than going dark. Once it has sat low a patient random
-     grace, `wantsLog` goes up — the signal Nora's idle care and a fireside
+     grace, `wantsLog` goes up — the signal Lunafreya's idle care and a fireside
      regular both watch. It is fine for the fire to rest at embers a while
      first; nothing here nags. */
   function updateFire(world, dt) {
@@ -1015,7 +1015,7 @@
 
   /* A fresh log lands: the burn target jumps to full so the fire climbs over a
      couple of seconds, a shower of sparks flies as it catches, and the soft
-     whoomph plays. Shared by Nora's fire-tending and Holger's (sim-characters /
+     whoomph plays. Shared by Lunafreya's fire-tending and Holger's (sim-characters /
      sim-patrons), so who lays the log never changes what it does. */
   function addLog(world) {
     const f = world.fire;
@@ -1158,9 +1158,9 @@
     return Math.floor((activeContext || productionContext).memory.now() / DAY_MS);
   }
 
-  /* Nora's memory of a regular, deepened just by her being present when they
+  /* Lunafreya's memory of a regular, deepened just by her being present when they
      arrive (docs/narrative.md §5). Bumps the persisted bond visit-count and
-     records the real day, then reports whether Nora already knew this face — the
+     records the real day, then reports whether Lunafreya already knew this face — the
      signal a recognition-flavoured opener needs, without any line depending on a
      previous one. The saved `lastDay` leaves room for later day-gap nuance
      ("same as yesterday"). Bonds live in the MEMORY save; a fresh café simply
@@ -1180,7 +1180,7 @@
   }
 
   /* The opener when a regular arrives: weather first (a wet arrival reads on
-     the coat, not the calendar), then recognition for a face Nora already
+     the coat, not the calendar), then recognition for a face Lunafreya already
      knows, else the plain arrival line. Every branch stands alone. */
   function regularArrivalLine(world, spec, info) {
     const lines = spec.lines || {};

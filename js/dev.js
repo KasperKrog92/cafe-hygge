@@ -7,7 +7,7 @@
    URL params:
      ?dev          boot straight into the scene (overlay dismissed; audio
                    stays uninitialized until the first real click)
-     ?morning      07:30, Nora arriving with the cat to reopen an empty café
+     ?morning      07:30, Lunafreya arriving with the cat to reopen an empty café
      ?night        21:30, evening closing with the boot's seated guests
      ?hour=20      start the clock at 20:00 (works with or without ?dev)
      ?overlay      layout overlay on from the first frame
@@ -35,7 +35,7 @@
      __dev.piano(on)   force/stop the corner-piano sound engine
      __dev.fire(level) read/set the hearth's live burn 0..1 (low → tend loop)
      __dev.send(n,x,y) path an entity through the real makePath
-     __dev.noraDo(name) force a Nora ritual on her next idle task ('fire' too)
+     __dev.noraDo(name) force a Lunafreya ritual on her next idle task ('fire' too)
      __dev.catDo(name) force a cat ritual on the next simulation tick
      __dev.bowls(f,w)  set the cat's food and water bowl levels
      __dev.overlay(b)  toggle the layout overlay
@@ -283,7 +283,7 @@
   D.noraDo = function (action) {
     const allowed = ['stretch', 'chalk', 'water', 'candles', 'fire', 'piano'];
     if (allowed.indexOf(action) < 0) {
-      console.warn('[dev] unknown Nora behavior "' + action + '"');
+      console.warn('[dev] unknown Lunafreya behavior "' + action + '"');
       return null;
     }
     const w = world(), b = w.barista;
@@ -303,7 +303,7 @@
 
   /* Read or set the hearth's live burn (0..1). Setting it low is the quickest
      way to watch the tend loop: `__dev.fire(0.2)` drops it near embers, then a
-     fireside regular or Nora lays a fresh log after the usual patient grace. */
+     fireside regular or Lunafreya lays a fresh log after the usual patient grace. */
   D.fire = function (level) {
     const w = world();
     if (level == null) return w.fire.level;
@@ -345,7 +345,7 @@
     })(L, 'L');
   }
 
-  /* every point the sim sends a patron to walk to (Nora's behind-the-counter
+  /* every point the sim sends a patron to walk to (Lunafreya's behind-the-counter
      spots are by-design occluded and excluded) */
   function walkTargets(w) {
     const t = [];
@@ -583,7 +583,7 @@
         side: s.side, kind: 'cup', owner: p.id, hot: 0, hidden: false
       });
     });
-    w.barista = { kind: 'barista', name: 'Nora', colors: structuredClone(world().barista.colors),
+    w.barista = { kind: 'barista', name: 'Lunafreya', colors: structuredClone(world().barista.colors),
       x: L.baristaHome.x, y: L.baristaHome.y, facing: -1, heading: 'down',
       pose: 'stand', state: 'idle', animT: 0, orders: [], holding: null };
     w.cat = { x: L.catCorner.cushion.x, y: L.catCorner.cushion.y - 2,
@@ -614,7 +614,7 @@
     const out = document.createElement('canvas'); out.width = 960; out.height = 850;
     const g = out.getContext('2d'); g.imageSmoothingEnabled = false;
     g.fillStyle = '#e3cfa7'; g.fillRect(0, 0, out.width, out.height);
-    const people = [{ name: 'Nora', colors: world().barista.colors }].concat(CAST.regulars);
+    const people = [{ name: 'Lunafreya', colors: world().barista.colors }].concat(CAST.regulars);
     const views = ['right', 'left', 'front', 'back', 'reading'];
     people.forEach(function (spec, col) {
       views.forEach(function (view, row) {
@@ -737,7 +737,7 @@
   /* check every leg of a route against the no-go boxes; boxes that contain
      the destination are that stop's own furniture (a seat inside its chair,
      a bus spot beside its table) and are skipped, as are explicitly
-     exempted boxes (Nora's routes legitimately start inside the counter). */
+     exempted boxes (Lunafreya's routes legitimately start inside the counter). */
   function routeProblems(route, dest, label, exemptNames, allowInside, problems, pad) {
     pad = pad == null ? PAD : pad;
     noGoBoxes().forEach(function (box) {
@@ -829,7 +829,7 @@
     // Journeys: the real furniture-aware route to every target must not cut
     // through an occluder or furniture footprint.
     // Seats and bus spots may end inside their own furniture's box; nothing
-    // else may. Bus spots are excluded here — Nora reaches them by her own
+    // else may. Bus spots are excluded here — Lunafreya reaches them by her own
     // routes, checked next.
     walkTargets(w).forEach(function (t) {
       if (/^busSpot/.test(t.name) || t.name === 'umbrellaSpot') return;
@@ -843,7 +843,7 @@
 
     // Check the path the walker actually planned, not just chore templates.
     const nora = w.barista;
-    if (nora.walkBlocked) problems.push('Nora cannot reach her current chore');
+    if (nora.walkBlocked) problems.push('Lunafreya cannot reach her current chore');
     if (nora.path && nora.path.length && nora._walkPath === nora.path && !nora.walkBlocked) {
       const actual = [{ x: nora.x, y: nora.y }].concat(nora.path);
       const dest = actual[actual.length - 1];
@@ -853,21 +853,21 @@
         function inSeat(p) { return box.seat && p.x > box.x0 && p.x < box.x1 && p.y > box.y0 && p.y < box.y1; }
         for (let i = 1; i < actual.length; i++) {
           if ((i === 1 && inSeat(actual[0])) || (i === actual.length - 1 && inSeat(dest))) continue;
-          // After stepping out of a service seat, Nora briefly remains in
+          // After stepping out of a service seat, Lunafreya briefly remains in
           // its clearance margin. Match the planner's endpoint relaxation:
           // leaving that margin is valid only if the solid furniture is clear.
           function inMargin(p) { return p.x > box.x0-PAD && p.x < box.x1+PAD && p.y > box.y0-PAD && p.y < box.y1+PAD; }
           if (!segHitsBox(actual[i-1],actual[i],box,0) &&
               ((i === 1 && inMargin(actual[0])) || (i === actual.length-1 && inMargin(dest)))) continue;
           if (segHitsBox(actual[i - 1], actual[i], box, PAD)) {
-            problems.push('Nora planned route cuts through the ' + box.name);
+            problems.push('Lunafreya planned route cuts through the ' + box.name);
             break;
           }
         }
       });
     }
 
-    // Nora's bus route templates (shared with SIM._.busRoute): she starts
+    // Lunafreya's bus route templates (shared with SIM._.busRoute): she starts
     // behind the counter by design, so the counter box is exempt
     w.tables.forEach(function (tb, i) {
       const route = SIM._.busRoute(w, i);
@@ -882,12 +882,12 @@
       routeProblems(route, route[route.length - 1], 'patron route ' + name, null, false, problems);
     });
 
-    // Nora's bowl-refill route shares the same declared geometry as bussing.
+    // Lunafreya's bowl-refill route shares the same declared geometry as bussing.
     const refill = SIM._.refillRoute();
     const refillEnd = refill[refill.length - 1];
     routeProblems(refill, refillEnd, 'cat bowl refill', ['counter', 'cat corner'], true, problems);
 
-    // Nora's three-stop watering round and full candle circuit are declared
+    // Lunafreya's three-stop watering round and full candle circuit are declared
     // by the sim, so this checks the geometry she actually walks.
     for (let i = 0; i < 3; i++) {
       const water = SIM._.waterRoute(i);
@@ -899,10 +899,10 @@
     routeProblems(candles, candleEnd, 'candle round', ['counter'], true, problems);
     const piano = SIM._.pianoRoute();
     const pianoEnd = piano[piano.length - 1];
-    routeProblems(piano, pianoEnd, 'Nora piano route', ['counter'], true, problems);
+    routeProblems(piano, pianoEnd, 'Lunafreya piano route', ['counter'], true, problems);
     const fire = SIM._.fireRoute();
     const fireEnd = fire[fire.length - 1];
-    routeProblems(fire, fireEnd, 'Nora fire-tending route', ['counter'], true, problems);
+    routeProblems(fire, fireEnd, 'Lunafreya fire-tending route', ['counter'], true, problems);
 
     // Cat floor stops obey floor collision rules; aerial anchors are checked
     // against their declared surface instead. The cushion is deliberately
@@ -1140,7 +1140,7 @@
             (holders.length && holders[0].id !== tb.owner)) problems.push('terrace table ' + i + ' reservation mismatch');
         if (tb.owner !== null && (tb.dirty || tb.cleaning)) problems.push('occupied terrace table is dirty/being cleared');
         if (tb.dirty && !tb.cup && !tb.cleaning) problems.push('dirty terrace table has no cup');
-        if (tb.cleaning && (w.barista.terraceTable !== i || w.barista.state.indexOf('terrace') !== 0)) problems.push('terrace cleanup has no Nora');
+        if (tb.cleaning && (w.barista.terraceTable !== i || w.barista.state.indexOf('terrace') !== 0)) problems.push('terrace cleanup has no Lunafreya');
       });
       w.patrons.concat([w.barista]).forEach(function (p) {
         if (!p.outside) return;
@@ -1155,7 +1155,7 @@
           if (!Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.age) || p.speed <= 0) problems.push('invalid waterfront movement');
         });
       });
-      if (w.shop && w.shop.away && wf.tables.some(function (tb) { return tb.owner !== null || tb.dirty || tb.cleaning; })) problems.push('Nora left the terrace uncleared');
+      if (w.shop && w.shop.away && wf.tables.some(function (tb) { return tb.owner !== null || tb.dirty || tb.cleaning; })) problems.push('Lunafreya left the terrace uncleared');
     }
     w.seats.forEach(function (s, i) {
       if (!SCENE.hasFurniture(w,s.furniture)) problems.push('seat targets absent furniture: ' + s.furniture);
@@ -1185,7 +1185,7 @@
       if (['open', 'closing', 'leaving', 'night', 'dawn', 'entering', 'opening'].indexOf(shop.phase) < 0) problems.push('unknown shop phase');
       if ([shop.fade, shop.lights].concat(shop.curtains).some(function (n) { return !Number.isFinite(n) || n < 0 || n > 1; })) problems.push('shop visuals outside 0–1');
       if (shop.accepting && shop.phase !== 'open' && shop.phase !== 'opening') problems.push('closed shop accepting guests');
-      if (shop.away && (w.patrons.length || w.queue.length || w.barista.orders.length)) problems.push('Nora left before the guests');
+      if (shop.away && (w.patrons.length || w.queue.length || w.barista.orders.length)) problems.push('Lunafreya left before the guests');
       if (shop.away && (!shop.carryingCat || shop.lights || shop.stocked ||
           (SCENE.hasFurniture(w,'drapes') && shop.curtains.some(function (n) { return n !== 1; })))) problems.push('shop left before closing chores finished');
       if (shop.phase === 'open' && (shop.carryingCat || shop.away || shop.fade)) problems.push('open shop still in overnight transition');

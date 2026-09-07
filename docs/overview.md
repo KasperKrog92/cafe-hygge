@@ -15,9 +15,9 @@ forward on their own time, and who now and then turn to you with something to
 share. The Danish word *hygge* — the art of cozy contentment — is still the
 entire mood spec. What changed is that the coziness now has somewhere to grow.
 
-You keep the café as **Nora**, its barista and constant — brewing, tidying,
+You keep the café as **Lunafreya**, its barista and constant — brewing, tidying,
 keeping the fire company, and, over many visits, getting to know the people who
-keep coming back. When the café remembers something, it remembers it as Nora
+keep coming back. When the café remembers something, it remembers it as Lunafreya
 would.
 
 ## Two ways to hold it
@@ -83,7 +83,7 @@ that possible has its own home: the **[narrative design contract](narrative.md)*
 
 ## The cast, briefly
 
-- **Nora**, the barista — the café's constant, and the one whose eyes you keep
+- **Lunafreya**, the barista — the café's constant, and the one whose eyes you keep
   it through. Brews, tidies, clears tables; slowly gets to know the regulars.
 - **Patrons** — Danish-named regulars who come and go: readers, chatters,
   window-watchers, each growing a small history over many visits.

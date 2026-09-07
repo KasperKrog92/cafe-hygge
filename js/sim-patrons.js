@@ -119,7 +119,7 @@
     }
     free = free.filter(function (s) { return !s.piano && !s.artist; });
     if (!free.length) return null;
-    // skip spots where an abandoned drink still waits for Nora — a newcomer's
+    // skip spots where an abandoned drink still waits for Lunafreya — a newcomer's
     // cup would land on the very same saucer spot (soak-test find)
     const clean = free.filter(function (s) {
       return s.table < 0 || !world.tables[s.table].items.some(function (it) {
@@ -314,7 +314,7 @@
         if (p.queueIdx === 0 && (!p.path || !p.path.length) && world.barista.state === 'idle' && !world.barista.orders.length) {
           p.state = 'ordering'; p.stateT = 0;
           p.facing = 1;
-          p.heading = 'up';        // step up and face Nora across the counter
+          p.heading = 'up';        // step up and face Lunafreya across the counter
           p.bubble = { icon: p.drink.icon, until: world.t + 1.9 };
           if (p.partner && !p.orderCaptioned) {
             p.orderCaptioned = true; p.partner.orderCaptioned = true;
@@ -784,7 +784,7 @@
       }
     }
 
-    // Lunafreya works in brief, unhurried bouts. The active canvas itself is
+    // Nora works in brief, unhurried bouts. The active canvas itself is
     // driven by saved café-day progress; these hands and whispers are ambience
     // around that truth. A ready painting waits untouched for its invitation,
     // and after both hangs she keeps the permanent station as a sketching nook.
@@ -891,7 +891,7 @@
     // A fireside regular who tends the hearth (spec trait `tendsFire`) gets up
     // now and then to lay a fresh log once the fire has burned low — the seat
     // stays theirs, exactly like slipping off to the bookshelf. They get first
-    // refusal over Nora, who only reaches the fire on an idle roll.
+    // refusal over Lunafreya, who only reaches the fire on an idle roll.
     if (world.fire && world.fire.wantsLog && !world.fire.claimed &&
         p.spec && p.spec.traits && p.spec.traits.tendsFire &&
         p.seat.armchair && p.sipPhase <= 0 && !p.holding && !p.dozing &&
@@ -937,7 +937,7 @@
       chairScrape(p, true); stepDown(p, p.seat);
       p.state = 'toEasel'; p.stateT = 0;
       pathFrom(p, p.seat, L.artist.watch.x, L.artist.watch.y);
-      if (R.random() < 0.45) caption(world, p.name + ' drifts over to see what Lunafreya is painting.');
+      if (R.random() < 0.45) caption(world, p.name + ' drifts over to see what Nora is painting.');
       return;
     }
 

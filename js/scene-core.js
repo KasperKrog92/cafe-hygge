@@ -123,7 +123,7 @@
       lamps: [{ x: 157, y: 177 }, { x: 568, y: 177 }]
     },
     // fire: the chimney breast + firebox; `stand` is the floor spot a tender
-    // (Nora or a fireside regular) takes to lay a fresh log, just left of the
+    // (Lunafreya or a fireside regular) takes to lay a fresh log, just left of the
     // firebox centre so the reach carries into the coals
     fire: { x: 344, w: 88, boxX: 364, boxW: 48, boxTop: 180, boxBot: 228, stand: { x: 384, y: 302 } },
     wallFrame: { x: 42, y: 48 }, // small print centered above the entrance gallery
@@ -140,7 +140,7 @@
         { x: 712, y: 514, dir: 1 },
         { x: 812, y: 538, dir: -1 }
       ],
-      // busVia: the clear column Nora descends through when bussing a side
+      // busVia: the clear column Lunafreya descends through when bussing a side
       // table — a straight drop at the bus spot would cut through the wing
       // chairs / reading lamps (the audit's journey check proves each one).
       // 666 threads between reading lamp 1 and the first wing chair; 762
@@ -262,7 +262,7 @@
       dismount: { x: 48, y: 532 },
       via: 170
     },
-    // Lunafreya's permanent studio lives just above the upright piano in the
+    // Nora's permanent studio lives just above the upright piano in the
     // room: an easel turned toward her stool, a paint table for her cortado,
     // and one clear watch spot where another patron may linger.
     artist: {
@@ -285,7 +285,7 @@
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
     backBar: { x: 646, w: 152, slabY: 222, frontY: 240, baseY: 254, workY: 274 },
     machine: { x: 656, y: 196, w: 56 },       // base rests on the rear worktop
-    matchaBar: { x: 726, y: 264 },   // caddy/chawan/chasen corner and Nora's whisking station
+    matchaBar: { x: 726, y: 264 },   // caddy/chawan/chasen corner and Lunafreya's whisking station
     serveSpot: { x: 744, y: 266 },   // where finished cups land on the counter
     orderSpot: { x: 696, y: 316 },
     pickupSpot: { x: 744, y: 316 },

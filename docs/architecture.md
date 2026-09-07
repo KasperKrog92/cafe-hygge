@@ -16,7 +16,7 @@ js/scene-home.js        → extends SCENE  (apartment and plant work stages)
 js/characters-roster.js → window.CAST    (regulars roster + story arcs, pure data)
 js/memory.js            → window.MEMORY  (persistent cross-visit save; versioned)
 js/sim-core.js          → window.SIM     (world + shared simulation systems)
-js/sim-waterfront.js    → extends SIM    (boat/bird/plane timers, terrace guests and Nora journeys)
+js/sim-waterfront.js    → extends SIM    (boat/bird/plane timers, terrace guests and Lunafreya journeys)
 js/sim-patrons.js       → extends SIM    (patron state machine)
 js/sim-shop.js          → extends SIM    (opening/closing lifecycle factory)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
@@ -39,13 +39,13 @@ It returns three synchronous, world-bound methods:
 - `beforeClock(world, dt)` applies the late-closing clock hold before `world.t`
   advances and `updateClock` runs. Narrative and activity timers still receive dt.
 - `update(world, dt)` runs after waterfront and door updates, before spawning.
-  It advances rituals and the overnight skip, returning whether it owns Nora
+  It advances rituals and the overnight skip, returning whether it owns Lunafreya
   for this tick. Ordinary service runs only when it returns false.
 - `route(world, kind, index)` preserves `SIM._.shopRoute` for the dev audit.
 
 Shared layout, movement, clock, captions, fire, sound and terrace cleanup come
 from `SIM._`; the character file retains ordinary service/cat updates and all
-entity drawing. Cat walking to Nora and pausing while carried keep their
+entity drawing. Cat walking to Lunafreya and pausing while carried keep their
 original position after patron updates. Every entry selects the supplied
 world's services with `bindWorld`, including direct route inspection. No save
 fields, phase names, task timing, paths or render behavior changed in the preparatory split. The subsequent life milestone is described below.
@@ -67,7 +67,7 @@ renderer, simulation driver, library or framework is introduced.
 
 `memory.life` (v5, migrated through v1/v2/v3/v4) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `plant: {stage,time}`, `projects`, `plannedTonight`, and a nullable lifecycle checkpoint containing
-shop state and Nora's position/path. Initial savings and the plant price are
+shop state and Lunafreya's position/path. Initial savings and the plant price are
 30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
 → unpack → place → installed. Purchase and stage transitions flush immediately;
 working checkpoints update in memory every tick and flush at most every ten
@@ -114,10 +114,10 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `regulars` / `sleeper` | per-id once-per-day arrival schedule for the roster (`CAST.regulars`, built by `buildRegulars`) and the single active dozing-patron reference |
 | `waterfront` | Transient exterior: `boats/birds/planes`, spawn timers, and two tables with `owner/cup/dirty/cleaning`. Outdoor people stay in `patrons` and use `outside/exteriorX/terraceTable`; indoor coordinates stay at the door while their floor path is empty. |
 | `queue[]` | patrons currently in the order line (index 0 = at the till) |
-| `barista` | Nora's entity |
+| `barista` | Lunafreya's entity |
 | `cat` | the cat entity: core pose/path plus `surface`, `hopFrom/hopTo/hopT`, `hungerT`/`thirstT`, `gazeT/gazeFacing`, `lapPatron`, `sniffedPass`, and rare-event `counterT`/`ascentT`/`moteT` fields |
-| `catBowls` | `{food, water}` levels (0–1); visible world state consumed by cat needs and restored by Nora |
-| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates and optional owner-linked laptops. The four dining tables come first, then the reading nook's two side tables (`small: true`), two tall window tables (`tall: true`), Lunafreya's paint table (`artist: true`), and the piano lid (`piano: true`) |
+| `catBowls` | `{food, water}` levels (0–1); visible world state consumed by cat needs and restored by Lunafreya |
+| `tables[]` | per-table `{x, y, tag, items[]}`; items are cups/plates and optional owner-linked laptops. The four dining tables come first, then the reading nook's two side tables (`small: true`), two tall window tables (`tall: true`), Nora's paint table (`artist: true`), and the piano lid (`piano: true`) |
 | `seats[]` | all sittable spots `{x, y, facing, table, side, armchair, nook, taken}`; nook chairs point `table` at their side table. Window seats add perch geometry; the appended `artist: true` stool and `piano: true` bench each point at their dedicated service surface while preserving historical seeded indices |
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
 | `particles[]` | steam wisps, fire sparks, and one-off dust motes |
@@ -202,7 +202,7 @@ against the same obstacles. On each new patron/cat path,
 `walker` also removes clear detours from authored routes; shortcuts never
 cross any furniture, including endpoint furniture.
 
-Nora's new paths are planned from her actual position to the chore's final
+Lunafreya's new paths are planned from her actual position to the chore's final
 anchor; intermediate chore-template waypoints are not walked. Her graph uses
 12 px side clearance to fit the service gaps between nook lamps and chairs.
 It preserves the counter's front barrier and its left exit at
@@ -212,7 +212,7 @@ solid chairs, plants and lamps blocked; the low table being serviced admits
 her approach. These adjusted bounds also supply graph corners, so overlapping
 personal-space margins cannot trap an approach. An unreachable destination
 keeps its path pending and sets `walkBlocked`, rather than completing a chore
-remotely. The audit checks Nora's actual planned legs and flags blocked chores.
+remotely. The audit checks Lunafreya's actual planned legs and flags blocked chores.
 Her door-to-switch trip is direct, before joining the floor routes.
 
 Cat walks use `catRoute`: safe pairs keep a
@@ -329,7 +329,7 @@ preferences and unrelated localStorage keys are retained.
 
 ## Dev harness (js/dev.js)
 
-`?morning` starts at 07:30 with an empty, closed room and Nora entering with
+`?morning` starts at 07:30 with an empty, closed room and Lunafreya entering with
 the cat for the real opening sequence. `?night` starts at 21:30 with the
 boot's guests present for closing. Both dismiss the start overlay like `?dev`
 (audio still needs a click). These scenario flags override `?hour`; if both
@@ -354,12 +354,12 @@ or console calls:
 | `__dev.regular(id)` / `__dev.doze()` | force a named regular's next arrival (`'holger'`, `'gerda'`, `'lunafreya'`, `'kasper'`, `'freya'`; defaults to `'holger'`) / put the first eligible seated reader to sleep |
 | `__dev.piano(on)` | force or stop the dt-driven corner-piano sound engine |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
-| `__dev.noraDo(action)` | wake Nora's idle picker and force `stretch`, `chalk`, `water`, `candles`, or `piano`; candle forcing clears the current flames so the full round is visible |
+| `__dev.noraDo(action)` | wake Lunafreya's idle picker and force `stretch`, `chalk`, `water`, `candles`, or `piano`; candle forcing clears the current flames so the full round is visible |
 | `__dev.catDo(action)` | reset the cat to a safe floor spot and force `eat`, `window`, `bookshelf`, `counter`, `topShelf`, `piano`, `lap`, `mote`, or `knead` on the next tick |
-| `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Nora's idle picker |
+| `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Lunafreya's idle picker |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
 | `__dev.shot(target?, {scale}?)` | headless render → PNG data URL via `SCENE.composeFrame` (same draw list `render()` ships), independent of the rAF loop / tab visibility / preview pane. `target`: a named region from `__dev.regions` (`fireside`, `nook`, `counter`, `window0`, `window1`, `door`, `hearth`, `bookshelf`, `piano`, `artist`, all derived from `SCENE.L`), an entity name (`nora`, `cat`, a patron by name/regularId), a `{x,y,w,h,scale}` crop, or nothing for the whole 960×600 scene. Nearest-neighbour integer upscale |
-| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — umbrella, Nora and cat routes included — seat↔table wiring, anchors, barista y=286 / lane 368, plus live-world checks for seats, pairs, umbrellas, sleeper, queue, props, bowls/candles, and spawn cap) |
+| `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — umbrella, Lunafreya and cat routes included — seat↔table wiring, anchors, barista y=286 / lane 368, plus live-world checks for seats, pairs, umbrellas, sleeper, queue, props, bowls/candles, and spawn cap) |
 
 Three contracts support it: `SIM._` (the private seam shared by the sim
 siblings and consumed by dev.js; other app code must not touch it — includes
@@ -387,7 +387,7 @@ composition timings. Commands and limits: [art-workflow.md](art-workflow.md).
 
 The rear coffee cabinet and animated espresso machine share a depth-sorted
 furniture drawable (`SCENE.drawCoffeeStation`, defined in scene-bg.js and
-registered by scene-furniture.js), behind Nora and the serving counter.
+registered by scene-furniture.js), behind Lunafreya and the serving counter.
 
 ## Isolated simulation worlds
 
@@ -414,9 +414,9 @@ precedes another kit. No purchase occurs autonomously.
 
 Each v3 `life.projects[id]` record is `{stage, step, time}`. Stages are
 available → purchased → scheduled → arrived → working → installed. Morning
-schedules the purchase; Nora collects the single kit after opening. An arrived
+schedules the purchase; Lunafreya collects the single kit after opening. An arrived
 kit is owned at its reserved site; a reload places it there rather than replaying
-its transport. Work advances only while Nora is at `L.projects[id].work`.
+its transport. Work advances only while Lunafreya is at `L.projects[id].work`.
 Every three-second fastening/stroke is a safe interruption and immediate save;
 a visit lasts at most nine seconds before she returns for an 18-second break.
 Orders and closing finish the current hand action; a carried kit is deposited

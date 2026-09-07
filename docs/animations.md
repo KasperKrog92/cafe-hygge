@@ -12,7 +12,7 @@ animation or change narrative pacing.
 | Reading and drinking | Added a timed page leaf and following hand; eased sip lift, corrected mouth/rim contact and steam origin. |
 | Knitting and sketching | Needles, hands and pencil now move instead of holding a static working pose. |
 | Painting, typing, piano | Retained painting/typing bouts; aligned piano fingertips with the keyboard. Brush already meets the canvas/tray. |
-| Brewing and food preparation | Added Nora's working forearms, tamp, scoop and pitcher cues. Whisk hand and chasen share one action clock. |
+| Brewing and food preparation | Added Lunafreya's working forearms, tamp, scoop and pitcher cues. Whisk hand and chasen share one action clock. |
 | Wiping, polishing, restocking | Visible rubbing gestures; work timers start after travel. |
 | Chalk, stretching, watering, candles, hearth | Moved chalk approach to the wall and added writing/return motion; retained established other gestures/routes. |
 | Cat walking and resting | Distance-driven paws; subtler sleeping breath, moving grooming head; asymmetric poses and scarves mirror together. |
@@ -30,7 +30,7 @@ animation or change narrative pacing.
   actual motion in eight six-frame sprite rows, gallery isolation from live
   world/save, and the live invariant audit. Returns a PNG contact sheet.
 - `tools/verify-animation-journeys.js`: runs 22 scenarios in newly created real
-  simulation worlds: six Nora routines, nine cat behaviors, and seven prep
+  simulation worlds: six Lunafreya routines, nine cat behaviors, and seven prep
   families from arrival through seating. Renders during the runs and checks
   completion plus each world's invariant audit. Cat scenarios accept normal
   alternate resting poses and the intentional interrupted high-shelf ascent.

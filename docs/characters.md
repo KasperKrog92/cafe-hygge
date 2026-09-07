@@ -2,8 +2,8 @@
 
 ## The first apartment evening
 
-`sim-life.js` sends the existing Nora and cat to the sparse apartment after
-closing. Nora pauses by her suitcase, uses her PC, reads and dozes on the bed,
+`sim-life.js` sends the existing Lunafreya and cat to the sparse apartment after
+closing. Lunafreya pauses by her suitcase, uses her PC, reads and dozes on the bed,
 then returns to the desk. She has a dedicated rear-facing PC pose: she lowers into the chair, keeps bent
 legs beneath the desk and types with alternating small hand movements at the
 keyboard, then rises before leaving. These movements use simulation time.
@@ -12,7 +12,7 @@ chosen scarf. Home uses authored routes through `L.home.lane`, below the desk
 and bed, with a side approach onto the bed. The cat investigates boxes and
 rests beside her. Arrival at the door happens once. Game mode loops only the indoor desk,
 reading and resting routine until the player chooses **go to sleep**, with or
-without open evening thoughts. Nora and the cat join matching positions at the loop
+without open evening thoughts. Lunafreya and the cat join matching positions at the loop
 boundary, without replaying arrival or jumping across the room. Idle mode finishes the routine
 automatically. Sleep advances directly to the short dawn transition and café entrance.
 
@@ -24,7 +24,7 @@ add no chore; ordinary service, care and patron routes stay as before.
 
 ## Daily shop rituals
 
-`updateShop` in `sim-shop.js` coordinates Nora's evening and morning
+`updateShop` in `sim-shop.js` coordinates Lunafreya's evening and morning
 rounds. Phases are `open → closing → leaving → night → home → dawn → entering →
 opening → open`; each chore has an outbound path, a 2.5-second interaction
 and an optional return to the till. Consecutive floor chores use the furniture
@@ -32,7 +32,7 @@ route planner; service can interrupt the round between chores. Ordinary idle
 chores wait until reopening is complete. See [world.md](world.md) for times
 and the full sequence.
 
-All café Nora movement—including drinks, watering, candles, clearing tables and
+All café Lunafreya movement—including drinks, watering, candles, clearing tables and
 opening/closing—uses a furniture-aware path from her current position to the
 next work spot. She no longer retraces obsolete aisle waypoints between chores.
 The counter front stays solid, with a separate working corridor behind it;
@@ -52,7 +52,7 @@ first pass through `closeLaptop`. Couples, dozers, borrowed books and umbrellas
 retain the same cleanup paths. Guests being served get their own final-cup
 grace after sitting down. No guests arrive during closing or overnight.
 
-Nora collects the cat after the guests leave. A perched cat first descends
+Lunafreya collects the cat after the guests leave. A perched cat first descends
 through its existing hop sequence, then walks to her (`shopWalk`). While
 carried, it is rendered asleep in her arms with its saved scarf and no floor
 shadow; its independent behavior pauses. In the morning she sets it down
@@ -76,11 +76,11 @@ profiles, front/back and seated reading for future visual review (see
 
 ---
 
-## Nora — the barista
+## Lunafreya — the barista
 
-The café's constant. She never leaves for the night (someone has to keep the
-fire company). Sea-blue top, cream apron (neck straps, pocket, tie bow at the
-back), long brown hair with a side-part fringe (`hairStyle: 1`).
+The café owner and player character. Warm-red top, cream apron (neck straps,
+pocket, tie bow at the back), golden-blonde hair in a generous bun
+(`hairStyle: 4`). She goes home with the cat after closing.
 
 **Home position:** behind the counter at `L.baristaHome` (706, 286) — the y
 matters; see art.md. She exits the counter through the gap at x = 616 when she
@@ -230,7 +230,7 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    umbrella: **shake** follows for 1.1 s with five falling drops and a soft
    flap, then **parkUmbrella** takes the declared door-to-stand route and
    adds the umbrella to `world.umbrellaStand` before queueing.
-2. **ordering** — when at slot 0 and Nora is free: 2 s with a speech bubble
+2. **ordering** — when at slot 0 and Lunafreya is free: 2 s with a speech bubble
    showing their order icon; caption fires ("Freja orders a cappuccino.").
 3. **waitDrink** — steps aside to the lowest free waiting spot (the cluster
    drifts down-left from the pass; spots free up on pickup) until their cup
@@ -241,7 +241,7 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    `bookColor` keeps the selected gold, red or blue loan spine's color through
    carrying and seated reading; returning it restores that matching spine.
    After browsing they pick a seat. Seat choice: spots where an abandoned drink still waits
-   for Nora are avoided while cleaner seats exist (two cups would share one
+   for Lunafreya are avoided while cleaner seats exist (two cups would share one
    saucer spot); borrowers prefer the nook chairs; readers in general prefer
    nook chairs / fireside armchairs / window perches; otherwise a random free
    seat. If the café is full they take it to go.
@@ -254,7 +254,7 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    leaving room beside the counter plant when stepping up or down.
    A pianist may instead take the appended piano bench; its drink goes to the
    dedicated saucer spot on the lid, so sipping, steam, cup return, abandoned
-   cup avoidance, and Nora's normal bussing all use the shared table pipeline.
+   cup avoidance, and Lunafreya's normal bussing all use the shared table pipeline.
 5. **seated** — the long, cozy middle (stay 100–260 s):
    - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — the cup,
      handle-less matcha bowl, or iced glass rises from the table (the table
@@ -265,7 +265,7 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
      per visitor.
      Nook and fireside sitters rest drinks or pastry plates on their own
      little side tables. Fireside cups use the same hide/lift/replace sip
-     sequence as other tables; Nora clears abandoned crockery from the
+     sequence as other tables; Lunafreya clears abandoned crockery from the
      front, below the chair footprints, via each table's declared `busVia`.
    - **Reading** (readers): page-turn sound every 12–26 s; occasional caption.
    - **Laptop work** (day-weighted non-readers at dining tables): an open
@@ -283,7 +283,7 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
      nook wing chair with more than a minute left may fall asleep over the
      lowered book for 40–110 s. Closed eyes, slow breathing, and an occasional
      `zzz` bubble carry the beat; page and sip clocks pause. They wake on their
-     own, or on 25% of doorbells, and continue reading. Nora never intervenes.
+     own, or on 25% of doorbells, and continue reading. Lunafreya never intervenes.
    - **Fetching a book**: a seated non-reader at a table sometimes wanders to
      the bookshelf mid-stay (seat and drink stay put), browses, and walks
      back with the book tucked under an arm (`holding: 'book'`), then reads.
@@ -298,7 +298,7 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
      Occasional caption, weather- and hour-aware (rain on the glass /
      streetlamps / the street drifting by).
 6. **leaving** — 40% carry their cup back to the counter ("returns the cup —
-   tak!"); the rest leave it for Nora. Anyone with a borrowed book stops at
+   tak!"); the rest leave it for Lunafreya. Anyone with a borrowed book stops at
    the shelf first to slide it home (**returnBook**, ~1.1 s — the spine
    reappears). Exit via the door (bell again). Armchair readers wander out
    cup-in-hand — the café allows it. A reader with the cat asleep on their
@@ -336,14 +336,14 @@ arrival window, and the pools of lines they might overhear or muse aloud.
 `makeRegular(world, spec)` stamps a row over a plain patron;
 `world.regulars` holds one schedule slot per id (`{ lastDay, day, hour,
 force }`), and `updateRegulars` brings each in once per café day within its
-window. Most regulars ride an existing behavior; Lunafreya adds the dedicated
+window. Most regulars ride an existing behavior; Nora adds the dedicated
 painting/sketching habit described below.
 
 | Regular | Arrives | Drink | Usual seat | Rides | Character |
 | --- | --- | --- | --- | --- | --- |
 | **Holger** | ~09:00 | espresso, own book | left fireside armchair | reading | stoic; never chats |
 | **Gerda** | ~10:00 | chamomile tea | window perch | window-gazing, chatty | warm, older; watches the street |
-| **Lunafreya** | ~11:00 | flat white | artist stool above the piano | painting, later sketching | deliberate; paints the café into its walls |
+| **Nora** | ~11:00 | flat white | artist stool above the piano | painting, later sketching | deliberate; paints the café into its walls |
 | **Kasper** | ~13:30 | iced matcha | dining table | laptop typing | young writer; mutters at the screen |
 | **Freya** | ~18:30 | matcha latte, own book | right fireside armchair | reading, dozing | evening reader; drifts off by the fire |
 
@@ -363,13 +363,13 @@ fall back to a generic templated line when a row has no bespoke pool. Readers
 settle in with a book, the writer keeps typing, the window-watcher keeps her
 eyes on the street.
 
-**Continuity — Nora's memory (Phase 3).** The café remembers its regulars.
+**Continuity — Lunafreya's memory (Phase 3).** The café remembers its regulars.
 When a regular arrives while the reader is present, `noteRegularVisit` bumps a
 persisted bond in the `MEMORY` save (`bonds[id].visits`, `lastDay`, `known`) —
-this is *Nora's* memory of them ([narrative.md](narrative.md) §5), and it is
+this is *Lunafreya's* memory of them ([narrative.md](narrative.md) §5), and it is
 the only thing that accrues just by being present. The **opener** then reflects
 it: `regularArrivalLine` prefers a weather line (`arrivalRain`) when they come
-in wet, otherwise — for a face Nora already knows — sometimes a recognition
+in wet, otherwise — for a face Lunafreya already knows — sometimes a recognition
 line (`arrivalReturn`, "Holger takes his corner as though he never left it"),
 otherwise the plain `arrival`. Every branch still stands alone; recognition is
 flavor, never a thread the reader must have followed. Bonds are free-form data
@@ -388,18 +388,17 @@ his armchair is somehow taken at boot the seed is skipped gracefully.
 habit of keeping the fire he sits by fed. While seated in a fireside armchair,
 when the hearth has burned low (`world.fire.wantsLog`) and no one else is on it,
 he sets down the book, rises, walks to the hearth via the fire's clear column,
-lays a log (`addLog` — the same catch Nora's tending triggers), and returns to
+lays a log (`addLog` — the same catch Lunafreya's tending triggers), and returns to
 his chair to read on — the seat stays his throughout, exactly like slipping off
 to the bookshelf (`toFire → atFire → backToSeat`). He gets first refusal over
-Nora; his `fireUp`/`fire` line pools narrate the rising and the log going on. The
+Lunafreya; his `fireUp`/`fire` line pools narrate the rising and the log going on. The
 trait is opt-in per roster row, so other fireside regulars can inherit the habit
 later.
 
 **Appearance & habits.** Holger: grey hair and beard, forest-green jumper,
 dark-red scarf, 130 Hz murmur, 46 px/s. Gerda: bun of grey hair, mauve top and
-warm-red scarf, a slower 40 px/s. Lunafreya: long golden-blonde hair wound into
-a large high bun with loose face-framing strands, warm-red top under a
-paint-flecked cream smock, deliberate 42 px/s. Kasper: long brown hair, muted-blue top,
+warm-red scarf, a slower 40 px/s. Nora: long brown hair with a side-part fringe (`hairStyle: 1`),
+sea-blue top under a paint-flecked cream smock, deliberate 42 px/s. Kasper: long brown hair, muted-blue top,
 brisk 52 px/s. Freya: long red hair, mossy-green top. Each carries a fixed umbrella
 colour brought reliably in rain, a fixed stay range, and its own `nameStyle`
 (no name special-case remains in `nameStyleFor`; the roster names live outside
@@ -468,9 +467,9 @@ A companion reader who never taps the bubble loses nothing; the café is still
 whole. Dev: `__dev.regular('gerda')`, then `__dev.age(5)` to ripen the scarf and
 `__dev.arc('gerda-scarf', {ready:true})` to raise the invitation at once.
 
-### Lunafreya's gallery — the first multi-stage owned arc
+### Nora's gallery — the first multi-stage owned arc
 
-Lunafreya keeps a permanent studio above the corner piano (`L.artist`): a tall
+Nora keeps a permanent studio above the corner piano (`L.artist`): a tall
 easel, backless stool, paint table with its own serviced saucer, and a nearby
 watch spot. Her flat white follows the normal order, sip, steam, bussing, and
 abandoned-cup rules. While `lunafreya-paintings` is active she paints in 2–4 s
@@ -482,15 +481,15 @@ same stool with a small sketchbook instead.
 The canvas deterministically reads saved `(stage, progress)`: charcoal lines,
 underpaint, colour masses, then detail. Stage 0 is the cat on the sill
 (including Gerda's scarf if that flag exists); after 10 café days its palette
-bubble waits over Lunafreya until tapped, then the finished work hangs above
+bubble waits over Nora until tapped, then the finished work hangs above
 the fireplace. Stage 1 is the hearth; after 12 more café days its chosen beat
 hangs the smaller study above the door. Each stage owns its own caption run and
 lasting flag, so reloads restore exactly the right canvas and wall gallery.
 
-While Lunafreya is present and actively painting, one non-couple patron at a
+While Nora is present and actively painting, one non-couple patron at a
 time may leave their drink and reserved seat, walk to `L.artist.watch`, look for
 6–12 s, and return (`toEasel → watchingArtist → backFromEasel`). A single soft
-exchange may use Lunafreya's `overheard` pool; it never stacks watchers or
+exchange may use Nora's `overheard` pool; it never stacks watchers or
 interrupts service. Dev: `__dev.regular('lunafreya')`,
 `__dev.arc('lunafreya-paintings', {ready:true})`, or boot an exact screenshot
 state with `?dev&arc=lunafreya-paintings&stage=1&progress=7`.
@@ -518,8 +517,8 @@ clip furniture use the declared `catRoute` waypoints checked by the audit.
 500–800 s. The cat walks to `L.catCorner.eatSpot`, eats for 6–10 s (0.34 food),
 or drinks for 3–5 s (0.2 water); 80% of meals are followed by a drink. Food
 and water are visible, quantized bowl art in `world.catBowls`. If a bowl is
-empty, the cat sits beside it facing Nora, occasionally meows, and retries
-after 60–120 s. Nothing harmful happens; Nora eventually performs her refill
+empty, the cat sits beside it facing Lunafreya, occasionally meows, and retries
+after 60–120 s. Nothing harmful happens; Lunafreya eventually performs her refill
 task.
 
 **Core states:** `sleep` (purrs, occasional "zzz"), `sit`, `groom`, `stretch`,
@@ -545,7 +544,7 @@ usual `softThump`, so the keys never sound twice.
 
 **Counter caper:** only in a quiet café with no queue, order, or active brew,
 the cat rarely hops onto the counter's right end, pads along the slab, and
-loafs (sniffing waiting cups for one second, never touching). Nora notices in
+loafs (sniffing waiting cups for one second, never touching). Lunafreya notices in
 3–8 s when free, walks behind the counter, swishes, and shoos it down. The
 rarer grand ascent goes counter → espresso-machine top → cleared back-bar
 shelf gap; a 30% half-way catch aborts it. On the top shelf the cat loafs or
@@ -595,7 +594,7 @@ Readers visibly turn a page for 0.8 seconds when the page-turn sound fires;
 that transient timer lives on the patron, never in the narrative save. Sips
 use smoothstep easing and bring the rim to mouth height. Knitting needles,
 sketching pencils and grooming heads now move; the sleeping cat breathes by
-one pixel. Piano hands use the keyboard's layout anchor. Nora's whisk hand
+one pixel. Piano hands use the keyboard's layout anchor. Lunafreya's whisk hand
 and the chasen share the same action clock. Preparation, wiping and polishing
 have working-hand poses; wiping and restocking work timers begin on arrival.
 
@@ -603,7 +602,7 @@ Cat hops include 0.10 seconds of anticipation and 0.12 seconds of landing,
 with a tucked airborne pose in between. Fixed asymmetric poses mirror with
 facing, including their scarves. Airborne cats do not carry a false contact
 shadow underneath their bodies. Existing hop routes and surface anchors remain
-in use. Nora now approaches the chalkboard at `L.noraCare.chalk` (893, 238),
+in use. Lunafreya now approaches the chalkboard at `L.noraCare.chalk` (893, 238),
 writes with a small hand stroke, then returns via `chalkHome` to the counter.
 
 The repeatable motion gallery and scenario coverage are described in
@@ -611,7 +610,7 @@ The repeatable motion gallery and scenario coverage are described in
 or the invitation-waits rule.
 
 
-## Terrace visits and Nora's outdoor round
+## Terrace visits and Lunafreya's outdoor round
 
 `sim-waterfront.js` extends the existing patron and barista state machines.
 Eligible ordinary solo walk-ins may reserve one clean terrace table at pickup;
@@ -625,13 +624,13 @@ After ten seconds of sustained rain, `terraceReturn` carries the drink back
 through the entrance and reserves an indoor seat; if no seat is available the
 normal take-away departure applies. Rain changing before the guest reaches
 the door cancels the outdoor reservation. Last call sends outside guests home
-and leaves any empties for Nora. No outdoor story beat or expiration exists.
+and leaves any empties for Lunafreya. No outdoor story beat or expiration exists.
 
-Nora's round is `terraceOut → terraceApproach → terraceClear → terraceBack →
+Lunafreya's round is `terraceOut → terraceApproach → terraceClear → terraceBack →
 terraceHome → idle`. She uses the normal furniture-aware planner inside,
 changes to the clipped exterior only at `L.doorSpot`, collects and wipes for
 2.8 seconds at the table, then walks home carrying a stack. Outdoor x positions
-live separately on the same entity; neither Nora nor patrons are drawn twice.
+live separately on the same entity; neither Lunafreya nor patrons are drawn twice.
 The ordinary idle-task priority handles clearing, while closing explicitly
 waits for both outdoor tables to be clear before the indoor closing chores.
 
@@ -656,7 +655,7 @@ sips; each guest joins at most once per passage.
 
 ## Interruptible table and hearth work
 
-After opening, Nora picks up a chosen kit and carries it to the reserved work
+After opening, Lunafreya picks up a chosen kit and carries it to the reserved work
 site. `projectOut` walks there, `projectWork` animates fastening/wiping or a
 kneeling brush stroke, and `projectHome` returns to the counter with empty
 hands. A held kit is put down at its site before responding; hand work finishes
@@ -672,7 +671,7 @@ uses its existing lane approaches to avoid the set. If a reader releases their
 seat during a lap hop, the cat lands and steps down instead of retaining a
 stale lap link. This race was exposed by the unattended project soak.
 
-## First-entry Nora routine
+## First-entry Lunafreya routine
 
 `SIM.firstOpeningSteps` defines twelve saved setup steps: place the cat and its
 things, fetch and place entrance equipment, fetch and install basic coffee
@@ -682,3 +681,12 @@ routes. Each table assembles over eighteen seconds. Customers are admitted
 only when the final step completes; no input or payment is required. Installed
 seating is added once. Ordinary routines use only installed furniture, and the
 initial menu excludes matcha. Existing furnished saves skip this first opening.
+
+## Identity swap — 7 September 2026
+
+Lunafreya is the owner at the café and apartment; Nora is the artist regular.
+Their appearances travel with their names, while apron/smock follow their jobs.
+Legacy internal identifiers (`nora` checkpoints and helpers, `lunafreya` regular ID,
+`lunafreya-paintings` arc and painting flags) stay stable to preserve saves.
+The legacy `__dev.shot("nora")` owner shortcut remains; use `"barista"` for the
+owner and `"artist"` for the studio. No cutscene dialogue is implemented yet.

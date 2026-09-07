@@ -30,7 +30,7 @@
     targets.forEach(function (from, i) {
       targets.forEach(function (to, j) {
         const e = { kind: 'barista', x: from.x, y: from.y, speed: 42,
-          // Deliberately obsolete waypoints: Nora must plan from her actual
+          // Deliberately obsolete waypoints: Lunafreya must plan from her actual
           // position, not revisit home or follow an obstructed old leg.
           path: [L.baristaHome, to] };
         const label = 'route ' + i + ' → ' + j;

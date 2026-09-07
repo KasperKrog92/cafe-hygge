@@ -17,7 +17,7 @@ Nothing here is committed; the owner picks what sounds lovely next.
 > file splits, doc slimming — future changes cost less), and the harness
 > sweep (a multi-day soak-test bug hunt plus the journey/footprint rules now
 > in `__dev.audit()`), and cat life (corner + bowl care, high perches,
-> counter/shelf capers, laps, kneading, and dust motes), Nora's care rituals
+> counter/shelf capers, laps, kneading, and dust motes), Lunafreya's care rituals
 > (watering, chalkboard doodles, dusk candles, quiet stretches), patron life
 > (umbrellas, laptops, Holger, couples, night dozing), and the synthesized
 > sound pass (chair and coin foley, town time, thunderstorms, and the night
@@ -96,7 +96,7 @@ machines, rain, café room tone…). Plan for when clips arrive:
   mantel in October.
 - Passers-by outside the window: silhouettes with umbrellas. **Built**, now
   joined by the persistent street-painter arc.
-- A real "closing hour" mood at 02:00: Nora stacks chairs, lights low, only
+- A real "closing hour" mood at 02:00: Lunafreya stacks chairs, lights low, only
   the fire and the cat — never actually closed, just quieter.
 
 ## 💬 Regulars & conversations (owner's direction)
@@ -141,8 +141,8 @@ Rough order (each slice ships something lovely on its own):
    it so the next few captions are that table's actual exchange, then it fades
    back to ambience — a lean-in, not a minigame. Built on the single click
    handler that today only pets the cat (main.js).
-5. **Conversations with Nora (opt-in, chapter-break friendly).** When a patron
-   has something to say to Nora, a *soft, ignorable* invitation appears — no
+5. **Conversations with Lunafreya (opt-in, chapter-break friendly).** When a patron
+   has something to say to Lunafreya, a *soft, ignorable* invitation appears — no
    badge, no count, no timer. If the reader looks up (say, at the end of a
    chapter) they may choose a short exchange or just keep reading; the invitation
    *waits* rather than drifting away — it never expires and nothing is lost by

@@ -28,7 +28,7 @@
                 typing); backstory is a rarer tier under musing (Phase 2). The
                 optional continuity pools (Phase 3) refine the openers and seat
                 moments: arrivalRain (a wet arrival), arrivalReturn (a familiar
-                face Nora already knows, from the persisted bonds count), settle
+                face Lunafreya already knows, from the persisted bonds count), settle
                 (once, taking the usual seat), and usualTaken (the usual seat is
                 occupied). Each falls back to a generic line when absent. See
                 regularLine()/specLine() in sim-patrons.js / sim-core.js. A
@@ -44,7 +44,7 @@
      Holger   ~09:00  espresso        left fireside   reading (never chats)
      Gerda    ~10:00  chamomile tea   window perch    window-gaze, chatty
      Kasper   ~13:30  iced matcha     dining table    laptop typing
-     Lunafreya~11:00  flat white      artist stool    painting / sketching
+     Nora~11:00  flat white      artist stool    painting / sketching
      Freya    ~18:30  matcha latte    right fireside  reading, dozes by the fire
    Deliberate contrasts: morning vs. dusk (only Liv sits late enough to doze),
    silent vs. chatty, and one of each behavior so no new behavior code exists. */
@@ -118,7 +118,7 @@
         lines: {
           arrival: ['Gerda comes in with the morning and takes her window seat.'],
           arrivalRain: ['Gerda shakes the rain from her scarf and makes for the warm window.'],
-          arrivalReturn: ['Gerda gives Nora a small wave — an old, easy habit.'],
+          arrivalReturn: ['Gerda gives Lunafreya a small wave — an old, easy habit.'],
           settle: ['Gerda settles onto the window sill, right where she likes it.'],
           usualTaken: ['Her window seat is taken; Gerda finds another and watches the street anyway.'],
           overheard: [
@@ -184,11 +184,11 @@
       },
       {
         id: 'lunafreya',
-        name: 'Lunafreya',
+        name: 'Nora',
         nameStyle: 'feminine',
         colors: {
-          skin: '#f0c49a', hair: '#e0b766', top: '#9c4848', pants: '#3d4a5c',
-          scarf: null, longHair: true, hairStyle: 4, beard: false,
+          skin: '#e8b48a', hair: '#4a2f1c', top: '#5a7a8a', pants: '#3d4a5c',
+          scarf: null, longHair: true, hairStyle: 1, beard: false,
           smock: '#d8c9ad'
         },
         drink: 'flat white',
@@ -199,25 +199,25 @@
         stay: [380, 520],
         seat: 'artistStool',
         lines: {
-          arrival: ['Lunafreya arrives with a paint-smudged satchel and makes for the easel.'],
-          arrivalRain: ['Lunafreya comes in under a golden umbrella, keeping her brushes dry.'],
-          arrivalReturn: ['Lunafreya returns to the easel and finds yesterday\'s colour waiting.'],
-          settle: ['Lunafreya settles at her little studio above the piano.'],
-          usualTaken: ['Her stool is occupied; Lunafreya opens her sketchbook at a nearby table.'],
+          arrival: ['Nora arrives with a paint-smudged satchel and makes for the easel.'],
+          arrivalRain: ['Nora comes in under a golden umbrella, keeping her brushes dry.'],
+          arrivalReturn: ['Nora returns to the easel and finds yesterday\'s colour waiting.'],
+          settle: ['Nora settles at her little studio above the piano.'],
+          usualTaken: ['Her stool is occupied; Nora opens her sketchbook at a nearby table.'],
           overheard: [
-            'Lunafreya points out a colour hidden in the firelight.',
-            'Lunafreya says the quiet parts are what make a room worth painting.',
-            'A watcher murmurs something; Lunafreya adds one small stroke and smiles.'
+            'Nora points out a colour hidden in the firelight.',
+            'Nora says the quiet parts are what make a room worth painting.',
+            'A watcher murmurs something; Nora adds one small stroke and smiles.'
           ],
           musing: [
-            'Lunafreya holds the brush still and lets the room settle first.',
-            'Lunafreya mixes a warmer shadow into the corner of the canvas.',
-            'Lunafreya leans back, squints, and finds the line she was missing.',
-            'A strand of Lunafreya\'s hair slips loose; she tucks it back with a clean knuckle.'
+            'Nora holds the brush still and lets the room settle first.',
+            'Nora mixes a warmer shadow into the corner of the canvas.',
+            'Nora leans back, squints, and finds the line she was missing.',
+            'A strand of Nora\'s hair slips loose; she tucks it back with a clean knuckle.'
           ],
           backstory: [
-            'Lunafreya paints cafés because every chair remembers a different kind of waiting.',
-            'Lunafreya once painted grand rooms; she says small rooms tell the truth more gently.'
+            'Nora paints cafés because every chair remembers a different kind of waiting.',
+            'Nora once painted grand rooms; she says small rooms tell the truth more gently.'
           ]
         }
       },
@@ -322,20 +322,20 @@
         glyph: 'palette',
         flag: ['lunafreya-cat-painting', 'lunafreya-hearth-painting'],
         paintLines: [
-          'Lunafreya lays in another quiet patch of colour.',
+          'Nora lays in another quiet patch of colour.',
           'The brush whispers over canvas above the piano.',
-          'Lunafreya mixes the light again, a shade warmer this time.'
+          'Nora mixes the light again, a shade warmer this time.'
         ],
         beat: [
           [
-            'Lunafreya sets down her brush and carries the first canvas into the firelight.',
+            'Nora sets down her brush and carries the first canvas into the firelight.',
             'The cat on the sill looks back from the paint — scarf, whiskers, and all the patience of the window.',
             'Together you hang it above the fireplace, where it keeps watching the room.'
           ],
           [
-            'Lunafreya turns the second canvas around: the hearth, caught between ember and flame.',
+            'Nora turns the second canvas around: the hearth, caught between ember and flame.',
             'She finds the small place above the door, a warm goodbye for everyone stepping out.',
-            'The easel rests now; Lunafreya keeps a sketchbook there for whatever the café becomes next.'
+            'The easel rests now; Nora keeps a sketchbook there for whatever the café becomes next.'
           ]
         ]
       },

@@ -50,7 +50,7 @@
     const flick = SCENE.hearthWork(world) ? 0 : (0.06 + 0.16 * fireLvl) + (0.04 + 0.05 * fireLvl) * Math.sin(t * 8.7) + 0.03 * fireLvl * Math.sin(t * 23.3);
     glow(g, 388, 204, 52 + 40 * fireLvl, 255, 140, 50, flick);
     glow(g, 388, 212, 24 + 16 * fireLvl, 255, 190, 90, flick * 0.8);
-    // candle pools bloom only after Nora has lit their visible flames
+    // candle pools bloom only after Lunafreya has lit their visible flames
     const mantel = world.candles ? world.candles.mantel : 0;
     glow(g, 385, 118, 20, 255, 200, 110, mantel * (0.1 + 0.06 * Math.sin(t * 11)));
     // window poseur tables carry no candle: cups only, cushions nearby

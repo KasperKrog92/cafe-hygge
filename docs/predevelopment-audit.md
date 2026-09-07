@@ -18,7 +18,7 @@ rewrite would add work without addressing the observed risks.
 | Check | Result |
 | --- | --- |
 | Production syntax | All 15 script-tag sources passed `node --check` |
-| Existing browser suites | All eight passed: art, pathing, Nora routing, hours, animations, animation journeys, waterfront, ship |
+| Existing browser suites | All eight passed: art, pathing, Lunafreya routing, hours, animations, animation journeys, waterfront, ship |
 | Art | 10 repeatable images; 8 occupancy/time fixtures; no live audit problems |
 | Composition timing | Final run: 1.3 ms median, 4.3 ms p95 on this machine; warm composition only, excluding PNG encoding, presentation and whole-app CPU |
 | Normal page | Splash, real entry click, initialized Web Audio, then one cappuccino order through seating; no audit problems or page errors |
@@ -143,7 +143,7 @@ fresh saves between suites are an interim safeguard, not this refactor itself.
 
 **Resolved 6 September 2026:** the behavior-preserving `js/sim-shop.js` split
 now exposes the [lifecycle contract](architecture.md#shop-lifecycle-contract).
-Hours, Nora routing, waterfront/ship closing and save/isolation regressions
+Hours, Lunafreya routing, waterfront/ship closing and save/isolation regressions
 pass before and after extraction. The original finding follows for context.
 
 [sim-characters.js](../js/sim-characters.js) is approximately 1,749 lines and

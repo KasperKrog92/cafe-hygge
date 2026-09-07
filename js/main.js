@@ -309,7 +309,7 @@
      to once a minute under Chrome's intensive throttling), a merely *slowed*
      rAF (occluded window, energy saver — document.hidden can stay false), or
      the refocus visibilitychange. The old fixed-dt hidden tick lost up to 96%
-     of backgrounded time, which starved slow arcs — Lunafreya's canvas never
+     of backgrounded time, which starved slow arcs — Nora's canvas never
      visibly advanced for a reader who kept the café in a background tab.
      A burst over a couple of seconds mutes its flood of one-shots (the
      __dev.ff pattern); a gap beyond 90 s (a frozen tab, a sleeping laptop) is

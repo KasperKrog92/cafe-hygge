@@ -47,7 +47,7 @@
     if(f.step>=12)return draws;
     const step=SIM.firstOpeningSteps[f.step];
     // The belongings arrive together at the threshold. Kits disappear from
-    // this stack only when Nora has collected them, never before entry.
+    // this stack only when Lunafreya has collected them, never before entry.
     draws.push({y:L.basic.staging.y,draw:g=>{
       const count=Math.max(0,5-Math.floor((f.step+1)/2));
       for(let i=0;i<count;i++)box(g,L.basic.staging.x+14+(i%2)*25,L.basic.staging.y-Math.floor(i/2)*22,false);

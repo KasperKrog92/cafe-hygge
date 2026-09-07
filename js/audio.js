@@ -855,7 +855,7 @@
     }
 
     // Corner-piano ostinato + drift. The left hand rocks steadily while the
-    // right hand wanders more sparsely; Nora leaves a little more air.
+    // right hand wanders more sparsely; Lunafreya leaves a little more air.
     if (S.music && !S.muted && pianoActive) {
       pianoChordT -= dt;
       if (pianoChordT <= 0) {

@@ -82,7 +82,7 @@ faint 2.9× partial under a 1.9 kHz lowpass; the shared 6 ms attack and
 1.6–2.4 s decay peak below 0.03 per note with moderate room send. A hand-written
 root–fifth–tenth figure rocks every 0.9–1.4 s through a small C / Am / F-ish /
 G-ish pentatonic-safe graph while a random-walk right hand answers every
-1.2–4 s with 25% rests and rare dyads. Nora's version leaves still more air.
+1.2–4 s with 25% rests and rare dyads. Lunafreya's version leaves still more air.
 
 `SND.pianoStart(style)` / `pianoStop()` own the dt-driven session. While a
 session is active the music box rests; stopping resets its timer to 4–8 s so
@@ -93,7 +93,7 @@ slider controls all three layers without changing their visual behavior.
 
 | Function | Triggered by | Recipe (abbreviated) |
 | --- | --- | --- |
-| `doorBell()` | patron entering/leaving and Nora/guests crossing the terrace door | 3 staggered bell tones around 1244 Hz (±2% detune, ×1.335 second strike) + 2.76× partial, 1.1 s decay, big delay send |
+| `doorBell()` | patron entering/leaving and Lunafreya/guests crossing the terrace door | 3 staggered bell tones around 1244 Hz (±2% detune, ×1.335 second strike) + 2.76× partial, 1.1 s decay, big delay send |
 | `doorClose()` | ~1.1 s after entry | 95→55 Hz sine thump + lowpassed noise tap |
 | `clink(pitch, vol)` | cup pickups, plates, busing (terrace pickups/return at 0.02), matcha-caddy scoop | 3 partials (f, 1.51f, 2.63f) of ~2350×pitch Hz, 45–90 ms decays |
 | `chairScrape(long)` | ordinary chairs settling / patrons standing | 90–140 ms noise scrape around 380–650 Hz under a 900 Hz lowpass, soft 8 ms attack, peak 0.02–0.028; the 160 ms standing variant adds a half-gain scuff |
@@ -110,14 +110,14 @@ slider controls all three layers without changing their visual behavior.
 | `kettlePour(dur)` | tea and matcha concentrate | noise bandpass sweeping up 700→2100 Hz (cup filling) + 3–4 bubble blips |
 | `whisk(dur)` | both matcha preparations | hand-loose 14–24 ms noise ticks every 55–85 ms → bandpass 1.5–2.4 kHz (Q 2.5), per-tick peak 0.012–0.02 inside a 150 ms-in / 200 ms-out envelope, combined peak ≤0.028, no room send |
 | `iceRattle()` | iced-matcha finish | 3–4 jittered glass partial stacks (f, 1.51f, 2.63f) around 2.6–3.4 kHz, 40–70 ms decays spaced 60–120 ms, combined peak ≤0.03 with a small 0.15 room send |
-| `chalkTick()` | Nora chalking the menu | one 45–70 ms high, narrow filtered-noise scrape; called 2–3 times across the gesture, peak ~0.025 |
-| `waterPour(dur)` | Nora watering a plant | dark bandpassed/lowpassed noise sweeping 520→980 Hz, 1.2 s, peak 0.03 |
-| `matchStrike()` | first stop of Nora's candle round | 100 ms scratch around 1.8 kHz followed by a 200 ms high fizz, combined peak ~0.03 |
+| `chalkTick()` | Lunafreya chalking the menu | one 45–70 ms high, narrow filtered-noise scrape; called 2–3 times across the gesture, peak ~0.025 |
+| `waterPour(dur)` | Lunafreya watering a plant | dark bandpassed/lowpassed noise sweeping 520→980 Hz, 1.2 s, peak 0.03 |
+| `matchStrike()` | first stop of Lunafreya's candle round | 100 ms scratch around 1.8 kHz followed by a 200 ms high fizz, combined peak ~0.03 |
 | `candlePop()` | each candle stop | soft 90 ms airy filtered-noise fwip, peak 0.018 |
-| `fireCatch()` | a fresh log laid on the fire (Nora or a fireside regular) | an 84→54 Hz settle thump + a soft low whoomph (lowpass-440 noise swelling to 0.05 over 0.2 s, ~1.1 s tail) + 5 fresh crackles scattered over ~0.7 s; on the fire bus |
+| `fireCatch()` | a fresh log laid on the fire (Lunafreya or a fireside regular) | an 84→54 Hz settle thump + a soft low whoomph (lowpass-440 noise swelling to 0.05 over 0.2 s, ~1.1 s tail) + 5 fresh crackles scattered over ~0.7 s; on the fire bus |
 | `pageTurn()` | readers | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
 | `needle()` | Gerda knitting (scarf arc) | soft wooden tick: 540–650 Hz tone under a 2.6 kHz lowpass (peak 0.013) + a fainter harmonic, with a half-chance second tap — quieter than the fire, on purpose |
-| `brush(jar?)` | Lunafreya's short painting bouts | 90–170 ms filtered bristle hiss, peak 0.012–0.018, lowpass 1.5 kHz / bandpass 620–1040 Hz; rare palette-mixing calls may add a brush-jar clink at 0.014 |
+| `brush(jar?)` | Nora's short painting bouts | 90–170 ms filtered bristle hiss, peak 0.012–0.018, lowpass 1.5 kHz / bandpass 620–1040 Hz; rare palette-mixing calls may add a brush-jar clink at 0.014 |
 | `sip()` | sip animation peak | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |
 | `murmur(pitch)` | chatting patrons | triangle osc walking around the patron's 125–235 Hz voice pitch, 5.5 Hz vibrato, lowpass 480 — speech-shaped, wordless |
@@ -125,7 +125,7 @@ slider controls all three layers without changing their visual behavior.
 | `purr(dur)` | sleeping/petted cat | 24 Hz sawtooth → lowpass 95, slow swell, ~2–3 s |
 | `crunch()` | cat eating kibble | 3–5 jittered 30 ms noise grains around bandpass 1.05–1.4 kHz, peak 0.02 |
 | `lapWater()` | cat drinking (~4/s) | tiny 330–410→250 Hz sine blip plus filtered noise, combined peak below 0.015 |
-| `kibblePour(dur)` | Nora refilling food | 10 granular noise bursts spread across ~0.9 s, bandpass jitter below a 3 kHz lowpass, density/gain decays from peak 0.035 |
+| `kibblePour(dur)` | Lunafreya refilling food | 10 granular noise bursts spread across ~0.9 s, bandpass jitter below a 3 kHz lowpass, density/gain decays from peak 0.035 |
 | `softThump()` | cat's final hop-down landing | 90→58 Hz sine thud plus a damped lowpassed click, peak 0.03 |
 | `pianoPlinks()` | cat stepping from the keyboard to the piano lid | 2–3 upper-register felt-piano notes 90–200 ms apart, including one allowable off-scale neighbour; each remains below 0.025 on the music bus |
 | `churchBells()` | noon hour edge | four human-loose strikes 1.7–2.1 s apart: ~330 Hz plus quiet 1.2× tierce and 2× partial, lowpass 1.2 kHz, 2.5–3.5 s decay, generous room send, peak below 0.02 |
@@ -146,7 +146,7 @@ All one-shots are wrapped in `guard()`: they silently no-op before
 
 The waterfront itself is silent: boats, clouds, birds, aircraft and the far-bank
 worker add no competing ambience. Terrace readers turn pages silently behind
-the glass; Nora reuses the existing quiet clink on collection and return.
+the glass; Lunafreya reuses the existing quiet clink on collection and return.
 
 
 ## Apartment/plant milestone

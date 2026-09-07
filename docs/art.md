@@ -18,9 +18,9 @@ curtain on the left; the basin and toilet sit to its right, clear of the doorway
 The bed is tucked into the rear-right corner, with a paneled headboard,
 thick mattress, two pillows, folded duvet and low timber rails and feet.
 The PC chair has a padded seat and full backrest on a wheeled pedestal;
-separate depth layers place Nora between the cushion and the near backrest.
+separate depth layers place Lunafreya between the cushion and the near backrest.
 Bare counters and walls keep the just-moved-in feel. No image assets or second rendering
-engine are used. Nora's existing sprite is shown without her apron at home;
+engine are used. Lunafreya's existing sprite is shown without her apron at home;
 the same cat sprite/scarf is reused. Props retain top/front/side tones and
 contact shadows. Home anchors and the clear walking lane live in
 `L.home`, including both utility-room bounds, door gaps and fixture anchors;
@@ -45,10 +45,10 @@ The existing red curtains now draw across each window independently from
 `world.shop.curtains[0/1]` (0 open, 1 closed), with pixel folds and a central
 seam. Curtain state also attenuates the corresponding incident daylight pool.
 `SCENE.lampLevel(world)` applies the interior switch without changing the
-street's lighting. Lamp glows disappear when Nora turns the switch off.
+street's lighting. Lamp glows disappear when Lunafreya turns the switch off.
 The counter pastry-case shelves empty during closing and refill during opening.
 
-Nora carries the existing sleeping-cat sprite in the same depth-sorted
+Lunafreya carries the existing sleeping-cat sprite in the same depth-sorted
 drawable as her body, with hands beneath it and no floating contact shadow.
 Both disappear only after reaching the door. `composeFrame` applies the
 overnight fade after the complete room, bubbles and caption, so dev captures
@@ -196,7 +196,7 @@ y=36  ── 16:9 crop top
           with railings, lamps and two bistro tables. One sun and one moon move
           across the full exterior; the wall naturally hides their middle
           crossing. Passers walk behind the terrace guests. Outdoor patrons
-          and Nora reuse their own sprites at half scale (the indoor ruler
+          and Lunafreya reuse their own sprites at half scale (the indoor ruler
           remains CH=60); the worker across the lake is more distant still.
           The door-side building preserves the seven-day repaint arc, ladder
           and tiny working figure on the FAR quay. Full rust-red drapes frame both views, with
@@ -218,7 +218,7 @@ y=232 ── wall meets floor (L.wallY — kept high so the floor, the life laye
           counter along the right (L.counter: slab → front face → baseline;
           register, tip jar, pastry case, tiny plant, and the matcha caddy /
           clay chawan / bamboo chasen at L.matchaBar on top; serve spot at the
-          pass = L.serveSpot); Nora's walking line behind it at y=286
+          pass = L.serveSpot); Lunafreya's walking line behind it at y=286
           (L.baristaHome — see depth model for why); order and pickup spots
           in front (L.orderSpot, L.pickupSpot; the queue fans back-left)
           fireside armchair pair flanking the hearth rug, facing in toward
@@ -255,7 +255,7 @@ y=368 ── the walking lane (L.lane — keep this corridor clear
           edge, the cat's anchor between — draw order (lamp behind cat, cat
           behind drink) keeps the overlaps honest. Its whole shadow stays
           above the caption strip
-          Lunafreya's permanent studio directly above/right of that piano
+          Nora's permanent studio directly above/right of that piano
           (L.artist): a 40×54 canvas on a tall A-frame easel, a backless
           artist stool, a small serviced paint table, and one declared watch
           spot. The easel faces into the room; the canvas grows from saved arc
@@ -305,7 +305,7 @@ Rules that keep it looking right:
 - **Background layer** (drawScene) = anything wall-mounted or behind
   everything: wall, windows, door, fireplace, menu, shelves, rugs.
   Static parts render once into an offscreen cache; the two windows, door,
-  Lunafreya's two flag-keyed paintings (above fireplace / above
+  Nora's two flag-keyed paintings (above fireplace / above
   door), hanging lamps, flames, clock hands and candle flames
   are painted over it every frame (in that order — it preserves the old
   overlap behavior). The small entrance print is cached with the static wall.
@@ -313,7 +313,7 @@ Rules that keep it looking right:
   first push order breaks the tie), so sitters overlap the stool.
 - **Tables** get baseline `cy+32` so tabletops overlap a sitter's knees.
 - **The counter** is one drawable at baseline 306: it hides the lower body of
-  anyone standing behind it. That is why **Nora's service-line y stays 286** — she
+  anyone standing behind it. That is why **Lunafreya's service-line y stays 286** — she
   reads hip-up above the slab (y 264–278), legs hidden. Lower and she
   vanishes. At the rear worktop she steps up to `L.backBar.workY`.
 - **Each armchair is drawn from the SIDE, facing `dir`** (fireside pair and
@@ -351,7 +351,7 @@ Rules that keep it looking right:
 - **The bookshelf** is one drawable at its `L.occluders` baseline; anyone on
   the lane above it is correctly occluded by it. Keep walk targets (seats,
   bus spots) and walk routes out of its occluder x-span so nobody vanishes
-  behind it — Nora busses the nook side tables through the declared clear
+  behind it — Lunafreya busses the nook side tables through the declared clear
   columns (`busVia` on `L.library.sideTables`), and `__dev.audit()`'s
   journey check flags any violation.
 
@@ -370,14 +370,14 @@ palm under plate, hands on book covers). Hair comes in **five styles** —
 bun with face-framing strands — plus the long-hair back fall (suppressed by
 either bun); cap gets a `shade()` shine streak. Clothing:
 shoulder light + centre fold + hem on tops, creases on trousers, scarf knot
-with hanging tail and fringe, and Nora's apron has neck straps, waistband,
+with hanging tail and fringe, and Lunafreya's apron has neck straps, waistband,
 pocket and a tie bow at the back. Options per character: scarf, long hair,
-`hairStyle`, `beard`, apron (Nora), `holding` (`cup`/`glass`/`plate`/`cloth`),
+`hairStyle`, `beard`, apron (Lunafreya), `holding` (`cup`/`glass`/`plate`/`cloth`),
 `armUp` 0–1 (sip animation lifts the cup toward the face), `reading` (open
 book replaces held items while seated), `typing` (forearms alternate toward
 the table), `playing` (the same alternating forearm language turned sideways
 toward the piano keys, with a 1 px sway), and `dozing` (head and book lower,
-eye closes). Lunafreya adds `painting` (the working arm lifts so the brush
+eye closes). Nora adds `painting` (the working arm lifts so the brush
 strokes ON the canvas panel — not the tray line, where it visually vanishes),
 `sketching` (a kraft-covered pad in the lap, dark cover so the pale pages read
 against the smock), and a paint-flecked smock overlay drawn as an APRON: a bib
@@ -388,11 +388,11 @@ ways); the face details and hair-back column flip with it.
 
 Standing and walking bodies also have **front and back views**, driven by
 `heading`: the shared walker sets `'down'` on mostly-vertical legs longer
-than 24 px heading down the room (door → lane, lane → seat, Nora's exit
+than 24 px heading down the room (door → lane, lane → seat, Lunafreya's exit
 column and candle/water descents) and `'up'` on the same legs heading up it
-(walking out to the door, returning a cup, Nora walking home); horizontal
+(walking out to the door, returning a cup, Lunafreya walking home); horizontal
 legs and arrival clear it, and short vertical hops keep the current view so
-nothing flashes mid-journey. State code sets `heading` directly too: Nora
+nothing flashes mid-journey. State code sets `heading` directly too: Lunafreya
 faces the room (`'down'`) while idle at the till. While prepping a drink her
 facing follows the station — the espresso-machine steps (`MACHINE_STAGES`) are
 on the back wall above her standing line, so she turns her back (`'up'`); the
@@ -419,7 +419,7 @@ neck onto the shoulders; the back scarf is the wrap band plus one tail down
 the back, and the apron shows straps, waistband and a centred tie bow.
 `sit`, `stretch` and `reach` always draw in profile.
 
-Nora adds two quiet standing poses: `stretch` (both arms overhead with a
+Lunafreya adds two quiet standing poses: `stretch` (both arms overhead with a
 2 px sway) and `reach` (one arm raised for board/candle care). Her held props
 also include a copper watering can (level while walking, tipped while
 pouring) and a cream taper with a two-tone flame once struck.
@@ -442,7 +442,7 @@ back-shelf/piano-lid tail that hangs and sways below the board or lid.
   Used on the menu board ("CAFÉ HYGGE", KAFFE / MATCHA / KAKAO / BOLLER + price
   dashes + one small changing doodle: heart, sleeping cat, steaming cup,
   sprig, umbrella, or bamboo whisk). The doodle id invalidates the static
-  background cache only when Nora finishes chalking. Glyph set is caps A–Y
+  background cache only when Lunafreya finishes chalking. Glyph set is caps A–Y
   subset + É; extend the map when a new word needs a missing letter.
 - **Captions use readable, antialiased text**: 24 px Jersey 10,
   warm cream with a 3 px dark stroke (1.5 px outside the letter) and a subtle
@@ -457,7 +457,7 @@ back-shelf/piano-lid tail that hangs and sways below the board or lid.
 See world.md for the lighting pass. When adding art, remember: warm glows are
 *additive* and cheap — a new lamp needs a `glow()` call in `drawLighting`
 scaled by `pal.lamp`. Table and mantel candles are the exception: their visible
-flame and additive glow share the same 0–1 live state, blooming when Nora
+flame and additive glow share the same 0–1 live state, blooming when Lunafreya
 lights them and fading after dawn; each keeps its slow phase-offset flicker.
 The **fire** is the other such live-state prop: its flame heights
 (`drawFireDynamic`), spark rate, glow-pool radius/alpha, and crackle audio all
@@ -492,7 +492,7 @@ the order in which the items were placed on the table.
 The fireplace has a continuous plastered chimney breast with shallow side
 shadows, a soldier-course brick lintel, and a wider stone hearth with a visible
 front edge. The mantel clock, candles and plant retain their usable positions;
-Lunafreya's cat painting still hangs in the clear space above them.
+Nora's cat painting still hangs in the clear space above them.
 
 Both rust-red curtains finish just above the sill, with long lower pleats.
 Brass casement catches and restrained glass reflections add detail; all exterior
@@ -517,7 +517,7 @@ The reading areas retain their floor lamps, candles and firelight.
 The back-bar menu now sits slightly left and lower at L.menu (808,112), sized
 116×100. A six-pixel wooden surround, recessed slate, and projecting chalk
 tray give it depth. The centered heading and four rows use wider vertical
-spacing, with separate columns for price dashes and Nora's changing doodle;
+spacing, with separate columns for price dashes and Lunafreya's changing doodle;
 all six doodles fit inside the frame. Chalk and a small eraser rest on the tray.
 
 
@@ -526,7 +526,7 @@ all six doodles fit inside the frame. Chalk and a small eraser rest on the tray.
 The motion pass keeps the pixel silhouettes and existing furniture projection.
 Shoes remain grounded during walking, sip rims meet mouths, piano hands use
 `L.piano.keyboardY`, and the whisk hand shares the bowl's animation phase.
-Nora's chalk stop is (893, 238), close enough to touch the board; she returns
+Lunafreya's chalk stop is (893, 238), close enough to touch the board; she returns
 to her normal y=286 service line afterwards. Cat hops have their own mirrored
 crouch/tuck/landing poses. See [animations.md](animations.md) for coverage and
 repeatable motion review commands.
@@ -552,8 +552,8 @@ The espresso machine sits 28 px farther back than before, its base visibly
 resting on the worktop; stacked saucers and a folded towel show the clear prep
 end. A strip of floor remains between the cabinet and the serving slab.
 `SCENE.drawCoffeeStation` paints cabinet then machine as one furniture drawable
-at the cabinet baseline, before Nora and the front counter. Its solid footprint
-participates in routing. Nora approaches `L.backBar.workY` for machine stages
+at the cabinet baseline, before Lunafreya and the front counter. Its solid footprint
+participates in routing. Lunafreya approaches `L.backBar.workY` for machine stages
 and returns to `L.baristaHome.y` for front-counter work and service. Machine
 station x positions derive from `L.machine`; the cat transit anchor follows
 the relocated warming tray.
@@ -573,9 +573,9 @@ Water has broken facade/window reflections and sparse slow ripple lines.
 Sailboats and rowing boats sit between the quays. Rails locate the far edge
 of the near pavement; low-contrast paving joints leave the terrace legible.
 Bistro tables have elliptical tops, pedestal feet, two chairs and an owner-linked
-cup. One guest occupies each table; the opposite chair keeps Nora's approach
+cup. One guest occupies each table; the opposite chair keeps Lunafreya's approach
 visible. People are rasterized with the existing person renderer and presented
-at half size with nearest sampling, so their clothes, book, sip, gait and Nora's
+at half size with nearest sampling, so their clothes, book, sip, gait and Lunafreya's
 apron stay recognizable without introducing a second cast. The near-path
 silhouettes are 26–30 px tall and have visible feet above the sill.
 
@@ -625,7 +625,7 @@ state changes are part of this art pass.
 
 ## Table assembly and hearth cleaning
 
-`L.projects.table` is centered at (568,450), with Nora working at (568,496).
+`L.projects.table` is centered at (568,450), with Lunafreya working at (568,496).
 The set occupies the open space between the fire table and lower dining table.
 Its table and seat footprints are reserved from the outset; parts stay inside
 that envelope, away from the main lane. Completed art uses the ordinary dining
@@ -636,7 +636,7 @@ The empty reserved site casts no shadow while scheduled or being carried in.
 The carton uses its own contact shadow; the broad table shadow appears only
 with the assembled pedestal/top, from the fitting phase onward.
 
-`L.projects.fireplace` puts the supplies at (390,246) and Nora at (390,274).
+`L.projects.fireplace` puts the supplies at (390,246) and Lunafreya at (390,274).
 Her new kneeling pose keeps one knee down and one foot planted while the brush
 moves at the hearth lip. Ash patches disappear by remembered phase; the clean
 stone lip remains. Fire, glow and sparks stay off during the chosen cleaning.
@@ -654,7 +654,7 @@ screen; earnings and purchases update its number without revealing it.
 ## First café (C0)
 
 Fresh saves show boarded-over windows, a 176 px counter and 84 px coffee bench.
-The small machine, grinder, kettle, cups and tiny cake stand appear as Nora sets
+The small machine, grinder, kettle, cups and tiny cake stand appear as Lunafreya sets
 them out. There are no room rugs, drapes, wall menu or fireplace decorations.
 Entrance equipment includes the doormat, umbrella stand and cat corner. Two
 table sets appear in assembly stages, then join the usual depth-sorted furniture.

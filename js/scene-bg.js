@@ -87,7 +87,7 @@
     g.restore();
   }
 
-  /* Two honest wall spaces, and only two: Lunafreya's cat painting settles
+  /* Two honest wall spaces, and only two: Nora's cat painting settles
      above the fireplace; her hearth study becomes the small warmth above the
      door. Both are lasting MEMORY flags, so a returning café redraws them
      before its first presented frame. */
@@ -829,7 +829,7 @@
 
   /* ---------- espresso machine (behind the counter) ---------- */
   // One depth-sorted station: its worktop must paint below the machine,
-  // and both must paint behind Nora when she approaches from the aisle.
+  // and both must paint behind Lunafreya when she approaches from the aisle.
   SCENE.drawCoffeeStation = function (g, world) {
     const B = L.backBar, m = L.machine;
     px(g, B.x - 2, B.baseY, B.w + 4, 3, 'rgba(20,12,8,0.22)');

@@ -31,7 +31,7 @@
     SIM.setMode(w,'idle');SIM.setMode(w,'game');
     check(p.step*18+p.time===before && w.barista.state===state && w.barista.path===path &&
       w.memory.life.savings===fundsBeforeMode,'mode changed active work');
-    // A real entrant arrives while Nora is working, then orders and sits.
+    // A real entrant arrives while Lunafreya is working, then orders and sits.
     const guest=SIM._.makePatron(w,'Signe');guest.wantsBook=false;guest.ownBook=true;guest.outdoor=false;
     SIM._.enqueueArrival(w,guest,0,true);
     let queuedAt=null,homeAt=null,progressAtQueue=null;

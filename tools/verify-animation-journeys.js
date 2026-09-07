@@ -23,7 +23,7 @@
  for(const action of ['stretch','chalk','water','candles','fire','piano']){
   const w=fresh(true),b=w.barista;b.forcedTask=action;b.idleT=0;
   if(action==='candles')w.candles.forceRound=true;
-  run(w,'Nora '+action,240,b,seen=>seen.size>1&&b.state==='idle');
+  run(w,'Lunafreya '+action,240,b,seen=>seen.size>1&&b.state==='idle');
  }
  for(const action of ['eat','window','bookshelf','counter','topShelf','piano','lap','mote','knead']){
   const w=fresh(false),cat=w.cat;cat.forced=action;

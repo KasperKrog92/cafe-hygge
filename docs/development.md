@@ -153,7 +153,7 @@ while page reloads also isolate dev controls and audio settings.
 2. **Opening/closing boundary — complete 6 September 2026:** extracted to
    `js/sim-shop.js`, with four supplied character helpers and three world-bound
    methods ([contract](architecture.md#shop-lifecycle-contract)). The existing
-   hours, Nora-routing, waterfront and ship suites pass before and after the
+   hours, Lunafreya-routing, waterfront and ship suites pass before and after the
    split, alongside all nine save/isolation groups. Timing, routes, cat handling,
    appearance and save schema remain unchanged.
 3. **Apartment/plant milestone — complete 6 September 2026:** one shared home

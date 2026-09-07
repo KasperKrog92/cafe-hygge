@@ -10,7 +10,7 @@ life. Autonomous characters (a barista, patrons, a cat) live their small lives;
 procedural ASMR-ish audio (rain, fire, espresso, page turns) plays underneath.
 Left alone it is pure ambience, whole if you never touch it. Attended to, it is
 a soft narrative: the regulars grow histories and small projects that advance in
-the background across café days, and turn to you — you keep the café as **Nora** —
+the background across café days, and turn to you — you keep the café as **Lunafreya** —
 when they have something to share. There is **no score and no fail state**;
 progression is patient, never pressure.
 
@@ -174,17 +174,17 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/scene-core.js` | `SCENE` | Creates the renderer global; owns `SCENE.L`, palette interpolation, and shared drawing helpers. |
 | `js/scene-waterfront.js` | `SCENE` | Continuous exterior, sun/window-light geometry, far-bank painter, lake and terrace rendering. |
 | `js/scene-bg.js` | `SCENE` | Static background cache and the dynamic wall layer: window, door, fireplace, shelves, lamps, and espresso machine. |
-| `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, plants, and Lunafreya's easel station/canvas. |
+| `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, plants, and Nora's easel station/canvas. |
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
 | `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering, plus `SCENE.composeFrame` — the shared depth-sorted frame composition that both `main.js` `render()` and `__dev.shot()` call. |
 | `js/scene-home.js` | `SCENE` | Sparse apartment and saved plant/table/hearth work drawables. |
 | `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, café-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
 | `js/memory.js` | `MEMORY` | The persistent, cross-visit save (`cafe-hygge-save`): versioned JSON blob (arcs, bonds, flags, `lastSeen`), a migration ladder, and a graceful fresh-café fallback. Mirrors `SND.save()`. Loaded before sim-core so world creation reconciles against it. |
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
-| `js/sim-waterfront.js` | `SIM` | Dt-driven boats, birds and planes; real terrace reservations, guests and Nora cleanup journeys. |
+| `js/sim-waterfront.js` | `SIM` | Dt-driven boats, birds and planes; real terrace reservations, guests and Lunafreya cleanup journeys. |
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes; character helpers supplied explicitly. |
-| `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
+| `js/sim-characters.js` | `SIM` | Lunafreya and cat state machines plus the main simulation update and entity-drawable bridge. |
 | `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v5 checkpoints. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
@@ -348,7 +348,7 @@ matching doc updated in the same change.
 | [docs/predevelopment-audit.md](docs/predevelopment-audit.md) | Measured baseline, findings, priorities and deferred work |
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
-| [docs/characters.md](docs/characters.md) | Nora, patrons, the cat — identities and full behavior state machines |
+| [docs/characters.md](docs/characters.md) | Lunafreya, patrons, the cat — identities and full behavior state machines |
 | [docs/world.md](docs/world.md) | Time, weather, lighting, spawning, captions/events |
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
 | [docs/art.md](docs/art.md) | Pixel style guide, palette, layout map, lighting pass |

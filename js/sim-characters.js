@@ -182,7 +182,7 @@
           b.holding = null;
           SND.cupDown();
           SND.ding();
-          if (R.random() < 0.6) caption(world, 'Nora sets ' + withArticle(order.drink.name) + ' on the counter.');
+          if (R.random() < 0.6) caption(world, 'Lunafreya sets ' + withArticle(order.drink.name) + ' on the counter.');
           b.state = 'idle';
           b.idleT = rnd(4, 9);
         }
@@ -390,8 +390,8 @@
             b.firePlaced = true; b.holding = null; b.pose = 'reach';
             addLog(world);
             if (R.random() < 0.6) caption(world, pick([
-              'Nora lays a fresh log on the fire; it catches and climbs.',
-              'Nora feeds the fire a new log — the flames wake up.'
+              'Lunafreya lays a fresh log on the fire; it catches and climbs.',
+              'Lunafreya feeds the fire a new log — the flames wake up.'
             ]));
           }
           if (b.stateT >= 1.2) {
@@ -426,7 +426,7 @@
             t.nextPickT = b.stateT + 0.55;
           } else {
             SND.swish();
-            if (t.count > 1 && R.random() < 0.3) caption(world, 'Nora gathers the empties in one practiced armful.');
+            if (t.count > 1 && R.random() < 0.3) caption(world, 'Lunafreya gathers the empties in one practiced armful.');
             b.state = 'busHome';
             // back behind the counter: the outbound route reversed, then home
             b.path = busRoute(world, t.table).slice(0, -1).reverse();
@@ -459,7 +459,7 @@
         if (b.stateT > 1.6) {
           b.refillKinds.forEach(function (kind) { world.catBowls[kind] = 1; });
           b.holding = null;
-          if (R.random() < 0.5) caption(world, 'Nora tops up the cat\'s bowl.');
+          if (R.random() < 0.5) caption(world, 'Lunafreya tops up the cat\'s bowl.');
           if (world.cat.waitingBowl && R.random() < 0.25) caption(world, 'The cat supervises the refill closely.');
           b.state = 'refillHome'; b.stateT = 0;
           b.path = refillRoute().slice(0, -1).reverse();
@@ -479,7 +479,7 @@
         if (!b.shooed && b.stateT > 0.8) {
           b.shooed = true;
           SND.swish();
-          caption(world, 'Nora shoos the cat off the counter — house rules.');
+          caption(world, 'Lunafreya shoos the cat off the counter — house rules.');
           leavePerch(world, world.cat);
         }
         if (b.stateT > 1.5) { b.shooed = false; b.state = 'idle'; b.idleT = rnd(5, 10); }
@@ -495,7 +495,7 @@
     }
   }
 
-  /* Nora's route from behind the counter to a table's bus spot, every leg
+  /* Lunafreya's route from behind the counter to a table's bus spot, every leg
      axis-aligned. Big tables: drop from the lane at the bus spot itself.
      Side tables: drop through the table's declared clear column (L busVia —
      between the wing chairs and reading lamps), then step across in front.
@@ -504,7 +504,7 @@
   function busRoute(world, ti) {
     const tb = world.tables[ti];
     const busX = tb.piano ? L.piano.bench.x : tb.x + (tb.small ? -28 : 24);
-    // tall window tables live on the wall; Nora stands at their floor line
+    // tall window tables live on the wall; Lunafreya stands at their floor line
     const busY = tb.piano ? L.piano.bench.y : (tb.tall || tb.artist) ? tb.base + 2 : tb.y + (tb.fireside ? 34 : 20);
     const dropX = (tb.piano || tb.small || tb.artist) ? tb.busVia : busX;
     const route = [
@@ -539,7 +539,7 @@
     ];
   }
 
-  /* Nora's out-and-back to the hearth to lay a log: slip out at baristaExitX,
+  /* Lunafreya's out-and-back to the hearth to lay a log: slip out at baristaExitX,
      along the lane, up the fire's clear column (the same one the mantel candle
      uses). Both legs axis-aligned; fireRoute() stitches them into the full
      circuit __dev.audit() walks. */
@@ -692,19 +692,19 @@
   }
 
   function chalkCaption(doodle) {
-    if (doodle === 1) return 'Nora chalks a little cat beside the prices.';
+    if (doodle === 1) return 'Lunafreya chalks a little cat beside the prices.';
     if (doodle === 2) return 'Today the board gets a steaming cup.';
     if (doodle === 3) return 'A small chalk sprig curls beside the prices.';
     if (doodle === 4) return 'Rain on the glass; an umbrella on the board.';
     if (doodle === 5) return 'A little bamboo whisk appears beside the prices.';
-    return 'Nora touches up the chalk heart.';
+    return 'Lunafreya touches up the chalk heart.';
   }
 
   function startStretch(world, b) {
     b.state = 'stretch'; b.stateT = 0; b.pose = 'stretch';
     if (R.random() < 0.3) caption(world, pick([
-      'The café is empty; Nora stretches, unhurried.',
-      'Nora stretches — the cat pretends it wasn\'t watching.'
+      'The café is empty; Lunafreya stretches, unhurried.',
+      'Lunafreya stretches — the cat pretends it wasn\'t watching.'
     ]));
   }
 
@@ -720,7 +720,7 @@
     b.state = 'waterOut'; b.stateT = 0; b.waterStop = b.waterNext || stops[0]; b.holding = 'can';
     b.path = waterFromHome(b.waterStop);
     if (!b.waterNext && R.random() < 0.4) caption(world, pick([
-      'Nora makes the rounds with the watering can.',
+      'Lunafreya makes the rounds with the watering can.',
       'The plants get their morning drink.'
     ]));
   }
@@ -734,8 +734,8 @@
     if (!b.candleCaptioned) {
       b.candleCaptioned = true;
       if (R.random() < 0.6) caption(world, pick([
-        'Nora goes round with a lit taper; the tables glow one by one.',
-        'Dusk. Nora lights the candles.'
+        'Lunafreya goes round with a lit taper; the tables glow one by one.',
+        'Dusk. Lunafreya lights the candles.'
       ]));
     }
   }
@@ -745,7 +745,7 @@
     world.fire.claimed = true;
     b.state = 'fireOut'; b.stateT = 0; b.holding = null; b.pose = 'stand';
     b.path = fireTendRoute();
-    if (R.random() < 0.4) caption(world, 'Nora crosses to feed the fire.');
+    if (R.random() < 0.4) caption(world, 'Lunafreya crosses to feed the fire.');
   }
 
   function startPiano(world, b) {
@@ -753,7 +753,7 @@
     b.state = 'pianoOut'; b.stateT = 0; b.pose = 'stand'; b.playing = false;
     b.pianoDur = rnd(60, 120); b.path = pianoRoute();
     world.noraPianoNextT = world.t + rnd(600, 1200);
-    if (R.random() < 0.7) caption(world, 'The café is empty; Nora plays a little.');
+    if (R.random() < 0.7) caption(world, 'The café is empty; Lunafreya plays a little.');
   }
 
   function startIdleTask(world, b) {
@@ -775,13 +775,13 @@
         b.busTarget = { table: ti, item: it };
         b.state = 'busOut'; b.stateT = 0;
         b.path = busRoute(world, ti);
-        if (R.random() < 0.5) caption(world, 'Nora slips out to clear a table.');
+        if (R.random() < 0.5) caption(world, 'Lunafreya slips out to clear a table.');
         return;
       }
     }
     if (R.startTerraceClear(world, b)) return;
     // Bowl care comes immediately after clearing tables: never urgent, but
-    // Nora notices before she invents another counter-polishing task.
+    // Lunafreya notices before she invents another counter-polishing task.
     const refillKinds = [];
     if (world.catBowls.food < 0.34) refillKinds.push('food');
     if (world.catBowls.water < 0.2) refillKinds.push('water');
@@ -806,14 +806,14 @@
     if (r < 0.35) {
       b.state = 'wipe'; b.stateT = 0; b.swishes = 0;
       b.path = [{ x: rnd(660, 780), y: L.baristaHome.y }];
-      if (R.random() < 0.2) caption(world, 'Nora wipes down the counter.');
+      if (R.random() < 0.2) caption(world, 'Lunafreya wipes down the counter.');
     } else if (r < 0.57) {
       b.state = 'polish'; b.stateT = 0; b.heading = '';   // profile keeps the cup readable
-      if (R.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
+      if (R.random() < 0.25) caption(world, 'Lunafreya polishes a cup until it gleams.');
     } else if (r < 0.75) {
       b.state = 'restock'; b.stateT = 0;
       b.path = [SCENE.hasFurniture(world,'full-counter')?L.shop.pastry:L.basic.pastry];
-      if (R.random() < 0.25) caption(world, 'Nora tidies the pastry case.');
+      if (R.random() < 0.25) caption(world, 'Lunafreya tidies the pastry case.');
     }
     // otherwise just stand a while, watching the room
   }
@@ -997,7 +997,7 @@
       cat.facing = -1;
     } else if (after.intent === 'topShelf') {
       cat.state = R.random() < 0.5 ? 'loaf' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
-      if (R.random() < 0.45) caption(world, 'Nora pretends not to see the cat on the shelf.');
+      if (R.random() < 0.45) caption(world, 'Lunafreya pretends not to see the cat on the shelf.');
     } else if (after.intent === 'piano') {
       const r = R.random();
       cat.state = r < 0.55 ? 'loaf' : r < 0.8 ? 'sit' : 'sleep';
@@ -1035,7 +1035,7 @@
       cat.hopQueue = null; cat.hopAfter = null; cat.hopPurpose = ''; cat.state = 'sit';
       cat.ascentMayAbort = false;
       SND.swish();
-      caption(world, 'Nora catches the cat halfway up. Not today.');
+      caption(world, 'Lunafreya catches the cat halfway up. Not today.');
       leavePerch(world, cat);
       return;
     }
@@ -1399,7 +1399,7 @@
     return out;
   }
 
-  /* bonds are Nora's memory of a person, deepened only by being present for a
+  /* bonds are Lunafreya's memory of a person, deepened only by being present for a
      shared moment (narrative.md §5). A played beat warms the owner's bond. */
   function bumpBond(world, id) {
     const b = world.memory.bonds;

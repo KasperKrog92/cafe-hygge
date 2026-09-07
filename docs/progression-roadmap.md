@@ -25,9 +25,9 @@ baseline. The old tips are preserved in `archive/idle-2026-09-06` and
   with a delivery person, moving equipment and an unpacking sequence.
 - Furniture and its contents can be separate purchases: deliver a bookshelf
   one day, buy books another day, then let her gradually fill it.
-- The preferred eventual protagonist name is **Lunafreya**. **Fleur de Lune**
+- The protagonist is now **Lunafreya**, with **Nora** as the artist patron. **Fleur de Lune**
   is a possible café name, still provisional. This document uses Lunafreya for
-  the proposed protagonist; the shipped owner is still Nora.
+  the proposed protagonist; the identity swap shipped on 7 September 2026.
 
 The concrete stages, pacing and rules below are recommendations to prototype.
 They should be revised after watching the first complete day-and-home loop.
@@ -50,10 +50,10 @@ who never buys anything still has a pleasant, functioning place indefinitely.
 **Evening rule (updated 6 September 2026):** idle mode automatically finishes
 its 90-second apartment routine and starts the next morning. Game mode stays
 at home until the player chooses **go to sleep**, whether the evening thoughts are open
-or closed. After arriving once, Nora and the cat relax on continuous indoor
+or closed. After arriving once, Lunafreya and the cat relax on continuous indoor
 routes without returning to the entrance. Reloading
 preserves the evening. Sleep immediately advances to 07:30 and the existing
-short dawn transition, with Nora entering the café carrying the cat. No plan
+short dawn transition, with Lunafreya entering the café carrying the cat. No plan
 is required. Switching to idle resumes automatic departure when the current
 routine finishes. Confirmed purchases proceed the following morning; nothing
 expires while the player lingers.
@@ -105,7 +105,7 @@ The starting café must already meet its standard of warmth and believable life.
 
 | State | Room and equipment | Life it supports |
 | --- | --- | --- |
-| C0 — First opening | A smaller room matching the tighter reference framing; boarded-over windows, small counter and coffee equipment, a tiny cake stand, warm lighting and entrance equipment. No room rugs, drapes, wall menu, matcha or mantel decoration; hearth unused. Nora arrives carrying the cat, sets out the entrance and counter equipment, then visibly assembles two tables and their chairs. | Setup starts on the player's first entry, runs autonomously and saves its progress. Customers enter only after both table sets are ready. Simple coffee, chamomile tea and cardamom buns support complete service; patrons bring their own books. |
+| C0 — First opening | A smaller room matching the tighter reference framing; boarded-over windows, small counter and coffee equipment, a tiny cake stand, warm lighting and entrance equipment. No room rugs, drapes, wall menu, matcha or mantel decoration; hearth unused. Lunafreya arrives carrying the cat, sets out the entrance and counter equipment, then visibly assembles two tables and their chairs. | Setup starts on the player's first entry, runs autonomously and saves its progress. Customers enter only after both table sets are ready. Simple coffee, chamomile tea and cardamom buns support complete service; patrons bring their own books. |
 | C1 — Settling in | First plant, small table assembled, cleaned hearth, a few personal touches. | More places to settle; watering, fire tending and improvement work become part of the day. |
 | C2 — A reading place | Delivered bookshelf, then partially and eventually fully stocked shelves; an optional reading chair and lamp. | Browsing and borrowed-book reading become available as their furniture and contents are ready. Holger's familiarity can support a reading-corner story. |
 | C3 — A cared-for café | Repainted walls, repaired window frames, coordinated small furnishings; the room keeps its familiar layout. | Contractor visits provide temporary daytime activity; completed work improves appearance without making the previous room feel like failure. |
@@ -295,7 +295,7 @@ commands are in [the development workflow](development.md).
 
 **Opening/closing preparation completed 6 September 2026:** `js/sim-shop.js`
 now owns the existing daily lifecycle through a small explicit contract. Hours,
-Nora routing, terrace/ship closing and save/isolation regressions pass before
+Lunafreya routing, terrace/ship closing and save/isolation regressions pass before
 and after extraction. Gameplay, timing, cat handling and appearance are unchanged.
 The first apartment/plant milestone below subsequently added the minimal life and savings state.
 
@@ -311,14 +311,14 @@ The first apartment/plant milestone below subsequently added the minimal life an
    the existing café layout for this isolated prototype. The implementation
    starts with 30 kr, adds 1 kr for each completed pickup and offers one 30 kr
    plant. Idle evenings last 90 seconds; game evenings wait for **go to sleep**.
-   The same Nora/cat objects inhabit both rooms. Tests cover three nights in
+   The same Lunafreya/cat objects inhabit both rooms. Tests cover three nights in
    each mode (automatic in idle, explicit sleep in game), mode switching,
    migration, actual page reloads at every plant stage, repeated clicks, and
    browser-tab ownership handoff. No payment or installation repeats. Larger jobs, H1 box
    unpacking, street-sign work, new identities and C0 remain later milestones.
 3. **Prove interruptible work — completed 6 September 2026.** Optional 60 kr
    table set and 30 kr fireplace cleaning, chosen one per evening alongside
-   the plant. Nora collects supplies after opening, works in three-second
+   the plant. Lunafreya collects supplies after opening, works in three-second
    actions, pauses for orders and returns in later quiet moments. Partial jobs
    carry through closing, home, mornings, reload and either mode. A new set
    adds two seats only when fully assembled; the existing furnished café stays.
@@ -342,10 +342,9 @@ The first apartment/plant milestone below subsequently added the minimal life an
    and replenishment before adding many recipes. Later, prove shared staff
    duties before introducing a helper's relationship arc or shared-home stories.
    Expand only after each addition feels enjoyable when left unattended.
-7. **Apply the settled identity before a public progression release.** Rename
-   the protagonist to Lunafreya; settle the café title. The existing artist
-   regular is already called Lunafreya, so give her a distinct identity and
-   preserve her paintings/arc state. Keep stable internal IDs and migrate any
+7. **Identity swap shipped on 7 September 2026.** Lunafreya is the protagonist;
+   the café title remains to be settled. The artist is now Nora; her paintings
+   and arc state are preserved. Keep stable internal IDs and migrate any
    necessary changes; branding must not reset saves. Domain changes are optional.
 
 The first review should show a real evening, a chosen plant, a morning arrival
@@ -381,7 +380,7 @@ direction. A large catalogue or a redesigned whole café would hide that test.
 - Prices, starting savings and how much progress a normal reading session funds.
 - The apartment's framing; C0's initial furniture is specified above.
 - Whether one new project per evening feels sufficient or overly restrictive.
-- Final café name and the existing artist's distinct name/identity.
+- Final café name (the owner/artist identity swap is complete).
 - Recipes, food portions and replenishment, counter layouts, oven routines and
   the order of kitchen upgrades; the working-day role and pay model for a helper.
 - Who might become a colleague, close friend, partner or temporary guest; the

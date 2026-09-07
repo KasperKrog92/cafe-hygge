@@ -182,7 +182,7 @@
       if (b.stateT > 2.8) {
         tb.dirty = false; tb.cleaning = false;
         b.holding = 'stack'; b.state = 'terraceBack'; b.stateT = 0; b.pose = 'stand';
-        if (R.random() < 0.3) R.caption(world, 'Nora gathers the cups outside; the water carries the last of the light.');
+        if (R.random() < 0.3) R.caption(world, 'Lunafreya gathers the cups outside; the water carries the last of the light.');
       }
     } else if (b.state === 'terraceBack') {
       if (outsideStep(b, F.entranceX, dt)) {

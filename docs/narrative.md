@@ -7,7 +7,7 @@
 
 
 The automatic closing/opening ritual is distinct from closing the app.
-Stories accrue only the actual `dt` spent running, including Nora's chores and home evenings;
+Stories accrue only the actual `dt` spent running, including Lunafreya's chores and home evenings;
 the wall-clock skip from night to morning adds no progress. Ready invitations
 remain in the save when their owners go home, and return with them on their
 next visit. Neither the fade nor a new shop day plays or expires a payoff.
@@ -23,7 +23,7 @@ thing hygge. Read it before adding any arc, beat, memory, or conversation.
 > progression (`updateNarrative` in `js/sim-core.js`), the invitation +
 > trigger loop (`SIM.beatAt` + owner and scene-anchored bubbles), **Gerda's
 > scarf — the reference arc (§8)**, and **the street painter — the first
-> café-owned anchored arc**, plus **Lunafreya's gallery — the first multi-stage
+> café-owned anchored arc**, plus **Nora's gallery — the first multi-stage
 > owned arc (§9)**. The painter's facade advances across seven café
 > days, its brush invitation waits in the window, and the finished warm house
 > persists after the chosen beat. `CAST.arcs` carries arc
@@ -65,7 +65,7 @@ project is an application of that one rule.
 
 **What this permits, newly:**
 
-- State that accumulates across sessions (a scarf's length, who Nora knows).
+- State that accumulates across sessions (a scarf's length, who Lunafreya knows).
 - Beats that build on earlier beats — *provided* every beat was reached through
   an invitation the player accepted, so there is no such thing as "you needed to
   have seen the last one." You only ever advance by choosing to.
@@ -214,20 +214,20 @@ Non-negotiables for the save:
   the offline / `file://` / zero-services promise; the local durability above is
   the deliberate ceiling.
 
-## 5. You are Nora
+## 5. You are Lunafreya
 
-The reader inhabits **Nora's** point of view — not a floating cursor, but the
+The reader inhabits **Lunafreya's** point of view — not a floating cursor, but the
 person behind the counter. This is a design lens, not a mechanic, and it settles
 a lot of small questions:
 
-- **Memory is Nora's memory.** The café "knows" a regular because *Nora* has
-  come to know them. `bonds` is what Nora remembers about a person, and it only
+- **Memory is Lunafreya's memory.** The café "knows" a regular because *Lunafreya* has
+  come to know them. `bonds` is what Lunafreya remembers about a person, and it only
   deepens by her (the reader) being present and choosing the small exchanges.
-- **Conversations are with Nora.** When a beat is a talk, the other side is a
-  patron and Nora's side is the reader's — chosen, never scripted at them.
+- **Conversations are with Lunafreya.** When a beat is a talk, the other side is a
+  patron and Lunafreya's side is the reader's — chosen, never scripted at them.
 - **Getting to know the café is the arc.** The long game is not a plot to
   finish; it is a room full of people who become familiar. Beats should feel
-  like *recognition* accruing — Gerda greeting Nora by name, Holger leaving his
+  like *recognition* accruing — Gerda greeting Lunafreya by name, Holger leaving his
   book a day early "for the counter" — more than like chapters completing.
 
 ## 6. Conversations, and the shape of "branching"
@@ -236,7 +236,7 @@ Conversations are beats (§2) whose content is a short exchange. Branching is
 welcome — with one hard reframe that keeps it hygge:
 
 > **Choices add; they never gate.** A branch is a way to *color* a moment (which
-> warm thing Nora says), not a fork where one path locks away content on the
+> warm thing Lunafreya says), not a fork where one path locks away content on the
 > others. There is no wrong answer, no missed line you can only get by having
 > chosen differently, no path that ends the friendship. Every branch lands
 > somewhere kind.
@@ -317,7 +317,7 @@ A companion user who never taps the bubble loses nothing; the café is still
 lovely. An invested user gets a small, earned, unmissable moment, exactly when
 they chose to be there for it. That is the entire design, in one scarf.
 
-## 9. Multi-stage example — Lunafreya's gallery
+## 9. Multi-stage example — Nora's gallery
 
 `lunafreya-paintings` proves that the same loop can repeat without becoming a
 quest log. It carries `stages: 2`, `rows: [10, 12]`, and per-stage `beat` and
@@ -326,12 +326,12 @@ caption run and lasting mark; the save shape stays the ordinary
 `{stage, progress, pendingBeat}`.
 
 During stage 0 the easel deterministically paints the cat on the sill from
-saved progress. Its ready palette bubble waits for Lunafreya; the chosen beat
+saved progress. Its ready palette bubble waits for Nora; the chosen beat
 sets `lunafreya-cat-painting`, advances to stage 1, clears progress, and the
 finished canvas appears above the fireplace. Stage 1 repeats with the hearth;
 its chosen beat sets `lunafreya-hearth-painting`, advances to the done stage,
 and hangs the study above the door. On reload, the two flags restore the wall
-gallery and the completed stage leaves a quiet primed easel where Lunafreya
+gallery and the completed stage leaves a quiet primed easel where Nora
 sketches. Neither unveiling can occur without the reader, neither invitation
 expires, and completed art only adds to the room.
 
