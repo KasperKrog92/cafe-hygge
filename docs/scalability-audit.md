@@ -176,9 +176,9 @@ evidence for the current commit.
 
 ### 2. Make the next improvement establish a reusable contract
 
-[sim-life.js](../js/sim-life.js) already has a small `PROJECTS` catalogue, but
+At the audit baseline, [sim-life.js](../js/sim-life.js) had a small `PROJECTS` catalogue, but
 prices/phases, save validation, geometry, installed effects and planner buttons
-still have separate knowledge of individual projects. The plant also has its
+still had separate knowledge of individual projects. The plant also had its
 own path. This is reasonable for a few prototypes and a growing maintenance
 cost for a large catalogue.
 
@@ -305,9 +305,12 @@ suite for a trivial isolated sprite adjustment.
 
 ## Practical next step
 
-Continue the creative roadmap with the next named improvement. For the bookshelf
-and first books, reserve a separate behavior-preserving change for the shared
-improvement contract, then deliver one visible, complete sequence. Follow that
+Shared improvement preparation is complete on 7 September 2026: the four
+existing choices now use [one contract](architecture.md#shared-improvement-contract)
+for definitions, purchase eligibility, current save limits and installed effects.
+Schema v7, historical migrations and bespoke work routines are preserved.
+Continue with the bookshelf as the next named milestone, then separate books;
+empty-shelf availability and delivery reservations still need implementation. Follow that
 with verification automation and save export/import before substantial public
 play. Defer helper scheduling until the menu/task work actually reaches that
 boundary, but do not build the helper by copying the single-worker state machine.

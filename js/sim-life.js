@@ -2,16 +2,8 @@
 (function () {
   'use strict';
   const R = SIM._, L = SCENE.L, H = L.home;
-  const PLANT = { price: 30, destination: 'cafe', delivery: 'carry', phases: ['scheduled','carry','unpack','place','installed'] };
-  SIM.plantProject = PLANT;
-  const PROJECTS = SIM.projects = {
-    window: { price: 30, destination: 'cafe', delivery: 'contractor', title: 'repair the left window',
-      phases: ['protect the sill','remove the boards','repair the frame','clean the glass'], duration: 18 },
-    table: { price: 60, destination: 'cafe', delivery: 'carry', title: 'table and chairs',
-      phases: ['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'], duration: 18 },
-    fireplace: { price: 30, destination: 'cafe', delivery: 'carry', title: 'clean the fireplace',
-      phases: ['brush the cooled hearth','gather the ash','wipe the stone','polish the hearth'], duration: 18 }
-  };
+  const PLANT = SIM.plantProject = IMPROVEMENTS.plant;
+  const PROJECTS = SIM.projects = IMPROVEMENTS.projects;
   function busy(w) { return w.barista.orders.length || R.customerAtCounter(w) || R.needsTableClear(w) || w.shop.phase !== 'open'; }
   function pending(w) {
     // Finish the job already laid out before opening another kit.
@@ -28,22 +20,17 @@
     [-1,1].forEach(side => w.seats.push({x:t.x+side*L.stoolDX,y:t.y+L.stoolDY+4,
       facing:-side,table:index,side:side,armchair:false,taken:false,project:'table',furniture:'project-table'}));
   };
+  function buyImprovement(w, id) {
+    if (!IMPROVEMENTS.canBuy(w,id)) return false;
+    const l = w.memory.life, p = IMPROVEMENTS.state(l,id);
+    l.savings -= IMPROVEMENTS.all[id].price; p.stage = 'purchased';
+    if (id === 'plant') p.time = 0;
+    l.plannedTonight = true; commit(w); return true;
+  }
   SIM.buyProject = function (w, id) {
-    const l = w.memory.life, d = PROJECTS[id], p = l.projects[id];
-    if (!d || !p || !w.plannerOpen || w.shop.phase !== 'home' || l.mode !== 'game' ||
-        !SIM.canPlanProject(w,id) || p.stage !== 'available' || l.savings < d.price) return false;
-    l.savings -= d.price; p.stage = 'purchased'; l.plannedTonight = true;
-    commit(w); return true;
+    return !!PROJECTS[id] && buyImprovement(w,id);
   };
-  // These two small first improvements can be booked together. Other evenings
-  // retain the existing one-project pace; repeat clicks never debit twice.
-  SIM.canPlanProject = function(w,id) {
-    const l=w.memory.life;
-    if(!l.plannedTonight)return true;
-    const other=id==='window'?'table':id==='table'?'window':null;
-    return !!other && l.projects[other].stage==='purchased' &&
-      l.plant.stage!=='purchased' && l.projects.fireplace.stage!=='purchased';
-  };
+  SIM.canPlanProject = function (w, id) { return IMPROVEMENTS.canPlan(w.memory.life,id); };
   function projectHome(w) {
     const b = w.barista;
     b.state = 'projectHome'; b.pose = 'stand'; b.holding = null;
@@ -103,7 +90,7 @@
   // The booked craftsperson has a private walking actor, never a customer,
   // order or seat. Durable progress uses the same project checkpoint as kits.
   R.updateWindowWorker = function(w,dt) {
-    const p=w.memory.life.projects.window,site=L.projects.window.work;
+    const p=w.memory.life.projects.window,site=L.projects.window.work,d=PROJECTS.window;
     let a=w.windowWorker;
     if(w.shop.phase==='home') { w.windowWorker=null;return; }
     if(!a) {
@@ -123,10 +110,10 @@
     }
     if(a.path && a.path.length) {R.walker(a,dt);return;}
     a.state='working';a.pose=p.step===0?'kneel':'reach';a.heading='up';a.facing=1;
-    p.stage='working';const before=p.time;p.time=Math.min(18,p.time+dt);a.stateT=p.time;
-    if(p.time>=18) {
+    p.stage='working';const before=p.time;p.time=Math.min(d.duration,p.time+dt);a.stateT=p.time;
+    if(p.time>=d.duration) {
       p.time=0;p.step++;
-      if(p.step===4) {p.stage='installed';R.caption(w,'the left window is clear; the lake comes into view.');}
+      if(p.step===d.phases.length) {p.stage='installed';R.caption(w,'the left window is clear; the lake comes into view.');}
       commit(w);
     } else if(Math.floor(before/3)!==Math.floor(p.time/3))commit(w);
   };
@@ -252,14 +239,7 @@
     startMorning(w);
     return true;
   };
-  SIM.buyPlant = function (w) {
-    const l = w.memory.life;
-    if (!w.plannerOpen || w.shop.phase !== 'home' || l.mode !== 'game' ||
-        l.plannedTonight || l.plant.stage !== 'available' || l.savings < PLANT.price) return false;
-    l.savings -= PLANT.price; l.plant.stage = 'purchased'; l.plant.time = 0;
-    l.plannedTonight = true;
-    commit(w); return true;
-  };
+  SIM.buyPlant = function (w) { return buyImprovement(w,'plant'); };
   R.enterHome = function (w) {
     if(w.shop.phase==='home')return;
     w.memory.life.daysCompleted++;
@@ -347,10 +327,10 @@
       p.stage = 'unpack'; p.time = 0; b.holding = null; commit(w);
     }
     b.pose = 'reach'; b.heading = ''; b.facing = 1;
-    p.time = Math.min(8,p.time+dt); b.stateT = p.time;
-    if (p.stage === 'unpack' && p.time >= 4) {
+    p.time = Math.min(PLANT.maxTime,p.time+dt); b.stateT = p.time;
+    if (p.stage === 'unpack' && p.time >= PLANT.duration) {
       p.stage = 'place'; p.time = 0; R.sound.swish(); commit(w);
-    } else if (p.stage === 'place' && p.time >= 4) {
+    } else if (p.stage === 'place' && p.time >= PLANT.duration) {
       p.stage = 'installed'; p.time = 0; b.pose = 'stand'; b.holding = null;
       R.caption(w,'a little green by the window.'); commit(w); return true;
     }

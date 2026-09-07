@@ -52,7 +52,7 @@
       Object.keys(s.flags).forEach(function (id) {
         requireShape(typeof s.flags[id] === 'boolean', 'invalid flag: ' + id);
       });
-      if (version >= 2) validateLife(s.life);
+      if (version >= 2) validateLife(s.life, version);
       if (version >= 3) validateProjects(s.life, version);
       if (version >= 7) requireShape(integer(s.life.daysCompleted) && s.life.daysCompleted >= 0, 'invalid café days');
       if (version >= 4) {
@@ -100,36 +100,41 @@
   }
   function freshLife() {
     return { mode: 'idle', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0,
-      plant: { stage: 'available', time: 0 }, projects: freshProjects(), furniture: furnishings(false),
+      plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), furniture: furnishings(false),
       firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
   }
   function freshIntro(complete) {
     return {line:0,finale:complete?8:0,time:0,skipped:false,complete:complete,sign:complete?'outside':'stored'};
   }
+  // Historical v2 → v3 migration payload; do not derive it from new content.
   function freshProjects() {
     return { table: { stage: 'available', step: 0, time: 0 }, fireplace: { stage: 'available', step: 0, time: 0 },
       window: { stage: 'available', step: 0, time: 0 } };
   }
   function validateProjects(l, version) {
     requireShape(record(l.projects) && typeof l.plannedTonight === 'boolean', 'invalid projects');
-    (version >= 7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
-      const p = l.projects[id], steps = id === 'table' ? 6 : 4;
-      requireShape(record(p) && ['available','purchased','scheduled','arrived','working','installed'].indexOf(p.stage) >= 0 &&
-        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < 18,
+    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : ['table','fireplace']).forEach(function (id) {
+      // Historical codecs retain their original limits, independent of today's catalogue.
+      const d = version === VERSION ? IMPROVEMENTS.projects[id] : null;
+      const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'table' ? 6 : 4;
+      const stages = d ? d.stages : ['available','purchased','scheduled','arrived','working','installed'];
+      requireShape(record(p) && stages.indexOf(p.stage) >= 0 &&
+        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < (d ? d.duration : 18),
         'invalid project: ' + id);
       requireShape(p.stage === 'installed' ? p.step === steps && p.time === 0 : p.step < steps, 'invalid project completion');
       if (['available','purchased','scheduled','arrived'].indexOf(p.stage) >= 0)
         requireShape(p.step === 0 && p.time === 0, 'invalid project arrival');
     });
   }
-  function validateLife(l) {
+  function validateLife(l, version) {
+    const plant = version === VERSION ? IMPROVEMENTS.plant : null;
     requireShape(record(l), 'invalid life');
     requireShape(['idle', 'game'].indexOf(l.mode) >= 0, 'invalid mode');
     requireShape(integer(l.savings) && l.savings >= 0, 'invalid savings');
     requireShape(finite(l.hour) && l.hour >= 0 && l.hour < 24, 'invalid life hour');
     requireShape(finite(l.homeTime) && l.homeTime >= 0 && l.homeTime <= 90, 'invalid home time');
-    requireShape(record(l.plant) && ['available','purchased','scheduled','carry','unpack','place','installed'].indexOf(l.plant.stage) >= 0 &&
-      finite(l.plant.time) && l.plant.time >= 0 && l.plant.time <= 8, 'invalid plant');
+    requireShape(record(l.plant) && (plant ? plant.stages : ['available','purchased','scheduled','carry','unpack','place','installed']).indexOf(l.plant.stage) >= 0 &&
+      finite(l.plant.time) && l.plant.time >= 0 && l.plant.time <= (plant ? plant.maxTime : 8), 'invalid plant');
     if (l.checkpoint !== null) {
       const c = l.checkpoint;
       requireShape(record(c) && record(c.shop) && record(c.nora), 'invalid lifecycle checkpoint');

@@ -1,10 +1,11 @@
 # Architecture
 
-Zero-dependency vanilla JS. Twenty IIFE scripts expose the production globals
-(`SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
+Zero-dependency vanilla JS. Twenty-one IIFE scripts expose the production globals
+(`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
 ```
+js/improvements.js      → window.IMPROVEMENTS (pure improvement catalogue and rules)
 js/audio.js             → window.SND     (sound engine; no DOM, no sim knowledge)
 js/scene-core.js        → window.SCENE   (layout, palette, shared renderer helpers)
 js/scene-waterfront.js  → extends SCENE  (continuous exterior, sky/light geometry, terrace art)
@@ -58,6 +59,29 @@ entity drawing. Cat walking to Lunafreya and pausing while carried keep their
 original position after patron updates. Every entry selects the supplied
 world's services with `bindWorld`, including direct route inspection. No save
 fields, phase names, task timing, paths or render behavior changed in the preparatory split. The subsequent life milestone is described below.
+
+## Shared improvement contract
+
+`js/improvements.js` owns the four shipped choices: plant, window, table and
+fireplace. Definitions hold IDs, prices, destination/delivery, phase labels and
+stable phase IDs, timing, prerequisites (currently empty), installed capabilities
+and the window/table evening pairing. `SIM.projects` and `SIM.plantProject`
+remain aliases for existing consumers.
+
+The planner and purchase APIs share `IMPROVEMENTS.canBuy(world,id)`; one debit
+path commits the choice. `state(life,id)` reads the existing plant or projects
+record without moving saved data. Current save validation and fresh projects
+read the catalogue; historical validation and migration payloads stay literal.
+Schema remains v7. Numeric steps keep their exact order and meaning: adding or
+reordering phases or adding saved jobs requires an explicit migration, including
+preserving the then-historical v7 validator independently of new definitions.
+
+`installed(life,capability)` supplies existing scene availability checks; owned
+furniture still supplies legacy furnished-room availability. Layout, work-site
+geometry, table seat installation, plant opening animation, contractor routes,
+interruptions and closing remain in their original owners. Bookshelf delivery,
+work-area reservations and empty-shelf versus usable-book availability remain
+the next milestone.
 
 ## Shared life and plant contract
 

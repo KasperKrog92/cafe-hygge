@@ -23,7 +23,7 @@ function boot(raw) {
   };
   sandbox.window = sandbox;
   const ctx = vm.createContext(sandbox);
-  for (const file of ['audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro']) {
+  for (const file of ['improvements', 'audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'js', file + '.js'), 'utf8'), ctx, { filename: file + '.js' });
   }
   return { ctx, data, events, timers, writes: () => writes, prompts: () => prompts,
@@ -32,6 +32,38 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('existing improvement purchases and v7 checkpoints retain their contract', () => {
+    const b=boot();
+    b.run(`
+      const ids=['window','table','plant','fireplace'], prices={window:30,table:60,plant:30,fireplace:30};
+      for(const first of ids)for(const second of ids) {
+        const w=SIM.create({});w.shop.phase='home';w.memory.life.mode='game';w.memory.life.savings=200;SIM.plan(w,true);
+        const buy=id=>id==='plant'?SIM.buyPlant(w):SIM.buyProject(w,id);
+        if(!buy(first))throw Error('first purchase '+first);
+        const pair=first==='window'&&second==='table'||first==='table'&&second==='window';
+        if(buy(second)!==pair)throw Error('evening pair '+first+'/'+second);
+        if(w.memory.life.savings!==200-prices[first]-(pair?prices[second]:0))throw Error('debit changed');
+        const restored=SIM.create({memory:MEMORY.createStore({state:JSON.parse(MEMORY.codec.encode(w.memory))})});
+        if(restored.memory.life.savings!==w.memory.life.savings)throw Error('reload debit');
+      }
+      // Literal shipped limits deliberately do not derive expectations from the catalogue.
+      for(const [id,steps] of [['table',6],['fireplace',4],['window',4]]) {
+        for(let step=0;step<steps;step++) {
+          const s=MEMORY.codec.fresh();s.life.projects[id]={stage:'working',step,time:17.75};
+          const result=MEMORY.codec.decode(JSON.stringify(s));
+          if(result.error||JSON.stringify(result.state)!==JSON.stringify(s))throw Error('v7 checkpoint '+id+'/'+step);
+        }
+        const s=MEMORY.codec.fresh();s.life.projects[id]={stage:'installed',step:steps,time:0};
+        if(MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('installed checkpoint '+id);
+        s.life.projects[id].step--;
+        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('early installation accepted '+id);
+      }
+      for(const mode of ['idle','game'])for(const phase of ['open','home'])for(const planner of [false,true]) {
+        const w=SIM.create({});w.memory.life.mode=mode;w.shop.phase=phase;w.plannerOpen=planner;
+        if(SIM.buyPlant(w)!==(mode==='game'&&phase==='home'&&planner))throw Error('purchase context');
+      }
+    `);
+  });
   await test('v7 adds café days and left-window work without replaying established lives', () => {
     const b=boot();
     b.run(`for(const finished of [false,true]) {

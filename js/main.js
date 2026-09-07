@@ -195,7 +195,8 @@
     if (!planner.open) return;
     function refreshChoice(button, stage, price, id) {
       const available = stage === 'available';
-      button.disabled = !available || !SIM.canPlanProject(world,id) || l.savings < price;
+      button.disabled = !IMPROVEMENTS.canBuy(world,id);
+      button.querySelector('.thought-price > span').textContent = price;
       button.querySelector('.thought-price').hidden = !available;
       const state = button.querySelector('.thought-state');
       state.hidden = available;
@@ -203,7 +204,7 @@
       button.setAttribute('aria-label', button.firstElementChild.textContent + ', ' +
         (available ? price + ' coins' : stage === 'installed' ? 'complete' : 'chosen'));
     }
-    refreshChoice(buyPlant, l.plant.stage, SIM.plantProject.price);
+    refreshChoice(buyPlant, l.plant.stage, SIM.plantProject.price, 'plant');
     Object.keys(SIM.projects).forEach(function (id) {
       refreshChoice(document.getElementById('buy-' + id), l.projects[id].stage, SIM.projects[id].price,id);
     });

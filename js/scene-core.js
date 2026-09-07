@@ -16,10 +16,10 @@
   SCENE.hasFurniture = function (world, id) {
     const life = world && world.memory && world.memory.life;
     if (!life || !life.furniture || !id) return true;
-    if (id === 'project-table') return life.projects.table.stage === 'installed';
+    if (id === 'project-table') return IMPROVEMENTS.installed(life,'project-table');
     if (id === 'table-worksite') return ['scheduled','arrived','working','installed'].indexOf(life.projects.table.stage) >= 0;
-    if (id === 'first-plant') return life.plant.stage === 'installed';
-    if (id === 'hearth') return life.furniture.hearth || life.projects.fireplace.stage === 'installed';
+    if (id === 'first-plant') return IMPROVEMENTS.installed(life,'first-plant');
+    if (id === 'hearth') return life.furniture.hearth || IMPROVEMENTS.installed(life,'hearth');
     return life.furniture[id] === true;
   };
   SCENE.layoutKey = function (world) {
@@ -28,7 +28,7 @@
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
-      w.x===SCENE.L.win.x && world.memory.life.projects.window.stage==='installed';
+      w.x===SCENE.L.win.x && IMPROVEMENTS.installed(world.memory.life,'left-window');
   };
   // Room extent is independent of furnishing ownership: a later expansion
   // exposes more usable floor without changing the size of the pixel art.

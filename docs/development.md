@@ -13,6 +13,33 @@ Desktop browsers are the current target, including Chrome and Safari. Mobile
 compatibility, responsive mobile layouts and mobile verification are deferred
 until the owner explicitly requests them (6 September 2026).
 
+## Shared improvement preparation — 7 September 2026
+
+The [shared contract](architecture.md#shared-improvement-contract) consolidates
+the existing four improvements without adding bookshelf behavior or changing
+schema v7. The new Node regression checks every ordered purchase pair against
+literal prices, context restrictions and every existing numeric work checkpoint.
+
+Verification: all 15 save/isolation groups, audio settings, 21 script syntax
+checks and all 15 browser suites pass, including animations, closing with queued
+service, current improvements and invariant audits. Actual browser runs preserve
+74 project/C0/opening checkpoints, seven plant/home checkpoints and seven
+first-day/window reloads. Planner controls, paired purchases, repeated clicks,
+mode/sleep UI and two-tab ownership pass. Normal entry initializes audio and
+completes the cappuccino journey in 37.5 seconds with income and a clean night
+audit. Planner and completed-improvement desktop captures were inspected.
+
+The final-code soak passes four one-hour scenarios (two seeds in each room):
+14 completed café days, 240 audit samples, all purchased jobs installed and no
+unattended story payoff. The earlier six-hour-per-scenario run was superseded
+and stopped after the final catalogue review; no result is claimed for it.
+Accelerated simulations verify continuity, not execution through OS suspension.
+
+Reports are in ignored `.art-review/improvement-*` paths. Browser runs used
+port 18737 because existing local servers returned empty responses on the usual
+ports. All automated browser sessions were closed. These are desktop Chromium
+results; native Safari and OS sleep/resume were not tested.
+
 ## One session, one reviewable change
 
 1. Read `git status` and the relevant implementation; preserve unrelated work.

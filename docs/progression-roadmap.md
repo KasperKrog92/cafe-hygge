@@ -4,6 +4,9 @@ Direction recorded 6 September 2026, with shipped updates through 7 September.
 Shared home life, the plant/table/hearth jobs, C0, the identity swap, first
 introduction and left-window repair are implemented. The build-order section
 and first-day update below distinguish these from proposed later stages.
+Shared improvement preparation is complete (7 September); bookshelf delivery
+and separate books remain for the next session. See the
+[contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
 the remaining ideas are not authorization to build every item.
 It grows from the former `idle` café, now the canonical `main` branch. The

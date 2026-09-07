@@ -176,10 +176,11 @@ choices. This one-time tutorial exception does not make later story arcs mandato
   check the live site, HTML or script URLs. The owner will report if a push
   appears not to have reached the site; investigate deployment when asked.
 
-## Architecture (20 scripts, deliberate order)
+## Architecture (21 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
+| `js/improvements.js` | `IMPROVEMENTS` | Shared plant/project definitions, purchase eligibility and installed capabilities; no runtime state. |
 | `js/audio.js` | `SND` | Web Audio synthesis. Buses, ambience loops, one-shot sounds, music box. No samples (yet — see roadmap). |
 | `js/scene-core.js` | `SCENE` | Creates the renderer global; owns `SCENE.L`, palette interpolation, and shared drawing helpers. |
 | `js/scene-waterfront.js` | `SCENE` | Continuous exterior, sun/window-light geometry, far-bank painter, lake and terrace rendering. |
@@ -201,7 +202,7 @@ choices. This one-time tutorial exception does not make later story arcs mandato
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
-Load order matters: audio → scene-core → scene-waterfront → scene-bg → scene-furniture →
+Load order matters: improvements → audio → scene-core → scene-waterfront → scene-bg → scene-furniture →
 scene-people → scene-fx → scene-home → scene-intro → characters-roster → memory → sim-core → sim-waterfront → sim-patrons →
 sim-shop → sim-characters → sim-life → sim-intro → dev → main. Scene-core creates `SCENE`; the renderer
 siblings extend it. `characters-roster` then defines `CAST` (the regulars
