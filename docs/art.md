@@ -650,3 +650,13 @@ and Jersey 10 numerals sit on a translucent dark panel. This DOM overlay stays
 inside fullscreen, allows clicks through to the scene, and fades over 0.6 seconds
 after 3.2 seconds at rest, alongside the controls. It is hidden on the entry
 screen; earnings and purchases update its number without revealing it.
+
+## First café (C0)
+
+Fresh saves show boarded-over windows, a 176 px counter and 84 px coffee bench.
+The small machine, grinder, kettle, cups and tiny cake stand appear as Nora sets
+them out. There are no room rugs, drapes, wall menu or fireplace decorations.
+Entrance equipment includes the doormat, umbrella stand and cat corner. Two
+table sets appear in assembly stages, then join the usual depth-sorted furniture.
+Optional furniture and its floor geometry share saved availability flags.
+Existing saves retain the fully furnished room.

@@ -11,9 +11,32 @@
   SCENE.W = W;
   SCENE.H = H;
   SCENE.lampLevel = function (world) { return world.pal.lamp * (world.shop ? world.shop.lights : 1); };
+  // Stable owned furniture IDs. Projects remain the single source of truth
+  // for their installed effects; no second copy of job completion is saved.
+  SCENE.hasFurniture = function (world, id) {
+    const life = world && world.memory && world.memory.life;
+    if (!life || !life.furniture || !id) return true;
+    if (id === 'project-table') return life.projects.table.stage === 'installed';
+    if (id === 'table-worksite') return ['scheduled','arrived','working','installed'].indexOf(life.projects.table.stage) >= 0;
+    if (id === 'first-plant') return life.plant.stage === 'installed';
+    if (id === 'hearth') return life.furniture.hearth || life.projects.fireplace.stage === 'installed';
+    return life.furniture[id] === true;
+  };
+  SCENE.layoutKey = function (world) {
+    const life = world && world.memory && world.memory.life;
+    return life ? JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'hearth') : 'full';
+  };
+  SCENE.activeGeometry = function (world, list) {
+    return list.filter(function (item) { return SCENE.hasFurniture(world, item.furniture); }).map(function (item) {
+      if (SCENE.hasFurniture(world,'full-counter')) return item;
+      if(item.name==='counter') return Object.assign({},item,{x1:L.basic.counter.x+L.basic.counter.w});
+      if(item.name==='back bar') return Object.assign({},item,{x1:L.basic.backBar.x+L.basic.backBar.w});
+      return item;
+    });
+  };
   SCENE.hearthWork = function (world) {
     const p = world.memory && world.memory.life.projects.fireplace;
-    return !!p && ['scheduled','arrived','working'].indexOf(p.stage) >= 0;
+    return !SCENE.hasFurniture(world, 'hearth') || !!p && ['scheduled','arrived','working'].indexOf(p.stage) >= 0;
   };
   SCENE.VIEW_W = 960;
   SCENE.VIEW_H = 540;
@@ -51,6 +74,13 @@
       catStops: [{ x: 278, y: 320 }, { x: 490, y: 320 }, { x: 655, y: 374 }]
     },
     firstPlant: { x: 250, y: 210, pickup: { x: 54, y: 300 }, work: { x: 250, y: 268 } },
+    basic: {
+      counter:{x:640,w:176,slabY:264,frontY:278,baseY:306},
+      backBar:{x:646,w:84,slabY:222,frontY:240,baseY:254},
+      pastry:{x:788,y:286}, machine:{x:666,y:222}, grinder:{x:650,y:222},
+      kettle:{x:708,y:222}, staging:{x:54,y:324},
+      tableWork:[{x:196,y:460},{x:414,y:474}]
+    },
     projects: {
       pickup: { x: 54, y: 300 },
       table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
@@ -371,6 +401,40 @@
   L.footprints.push({ name: 'artist lamp', x0: L.artist.lamp.x - 9, x1: L.artist.lamp.x + 11, y0: L.artist.lamp.y - 7, y1: L.artist.lamp.y + 1 });
   L.footprints.push({ name: 'artist stool', seat: true, x0: 97, x1: 123, y0: 448, y1: 466 });
   L.footprints.push({ name: 'artist table', x0: 126, x1: 158, y0: 462, y1: 478, passable: true });
+
+  // Geometry and render/activity declarations share these stable IDs. Names
+  // remain human-readable audit labels, never persisted table indices.
+  L.tables.forEach(function (t, i) { t.furniture = ['table-window','table-hearth','table-front-left','table-front-right'][i]; });
+  L.armchairs.forEach(a => { a.furniture = 'fireside'; });
+  L.library.chairs.concat(L.library.lamps).forEach(a => { a.furniture = 'nook'; });
+  L.artist.lamp.furniture = 'studio';
+  L.plants.forEach(a => { a.furniture = 'plants'; });
+  L.occluders.concat(L.footprints).forEach(function (box) {
+    const n = box.name, table = n.match(/(?:^table |\(table )(\d+)/);
+    if (table) box.furniture = L.tables[+table[1]].furniture;
+    else if (/^reserved/.test(n)) box.furniture = 'table-worksite';
+    else if (/^wing chair/.test(n)) box.furniture = +n.slice(-1) < 2 ? 'fireside' : 'nook';
+    else if (/^fireside table/.test(n)) box.furniture = 'fireside';
+    else if (/^(side table|reading lamp)/.test(n)) box.furniture = 'nook';
+    else if (/^(bookshelf|magazine basket)/.test(n)) box.furniture = 'bookshelf';
+    else if (/^window table/.test(n)) box.furniture = 'window-seats';
+    else if (/^artist/.test(n)) box.furniture = 'studio';
+    else if (/^piano/.test(n)) box.furniture = 'piano';
+    else if (/^plant /.test(n)) box.furniture = 'plants';
+    else if (n === 'log pile') box.furniture = 'hearth';
+    else if (/^entrance screen/.test(n)) box.furniture = 'entrance-screen';
+    else if (n === 'cat corner') box.furniture = 'cat-corner';
+    else if (n === 'umbrella stand') box.furniture = 'entrance';
+  });
+  SCENE.catSpotAvailable = function (world, id) {
+    if (/^(window|topShelf|counter)/.test(id) && !SCENE.hasFurniture(world,'full-counter')) return false;
+    if (/^bookshelf/.test(id)) return SCENE.hasFurniture(world,'bookshelf') && SCENE.hasFurniture(world,'nook');
+    if (/^piano/.test(id)) return SCENE.hasFurniture(world,'piano');
+    if (id === 'armchair') return SCENE.hasFurniture(world,'fireside');
+    if (id === 'nookRug') return SCENE.hasFurniture(world,'nook');
+    if (id === 'bigRug') return SCENE.hasFurniture(world,'rugs');
+    return true;
+  };
 
   /* ---------- helpers ---------- */
   function px(g, x, y, w, h, c) { g.fillStyle = c; g.fillRect(x | 0, y | 0, w, h); }

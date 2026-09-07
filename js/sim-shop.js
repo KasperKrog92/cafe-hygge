@@ -27,10 +27,13 @@
     function shopRoute(world, kind, index) {
       if (kind === 'plant') return shopPath(world.barista, L.firstPlant.pickup);
       if (kind === 'table') return busRoute(world, index);
-      if (kind === 'curtain') return busRoute(world, L.tables.length + L.library.sideTables.length + index);
+      if (kind === 'curtain') {
+        const ti = world.tables.findIndex(t => t.tall && t.x === L.winTables[index].x);
+        return ti >= 0 ? busRoute(world,ti) : shopPath(world.barista,L.catPerches.windows[index].stand);
+      }
       if (kind === 'hearth') return fireTendRoute();
       if (kind === 'bowls' || kind === 'cat' || kind === 'putCat') return refillRoute();
-      if (kind === 'stock') return [{ x: L.shop.pastry.x, y: L.baristaHome.y }];
+      if (kind === 'stock') return [SCENE.hasFurniture(world,'full-counter')?L.shop.pastry:L.basic.pastry];
       if (kind === 'lights') return [
         { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
         { x: L.entryApproach.x, y: L.lane }, L.entryApproach, L.shop.switchSpot
@@ -42,7 +45,7 @@
       if (opening) return [{ kind: 'lights' }, { kind: 'putCat' }, { kind: 'bowls' }]
         .concat(world.shop.plantMorning ? [{ kind: 'plant' }] : [])
         .concat([{ kind: 'curtain', index: 0 }, { kind: 'hearth' }, { kind: 'curtain', index: 1 },
-          { kind: 'stock' }, { kind: 'welcome' }]);
+          { kind: 'stock' }, { kind: 'welcome' }]).filter(t => (t.kind !== 'hearth' || !SCENE.hearthWork(world)) && (t.kind !== 'curtain' || SCENE.hasFurniture(world,'drapes')));
       // One floor circuit from the counter: reading nook, lower dining tables,
       // piano/artist corner, then the upper tables/windows from left to right.
       // Keep table identity in world.tables; only the visit order changes.
@@ -61,7 +64,7 @@
       return [{ kind: 'greet' }, { kind: 'wipe' }, { kind: 'wait' }]
         .concat(tables)
         .concat([{ kind: 'stock' }, { kind: 'curtain', index: 1 }, { kind: 'hearth' },
-          { kind: 'curtain', index: 0 }, { kind: 'cat' }, { kind: 'lights' }]);
+          { kind: 'curtain', index: 0 }, { kind: 'cat' }, { kind: 'lights' }]).filter(t => (t.kind !== 'hearth' || !SCENE.hearthWork(world)) && (t.kind !== 'curtain' || SCENE.hasFurniture(world,'drapes')));
     }
 
     function updateShop(world, dt) {
@@ -208,7 +211,7 @@
       }
       if (next.kind === 'welcome') {
         s.accepting = true; world.spawnT = 1; s.step++;
-        caption(world, 'fresh cakes, open curtains — the first guests are welcome.');
+        caption(world, SCENE.hasFurniture(world,'drapes') ? 'fresh cakes, open curtains — the first guests are welcome.' : 'fresh coffee and a little cake — the first guests are welcome.');
         return false;
       }
       if (b.state !== 'idle' || b.orders.length || world.queue.length) return false;

@@ -17,7 +17,7 @@
   const g=sheet.getContext('2d'); g.imageSmoothingEnabled=false;
   g.fillStyle='#c9b28a';g.fillRect(0,0,sheet.width,sheet.height);
   const rows=['walk right','walk left','walk toward','page turn','sip','knitting','cat jump left','cat groom'];
-  const base=__dev.study({seats:[0]}).patrons[0];
+  const base=__dev.study({world:__dev.furnishedWorld({random:SIM.seededRandom(42)}),seats:[0]}).patrons[0];
   // Inspect the shipping renderer's shoes while the body actually travels.
   // This catches reversed swing/stance and missing facing, which an in-place
   // animation contact sheet cannot establish.

@@ -17,6 +17,7 @@ agent-browser --session $Session wait --fn '!!(window.__dev && window.__dev.revi
 if ($LASTEXITCODE -ne 0) { throw 'Dev harness did not become ready.' }
 $payload = agent-browser --session $Session eval @'
 (() => {
+  for (let i=0;i<5000 && __world.shop.phase==='settling';i++) SIM.update(__world,.25);
   const problems = __dev.audit().concat(__dev.audit(__dev.study()), __dev.audit(__dev.study({hour:20})));
   const memory = JSON.stringify(MEMORY.state), time = __world.t;
   const shots = __dev.review();

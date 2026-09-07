@@ -1,6 +1,6 @@
 param(
-    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects')]
-    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects'),
+    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening')]
+    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening'),
     [string]$Url = 'http://127.0.0.1:8137/?dev',
     [ValidatePattern('^[a-zA-Z0-9_-]+$')][string]$Label = 'project-check'
 )
@@ -75,7 +75,7 @@ try {
         $frameCode = @'
 (() => {
   const frames = {};
-  for (const key of ['hoursFrames', 'noraFrames', 'waterfrontFrames', 'shipFrames', 'lifeFrames', 'projectFrames']) {
+  for (const key of ['hoursFrames', 'noraFrames', 'waterfrontFrames', 'shipFrames', 'lifeFrames', 'projectFrames', 'c0Frames', 'firstFrames']) {
     if (window[key]) Object.assign(frames, window[key]);
   }
   return frames;

@@ -334,3 +334,8 @@ and hangs the study above the door. On reload, the two flags restore the wall
 gallery and the completed stage leaves a quiet primed easel where Lunafreya
 sketches. Neither unveiling can occur without the reader, neither invitation
 expires, and completed art only adds to the room.
+
+Version 4 also preserves furnished v3 rooms while adding a resumable first
+opening to fresh saves. Furniture ownership and free setup progress live in
+`life`; migration keeps story arcs, bonds, flags and existing projects intact.
+Setup completion opens the café; narrative payoffs still wait for player input.

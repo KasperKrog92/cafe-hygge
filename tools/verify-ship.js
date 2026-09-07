@@ -6,7 +6,7 @@
   const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   function check(ok, msg) { if (!ok && failures.indexOf(msg) < 0) failures.push(msg); }
   try {
-    const w = SIM.create({ random: random }); window.__world = w; __dev.hour(12);
+    const w = __dev.furnishedWorld({ random: random }); window.__world = w; __dev.hour(12);
     w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];
     w.seats.forEach(function (s) { s.taken = false; });
     w.tables.forEach(function (t) { t.items = []; });

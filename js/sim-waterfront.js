@@ -74,7 +74,7 @@
   R.reserveTerrace = function (world, p) {
     // Regulars keep their authored seats and stories. Borrowed books, paired
     // visits and parked umbrellas keep their existing indoor journeys.
-    if (!terraceWeather(world) || p.isRegular || p.partner || p.laptop || p.pianist ||
+    if (!SCENE.hasFurniture(world,'terrace') || !terraceWeather(world) || p.isRegular || p.partner || p.laptop || p.pianist ||
         p.umbrellaParked || p.hasShelfBook || (p.wantsBook && !p.ownBook) || p.seat || p.outdoor === false) return false;
     if (p.outdoor !== true && R.random() >= 0.4) return false;
     const index = world.waterfront.tables.findIndex(function (t) { return t.owner === null && !t.dirty && !t.cleaning; });

@@ -12,9 +12,9 @@
   function snap(w,name) { frames[name]=__dev.shot(null,{world:w}); saves[name]=MEMORY.codec.encode(w.memory); }
   function audit(w) { const a=__dev.audit(w); check(!a.length,a.join('; ')); }
   function home(w) { SIM.setMode(w,'game');hour(w,21.5);until(w,()=>w.shop.phase==='home');SIM.plan(w,true); }
-  function restore(w) { return SIM.create({memory:MEMORY.createStore({state:JSON.parse(MEMORY.codec.encode(w.memory))}),random:SIM.seededRandom(84)}); }
+  function restore(w) { return __dev.furnishedWorld({memory:MEMORY.createStore({state:JSON.parse(MEMORY.codec.encode(w.memory))}),random:SIM.seededRandom(84)}); }
   for(const id of ['table','fireplace']) {
-    let w=SIM.create({random:SIM.seededRandom(id==='table'?84:42)});
+    let w=__dev.furnishedWorld({random:SIM.seededRandom(id==='table'?84:42)});
     w.memory.life.savings=180;
     home(w); const funds=w.memory.life.savings;
     check(SIM.buyProject(w,id),'purchase rejected');
@@ -69,7 +69,7 @@
     check(w.tables.length===tables && w.seats.length===seats,'unattended duplicated installation');audit(w);
   }
   // Both purchased projects can coexist: one per evening, old work is retained.
-  const w=SIM.create({random:SIM.seededRandom(16)});w.memory.life.savings=180;home(w);
+  const w=__dev.furnishedWorld({random:SIM.seededRandom(16)});w.memory.life.savings=180;home(w);
   check(SIM.buyProject(w,'table'),'queue table');SIM.goToSleep(w);until(w,()=>w.barista.state==='projectWork');
   home(w);check(SIM.buyProject(w,'fireplace'),'queue fireplace');
   const funds=w.memory.life.savings;

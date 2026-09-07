@@ -90,7 +90,9 @@
       return withContext(world.context || activeContext || productionContext, fn, this, arguments);
     };
   }
-  SIM.withWorld = function (world, fn) { return withContext(world.context, fn); };
+  SIM.withWorld = function (world, fn) {
+    return withContext(world.context || Object.assign({}, productionContext, {memory:{state:world.memory}}), fn);
+  };
   SIM.seededRandom = function (seed) {
     return function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   };
@@ -253,11 +255,26 @@
         fireside: true, busVia: st.busVia, items: [], candle: 0, candleTarget: 0 });
     });
 
+    // Filter before creating any occupants. Array references are runtime-only;
+    // furniture identity in the save is stable across both room variants.
+    world.memory = context.memory.state;
+    const tableIds = L.tables.map(t => t.furniture).concat(['nook','nook','window-seats','window-seats','studio','piano','fireside','fireside']);
+    const tableMap = {};
+    world.tables = world.tables.filter(function (tb, i) {
+      tb.furniture = tableIds[i];
+      if (!SCENE.hasFurniture(world,tb.furniture)) return false;
+      tableMap[i] = Object.keys(tableMap).length; return true;
+    });
+    world.seats = world.seats.filter(function (seat) {
+      if (tableMap[seat.table] === undefined) return false;
+      seat.table = tableMap[seat.table]; seat.furniture = world.tables[seat.table].furniture; return true;
+    });
+
     // a few patrons are already settled in
     // (seat 10 = the first nook chair, 12 = the first window perch)
-    seedPatron(world, 1);
-    seedPatron(world, 10);
-    seedPatron(world, 12);
+    if(world.memory.life.firstOpening.step===12) {
+      seedPatron(world, 1); seedPatron(world, 10); seedPatron(world, 12);
+    }
 
     // the street is never quite empty at boot
     spawnPasser(world, { x: rnd(STREET.x0 + 40, STREET.x1 - 40) });
@@ -269,13 +286,14 @@
     // you recognise. His schedule is marked done-for-today inside seedRegular so
     // updateRegulars never brings a second Holger the same café day.
     const holger = CAST.regulars.find(function (r) { return r.id === 'holger'; });
-    if (holger) seedRegular(world, holger);
+    if (holger && world.memory.life.firstOpening.step===12) seedRegular(world, holger);
 
     if (SIM._.restoreLife) SIM._.restoreLife(world);
     return world;
   }
 
   function seedPatron(world, seatIdx) {
+    if (!world.seats[seatIdx]) return;
     const p = makePatron(world);
     const seat = world.seats[seatIdx];
     p.laptop = !p.wantsBook && random() < 0.16;
@@ -342,6 +360,7 @@
   }
 
   function borrowBook(world, p) {
+    if (!SCENE.hasFurniture(world,'bookshelf')) return;
     const slots = SCENE.bookLoans;
     const slot = slots.find(function (s) {
       return !world.patrons.some(function (other) {
@@ -353,7 +372,8 @@
   }
 
   function makePatron(world, requestedName) {
-    const drink = pickDrink();
+    const available = SCENE.hasFurniture(world,'full-counter') ? DRINKS : DRINKS.filter(d => ['espresso','cappuccino','chamomile tea','cardamom bun'].indexOf(d.name)>=0);
+    const drink = SCENE.hasFurniture(world,'full-counter') ? pickDrink() : pick(available);
     const wantsBook = random() < 0.35;
     const pianist = !wantsBook && random() < 0.1;
     const nameStyle = requestedName ? nameStyleFor(requestedName) : (random() < 0.5 ? 'feminine' : 'masculine');
@@ -472,25 +492,31 @@
   // change their route when a reader sits down. Interaction endpoints still
   // approach their own furniture through walkClear's first/last-leg rules.
   // Even low tables block shortcuts: depth sorting alone isn't a walkable gap.
-  const walkBoxes = L.occluders.map(function (o) {
-    return { name: o.name, x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
-  }).concat(L.footprints).map(function (b) {
-    const side = b.seat ? 22 : 18, depth = b.seat ? 24 : 14;
-    return { x0: b.x0 - side, x1: b.x1 + side, y0: b.y0 - depth,
-      y1: b.y1 + (b.frontClearance || depth), core: b };
-  });
+  let walkBoxes = [], staffBoxes = [], walkCorners = [], navigationKey = null;
+  function ensureNavigation() {
+    const w = {memory: (activeContext || productionContext).memory.state};
+    const key = SCENE.layoutKey(w);
+    if (key === navigationKey) return;
+    navigationKey = key;
+    walkBoxes = SCENE.activeGeometry(w, L.occluders.map(function (o) {
+      return { name: o.name, furniture:o.furniture, x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
+    }).concat(L.footprints)).map(function (b) {
+      const side = b.seat ? 22 : 18, depth = b.seat ? 24 : 14;
+      return { x0: b.x0 - side, x1: b.x1 + side, y0: b.y0 - depth,
+        y1: b.y1 + (b.frontClearance || depth), core: b };
+    });
 
-  // Nora's feet are projected behind the counter at y=286. Keep that
-  // working corridor open, but retain the counter front as a solid barrier:
-  // access to the room is around its left end, never through the slab.
-  const staffBoxes = walkBoxes.map(function (box) {
-    // Nora needs the service gaps between the nook's lamps and armchairs.
-    // Use body clearance there rather than a patron's wider personal space.
-    const staff = Object.assign({}, box, { x0: box.core.x0 - 12, x1: box.core.x1 + 12 });
-    if (box.core.name !== 'counter') return staff;
-    const core = Object.assign({}, box.core, { y0: L.baristaHome.y + 1 });
-    return Object.assign({}, staff, { x0: L.baristaExitX, y0: core.y0, core: core });
-  });
+    // Nora's feet are projected behind the counter at y=286. Keep that
+    // working corridor open, but retain the counter front as a solid barrier.
+    staffBoxes = walkBoxes.map(function (box) {
+      // Staff use body clearance through the nook's service gaps.
+      const staff = Object.assign({}, box, { x0: box.core.x0 - 12, x1: box.core.x1 + 12 });
+      if (box.core.name !== 'counter') return staff;
+      const core = Object.assign({}, box.core, { y0: L.baristaHome.y + 1 });
+      return Object.assign({}, staff, { x0: L.baristaExitX, y0: core.y0, core: core });
+    });
+    walkCorners = cornersFor(walkBoxes);
+  }
 
   function insideWalkBox(p, b) {
     return p.x > b.x0 && p.x < b.x1 && p.y > b.y0 && p.y < b.y1;
@@ -548,7 +574,6 @@
     });
     return corners;
   }
-  const walkCorners = cornersFor(walkBoxes);
 
   function staffRouteBoxes(start, end) {
     return staffBoxes.map(function (box) {
@@ -573,6 +598,7 @@
   }
 
   function findWalkPath(e, tx, ty) {
+    ensureNavigation();
     const start = { x: e.x, y: e.y }, end = { x: tx, y: ty };
     const boxes = e.kind === 'barista' ? staffRouteBoxes(start, end) : walkBoxes;
     if (walkClear(start, end, boxes, start, end)) { e.path = [end]; return; }
@@ -619,6 +645,7 @@
   }
 
   function smoothPath(e) {
+    ensureNavigation();
     // Keep authored interaction approaches, but omit aisle detours wherever
     // the entire shortcut is clear. Never exempt endpoint furniture here.
     let from = e;
@@ -874,7 +901,7 @@
         SND.churchBells();
         if (random() < 0.5) caption(world, 'noon — the church bells, from across the water.');
       } else if ([9, 15, 18, 21].indexOf(whole) >= 0) {
-        SND.mantelChime();
+        if(SCENE.hasFurniture(world,'mantel-decor')) SND.mantelChime();
       }
     }
     world.lastWholeHour = whole;
@@ -911,8 +938,8 @@
       tb.candle = value;
       tb.candleTarget = value;
     });
-    world.candles.mantel = value;
-    world.candles.mantelTarget = value;
+    world.candles.mantel = SCENE.hasFurniture(world,'mantel-decor') ? value : 0;
+    world.candles.mantelTarget = SCENE.hasFurniture(world,'mantel-decor') ? value : 0;
     world.candles.wasDark = dark;
     world.candles.forceRound = false;
     world.barista.candlePending = false;
@@ -947,7 +974,7 @@
     if (c.mantel < c.mantelTarget) c.mantel = Math.min(c.mantelTarget, c.mantel + mantelStep);
     else if (c.mantel > c.mantelTarget) c.mantel = Math.max(c.mantelTarget, c.mantel - mantelStep);
 
-    if (dark && (tables.some(function (tb) { return tb.candleTarget < 1; }) || c.mantelTarget < 1)) {
+    if (dark && (tables.some(function (tb) { return tb.candleTarget < 1; }) || (SCENE.hasFurniture(world,'mantel-decor') && c.mantelTarget < 1))) {
       world.barista.candlePending = true;
     }
     c.wasDark = dark;
@@ -1100,7 +1127,7 @@
     p.nameStyle = spec.nameStyle;
     p.colors = Object.assign({}, spec.colors);
     const drink = DRINKS.find(function (d) { return d.name === spec.drink; });
-    if (drink) p.drink = drink;
+    if (drink && (SCENE.hasFurniture(world,'full-counter') || ['espresso','cappuccino','chamomile tea','cardamom bun'].indexOf(drink.name)>=0)) p.drink = drink;
     p.wantsBook = !!spec.traits.wantsBook;
     p.ownBook = !!spec.traits.ownBook;
     p.chatty = !!spec.traits.chatty;

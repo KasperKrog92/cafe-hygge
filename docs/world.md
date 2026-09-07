@@ -417,3 +417,14 @@ New completion captions use the normal quiet queue: “another little place to
 settle, whenever you like.” and “the hearth is clean; a small fire can glow
 again.” Neither completion consumes a story invitation. There are no progress
 bars, deadlines or required acknowledgement clicks.
+
+## First opening
+
+A fresh café waits behind the entry overlay. On entry, Nora brings the cat to
+its corner, sets out entrance equipment, coffee equipment and a small cake
+stand, then assembles both table sets. The clock and customer arrivals wait
+until setup finishes; setup costs nothing and resumes after reload. The bare
+hearth stays cold until its existing improvement is installed. Boarded windows
+have no curtain routine or window light beams. Optional furniture controls
+its associated paths, activities and perches; absent furniture is never a target.
+The initial menu offers espresso, cappuccino, chamomile tea and cardamom buns.

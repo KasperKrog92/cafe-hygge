@@ -22,9 +22,9 @@
   R.installProjects = function (w) {
     if (w.memory.life.projects.table.stage !== 'installed' || w.tables.some(t => t.project === 'table')) return;
     const t = L.projects.table, index = w.tables.length;
-    w.tables.push({ x:t.x, y:t.y, tag:t.tag, project:'table', items:[], candle:0, candleTarget:0 });
+    w.tables.push({ x:t.x, y:t.y, tag:t.tag, project:'table', furniture:'project-table', items:[], candle:0, candleTarget:0 });
     [-1,1].forEach(side => w.seats.push({x:t.x+side*L.stoolDX,y:t.y+L.stoolDY+4,
-      facing:-side,table:index,side:side,armchair:false,taken:false,project:'table'}));
+      facing:-side,table:index,side:side,armchair:false,taken:false,project:'table',furniture:'project-table'}));
   };
   SIM.buyProject = function (w, id) {
     const l = w.memory.life, d = PROJECTS[id], p = l.projects[id];
@@ -88,6 +88,56 @@
     return true;
   };
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
+  // First arrival is ordinary visible work, held before service. Every step
+  // and partial hand action is saved; existing lives migrate past this once.
+  const B=L.basic;
+  const FIRST = SIM.firstOpeningSteps = [
+    {at:L.catCorner.noraSpot,duration:3,pose:'reach',install:'cat-corner',carry:'cat'},
+    {at:B.staging,duration:1,pose:'kneel',pickup:true},
+    {at:L.umbrellaSpot,duration:3,pose:'kneel',install:'entrance',carry:'parcel'},
+    {at:B.staging,duration:1,pose:'kneel',pickup:true},
+    {at:{x:B.machine.x+14,y:L.backBar.workY},duration:6,pose:'reach',install:'counter-equipment',carry:'parcel'},
+    {at:B.staging,duration:1,pose:'kneel',pickup:true},
+    {at:B.pastry,duration:3,pose:'reach',install:'cake-stand',carry:'parcel'},
+    {at:B.staging,duration:1,pose:'kneel',pickup:true},
+    {at:B.tableWork[0],duration:18,pose:'kneel',install:'table-window',carry:'parcel',table:0},
+    {at:B.staging,duration:1,pose:'kneel',pickup:true},
+    {at:B.tableWork[1],duration:18,pose:'kneel',install:'table-hearth',carry:'parcel',table:1},
+    {at:L.baristaHome,duration:2,pose:'stand'}
+  ];
+  function installFirstTable(w,index) {
+    const t=L.tables[index];
+    if(w.tables.some(tb=>tb.furniture===t.furniture))return;
+    const ti=w.tables.length;
+    w.tables.push({x:t.x,y:t.y,tag:t.tag,furniture:t.furniture,items:[],candle:0,candleTarget:0});
+    [-1,1].forEach(side=>w.seats.push({x:t.x+side*L.stoolDX,y:t.y+L.stoolDY+4,facing:-side,
+      table:ti,side,armchair:false,taken:false,furniture:t.furniture}));
+  }
+  R.updateFirstOpening = function(w,dt) {
+    const f=w.memory.life.firstOpening,b=w.barista,step=FIRST[f.step];
+    if(!step)return;
+    b.animT+=dt;w.cat.animT+=dt;
+    if(!b.path) { R.makePath(b,step.at.x,step.at.y);b.holding=step.carry||null; }
+    if(b.path.length) { R.walker(b,dt);return; }
+    b.holding=step.carry==='cat'?'cat':null;b.pose=step.pose;b.heading=step.install==='counter-equipment'?'up':'';b.facing=1;
+    const before=f.time;f.time=Math.min(step.duration,f.time+dt);b.stateT=f.time;
+    if(Math.floor(before/3)!==Math.floor(f.time/3))commit(w);
+    if(f.time<step.duration)return;
+    if(step.install)w.memory.life.furniture[step.install]=true;
+    if(step.table!==undefined)installFirstTable(w,step.table);
+    if(step.install==='cat-corner') {
+      w.shop.carryingCat=false;w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;
+      w.cat.state='sleep';w.cat.surface='floor';w.cat.path=null;
+    }
+    if(step.install==='cake-stand')w.shop.stocked=true;
+    if(step.install)R.sound.softThump();
+    f.step++;f.time=0;b.path=null;b.pose='stand';b.holding=null;
+    if(f.step===FIRST.length) {
+      w.shop.phase='open';w.shop.accepting=true;w.shop.carryingCat=false;b.state='idle';b.idleT=2;
+      w.spawnT=2;R.caption(w,'two little tables, fresh coffee. the door is open.');
+    }
+    commit(w);
+  };
   function saveLife(w, dt) {
     const l = w.memory.life, b = w.barista;
     l.hour = w.hour;
@@ -115,6 +165,12 @@
     if (SCENE.hearthWork(w)) { w.fire.level = w.fire.target = 0; w.fire.wantsLog = false; }
     w.clockOffset = (l.hour - w.hour) / 24 * R.DAY_SECONDS;
     R.updateClock(w, 0);
+    w.firstEntryReady=true;
+    if(l.firstOpening.step<FIRST.length&&!c) {
+      w.shop.phase='settling';w.shop.accepting=false;w.shop.stocked=false;w.shop.carryingCat=l.firstOpening.step===0;
+      w.barista.x=L.doorSpot.x;w.barista.y=L.doorSpot.y;w.barista.path=null;w.barista.state='shop';
+      w.barista.holding=w.shop.carryingCat?'cat':null;
+    }
     if (!c) return;
     Object.assign(w.shop, JSON.parse(JSON.stringify(c.shop)));
     Object.assign(w.barista, JSON.parse(JSON.stringify(c.nora)));

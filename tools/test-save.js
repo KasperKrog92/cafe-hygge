@@ -32,12 +32,35 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v4 starts small and preserves every furnished v3 job/history record', () => {
+    const b=boot();
+    b.run(`var fresh=MEMORY.codec.fresh(),small=SIM.create({memory:MEMORY.createStore({state:fresh})});
+      if(small.tables.length||small.seats.length||small.shop.phase!=='settling')throw Error('first arrival skipped');
+      for(let i=0;i<4000&&small.shop.phase==='settling';i++)SIM.update(small,.25);
+      if(small.tables.length!==2||small.seats.length!==4||small.fire.level!==0||small.shop.phase!=='open')throw Error('first setup failed');
+      for(const stage of ['available','purchased','scheduled','arrived','working','installed']) {
+        var old=MEMORY.codec.fresh();old.version=3;delete old.life.furniture;
+        old.life.savings=173;old.flags.kept=true;old.bonds.gerda={visits:9};
+        old.arcs['gerda-scarf']={stage:0,progress:2,pendingBeat:'finished'};
+        old.life.projects.table={stage,step:stage==='installed'?6:stage==='working'?3:0,time:stage==='working'?1.25:0};
+        var before=JSON.stringify(old),next=MEMORY.codec.decode(before);
+        if(next.error||JSON.stringify(old)!==before||next.state.version!==4)throw Error('migration failed');
+        if(JSON.stringify(next.state.life.projects)!==JSON.stringify(old.life.projects)||next.state.life.savings!==173||
+           JSON.stringify(next.state.arcs)!==JSON.stringify(old.arcs)||!next.state.flags.kept||next.state.bonds.gerda.visits!==9)throw Error('history lost');
+        var full=SIM.create({memory:MEMORY.createStore({state:next.state})});
+        if(full.seats.length!==(stage==='installed'?20:18)||Object.values(full.memory.life.furniture).some(v=>!v))throw Error('furniture stripped');
+      }
+      for(const value of [null,[],{}, {'table-window':true}]) {
+        var s=MEMORY.codec.fresh();s.life.furniture=value;
+        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid furniture accepted');
+      }`);
+  });
   await test('v2 migration retains the apartment and plant; v3 jobs reject invalid progress', () => {
     const b=boot();
     b.run(`var old=MEMORY.codec.fresh();old.version=2;delete old.life.projects;delete old.life.plannedTonight;
       old.life.savings=83;old.life.plant={stage:'place',time:2.5};old.flags.kept=true;
       var next=MEMORY.codec.decode(JSON.stringify(old));
-      if(next.error||next.state.version!==3||next.state.life.savings!==83||next.state.life.plant.time!==2.5||!next.state.flags.kept)throw Error('v2 lost life');
+      if(next.error||next.state.version!==MEMORY.VERSION||next.state.life.savings!==83||next.state.life.plant.time!==2.5||!next.state.flags.kept)throw Error('v2 lost life');
       for(const change of [p=>p.time=-1,p=>p.time=18,p=>p.step=1.5,p=>p.step=7,p=>p.stage='other',p=>p.stage='installed',p=>p.step=1]) {
         var s=MEMORY.codec.fresh();change(s.life.projects.table);
         if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('bad project accepted');
@@ -82,7 +105,8 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
   });
   await test('borrowed covers keep their colors when books return out of order', () => {
     const b = boot();
-    b.run(`var w = SIM.create({random:SIM.seededRandom(42)});
+    b.run(`var state=MEMORY.codec.fresh();state.life.furniture=MEMORY.furnishings(true);state.life.firstOpening={step:12,time:0};
+      var w = SIM.create({random:SIM.seededRandom(42),memory:MEMORY.createStore({state})});
       w.patrons = [];
       var readers = [{}, {}, {}];
       readers.forEach(function(p) { SIM._.borrowBook(w, p); w.patrons.push(p); });
@@ -200,6 +224,8 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
     const b = boot();
     b.run(`var writesA=0,writesB=0,storeA=MEMORY.createStore(),storeB=MEMORY.createStore();
       storeA.save=()=>writesA++;storeB.save=()=>writesB++;
+      storeA.state.life.furniture=MEMORY.furnishings(true);storeA.state.life.firstOpening={step:12,time:0};
+      storeB.state.life.furniture=MEMORY.furnishings(true);storeB.state.life.firstOpening={step:12,time:0};
       var a=SIM.create({memory:storeA}),b=SIM.create({memory:storeB});writesA=writesB=0;
       SIM._.updateNarrative(a,59);SIM._.updateNarrative(b,1);
       if(writesA||writesB)throw Error('shared cadence');SIM._.updateNarrative(a,1);

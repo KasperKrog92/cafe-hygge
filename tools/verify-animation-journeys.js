@@ -3,7 +3,7 @@
  const failures=[], results=[];
  const canvas=document.createElement('canvas');canvas.width=960;canvas.height=600;const g=canvas.getContext('2d');
  function fresh(empty){
-  const w=SIM.create({});w.spawnT=1e9;
+  const w=__dev.furnishedWorld({});w.spawnT=1e9;
   Object.values(w.regulars).forEach(r=>{r.hour=99;});
   if(empty){w.patrons=[];w.seats.forEach(s=>s.taken=false);w.tables.forEach(t=>t.items=[]);}
   return w;

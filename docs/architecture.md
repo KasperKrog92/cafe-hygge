@@ -65,7 +65,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v3, migrated through v1/v2) contains `mode`, integer `savings`, `hour`,
+`memory.life` (v4, migrated through v1/v2/v3) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `plant: {stage,time}`, `projects`, `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Nora's position/path. Initial savings and the plant price are
 30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -269,7 +269,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v3; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v4; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -437,3 +437,13 @@ allows the existing fire routine again. Other furnishings and stories remain.
 The audit checks work anchors and table/seat equivalence. Its route check allows
 exiting a service seat's clearance margin only when the solid furniture stays
 clear, matching the path planner.
+
+### Saved first opening and furniture
+
+Version 4 adds `life.furniture` (stable availability keys) and
+`life.firstOpening: {step, time}`. Fresh saves start empty with step zero; v3
+migration marks the existing room furnished and setup complete. `settling` is
+a resumable shop checkpoint. `sim-life.js` commits setup progress and furniture
+together. `SCENE.activeGeometry` and layout keys rebuild private-world navigation
+and background caches when availability changes. Tables and seats are installed
+before ordinary simulation starts; optional routines share the same flags.

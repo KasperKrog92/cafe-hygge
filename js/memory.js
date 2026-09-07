@@ -1,7 +1,16 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 3;
+  const KEY = 'cafe-hygge-save', VERSION = 4;
+  const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
+    'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
+    'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
+    'counter-equipment','cake-stand','cat-corner','entrance'];
+  function furnishings(full) {
+    const result = {};
+    FURNITURE.forEach(function (id) { result[id] = !!full; });
+    return result;
+  }
   const MEMORY = (window.MEMORY = {});
   // Waiting browser tabs may receive hidden/pagehide before they own a world.
   // Their exit listeners must not flush an old snapshot over the active save.
@@ -45,6 +54,15 @@
       });
       if (version >= 2) validateLife(s.life);
       if (version >= 3) validateProjects(s.life);
+      if (version >= 4) {
+        requireShape(record(s.life.furniture), 'invalid furniture');
+        FURNITURE.forEach(id => requireShape(typeof s.life.furniture[id] === 'boolean', 'invalid furniture: ' + id));
+        const first=s.life.firstOpening;
+        requireShape(record(first) && integer(first.step) && first.step>=0 && first.step<=12 &&
+          finite(first.time) && first.time>=0 && first.time<=18, 'invalid first opening');
+        if(first.step===12) requireShape(first.time===0 && s.life.furniture['table-window'] &&
+          s.life.furniture['table-hearth'], 'unfinished starting tables');
+      }
       return s;
     }
     function migrate(input) {
@@ -73,7 +91,8 @@
   }
   function freshLife() {
     return { mode: 'idle', savings: 30, hour: 8.4, homeTime: 0,
-      plant: { stage: 'available', time: 0 }, projects: freshProjects(), plannedTonight: false, checkpoint: null };
+      plant: { stage: 'available', time: 0 }, projects: freshProjects(), furniture: furnishings(false),
+      firstOpening:{step:0,time:0}, plannedTonight: false, checkpoint: null };
   }
   function freshProjects() {
     return { table: { stage: 'available', step: 0, time: 0 }, fireplace: { stage: 'available', step: 0, time: 0 } };
@@ -102,7 +121,7 @@
       const c = l.checkpoint;
       requireShape(record(c) && record(c.shop) && record(c.nora), 'invalid lifecycle checkpoint');
       const s = c.shop, b = c.nora;
-      requireShape(['closing','leaving','night','home','dawn','entering','opening'].indexOf(s.phase) >= 0, 'invalid lifecycle phase');
+      requireShape(['settling','closing','leaving','night','home','dawn','entering','opening'].indexOf(s.phase) >= 0, 'invalid lifecycle phase');
       requireShape(finite(s.elapsed) && s.elapsed >= 0 && integer(s.step) && s.step >= 0, 'invalid ritual progress');
       requireShape(Array.isArray(s.curtains) && s.curtains.length === 2 &&
         [s.fade,s.lights].concat(s.curtains).every(n => finite(n) && n >= 0 && n <= 1), 'invalid ritual lighting');
@@ -122,8 +141,12 @@
     createCodec(2, {}).validate(s);
     s.version = 3; s.life.projects = freshProjects();
     s.life.plannedTonight = s.life.plant.stage === 'purchased'; return s;
+  }, 3: function (s) {
+    createCodec(3, {}).validate(s);
+    s.version = 4; s.life.furniture = furnishings(true); s.life.firstOpening={step:12,time:0}; return s;
   } });
   MEMORY.VERSION = VERSION;
+  MEMORY.furnishings = furnishings;
   MEMORY.codec = codec;
   MEMORY.createCodec = createCodec;
   MEMORY.isRecord = record;

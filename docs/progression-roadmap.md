@@ -105,7 +105,7 @@ The starting café must already meet its standard of warmth and believable life.
 
 | State | Room and equipment | Life it supports |
 | --- | --- | --- |
-| C0 — First opening | Intact but worn room, compact counter with basic coffee/tea equipment and a sink for hand washing, two usable tables with chairs, warm lighting, basic cups, street sign and safe clear routes. Hearth unused, bookshelf and optional furnishings absent. | Complete autonomous service of simple coffee and tea, possibly one food item; hand-washed dishes, reading with patrons' own books, weather and a small starting cast. No mandatory repair tutorial. |
+| C0 — First opening | Boarded-over windows, small counter and coffee equipment, a tiny cake stand, warm lighting and entrance equipment. No room rugs, drapes, wall menu, matcha or mantel decoration; hearth unused. Nora arrives carrying the cat, sets out the entrance and counter equipment, then visibly assembles two tables and their chairs. | Setup starts on the player's first entry, runs autonomously and saves its progress. Customers enter only after both table sets are ready. Simple coffee, chamomile tea and cardamom buns support complete service; patrons bring their own books. |
 | C1 — Settling in | First plant, small table assembled, cleaned hearth, a few personal touches. | More places to settle; watering, fire tending and improvement work become part of the day. |
 | C2 — A reading place | Delivered bookshelf, then partially and eventually fully stocked shelves; an optional reading chair and lamp. | Browsing and borrowed-book reading become available as their furniture and contents are ready. Holger's familiarity can support a reading-corner story. |
 | C3 — A cared-for café | Repainted walls, repaired window frames, coordinated small furnishings; the room keeps its familiar layout. | Contractor visits provide temporary daytime activity; completed work improves appearance without making the previous room feel like failure. |
@@ -318,11 +318,14 @@ The first apartment/plant milestone below subsequently added the minimal life an
    The chosen hearth rests cold during cleaning, then resumes its usual fire.
    Schema v3 preserves v2 life/history. Busy/unattended simulations, actual
    page reloads at each work phase, purchase UI and duplicate prevention pass.
-   C0, H1 unpacking, contractors and later catalogue items remain deferred.
-4. **Introduce the modest starting café.** Define C0 and explicit furniture
-   availability using the existing scene. Verify complete service and all
-   character routes at every intermediate layout before adding more upgrades.
-   Introduce H1 unpacking and the first returning-patron conversation.
+   H1 unpacking, contractors and later catalogue items remain deferred.
+4. **Modest starting café — implemented locally 7 September 2026.** C0 uses
+   explicit saved furniture availability and the owner's first-entry sequence
+   above. Assembly is free, automatic and resumable; opening waits for completion.
+   Schema v4 preserves the furnished room and all progress in existing v3 saves.
+   Routes, perches, service equipment and optional routines follow what is
+   installed. The existing plant, extra-table and hearth jobs work in C0.
+   H1 unpacking and the first returning-patron conversation remain separate work.
 5. **Prove a visitor job.** Build bookshelf delivery, then a separate book
    purchase and gradual stocking. Reuse the visitor/job structure for a painter
    or window worker after the delivery loop is convincing.
@@ -357,7 +360,7 @@ direction. A large catalogue or a redesigned whole café would hide that test.
 - Preserve current users' developed cafés, story marks and relationships by
   migrating them to equivalent owned furnishings. Starting small must be an
   explicit new-life choice, never an update that strips an existing save.
-- A fresh save eventually begins at C0/H0; changing mode never creates a fresh
+- A fresh save begins at C0/H0; changing mode never creates a fresh
   save. Before release, handle simultaneous tabs so two views cannot duplicate
   earnings or overwrite each other's job progress.
 - Test long unattended runs, mid-action saves, interruptions, worker exits,
@@ -369,7 +372,7 @@ direction. A large catalogue or a redesigned whole café would hide that test.
 
 - Evening length and how the planner allows lingering without a feeling of hurry.
 - Prices, starting savings and how much progress a normal reading session funds.
-- Which furniture belongs in the final C0 layout, and the apartment's framing.
+- The apartment's framing; C0's initial furniture is specified above.
 - Whether one new project per evening feels sufficient or overly restrictive.
 - Final café name and the existing artist's distinct name/identity.
 - Recipes, food portions and replenishment, counter layouts, oven routines and

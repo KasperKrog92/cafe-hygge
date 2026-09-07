@@ -16,7 +16,9 @@ try {
   & $browser --session $testSession wait --fn '!!window.__world'
   if($LASTEXITCODE -ne 0){throw 'Boot failed'}
   Eval-Project (Get-Content -Raw -Encoding UTF8 (Join-Path $PSScriptRoot 'verify-projects.js')) | Out-Null
-  $saves=Eval-Project 'window.projectSaves'
+  Eval-Project (Get-Content -Raw -Encoding UTF8 (Join-Path $PSScriptRoot 'verify-c0.js')) | Out-Null
+  Eval-Project (Get-Content -Raw -Encoding UTF8 (Join-Path $PSScriptRoot 'verify-first-opening.js')) | Out-Null
+  $saves=Eval-Project 'Object.assign({},window.projectSaves,window.c0Saves,window.firstSaves)'
   foreach($fixture in $saves.PSObject.Properties) {
     $raw=$fixture.Value | ConvertTo-Json -Compress
     Eval-Project "MEMORY.state=MEMORY.codec.decode($raw).state; MEMORY.saveNow(); true" | Out-Null
@@ -24,22 +26,26 @@ try {
     if($LASTEXITCODE -ne 0){throw 'Reload failed'}
     & $browser --session $testSession wait --fn '!!window.__world' | Out-Null
     if($LASTEXITCODE -ne 0){throw 'Reload boot failed'}
-    Eval-Project "(()=>{const old=JSON.parse($raw).life,l=__world.memory.life;if(JSON.stringify(l.projects)!==JSON.stringify(old.projects)||l.savings!==old.savings)throw Error('reload changed jobs or balance');return true})()" | Out-Null
+    Eval-Project "(()=>{const old=JSON.parse($raw).life,l=__world.memory.life;if(JSON.stringify(l.projects)!==JSON.stringify(old.projects)||JSON.stringify(l.furniture)!==JSON.stringify(old.furniture)||JSON.stringify(l.plant)!==JSON.stringify(old.plant)||l.savings!==old.savings)throw Error('reload changed layout, jobs or balance');return true})()" | Out-Null
     $result=Eval-Project @'
 (()=>{
  const w=__world,l=w.memory.life,initial=JSON.parse(JSON.stringify(l.projects));
- const before=l.savings;
+ const before=l.savings,plant=l.plant.stage,layout=JSON.stringify(l.furniture),settling=l.firstOpening.step<12;
  SIM.setMode(w,'idle');SIM.setMode(w,'game');SIM.setMode(w,'idle');
  if(l.savings!==before)throw Error('mode charged');
  let funds=l.savings;
  for(let i=0;i<28000;i++) {
    SIM.update(w,.25);
    if(l.savings<funds)throw Error('charged while resuming');funds=l.savings;
-   if(Object.keys(initial).every(id=>initial[id].stage==='available'||l.projects[id].stage==='installed'))break;
+   if(l.firstOpening.step===12&&(plant==='available'||l.plant.stage==='installed')&&Object.keys(initial).every(id=>initial[id].stage==='available'||l.projects[id].stage==='installed'))break;
  }
  Object.keys(initial).forEach(id=>{
    if(initial[id].stage==='available' ? l.projects[id].stage!=='available' : l.projects[id].stage!=='installed')throw Error('resumption failed '+id);
  });
+ if(plant!=='available'&&l.plant.stage!=='installed')throw Error('plant did not resume');
+ if(!settling&&JSON.stringify(l.furniture)!==layout)throw Error('room changed on resume');
+ if(l.firstOpening.step!==12)throw Error('first opening did not resume');
+ if(settling&&(w.tables.length!==2||w.seats.length!==4))throw Error('first opening duplicated seating');
  const installed=l.projects.table.stage==='installed';
  if(w.tables.filter(t=>t.project==='table').length!==(installed?1:0)||w.seats.filter(s=>s.project==='table').length!==(installed?2:0))throw Error('duplicate table or seats');
  MEMORY.codec.validate(w.memory);

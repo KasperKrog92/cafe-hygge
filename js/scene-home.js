@@ -40,8 +40,41 @@
       }
       px(g,x-9,y-29-Math.round(Math.sin(p.time*4)*3),6,4,b.colors.skin);
     }});
-    return draws.concat(projectDrawables(w));
+    return draws.concat(projectDrawables(w), firstOpeningDrawables(w));
   };
+  function firstOpeningDrawables(w) {
+    const f=w.memory.life.firstOpening,L=SCENE.L,b=w.barista,draws=[];
+    if(f.step>=12)return draws;
+    const step=SIM.firstOpeningSteps[f.step];
+    // The belongings arrive together at the threshold. Kits disappear from
+    // this stack only when Nora has collected them, never before entry.
+    draws.push({y:L.basic.staging.y,draw:g=>{
+      const count=Math.max(0,5-Math.floor((f.step+1)/2));
+      for(let i=0;i<count;i++)box(g,L.basic.staging.x+14+(i%2)*25,L.basic.staging.y-Math.floor(i/2)*22,false);
+    }});
+    if(b.holding==='parcel')draws.push({y:b.y+.1,draw:g=>box(g,Math.round(b.x)+12,Math.round(b.y)-23,false)});
+    if(step.table!==undefined&&b.path&&!b.path.length) {
+      const a=L.tables[step.table],n=Math.min(5,Math.floor(f.time/3));
+      draws.push({y:a.y+32,draw:g=>{
+        const x=a.x,y=a.y;
+        if(n<2) {box(g,x-14,y+22,true);px(g,x-22,y+30,44,4,'#96704c');ell(g,x+9,y+9,23,7,'#8a6142');}
+        else {
+          px(g,x-5,y,10,27,'#5a3d28');px(g,x-16,y+26,32,5,'#4a3222');
+          ell(g,x,y,32,12,'#8a6142');ell(g,x,y-3,27,9,'#96704c');
+        }
+        [-1,1].forEach((side,i)=>{
+          const sx=x+side*L.stoolDX;
+          if(n<3+i) {px(g,sx-10,y+16,20,4,'#96704c');px(g,sx-8,y+23,16,3,'#6e4c30');}
+          else {px(g,sx-9,y+8,5,14,'#4a3222');px(g,sx+4,y+8,5,14,'#4a3222');ell(g,sx,y+8,13,6,'#94684a');
+            if(side<0){px(g,sx-16,y-28,6,38,'#5a3d28');px(g,sx-17,y-30,8,4,'#7d5334');}}
+        });
+        px(g,x+18,y+29,10,2,'#b8bfc7');px(g,x+26,y+28,5,4,'#a8764a');
+      }});
+    } else if(step.install && !step.table && b.path && !b.path.length && step.install!=='cat-corner') {
+      draws.push({y:b.y+.1,draw:g=>box(g,Math.round(b.x)-18,Math.round(b.y)+3,true)});
+    }
+    return draws;
+  }
   function projectDrawables(w) {
     const draws=[], b=w.barista, jobs=w.memory.life.projects, anchors=SCENE.L.projects;
     Object.keys(jobs).forEach(function(id) {

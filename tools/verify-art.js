@@ -22,7 +22,8 @@
   }
   // Empty furniture, every dining seat, both directions of every upholstered
   // chair, all four window perches, artist and pianist at both times.
-  const groups = [[], [0, 1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12, 13], [14, 15, 16, 17]];
+  const groups = [[]];
+  for (let i=0;i<live.seats.length;i+=7) groups.push(live.seats.slice(i,i+7).map((s,j)=>i+j));
   [12, 20].forEach(function (hour) {
     groups.forEach(function (seats) {
       const w = __dev.study({ hour: hour, seats: seats });

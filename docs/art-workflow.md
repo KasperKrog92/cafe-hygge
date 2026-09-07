@@ -244,3 +244,13 @@ For sailing-ship behavior, run `tools/verify-ship.ps1` with the local server
 running. It verifies real orders, window round trips, retained seats, pedestrian
 waves, reverse travel, disposal, weather/daylight scheduling and closing,
 exporting ship captures to `.art-review/ship-motion/` before browser cleanup.
+
+For C0, the art-review script completes the live first-opening sequence before
+making detached day/night fixtures. Arrival and partial assembly captures come
+from `verify-first-opening.js`; those fixtures exercise the actual simulation.
+The 7 September local pass is in `.art-review/first-opening-final/` and
+`.art-review/first-opening-art-final/`: boarded windows, compact equipment,
+bare hearth, two table sets and no optional room furnishings. Art audits found
+zero problems. All twelve browser suites passed (the animation fixture rerun
+is in `first-opening-animation-final`), alongside 75 real setup/project reloads,
+seven home/plant reloads, two-tab takeover and a real-time cappuccino order.

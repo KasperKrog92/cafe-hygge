@@ -172,7 +172,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v3; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v4; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -232,7 +232,7 @@ exact partial progress/balance before resuming. It verifies the new planner
 buttons, scrolling and duplicate clicks. The original life reload runner still
 covers the plant and two-tab ownership handoff. No Safari execution is claimed.
 
-The full set now contains ten browser suites and twelve Node save/isolation
+The full set now contains twelve browser suites and thirteen Node save/isolation
 groups. Project checks also serve a real new-seat patron, keep the original
 café running while a job is pending and run two unattended hour-long soaks.
 An existing lap-hop/departure race found in those runs is fixed. A route-audit
@@ -249,3 +249,14 @@ The normal-entry cappuccino run completed in 36.5 seconds with audio ready,
 savings credited, clean browser errors and a zero-problem night audit. The art
 runner verified ten repeatable images and eight occupancy fixtures. All owned
 verification sessions were closed. These are desktop Chromium results.
+
+## C0 and first-entry verification
+
+The runner includes `c0` (all eight plant/table/hearth combinations and private
+layout isolation) and `first-opening` (arrival, each setup step, partial table
+assembly, first sale and day/night captures). `verify-project-reloads.ps1`
+reloads their exported saves alongside project phases. `verify-entry.ps1` checks
+the real splash pause and click/audio entry, advances setup, then observes a
+real-time cappuccino cycle. Use `__dev.furnishedWorld()` for legacy full-room
+fixtures and `__dev.modestWorld()` for a private café after its real initial
+setup; neither changes production persistence.

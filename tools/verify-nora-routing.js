@@ -9,7 +9,7 @@
   function inside(p, b) { return p.x > b.x0 && p.x < b.x1 && p.y > b.y0 && p.y < b.y1; }
   // Independent solid-footprint oracle. Low service tables share projected
   // floor space with their interaction; chairs, lamps and plants never do.
-  const solids = L.footprints.filter(function (b) { return !b.passable; }).concat(
+  const solids = L.footprints.filter(function (b) { return !b.passable && b.furniture !== 'table-worksite'; }).concat(
     L.occluders.map(function (b) { return { name: b.name, x0: b.x0, x1: b.x1,
       y0: b.name === 'counter' ? L.baristaHome.y + 1 : b.top, y1: b.baseline }; }));
   function inspect(p, from, to, label) {
@@ -22,7 +22,7 @@
   }
   const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   try {
-    const w = SIM.create({ random: random }); window.__world = w;
+    const w = __dev.furnishedWorld({ random: random }); window.__world = w;
     const targets = [L.baristaHome, L.doorSpot, L.shop.switchSpot, L.shop.pastry,
       L.noraCare.chalk, L.fire.stand, L.noraCare.mantel, L.catCorner.noraSpot]
       .concat(L.noraCare.water, w.tables.map(function (t, i) { return R.busRoute(w, i).slice(-1)[0]; }),
@@ -36,7 +36,7 @@
         const label = 'route ' + i + ' → ' + j;
         let arrived = false;
         for (let tick = 0; tick < 1800; tick++) {
-          arrived = R.walker(e, 0.05);
+          arrived = SIM.withWorld(w,()=>R.walker(e, 0.05));
           inspect(e, from, to, label);
           if (arrived || e.walkBlocked) break;
         }
@@ -46,14 +46,14 @@
     });
     const blocked = { kind: 'barista', x: L.baristaHome.x, y: L.baristaHome.y,
       speed: 42, path: [{ x: L.plants[0].x, y: L.plants[0].y }] };
-    check(!R.walker(blocked, 0.25) && blocked.walkBlocked && blocked.path.length === 1,
+    check(!SIM.withWorld(w,()=>R.walker(blocked, 0.25)) && blocked.walkBlocked && blocked.path.length === 1,
       'unreachable chore was reported as arrival');
     blocked.path = [L.shop.pastry];
-    R.walker(blocked, 0.25);
+    SIM.withWorld(w,()=>R.walker(blocked, 0.25));
     check(!blocked.walkBlocked, 'replacement route remained blocked');
 
     ['water', 'candles', 'fire', 'chalk', 'piano', 'bus', 'bowls'].forEach(function (task) {
-      const world = SIM.create({ random: random }); window.__world = world;
+      const world = __dev.furnishedWorld({ random: random }); window.__world = world;
       world.patrons = []; world.queue = []; world.counterCups = [];
       world.seats.forEach(function (s) { s.taken = false; });
       world.tables.forEach(function (t) { t.items = []; });

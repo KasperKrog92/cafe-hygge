@@ -126,7 +126,8 @@
         return it.owner === null && it.side === s.side;
       });
     });
-    if (clean.length) free = clean;
+    free = clean;
+    if (!free.length) return null;
     if (patron.isRegular && patron.spec && SEAT_PREFS[patron.spec.seat]) {
       const pref = SEAT_PREFS[patron.spec.seat];
       const preferred = free.filter(function (s) { return pref(s); });
@@ -172,8 +173,8 @@
       if (seats.length >= 2) pair = seats.slice(0, 2);
     });
     if (!pair) {
-      L.winTables.some(function (tb, wi) {
-        const ti = L.tables.length + LB.sideTables.length + wi;
+      world.tables.some(function (tb, ti) {
+        if (!tb.tall) return false;
         const seats = world.seats.filter(function (s) { return s.table === ti && s.window && cleanSeat(world, s); });
         if (seats.length >= 2) { pair = seats.slice(0, 2); return true; }
         return false;
@@ -373,7 +374,7 @@
             break;
           }
           if (R.reserveTerrace(world, p)) break;
-          if (p.wantsBook && !p.ownBook) {
+          if (SCENE.hasFurniture(world,'bookshelf') && p.wantsBook && !p.ownBook) {
             // a borrower: browse the shelf before settling anywhere
             p.state = 'browse'; p.stateT = 0;
             p.browseDur = rnd(2.5, 5.5);
@@ -906,7 +907,7 @@
       return;
     }
 
-    const ship = R.visibleShip(world);
+    const ship = SCENE.hasFurniture(world,'open-windows') && R.visibleShip(world);
     if (ship && ship.watchers < 2 && p.shipSeen !== ship && world.shop.phase === 'open' &&
         !world.shop.lastCall && !p.isRegular && !p.partner && !p.seat.window && !p.seat.piano &&
         !p.seat.artist && !p.holding && !p.dozing && !p.laptopActive && !p.knitting &&
@@ -926,7 +927,7 @@
 
     // One quiet observer at a time may leave their seat and stand by the
     // studio. The seat and drink wait for them exactly as during a book-fetch.
-    if (!p.seat.artist && !p.seat.piano && !p.partner && !p.holding && !p.dozing &&
+    if (SCENE.hasFurniture(world,'studio') && !p.seat.artist && !p.seat.piano && !p.partner && !p.holding && !p.dozing &&
         p.sipPhase <= 0 && p.stay > 70 && !p.laptopActive &&
         lunafreyaAtEasel(world, true) &&
         !world.patrons.some(function (q) { return q !== p && (q.state === 'toEasel' || q.state === 'watchingArtist' || q.state === 'backFromEasel'); }) &&
@@ -941,7 +942,7 @@
     }
 
     // now and then the bookshelf calls (drink stays on the table, seat stays theirs)
-    if (!p.seat.piano && !p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
+    if (SCENE.hasFurniture(world,'bookshelf') && !p.seat.piano && !p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
         R.random() < dt * 0.01) {
       p.pose = 'stand';
       chairScrape(p, true);

@@ -117,7 +117,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
 - **Repeatable verification:** with this checkout served on port 8137, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-project.ps1`.
   It runs the Node save/isolation regressions, checks shipped-script syntax,
-  runs the ten browser suites with
+  runs the twelve browser suites with
   fresh saves between them, exports reports/captures, and confirms session
   cleanup. See [docs/development.md](docs/development.md) for targeted commands,
   the separate normal-entry smoke test and the next preparation tasks.
@@ -185,7 +185,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes; character helpers supplied explicitly. |
 | `js/sim-characters.js` | `SIM` | Nora and cat state machines plus the main simulation update and entity-drawable bridge. |
-| `js/sim-life.js` | `SIM` | Shared home, presentation, plant and interruptible projects, v3 checkpoints. |
+| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v4 checkpoints. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 

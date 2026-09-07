@@ -27,7 +27,7 @@
     // warm pools of light
     g.globalCompositeOperation = 'lighter';
     const lampA = SCENE.lampLevel(world), power = world.shop ? world.shop.lights : 1;
-    L.pendants.forEach(function (lp) {
+    L.pendants.filter((p,i)=>i===0||SCENE.hasFurniture(world,'full-counter')).forEach(function (lp) {
       // Shade contains the source: modest bloom below its rim, with the
       // useful light directly beneath it on the counter, not across the wall.
       g.save();
@@ -38,12 +38,12 @@
       g.restore();
       glow(g, lp.x, L.counter.slabY - 16, 112, 255, 190, 100, 0.26 * lampA);
     });
-    L.library.lamps.forEach(function (lp) {
+    SCENE.activeGeometry(world,L.library.lamps).forEach(function (lp) {
       glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, (0.04 + 0.3 * pal.lamp) * power);
     });
-    glow(g, L.piano.lamp.x, L.piano.lamp.y, 22, 255, 190, 100, (0.03 + 0.28 * pal.lamp) * power);
+    if (SCENE.hasFurniture(world,'piano')) glow(g, L.piano.lamp.x, L.piano.lamp.y, 22, 255, 190, 100, (0.03 + 0.28 * pal.lamp) * power);
     // the studio floor lamp pools over the easel so the canvas stays readable after dark
-    glow(g, L.artist.lamp.x + 8, L.artist.lamp.y - 56, 64, 255, 190, 100, (0.04 + 0.3 * pal.lamp) * power);
+    if (SCENE.hasFurniture(world,'studio')) glow(g, L.artist.lamp.x + 8, L.artist.lamp.y - 56, 64, 255, 190, 100, (0.04 + 0.3 * pal.lamp) * power);
     // fire: its warm pool grows and brightens with the live burn, and shrinks
     // to a small ember glow when low — but never goes fully dark
     const fireLvl = world.fire ? world.fire.level : 1;

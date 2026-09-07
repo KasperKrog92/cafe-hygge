@@ -34,17 +34,21 @@
     // the piano, and entity drawables place a sitter in front of both.
     const pianoTable = world.tables.find(function (tb) { return tb.piano; });
     const artistTable = world.tables.find(function (tb) { return tb.artist; });
+    if (SCENE.hasFurniture(world,'piano')) {
     out.push({ y: L.piano.catAnchor.y - 1, draw: function (g) { drawPianoLamp(g, world); } });
     out.push({ y: L.piano.baseline, draw: function (g) { drawPianoBench(g); } });
     out.push({ y: L.piano.baseline, draw: function (g) { drawPiano(g, pianoTable, world); } });
+    }
 
     // Lunafreya's studio is a permanent part of the piano corner. The easel
     // sits behind her baseline; the little table lands just in front so a cup
     // can be shared with the normal service/bussing pipeline.
+    if (SCENE.hasFurniture(world,'studio')) {
     out.push({ y: L.artist.lamp.y, draw: function (g) { drawFloorLamp(g, L.artist.lamp.x, L.artist.lamp.y); } });
     out.push({ y: L.artist.easel.baseline, draw: function (g) { drawArtistEasel(g, world); } });
     out.push({ y: L.artist.stool.y, draw: function (g) { drawArtistStool(g); } });
     out.push({ y: L.artist.table.base, draw: function (g) { drawArtistTable(g, artistTable); } });
+    }
 
     // tables + their seats (chair with a back on the left, stool on the right);
     // the nook's small side tables carry items but seat no one themselves
@@ -124,31 +128,32 @@
 
     // wing chairs: the fireside pair (red) and the reading nook pair (green).
     // Each is split so a sitter nestles into it; art is authored facing right.
-    L.armchairs.forEach(function (A) {
+    SCENE.activeGeometry(world,L.armchairs).forEach(function (A) {
       out.push({ y: A.y - 4, draw: function (g) { wingChairBack(g, A, CHAIR_RED); } });
       out.push({ y: A.y + 12, draw: function (g) { wingChairFront(g, A, CHAIR_RED); } });
     });
-    L.library.chairs.forEach(function (A) {
+    SCENE.activeGeometry(world,L.library.chairs).forEach(function (A) {
       out.push({ y: A.y - 4, draw: function (g) { wingChairBack(g, A, CHAIR_GREEN); } });
       out.push({ y: A.y + 12, draw: function (g) { wingChairFront(g, A, CHAIR_GREEN); } });
     });
 
     // reading lamps, one leaning over each nook chair
-    L.library.lamps.forEach(function (F) {
+    SCENE.activeGeometry(world,L.library.lamps).forEach(function (F) {
       out.push({ y: F.y, draw: function (g) { drawFloorLamp(g, F.x, F.y); } });
     });
 
     // The cat's corner is split by baseline: cushion behind the cat, bowls
     // in front when it lowers its head to eat or drink.
-    out.push({ y: L.catCorner.cushion.y, draw: function (g) { drawCatCushion(g); } });
-    out.push({ y: L.catCorner.food.y, draw: function (g) { drawCatBowls(g, world.catBowls); } });
+    if(SCENE.hasFurniture(world,'cat-corner')) out.push({ y: L.catCorner.cushion.y, draw: function (g) { drawCatCushion(g); } });
+    if(SCENE.hasFurniture(world,'cat-corner')) out.push({ y: L.catCorner.food.y, draw: function (g) { drawCatBowls(g, world.catBowls); } });
 
     // the bookshelf — spines thin out while borrowed books are on loan
-    out.push({ y: L.library.shelf.y, draw: function (g) { drawBookshelf(g, world); } });
+    if (SCENE.hasFurniture(world,'bookshelf')) out.push({ y: L.library.shelf.y, draw: function (g) { drawBookshelf(g, world); } });
 
     // A low paneled screen replaces the freestanding hat/scarf silhouette.
     // Two-pixel floor slices let a walker pass either end at the right depth.
     const E = L.entranceScreen;
+    if(SCENE.hasFurniture(world,'entrance-screen')) {
     for (let sy = 0; sy < E.depth; sy += 2) {
       const sx = E.x + Math.floor(E.dx * sy / E.depth), base = E.y + sy + 2;
       out.push({ y: base, draw: function (g) {
@@ -178,10 +183,11 @@
       px(g, x - 2, y - 4, E.w + 2, 4, '#4a3222');
     } });
 
+    }
     // A small glazed crock for rainy arrivals. The state is intentionally
     // only the umbrellas currently visible in the room, never inventory UI.
     const US = L.umbrellaStand;
-    out.push({ y: US.y, draw: function (g) {
+    if(SCENE.hasFurniture(world,'entrance')) out.push({ y: US.y, draw: function (g) {
       const umbrellas = world.umbrellaStand || [];
       ell(g, US.x, US.y - 1, 10, 3, SHADOW);
       umbrellas.slice(-4).forEach(function (u, i) {
@@ -202,13 +208,13 @@
 
     // potted plants anchoring the counter: one against the wall at its left
     // end, one tucked against its right front corner
-    L.plants.forEach(function (P) {
+    SCENE.activeGeometry(world,L.plants).forEach(function (P) {
       out.push({ y: P.y, draw: function (g) { ell(g, P.x, P.y - 2, 13, 4, SHADOW); drawBigPlant(g, P.x, P.y); } });
     });
 
     // magazine basket tucked at the bookshelf's foot
     const BK = L.library.basket;
-    out.push({ y: BK.y, draw: function (g) {
+    if (SCENE.hasFurniture(world,'bookshelf')) out.push({ y: BK.y, draw: function (g) {
       ell(g, BK.x, BK.y - 2, 17, 5, SHADOW);
       px(g, BK.x - 14, BK.y - 24, 28, 22, '#a5763f');
       px(g, BK.x - 10, BK.y - 20, 2, 14, '#8a5a2a'); px(g, BK.x - 2, BK.y - 20, 2, 14, '#8a5a2a'); px(g, BK.x + 6, BK.y - 20, 2, 14, '#8a5a2a');
@@ -219,14 +225,14 @@
     } });
     // log pile leaning on the firewood crate beside the hearth
     const LP = L.logPile;
-    out.push({ y: LP.y + 2, draw: function (g) {
+    if (SCENE.hasFurniture(world,'hearth')) out.push({ y: LP.y + 2, draw: function (g) {
       ell(g, LP.x, LP.y, 18, 5, SHADOW);
       px(g, LP.x - 15, LP.y - 6, 30, 6, '#6b4429'); ell(g, LP.x - 15, LP.y - 3, 3, 3, '#8a6142');
       px(g, LP.x - 13, LP.y - 12, 26, 6, '#5a3520'); ell(g, LP.x + 13, LP.y - 9, 3, 3, '#8a6142');
       px(g, LP.x - 9, LP.y - 18, 20, 6, '#6b4429'); ell(g, LP.x - 9, LP.y - 15, 3, 3, '#8a6142');
     } });
 
-    out.push({ y: L.backBar.baseY, draw: function (g) { SCENE.drawCoffeeStation(g, world); } });
+    out.push({ y: L.backBar.baseY, draw: function (g) { if(SCENE.hasFurniture(world,'full-counter')) SCENE.drawCoffeeStation(g, world); else drawBasicStation(g,world); } });
     // the counter itself
     out.push({ y: C.baseY, draw: function (g) { drawCounter(g, world); } });
 
@@ -738,7 +744,54 @@
     }
   }
 
+  function drawBasicStation(g,world) {
+    const B=L.basic,A=B.backBar;
+    px(g,A.x,A.frontY,A.w,A.baseY-A.frontY,'#6b4529');
+    px(g,A.x-2,A.slabY,A.w+4,A.frontY-A.slabY,'#a8764a');
+    px(g,A.x-2,A.slabY,A.w+4,3,'#c08a58');
+    if(!SCENE.hasFurniture(world,'counter-equipment'))return;
+    const x=B.machine.x,y=B.machine.y;
+    // A domestic single-group machine and separate little hand-sized grinder.
+    px(g,x,y-30,30,30,'#8a919c');px(g,x+2,y-28,26,16,'#b8bfc7');
+    px(g,x+3,y-26,24,2,'#d9d2c0');px(g,x+5,y-9,19,7,'#3c414d');
+    px(g,x+12,y-13,5,7,'#3c414d');px(g,x+14,y-11,12,2,'#4a3222');
+    px(g,x+10,y-6,8,5,'#e8dfc9');px(g,x+4,y-23,3,3,'#657568');
+    px(g,x+23,y-23,3,3,world.brew.active?'#d9a33c':'#64706d');
+    px(g,x+30,y-16,2,13,'#8a919c');px(g,x+28,y-3,7,2,'#d9d2c0');
+    const G=B.grinder;
+    px(g,G.x,G.y-17,12,17,'#4d6052');px(g,G.x+1,G.y-26,10,9,'#64706d');
+    px(g,G.x,G.y-28,12,3,'#3c414d');px(g,G.x+3,G.y-23,6,5,'#6b4429');
+    px(g,G.x+4,G.y-8,9,2,'#b8bfc7');
+    const K=B.kettle;
+    ell(g,K.x,K.y-6,9,6,'#8a919c');px(g,K.x-5,K.y-17,10,9,'#b8bfc7');
+    px(g,K.x-4,K.y-19,8,3,'#3c414d');px(g,K.x+8,K.y-12,5,3,'#8a919c');
+    px(g,K.x-10,K.y-13,3,8,'#3c414d');
+  }
+  function drawBasicCounter(g,world) {
+    const C=L.basic.counter;
+    px(g,C.x-3,C.baseY,C.w+6,3,'rgba(20,12,8,.2)');
+    px(g,C.x,C.frontY,C.w,C.baseY-C.frontY,'#6b4529');
+    for(let x=C.x+24;x<C.x+C.w;x+=30)px(g,x,C.frontY+4,2,19,'#57371f');
+    px(g,C.x,C.baseY-4,C.w,4,'#4a2f1c');
+    px(g,C.x-6,C.slabY,C.w+10,C.frontY-C.slabY,'#a8764a');
+    px(g,C.x-6,C.slabY,C.w+10,3,'#c08a58');
+    px(g,C.x-6,C.frontY-3,C.w+10,3,'#7d5334');
+    if(SCENE.hasFurniture(world,'counter-equipment')) {
+      // Three cups and a little cash tin, no register or wall menu.
+      for(let i=0;i<3;i++) {px(g,C.x+24+i*10,C.slabY-7,7,7,'#e8dfc9');px(g,C.x+31+i*10,C.slabY-5,2,3,'#c9b28a');}
+      px(g,C.x+100,C.slabY-7,18,7,'#4d6052');px(g,C.x+100,C.slabY-9,18,3,'#64706d');
+    }
+    if(SCENE.hasFurniture(world,'cake-stand')) {
+      const x=L.basic.pastry.x,y=C.slabY;
+      px(g,x-2,y-10,4,10,'#c9b28a');ell(g,x,y-1,8,2,'#d9d2c0');ell(g,x,y-11,16,4,'#e8dfc9');
+      if(world.shop.stocked) {
+        px(g,x-9,y-18,9,6,'#c98f4a');px(g,x-7,y-20,5,3,'#e0b06a');
+        px(g,x+2,y-17,8,5,'#c98f4a');px(g,x+4,y-19,4,3,'#e0b06a');
+      }
+    }
+  }
   function drawCounter(g, world) {
+    if(!SCENE.hasFurniture(world,'full-counter')) {drawBasicCounter(g,world);drawCounterCups(g,world);return;}
     const C = L.counter;
     // ground shadow
     px(g, C.x - 4, C.baseY, C.w + 8, 3, 'rgba(20,12,8,0.22)');
@@ -808,7 +861,9 @@
     // the matcha kit lives in the narrow clear gap between machine and pass;
     // waiting orders paint after it so the pass remains immediately legible.
     drawMatchaBar(g, world);
-    // orders waiting at the pass
+    drawCounterCups(g,world);
+  }
+  function drawCounterCups(g,world) {
     world.counterCups.forEach(function (c) {
       if (c.kind === 'plate') {
         ell(g, c.x + 5, c.y + 8, 11, 4, '#e8e0d0');

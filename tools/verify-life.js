@@ -16,7 +16,7 @@
     return Array.from(context.getImageData(400,150,1,1).data).join(',');
   }
   for(const mode of ['idle','game']) {
-    const w=SIM.create({random:SIM.seededRandom(42)}), cat=w.cat, nora=w.barista;
+    const w=__dev.modestWorld({random:SIM.seededRandom(42)}), cat=w.cat, nora=w.barista;
     SIM.setMode(w,mode);
     w.clockOffset+=(21.5-w.hour)/24*SIM._.DAY_SECONDS;
     const phases=[]; let nights=0, prior='open';
@@ -51,7 +51,7 @@
     check(!__dev.audit(w).length,'unattended audit');
     results.push({mode,nights,phases});
   }
-  const w=SIM.create({random:SIM.seededRandom(61)}), cat=w.cat;
+  const w=__dev.modestWorld({random:SIM.seededRandom(61)}), cat=w.cat;
   w.clockOffset+=(21.5-w.hour)/24*SIM._.DAY_SECONDS;
   until(w,()=>w.shop.phase==='home');
   SIM.setMode(w,'game'); SIM.plan(w,true); tick(w,20); snap(w,'home-pc');
@@ -75,7 +75,7 @@
     if(stage==='unpack'||stage==='place') check(w.barista.x===SCENE.L.firstPlant.work.x && w.barista.y===SCENE.L.firstPlant.work.y,'plant worked from wrong location');
     check(!__dev.audit(w).length,stage+' audit');
     const before=w.memory.life.savings;
-    const restored=SIM.create({memory:MEMORY.createStore({state:JSON.parse(saves[stage])}),random:SIM.seededRandom(72)});
+    const restored=__dev.modestWorld({memory:MEMORY.createStore({state:JSON.parse(saves[stage])}),random:SIM.seededRandom(72)});
     check(restored.memory.life.plant.stage===stage,'reload changed stage '+stage);
     check(restored.memory.life.savings===before,'reload changed funds');
     until(restored,()=>restored.shop.phase==='open'&&restored.memory.life.plant.stage==='installed',1200);

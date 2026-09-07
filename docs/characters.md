@@ -671,3 +671,14 @@ all seven waiting/queue stops remain clear. The cat's bowl–bookshelf journey
 uses its existing lane approaches to avoid the set. If a reader releases their
 seat during a lap hop, the cat lands and steps down instead of retaining a
 stale lap link. This race was exposed by the unattended project soak.
+
+## First-entry Nora routine
+
+`SIM.firstOpeningSteps` defines twelve saved setup steps: place the cat and its
+things, fetch and place entrance equipment, fetch and install basic coffee
+equipment, fetch and place the tiny cake stand, fetch and assemble each of two
+table sets, and return behind the counter. Travel uses the usual obstacle-aware
+routes. Each table assembles over eighteen seconds. Customers are admitted
+only when the final step completes; no input or payment is required. Installed
+seating is added once. Ordinary routines use only installed furniture, and the
+initial menu excludes matcha. Existing furnished saves skip this first opening.

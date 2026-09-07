@@ -8,7 +8,7 @@
   const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   function check(ok, text) { if (!ok && failures.indexOf(text) < 0) failures.push(text); }
   function fresh(hour) {
-    const w = SIM.create({ random: random }); window.__world = w;
+    const w = __dev.furnishedWorld({ random: random }); window.__world = w;
     w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];
     w.seats.forEach(function (s) { s.taken = false; }); w.tables.forEach(function (t) { t.items = []; });
     w.regulars = {}; w.spawnT = 1e8; w.weatherT = 1e8; w.rain = w.rainTarget = 0; w.storm = false;
@@ -108,7 +108,7 @@
     });
     // Repeated complete days with normal admissions exercise spontaneous
     // choices, delayed Nora availability, weather and the shared spawn cap.
-    w = fresh(10); w.spawnT = 1; w.regulars = SIM.create({ random: random }).regulars; w.weatherT = 20;
+    w = fresh(10); w.spawnT = 1; w.regulars = __dev.furnishedWorld({ random: random }).regulars; w.weatherT = 20;
     run(w, function () { return false; }, 3000);
     results.push('50-minute simulation soak with ordinary arrivals and weather');
   } finally { window.__world = original; }

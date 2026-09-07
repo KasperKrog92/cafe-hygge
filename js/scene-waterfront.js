@@ -270,7 +270,7 @@
   }
   S.drawTerrace = function (g, world) {
     const wf = world.waterfront;
-    if (!wf) return;
+    if (!wf || !S.hasFurniture(world,'terrace')) return;
     F.tables.forEach(function (a, i) {
       const tb = wf.tables[i], base = F.terraceY;
       ell(g, a.x, base, 24, 3, 'rgba(36,31,34,0.15)');

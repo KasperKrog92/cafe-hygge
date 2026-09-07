@@ -20,6 +20,7 @@
   const stage = document.getElementById('stage');
 
   const world = SIM.create();
+  world.firstEntryReady = new URLSearchParams(location.search).has('dev') || world.memory.life.firstOpening.step===12;
   window.__world = world; // handy for tinkering in the console
 
   /* ---------- viewport manager ----------
@@ -230,6 +231,7 @@
   refreshButtons();
 
   document.getElementById('enter').addEventListener('click', function () {
+    world.firstEntryReady=true;
     SND.init();
     overlay.classList.add('gone');
     controls.classList.remove('hidden');

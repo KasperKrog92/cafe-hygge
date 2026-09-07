@@ -101,6 +101,11 @@
         if (b.orders.length) {
           const order = b.orders[0];
           b.steps = PREP_STEPS[order.drink.prep].slice();
+          if(!SCENE.hasFurniture(world,'full-counter')) b.steps=b.steps.map(function(s) {
+            const x=s.act==='fetch'?L.basic.pastry.x:s.act==='kettle'?L.basic.kettle.x:
+              s.act==='grind'||s.act==='tamp'?L.basic.grinder.x+8:s.act==='steam'?L.basic.machine.x+30:L.basic.machine.x+14;
+            return Object.assign({},s,{x:x});
+          });
           b.stepIdx = -1;
           b.state = 'prepWalk';
           b.path = [prepTarget(b.steps[0])];
@@ -295,17 +300,16 @@
         }
         if (b.stateT >= 1.6) {
           b.pouring = false;
-          if (b.waterStop < WATER_STOPS.length - 1) {
-            const nextStop = b.waterStop + 1;
+          const stops = waterStops(world), nextStop = stops[stops.indexOf(b.waterStop) + 1];
+          if (nextStop !== undefined) {
             if (b.orders.length || world.queue.length) {
               b.waterNext = nextStop;
               b.state = 'waterHome'; b.stateT = 0;
               b.path = waterHomeRoute(b.waterStop);
             } else {
-              const prev = waterRoute(b.waterStop);
               b.waterStop = nextStop;
               b.state = 'waterOut'; b.stateT = 0;
-              b.path = waterRoute(b.waterStop).slice(prev.length);
+              b.path = waterFromHome(b.waterStop);
             }
           } else {
             world.wateredDay = dayIndex(world);
@@ -559,7 +563,11 @@
       .concat(fireTendRoute()).concat(fireHomeRoute());
   }
 
-  const WATER_STOPS = L.noraCare.water;
+  const WATER_STOPS = L.noraCare.water.concat([Object.assign({facing:1},L.firstPlant.work)]);
+  function waterStops(world) {
+    return (SCENE.hasFurniture(world,'full-counter')?[0]:[]).concat(SCENE.hasFurniture(world,'plants') ? [1,2] : [])
+      .concat(SCENE.hasFurniture(world,'first-plant') ? [3] : []);
+  }
 
   function waterRoute(stop) {
     const all = [
@@ -577,6 +585,7 @@
   }
 
   function waterFromHome(stop) {
+    if (stop === 3) return [L.firstPlant.work];
     if (stop === 0) return [{ x: WATER_STOPS[0].x, y: WATER_STOPS[0].y }];
     if (stop === 1) return [
       { x: L.baristaExitX, y: L.baristaHome.y },
@@ -592,6 +601,7 @@
   }
 
   function waterHomeRoute(stop) {
+    if (stop === 3) return [L.baristaHome];
     if (stop === 0) return [{ x: L.baristaHome.x, y: L.baristaHome.y }];
     if (stop === 1) return [
       { x: L.baristaExitX, y: L.baristaHome.y },
@@ -618,7 +628,7 @@
     for (let i = 0; i < indices.length; i++) {
       if (world.tables[indices[i]].candleTarget < 1) return { table: indices[i] };
     }
-    return world.candles.mantelTarget < 1 ? { mantel: true } : null;
+    return SCENE.hasFurniture(world,'mantel-decor') && world.candles.mantelTarget < 1 ? { mantel: true } : null;
   }
 
   function candleApproach(world, stop, fromHome) {
@@ -656,7 +666,8 @@
 
   function candleRoute(world) {
     const stops = candleTableIndices(world).map(function (i) { return { table: i }; });
-    stops.push({ mantel: true });
+    if(SCENE.hasFurniture(world,'mantel-decor')) stops.push({ mantel: true });
+    if(!stops.length)return [L.baristaHome];
     const route = [{ x: L.baristaHome.x, y: L.baristaHome.y }];
     let from = null;
     stops.forEach(function (stop) {
@@ -704,7 +715,9 @@
   }
 
   function startWater(world, b) {
-    b.state = 'waterOut'; b.stateT = 0; b.waterStop = b.waterNext || 0; b.holding = 'can';
+    const stops=waterStops(world);
+    if(!stops.length) { b.wateringPending=false;world.wateredDay=dayIndex(world);return; }
+    b.state = 'waterOut'; b.stateT = 0; b.waterStop = b.waterNext || stops[0]; b.holding = 'can';
     b.path = waterFromHome(b.waterStop);
     if (!b.waterNext && R.random() < 0.4) caption(world, pick([
       'Nora makes the rounds with the watering can.',
@@ -728,6 +741,7 @@
   }
 
   function startFireTend(world, b) {
+    if (SCENE.hearthWork(world)) return;
     world.fire.claimed = true;
     b.state = 'fireOut'; b.stateT = 0; b.holding = null; b.pose = 'stand';
     b.path = fireTendRoute();
@@ -735,6 +749,7 @@
   }
 
   function startPiano(world, b) {
+    if (!SCENE.hasFurniture(world,'piano')) return;
     b.state = 'pianoOut'; b.stateT = 0; b.pose = 'stand'; b.playing = false;
     b.pianoDur = rnd(60, 120); b.path = pianoRoute();
     world.noraPianoNextT = world.t + rnd(600, 1200);
@@ -746,7 +761,7 @@
     if (b.forcedTask) {
       const forced = b.forcedTask; b.forcedTask = '';
       if (forced === 'stretch') startStretch(world, b);
-      else if (forced === 'chalk') startChalk(b);
+      else if (forced === 'chalk' && SCENE.hasFurniture(world,'wall-menu')) startChalk(b);
       else if (forced === 'water') startWater(world, b);
       else if (forced === 'candles') startCandleRound(world, b);
       else if (forced === 'fire') startFireTend(world, b);
@@ -786,7 +801,7 @@
       startPiano(world, b); return;
     }
     if (b.emptyT > 20 && R.random() < 0.3) { startStretch(world, b); return; }
-    if (b.chalkT <= 0 && R.random() < 0.35) { startChalk(b); return; }
+    if (SCENE.hasFurniture(world,'wall-menu') && b.chalkT <= 0 && R.random() < 0.35) { startChalk(b); return; }
     const r = R.random();
     if (r < 0.35) {
       b.state = 'wipe'; b.stateT = 0; b.swishes = 0;
@@ -797,7 +812,7 @@
       if (R.random() < 0.25) caption(world, 'Nora polishes a cup until it gleams.');
     } else if (r < 0.75) {
       b.state = 'restock'; b.stateT = 0;
-      b.path = [{ x: 858, y: L.baristaHome.y }];
+      b.path = [SCENE.hasFurniture(world,'full-counter')?L.shop.pastry:L.basic.pastry];
       if (R.random() < 0.25) caption(world, 'Nora tidies the pastry case.');
     }
     // otherwise just stand a while, watching the room
@@ -912,6 +927,7 @@
 
   function pickCatSpot(world, cat) {
     const all = CAT_SPOTS.concat(WINDOW_SPOTS).concat([BOOK_SPOT, PIANO_SPOT]).filter(function (s) {
+      if (!SCENE.catSpotAvailable(world,s.id)) return false;
       if (cat.target && routeId(s.id) === routeId(cat.target.id)) return false;
       return spotWeight(world, cat, s) > 0;
     });
@@ -1169,12 +1185,12 @@
   }
 
   function startNextJourney(world, cat) {
-    if (quietCafe(world) && cat.ascentT <= 0) {
+    if (SCENE.catSpotAvailable(world,'topShelf') && quietCafe(world) && cat.ascentT <= 0) {
       cat.ascentT = rnd(900, 1600);
       startTravel(cat, { id: 'topShelf', stand: CP.topShelf.stand, kind: 'perch' }, 'topShelf');
       return;
     }
-    if (quietCafe(world) && cat.counterT <= 0) {
+    if (SCENE.catSpotAvailable(world,'counter') && quietCafe(world) && cat.counterT <= 0) {
       cat.counterT = rnd(1200, 2400);
       startTravel(cat, { id: 'counter', stand: CP.counter.stand, kind: 'perch' }, 'counter');
       return;
@@ -1188,11 +1204,13 @@
     if (lap && R.random() < 0.15) { startLap(cat, lap); return; }
     const spot = pickCatSpot(world, cat);
     startTravel(cat, spot, spot.kind === 'perch' ? spot.id : 'floor');
-    if (R.random() < 0.6) caption(world, 'The cat pads over to ' + spot.name + '.');
+    if (R.random() < 0.6) caption(world, 'The cat pads over to ' +
+      (spot.id==='fire'&&!SCENE.hasFurniture(world,'rugs')?'the quiet spot by the hearth':spot.name) + '.');
     if (R.random() < 0.15) SND.meow();
   }
 
   function forceCat(world, cat, action) {
+    if (!SCENE.catSpotAvailable(world,action)) return;
     if (action === 'eat') { cat.hungerT = 0; startNeed(cat, 'eat'); }
     else if (action === 'window') startTravel(cat, WINDOW_SPOTS[0], 'window1');
     else if (action === 'bookshelf') startTravel(cat, BOOK_SPOT, 'bookshelf');
@@ -1403,7 +1421,7 @@
     let lines = arcBeat(arc, playedStage).slice();
     if (arc.presenceBeat) {
       const pb = arc.presenceBeat;
-      const table = pb.window == null ? -1 : L.tables.length + L.library.sideTables.length + pb.window;
+      const table = pb.window == null ? -1 : world.tables.findIndex(t => t.tall && t.x === L.winTables[pb.window].x);
       const witness = world.patrons.find(function (p) {
         return p.regularId === pb.owner && p.state === 'seated' &&
           (pb.window == null || (p.seat && p.seat.window && p.seat.table === table));
@@ -1488,6 +1506,11 @@
   });
 
   SIM.update = function (world, dt) {
+    if(world.shop.phase==='settling') {
+      if(!world.firstEntryReady)return;
+      world.t+=dt;world.clockOffset-=dt;
+      R.updateFirstOpening(world,dt);updateCaptions(world,dt);R.saveLife(world,dt);return;
+    }
     shop.beforeClock(world, dt);
     world.t += dt;
     updateClock(world, dt);

@@ -361,13 +361,13 @@
       const end = route[route.length - 1];
       t.push({ x: end.x, y: end.y, name: 'busSpot(table ' + i + ')' });
     });
-    t.push({ x: L.library.browseSpot.x, y: L.library.browseSpot.y, name: 'browseSpot' });
+    if (SCENE.hasFurniture(w,'bookshelf')) t.push({ x: L.library.browseSpot.x, y: L.library.browseSpot.y, name: 'browseSpot' });
     t.push({ x: L.doorSpot.x, y: L.doorSpot.y, name: 'doorSpot' });
     t.push({ x: L.umbrellaSpot.x, y: L.umbrellaSpot.y, name: 'umbrellaSpot' });
     t.push({ x: L.orderSpot.x, y: L.orderSpot.y, name: 'orderSpot' });
     t.push({ x: L.pickupSpot.x, y: L.pickupSpot.y, name: 'pickupSpot' });
     t.push({ x: L.returnSpot.x, y: L.returnSpot.y, name: 'returnSpot' });
-    t.push({ x: L.artist.watch.x, y: L.artist.watch.y, name: 'artistWatch' });
+    if (SCENE.hasFurniture(w,'studio')) t.push({ x: L.artist.watch.x, y: L.artist.watch.y, name: 'artistWatch' });
     ['table','fireplace'].forEach(function (id) {
       const p=L.projects[id].work;t.push({x:p.x,y:p.y,name:'project '+id});
     });
@@ -418,13 +418,13 @@
     g.setLineDash([]);
 
     // furniture footprints (the journey check's no-go floor boxes)
-    L.footprints.forEach(function (f) {
+    SCENE.activeGeometry(w,L.footprints).forEach(function (f) {
       g.strokeStyle = 'rgba(120,170,255,0.5)';
       g.strokeRect(f.x0 + 0.5, f.y0 + 0.5, f.x1 - f.x0 - 1, f.y1 - f.y0 - 1);
     });
 
     // occluder boxes with their baselines
-    L.occluders.forEach(function (o) {
+    SCENE.activeGeometry(w,L.occluders).forEach(function (o) {
       g.fillStyle = 'rgba(255,70,70,0.14)';
       g.fillRect(o.x0, o.top, o.x1 - o.x0, o.baseline - o.top);
       g.strokeStyle = 'rgba(255,70,70,0.8)';
@@ -509,6 +509,24 @@
   })();
   D.regions = regions;
 
+  // Explicit legacy-room simulation fixture for regression suites. Private
+  // memory keeps the furnished-room tests separate from new-life defaults.
+  D.furnishedWorld = function (options) {
+    const o = Object.assign({},options);
+    if (!o.memory) {
+      const state = MEMORY.codec.fresh(); state.life.furniture = MEMORY.furnishings(true);
+      state.life.firstOpening={step:12,time:0};
+      o.memory = MEMORY.createStore({state:state});
+    }
+    return SIM.create(o);
+  };
+  D.modestWorld = function(options) {
+    const w=SIM.create(options||{});
+    for(let i=0;i<4000&&w.shop.phase==='settling';i++)SIM.update(w,.25);
+    if(w.shop.phase==='settling')throw Error('first setup did not complete');
+    return w;
+  };
+
   /* A detached, repeatable art fixture. Never SIM.create/update: those can
      write MEMORY, play sounds or consume randomness. Only this copy is posed;
      real seats/paths/colours and the shipping composeFrame still do the work.
@@ -516,7 +534,7 @@
   D.study = function (opts) {
     opts = opts || {};
     if (opts.seats && opts.seats.length > 7) throw new Error('[dev] study keeps the seven-patron cap');
-    const w = structuredClone(world());
+    const w = structuredClone(opts.world || world());
     w.clockOffset = 0;
     w.shop = { phase: 'open', elapsed: 0, step: 0, task: null, fade: 0, lights: 1, lastCall: false,
       curtains: [0, 0], stocked: true, accepting: true, carryingCat: false, away: false };
@@ -532,7 +550,9 @@
     w.queue = []; w.counterCups = []; w.umbrellaStand = []; w.sleeper = null;
     w.captionQueue = []; w.captionScript = []; w.activeCaption = null;
     w.catBowls = { food: 1, water: 1 };
-    w.memory = MEMORY.codec.fresh();
+    const life = w.memory.life;
+    w.memory = MEMORY.codec.fresh(); w.memory.life = life;
+    if (SCENE.hearthWork(w)) w.fire.level = w.fire.target = 0;
     CAST.arcs.forEach(function (a) {
       w.memory.arcs[a.id] = { stage: 0, progress: 0, pendingBeat: null };
     });
@@ -542,7 +562,7 @@
     w.tables.forEach(function (tb) { tb.items = []; });
     w.seats.forEach(function (s) { s.taken = false; });
     w.patrons = [];
-    (opts.seats || [8, 9, 10, 11, 1, 16, 17]).forEach(function (index, i) {
+    (opts.seats || (w.seats.length >= 18 ? [8,9,10,11,1,16,17] : w.seats.map((s,i) => i).slice(0,7))).forEach(function (index, i) {
       const s = w.seats[index];
       if (!s || s.taken) throw new Error('[dev] invalid/duplicate study seat: ' + index);
       const spec = CAST.regulars[i % CAST.regulars.length];
@@ -684,10 +704,11 @@
   const PAD = 9; // half a character's body width, for occlusion/journey checks
 
   /* occluders and footprints, normalized to {name, x0, x1, y0, y1} */
+  let auditWorld = null;
   function noGoBoxes() {
-    return L.occluders.map(function (o) {
+    return SCENE.activeGeometry(auditWorld,L.occluders).map(function (o) {
       return { name: o.name, x0: o.x0, x1: o.x1, y0: o.top, y1: o.baseline };
-    }).concat(L.footprints);
+    }).concat(SCENE.activeGeometry(auditWorld,L.footprints));
   }
 
   /* does the walk segment a→b (feet coordinates) cut through the box?
@@ -741,7 +762,19 @@
 
   D.audit = function (reviewWorld) {
     const w = reviewWorld || world();
+    const previous = auditWorld; auditWorld = w;
+    try { return SIM.withWorld(w, function () { return audit(w); }); }
+    finally { auditWorld = previous; }
+  };
+  function audit(w) {
     const problems = [];
+    if(w.shop.phase==='settling') {
+      try {MEMORY.codec.validate(w.memory);}catch(e){problems.push(e.message);}
+      if(w.shop.accepting||w.patrons.length||w.queue.length)problems.push('service before first opening');
+      if(w.barista.walkBlocked)problems.push('first setup route blocked');
+      w.tables.forEach(t=>{if(!SCENE.hasFurniture(w,t.furniture))problems.push('unfinished first table is usable');});
+      return problems;
+    }
     if (w.shop.phase === 'home') {
       try { MEMORY.codec.validate(w.memory); } catch(e) { problems.push(e.message); }
       if (w.patrons.length || w.shop.accepting || w.shop.carryingCat) problems.push('home has café service or a carried cat');
@@ -783,7 +816,7 @@
       if (!Number.isInteger(t.x) || !Number.isInteger(t.y)) {
         problems.push('walk target ' + t.name + ' (' + t.x + ',' + t.y + ') is not on whole pixels');
       }
-      L.occluders.forEach(function (o) {
+      SCENE.activeGeometry(w,L.occluders).forEach(function (o) {
         if (t.x >= o.x0 - PAD && t.x <= o.x1 + PAD && t.y > o.top && t.y < o.baseline) {
           problems.push('walk target ' + t.name + ' (' + t.x + ',' + t.y + ') hides behind the ' +
             o.name + ' (x ' + o.x0 + '–' + o.x1 + ', baseline ' + o.baseline + ')');
@@ -882,7 +915,7 @@
       { id: 'pianoDismount', x: L.piano.dismount.x, y: L.piano.dismount.y,
         approach: L.catRoutes.pianoDismount },
       { id: 'eat', x: L.catCorner.eatSpot.x, y: L.catCorner.eatSpot.y, catCorner: true }
-    ]);
+    ]).filter(s => SCENE.catSpotAvailable(w,s.id));
     w.seats.filter(function (s) { return s.armchair || s.nook; }).forEach(function (seat, i) {
       const lap = { id: 'lapStand' + i, x: seat.x + seat.facing * 38, y: seat.y + 16 };
       lap.approach = [{ x: lap.x, y: L.lane }];
@@ -1122,6 +1155,7 @@
       if (w.shop && w.shop.away && wf.tables.some(function (tb) { return tb.owner !== null || tb.dirty || tb.cleaning; })) problems.push('Nora left the terrace uncleared');
     }
     w.seats.forEach(function (s, i) {
+      if (!SCENE.hasFurniture(w,s.furniture)) problems.push('seat targets absent furniture: ' + s.furniture);
       const holders = w.patrons.filter(function (p) { return p.seat === s; }).length;
       if (s.taken && holders !== 1) problems.push('seat[' + i + '] taken but ' + holders + ' patron(s) hold it');
       if (!s.taken && holders) problems.push('seat[' + i + '] free but ' + holders + ' patron(s) hold it');
@@ -1130,6 +1164,7 @@
       if (q.queueIdx !== i) problems.push('queue[' + i + '] (' + q.name + ') carries queueIdx ' + q.queueIdx);
     });
     w.tables.forEach(function (tb, ti) {
+      if (!SCENE.hasFurniture(w,tb.furniture)) problems.push('table targets absent furniture: ' + tb.furniture);
       const bySide = {};
       tb.items.forEach(function (it) {
         if (it.owner !== null && !live[it.owner]) problems.push('table ' + ti + ' item owned by departed patron ' + it.owner);
@@ -1148,7 +1183,8 @@
       if ([shop.fade, shop.lights].concat(shop.curtains).some(function (n) { return !Number.isFinite(n) || n < 0 || n > 1; })) problems.push('shop visuals outside 0–1');
       if (shop.accepting && shop.phase !== 'open' && shop.phase !== 'opening') problems.push('closed shop accepting guests');
       if (shop.away && (w.patrons.length || w.queue.length || w.barista.orders.length)) problems.push('Nora left before the guests');
-      if (shop.away && (!shop.carryingCat || shop.lights || shop.stocked || shop.curtains.some(function (n) { return n !== 1; }))) problems.push('shop left before closing chores finished');
+      if (shop.away && (!shop.carryingCat || shop.lights || shop.stocked ||
+          (SCENE.hasFurniture(w,'drapes') && shop.curtains.some(function (n) { return n !== 1; })))) problems.push('shop left before closing chores finished');
       if (shop.phase === 'open' && (shop.carryingCat || shop.away || shop.fade)) problems.push('open shop still in overnight transition');
     }
     const parkedOwners = {};

@@ -14,7 +14,7 @@
      rendered once into an offscreen canvas and blitted per frame. Dynamic
      elements (window, door, lamps, flames, clock hands, candle flames) are painted on top each frame — in the same relative order the
      one-pass renderer used, so nothing overlaps wrongly. */
-  let bgCache = null;
+  let bgCache = null, bgLayout = null;
   let menuDoodle = 0;
 
   SCENE.invalidateBG = function () { bgCache = null; };
@@ -27,10 +27,12 @@
   SCENE.getMenuDoodle = function () { return menuDoodle; };
 
   SCENE.drawScene = function (g, world) {
-    if (!bgCache) {
+    const layout = SCENE.layoutKey(world);
+    if (!bgCache || bgLayout !== layout) {
+      bgLayout = layout;
       bgCache = document.createElement('canvas');
       bgCache.width = W; bgCache.height = H;
-      drawStaticBG(bgCache.getContext('2d'));
+      drawStaticBG(bgCache.getContext('2d'),world);
     }
     g.drawImage(bgCache, 0, 0);
     drawFloorLight(g, world); // incident light belongs UNDER objects and their contact shadows
@@ -39,21 +41,21 @@
     drawWindow(g, world, L.win2, 1);
     drawDoor(g, world);
     drawLunafreyaGallery(g, world);
-    drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
+    if(SCENE.hasFurniture(world,'entrance')) drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
     // A single quiet woven pad gathers the cat's bed and bowls on the room
     // side of the entrance screen; all interaction anchors remain visible.
     const cc = L.catCorner;
-    px(g, cc.cushion.x - 24, cc.cushion.y - 10, 50, 35, '#8a7958');
-    px(g, cc.cushion.x - 22, cc.cushion.y - 8, 46, 31, '#9b8965');
-    px(g, cc.cushion.x - 20, cc.cushion.y + 20, 42, 2, '#b19b73');
-    L.pendants.forEach(function (lp) { drawHangingLamp(g, lp, world); });
+    if(SCENE.hasFurniture(world,'rugs') && SCENE.hasFurniture(world,'cat-corner')) px(g, cc.cushion.x - 24, cc.cushion.y - 10, 50, 35, '#8a7958');
+    if(SCENE.hasFurniture(world,'rugs') && SCENE.hasFurniture(world,'cat-corner')) px(g, cc.cushion.x - 22, cc.cushion.y - 8, 46, 31, '#9b8965');
+    if(SCENE.hasFurniture(world,'rugs') && SCENE.hasFurniture(world,'cat-corner')) px(g, cc.cushion.x - 20, cc.cushion.y + 20, 42, 2, '#b19b73');
+    L.pendants.filter((p,i)=>i===0||SCENE.hasFurniture(world,'full-counter')).forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
   };
 
   function drawFloorLight(g, world) {
     const d = world.pal.daylight, lamp = SCENE.lampLevel(world);
     g.save();
-    if (d > 0.1) {
+    if (d > 0.1 && SCENE.hasFurniture(world,'open-windows')) {
       [L.win, L.win2].forEach(function (w, wi) {
         const beam = SCENE.windowLight(world, w);
         const y = L.wallY + 2, depth = beam.depth, shift = beam.shift;
@@ -74,7 +76,7 @@
     }
     // Low, oval pools locate the reading lamps on the floor. The later
     // lighting pass supplies the bloom over fabric and faces.
-    L.library.lamps.concat([L.artist.lamp]).forEach(function (lp) {
+    SCENE.activeGeometry(world,L.library.lamps.concat([L.artist.lamp])).forEach(function (lp) {
       if (lamp < 0.05) return;
       g.save(); g.translate(lp.x + 8, lp.y - 1); g.scale(1, 0.3);
       const light = g.createRadialGradient(0, 0, 3, 0, 0, 48);
@@ -122,7 +124,7 @@
     }
   }
 
-  function drawStaticBG(g) {
+  function drawStaticBG(g, world) {
     // wall + wainscot + floor (wall runs to y=0: the top 36 px are overscan)
     px(g, 0, 0, W, 176, '#e3cfa7');
     // faint plaster mottling so the big wall field isn't dead flat
@@ -173,22 +175,22 @@
     }
 
     // rugs (the big rug reaches up under the walking lane to break the bare stripe)
-    ell(g, 390, 450, 168, 74, '#a34d3b');
-    ell(g, 390, 450, 148, 62, '#b25c46');
-    ell(g, 390, 450, 118, 46, '#a34d3b');
-    ell(g, 388, 290, 50, 16, '#8f5a3a');
-    ell(g, 388, 290, 40, 11, '#a0693f');
+    if(SCENE.hasFurniture(world,'rugs')) ell(g, 390, 450, 168, 74, '#a34d3b');
+    if(SCENE.hasFurniture(world,'rugs')) ell(g, 390, 450, 148, 62, '#b25c46');
+    if(SCENE.hasFurniture(world,'rugs')) ell(g, 390, 450, 118, 46, '#a34d3b');
+    if(SCENE.hasFurniture(world,'rugs')) ell(g, 388, 290, 50, 16, '#8f5a3a');
+    if(SCENE.hasFurniture(world,'rugs')) ell(g, 388, 290, 40, 11, '#a0693f');
     // reading nook rug under the wing chairs
-    ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#8f5a3a');
-    ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx - 14, L.library.rug.ry - 7, '#a0693f');
-    rugWeave(g, 390, 450, 168, 74, '#c9a04a');
-    rugWeave(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#c9b28a');
+    if (SCENE.hasFurniture(world,'nook')) ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#8f5a3a');
+    if (SCENE.hasFurniture(world,'nook')) ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx - 14, L.library.rug.ry - 7, '#a0693f');
+    if(SCENE.hasFurniture(world,'rugs')) rugWeave(g, 390, 450, 168, 74, '#c9a04a');
+    if (SCENE.hasFurniture(world,'nook')) rugWeave(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#c9b28a');
 
-    drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
-    drawFireplaceStatic(g);
-    drawMenuBoard(g);
-    drawShelves(g);
-    drawFirewood(g);
+    if(SCENE.hasFurniture(world,'mantel-decor')) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
+    drawFireplaceStatic(g,world);
+    if(SCENE.hasFurniture(world,'wall-menu')) drawMenuBoard(g);
+    if(SCENE.hasFurniture(world,'full-counter')) drawShelves(g);
+    if (SCENE.hasFurniture(world,'hearth')) drawFirewood(g);
   }
 
   /* Sparse stitches in an elliptical border; the centre stays quiet behind
@@ -221,8 +223,22 @@
   /* ---------- window with the world outside ----------
      Shared by both windows; both clip the same continuous waterfront.
      `alt` identifies the curtain and rain seed, never a second sun or moon. */
+  function drawBoardedWindow(g,w) {
+    px(g,w.x-8,w.y-8,w.w+16,w.h+16,'#5a3d28');
+    px(g,w.x,w.y,w.w,w.h,'#292821');
+    for(let y=0;y<w.h;y+=24) {
+      const h=Math.min(22,w.h-y),c=y%48?'#94724f':'#a27e56';
+      px(g,w.x-2,w.y+y,w.w+4,h,c);
+      px(g,w.x,w.y+y+2,w.w,2,'#b18d62');
+      px(g,w.x+12,w.y+y+8,56,2,'#805f40');
+      px(g,w.x+98,w.y+y+15,48,2,'#8a6846');
+      [6,w.w-9].forEach(x=>px(g,w.x+x,w.y+y+6,2,3,'#514335'));
+    }
+    px(g,w.x-10,w.y+w.h+4,w.w+20,5,'#6e4a33');
+  }
   function drawWindow(g, world, w, alt) {
     const pal = world.pal, t = world.t;
+    if(!SCENE.hasFurniture(world,'open-windows')) { drawBoardedWindow(g,w);return; }
     // Clip the entire exterior: rain and town silhouettes cannot spill onto the sill.
     g.save();
     g.beginPath(); g.rect(w.x, w.y, w.w, w.h); g.clip();
@@ -270,7 +286,7 @@
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 2, '#6e4a33');
     // Small brass casement catch on the central stile.
     px(g, w.x + w.w / 2 + 2, w.y + w.h / 2 + 8, 3, 8, '#c9a04a');
-    drawCurtains(g, w, world.shop ? world.shop.curtains[alt] : 0);
+    if(SCENE.hasFurniture(world,'drapes')) drawCurtains(g, w, world.shop ? world.shop.curtains[alt] : 0);
     // deep sill: lit top, front face, shadow underneath
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 8, '#6e4a33');
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 2, '#8a6142');
@@ -278,9 +294,9 @@
     px(g, w.x - 12, w.y + w.h + 20, w.w + 24, 2, 'rgba(20,12,8,0.25)');
     // window-seat back cushions against the side frames (perched sitters
     // render in front of them); one plant between the perches
-    drawSillCushion(g, w.x + 2, w.y + w.h - 16, CUSHIONS[alt]);
-    drawSillCushion(g, w.x + w.w - 14, w.y + w.h - 16, CUSHIONS[alt]);
-    drawTinyPlant(g, w.x + w.w / 2 - 6, w.y + w.h + 8);
+    if (SCENE.hasFurniture(world,'window-seats')) drawSillCushion(g, w.x + 2, w.y + w.h - 16, CUSHIONS[alt]);
+    if (SCENE.hasFurniture(world,'window-seats')) drawSillCushion(g, w.x + w.w - 14, w.y + w.h - 16, CUSHIONS[alt]);
+    if (SCENE.hasFurniture(world,'plants')) drawTinyPlant(g, w.x + w.w / 2 - 6, w.y + w.h + 8);
   }
 
   /* back cushions for the window perches — red pair in the door-side window,
@@ -543,7 +559,7 @@
   }
 
   /* ---------- fireplace ---------- */
-  function drawFireplaceStatic(g) {
+  function drawFireplaceStatic(g, world) {
     const f = L.fire;
     // Plastered flue continues to the ceiling; shallow side planes locate
     // the masonry in front of the wall instead of ending behind the clock.
@@ -601,6 +617,7 @@
     px(g, f.boxX + 8, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
     px(g, f.boxX + 24, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
     px(g, f.boxX + 40, f.boxBot + 2, 2, 4, 'rgba(60,55,48,0.4)');
+    if(!SCENE.hasFurniture(world,'mantel-decor'))return;
     // mantel clock (body + face; the hands are dynamic)
     px(g, 346, 110, 22, 22, '#6b4a30');
     px(g, 348, 106, 18, 4, '#5a3d26');
@@ -639,6 +656,7 @@
       px(g, f.boxX + 4 + i * 5, f.boxBot - 4, 4, 3, i % 2 ? '#e06a1e' : '#f5a83c');
       g.globalAlpha = 1;
     }
+    if(!SCENE.hasFurniture(world,'mantel-decor'))return;
     // clock hands
     drawClockHands(g, 357, 121, world.hour);
     // candle flames
