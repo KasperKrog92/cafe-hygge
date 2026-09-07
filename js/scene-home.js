@@ -114,7 +114,7 @@
           // Folded cloth and screwdriver, set down whenever service calls.
           px(g,x+17,y+23,10,4,'#7a89a5'); px(g,x+17,y+29,9,2,'#b8bfc7'); px(g,x+25,y+28,5,4,'#a8764a');
         }});
-      } else {
+      } else if (id==='fireplace') {
         draws.push({y:a.y+3,draw:g=>{
           const x=a.x,y=a.y;
           // Ash and soot disappear in remembered sections; no future decay.

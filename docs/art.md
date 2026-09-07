@@ -714,6 +714,8 @@ beside her. All route/prop anchors live in `SCENE.L.home.story`. Apartment
 furniture, ladder, sleeper and cat retain the room's shared depth draw list.
 The bedside lamp sorts separately at its own foot, behind Lunafreya when she
 stands beside the bed, rather than sharing the bed's foreground baseline.
+Window repairs use the wall renderer and worker actor only; they must not enter
+the fireplace prop branch, whose floor anchors do not exist on window projects.
 
 
 ## Second-day visitors — shipped 8 September 2026

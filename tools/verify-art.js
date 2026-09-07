@@ -27,6 +27,19 @@
   const layouts = [__dev.modestWorld({random:SIM.seededRandom(42)}),
     __dev.furnishedWorld({random:SIM.seededRandom(42)})];
   let occupancyScenarios = 0, occupiedSeats = 0;
+  // Window jobs have a work anchor, not fireplace floor coordinates. An invalid
+  // depth here can prevent the counter from sorting in front of its barista.
+  layouts.forEach(function (base) {
+    ['available','purchased','scheduled','working','installed'].forEach(function (stage) {
+      const w=__dev.study({world:base,seats:[]});
+      w.memory.life.projects.window.stage=stage;
+      w.barista.x=SCENE.L.baristaHome.x;w.barista.y=SCENE.L.baristaHome.y;
+      const list=SCENE.furnitureDrawables(w).concat(SCENE.plantDrawables(w),SIM.entityDrawables(w).draws);
+      if(list.some(d=>!Number.isFinite(d.y))) failures.push('Invalid window project depth: '+stage);
+      list.sort((a,b)=>a.y-b.y);
+      for(let i=1;i<list.length;i++) if(list[i].y<list[i-1].y) failures.push('Broken draw order: '+stage);
+    });
+  });
   layouts.forEach(function (base) {
     const groups = [[]];
     for (let i=0;i<base.seats.length;i+=7) groups.push(base.seats.slice(i,i+7).map((s,j)=>i+j));
