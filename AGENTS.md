@@ -346,6 +346,10 @@ matching doc updated in the same change.
 
 ## Docs index
 
+For character dialogue and new story beats, read [docs/story-bible.md](docs/story-bible.md)
+first. Preserve chosen Lunafreya background flags and distinguish shipped beats
+from planned directions.
+
 | Doc | Contents |
 | --- | --- |
 | [docs/overview.md](docs/overview.md) | Vision, design principles, what this is and isn't |
@@ -353,6 +357,7 @@ matching doc updated in the same change.
 | [docs/development.md](docs/development.md) | Session workflow, verification commands and preparation checklist |
 | [docs/predevelopment-audit.md](docs/predevelopment-audit.md) | Measured baseline, findings, priorities and deferred work |
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
+| [docs/story-bible.md](docs/story-bible.md) | Cast identities and voices, Holger's introduction, remembered choices, shipped and planned story beats |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
 | [docs/characters.md](docs/characters.md) | Lunafreya, patrons, the cat — identities and full behavior state machines |
 | [docs/world.md](docs/world.md) | Time, weather, lighting, spawning, captions/events |

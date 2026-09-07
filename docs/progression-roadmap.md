@@ -397,3 +397,12 @@ The old no-economy/no-upgrades rule is superseded for this proposed direction
 by the owner's explicit request for purchases and improvements. The no-pressure
 rule remains. Current implementation docs still describe the shipped café;
 update their detailed contracts alongside each implemented milestone.
+
+## First neighbour conversation — shipped 7 September 2026
+
+Holger enters first after a new café opens and offers an attended introduction.
+Two choices establish Lunafreya's motivation and first hope; neither buys or
+locks an improvement. Conversations use close framing and hold café obligations
+until finished or put aside. The [story bible](story-bible.md) is the cast and
+continuity reference; Holger's later encouragement and deeper stories remain
+planned beats there, separate from the upgrade milestones above.

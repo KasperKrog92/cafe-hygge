@@ -114,6 +114,32 @@
   const introControls=document.getElementById('intro-controls'),introPause=document.getElementById('intro-pause');
   const introTranscript=document.getElementById('intro-transcript'),instantText=document.getElementById('setting-instant');
   let spokenLine='';
+  const momentPanel=document.getElementById('conversation'),meetHolger=document.getElementById('meet-holger');
+  let momentKey=null,returnFocus=null;
+  meetHolger.addEventListener('click',function(){SIM.startHolger(world);refreshMoment();});
+  document.getElementById('conversation-later').addEventListener('click',function(){SIM.leaveMoment(world);refreshMoment();});
+  function refreshMoment() {
+    meetHolger.hidden=!SIM.holgerAvailable(world);
+    const m=world.moment,line=SIM.momentLine(world);
+    momentPanel.hidden=!m;
+    stage.classList.toggle('in-conversation',!!m);
+    btnMode.disabled=!!m;btnHome.disabled=!!m;
+    const key=m?String(m.index)+line.text:null;
+    if(key===momentKey)return;
+    const entering=momentKey===null && !!m;
+    momentKey=key;
+    if(!m) {if(returnFocus && !returnFocus.hidden)returnFocus.focus();else canvas.focus();return;}
+    if(entering)returnFocus=document.activeElement;
+    document.getElementById('conversation-speaker').textContent=line.speaker;
+    document.getElementById('conversation-text').textContent=line.text;
+    const answers=document.getElementById('conversation-answers');answers.replaceChildren();
+    (line.choices || [{text:m.index===m.lines.length-1?'back to the café':'continue'}]).forEach(function(c,i){
+      const button=document.createElement('button');button.type='button';button.textContent=c.text;
+      button.addEventListener('click',function(){SIM.advanceMoment(world,line.choices?i:undefined);refreshMoment();});
+      answers.appendChild(button);
+    });
+    answers.firstElementChild.focus();
+  }
   function refreshIntro() {
     const active=SIM.introActive(world) && world.firstEntryReady;
     introControls.hidden=!active;
@@ -304,6 +330,7 @@
   // a click (client coords → master-canvas coords): a waiting story invitation
   // takes it first, otherwise say hello to the cat. Both are optional and soft.
   canvas.addEventListener('click', function (e) {
+    if(world.moment || focusAmount>.02)return;
     if(SIM.introActive(world)) {SIM.advanceIntro(world);return;}
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
@@ -315,13 +342,25 @@
 
   /* ---------- render ---------- */
 
+  let focusAmount=0,focusLast=performance.now(),focusPoint={x:400,y:280};
   function render() {
     if (shownRoom !== SCENE.presentation(world)) fit();
     // the whole depth-sorted frame — shared with __dev.shot so a headless
     // capture renders the exact same list (js/scene-fx.js)
     SCENE.composeFrame(g, world);
     // present: blit the chosen view of the master at an integer scale
-    out.drawImage(master, view.x, view.y, view.w, view.h, 0, 0, canvas.width, canvas.height);
+    const now=performance.now(),delta=Math.min(.1,(now-focusLast)/1000);focusLast=now;
+    focusAmount+=(world.moment?1-focusAmount:-focusAmount)*Math.min(1,delta*5);
+    if(world.moment) {
+      const owner=world.moment.owner || world.barista,b=world.barista;
+      focusPoint={x:(owner.x+b.x)/2,y:Math.min(owner.y,b.y)-28};
+    }
+    const zoom=1+focusAmount*.9,cw=view.w/zoom,ch=view.h/zoom;
+    const cx=Math.max(view.x,Math.min(view.x+view.w-cw,focusPoint.x-cw/2));
+    const cy=Math.max(view.y,Math.min(view.y+view.h-ch,focusPoint.y-ch*.38));
+    out.drawImage(master,Math.round(view.x+(cx-view.x)*focusAmount),Math.round(view.y+(cy-view.y)*focusAmount),
+      Math.round(cw),Math.round(ch),0,0,canvas.width,canvas.height);
+    if(focusAmount>.01){out.fillStyle='rgba(24,17,26,'+(focusAmount*.16)+')';out.fillRect(0,0,canvas.width,canvas.height);}
   }
 
   /* ---------- loop ----------
@@ -370,7 +409,7 @@
   }
   function frame(now) {
     advance(now);
-    render(); refreshLife();refreshIntro();
+    render(); refreshLife();refreshIntro();refreshMoment();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);

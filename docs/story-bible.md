@@ -1,0 +1,144 @@
+# Character and story bible
+
+This is the continuing writing reference for Café Hygge. Updated 7 September
+2026. **Shipped** means playable; **planned** means a direction for later work,
+not a promise that a trigger or scene already exists. The invitation-waits rule
+in [narrative.md](narrative.md) applies to every character.
+
+## Writing and choices
+
+The café is a place to belong. People have lives beyond its door, and reveal
+those lives through ordinary talk, habits and objects. Leave room for silence.
+Do not turn hidden depth into a compulsory tragedy or a mystery to solve.
+
+Lunafreya speaks as a character. Offer a choice when it establishes a preference,
+a boundary, a piece of her past or a decision that someone can remember. Most
+lines need no menu. Both answers deserve a warm, specific response. There are
+no correct answers, approval scores, locked friendships or missed deadlines.
+Choices describe her at this moment; they do not prescribe every future reply.
+Never invent a chosen background in later writing unless its saved flag exists.
+
+Conversations are attended, manually advanced moments. The camera moves closer,
+ordinary controls and speech icons recede, and the café holds its obligations.
+People breathe and blink; orders, new arrivals, departures and time wait.
+“Continue another time” releases the hold. Holger remembers the exact completed
+line and selected reply; his invitation returns when he is present. Existing
+short arc moments restart when reopened and award their result only at the end.
+
+## Lunafreya — the keeper
+
+**Established:** newly opening this café, living in the apartment, sharing both
+places with the cat. Nervous, practical and quietly hopeful. She wants guests
+to feel welcome and is learning what her own place will become. Her name and
+role are fixed; her reasons and aspirations have room for the reader.
+
+**Voice:** concrete observations, little admissions, affection without speeches.
+She can ask a direct question, admit uncertainty and set a boundary. She should
+also be allowed to encourage the regulars; kindness does not run only toward her.
+
+| Beat | Status | Memory / consequence |
+| --- | --- | --- |
+| First morning: cat, setup, cups, two tables, unnamed sign | Shipped | Existing first-morning checkpoint |
+| Why this café: a place to belong / a new beginning | Shipped, Holger introduction | `luna-beginning-belonging` / `luna-beginning-new-start` |
+| First hope: a reading corner / learning neighbours' names | Shipped, Holger introduction | `luna-cafe-books` / `luna-cafe-neighbours` |
+| What came before the move | Open | A new beginning does not establish trauma, a former job or a relationship |
+| Naming the café | Planned | Find its name through lived experience; Fleur de Lune remains provisional |
+
+The reading-corner answer makes no purchase, price commitment or upgrade gate.
+The neighbours answer never prevents buying books later.
+
+## Holger — two doors along
+
+**Established:** retired neighbour, formerly a seafarer on the Kattegat for
+thirty years. Grey hair and beard, green jumper, muted red scarf. Espresso,
+his own book, an unhurried pace. He tends the hearth when it is available.
+His first visit is the first arrival at a newly opened café.
+
+**Purpose:** an early friend who makes the opening feel witnessed. He notices
+what Lunafreya has already done before suggesting what might come next. He
+can offer an idea, a spare book or practical help, then leave the decision with
+her. He is a neighbour with a life, not a tutorial dispenser or endless praise.
+
+**Voice:** warm, dry, specific. A small story instead of a maxim. He asks
+permission before a personal question and accepts a partial answer. Nautical
+history appears in remembered details, not constant sailor metaphors.
+
+**Depth:** retirement gave him time but took away everyday company. In the
+first conversation he misses “some of the voices” more than the sea. This is
+a seed, not an established bereavement. Do not assign a dead spouse, estranged
+child or maritime disaster without a later, deliberate writing decision.
+
+| Beat | Status | Content and continuity |
+| --- | --- | --- |
+| H1 — The new sign | Shipped | Mutual names, first espresso, her two choices, polishing a brass handle from nerves, galley table, missing familiar voices |
+| H2 — A corner for company | Planned | Recall her actual chosen hope. Offer a few books or introduce a neighbour; never require an upgrade to keep the friendship growing |
+| H3 — Keeping a fire | Planned | When a hearth is available, a small stove-at-sea story; provide another ordinary setting if it is never bought |
+| H4 — The voices at the table | Planned | Lunafreya may ask about someone he mentioned or simply keep him company. Let him decide how much to tell |
+| H5 — Being welcome, too | Planned | Lunafreya notices that he also needs encouragement. A reciprocal moment, not a rescue |
+
+H1 completes with `holger-introduced`. Completed line flags are
+`holger-introduction-line-N`; the two choice pairs above are mutually exclusive
+through the conversation API. The current answer is committed before its reply,
+so reload cannot choose a different answer or skip the acknowledgement.
+An already established café receives a “properly said hello” variation when
+Holger has visited more than once. No existing relationships are reset.
+
+## Gerda — care made tangible
+
+**Established:** tea, knitting, a window seat, garden and winter stories. She
+speaks of Erik and sometimes corrects herself into the past tense. Treat that
+gently; his relationship to her and the circumstances are not yet fully authored.
+
+**Shipped:** `gerda-scarf` grows over five café days, then waits for the reader.
+Its attended payoff gives the cat a lasting scarf. Her attention to the painter
+across the water can accompany the street-house story.
+
+**Planned:** introduce her through an ordinary act of care; let Lunafreya ask
+about a pattern or a garden before reaching for a more personal subject.
+
+## Nora — attention through painting
+
+**Established:** artist with a paint-marked satchel and smock, flat white,
+small rooms and warm shadows. She once painted grand rooms. Her precise way
+of looking is a form of care; avoid making every sentence a poetic aphorism.
+
+**Shipped:** cat and hearth studies, two invited gallery unveilings. Technical
+save IDs still use `lunafreya-paintings` and regular ID `lunafreya`; that is
+compatibility history, never the artist's displayed name.
+
+**Planned:** an introduction about what she noticed; later a choice about what
+Lunafreya wants a painting to remember. Do not specify Nora's past career yet.
+
+## Kasper — the unfinished chapter
+
+**Established:** laptop, writer, chapter seven since spring, cautious delight
+in three good lines. Usually quiet. His preferred iced matcha follows menu
+availability; he remains welcome in the small café with its simpler menu.
+
+**Shipped:** autonomous writing, hesitation and occasional backstory musings.
+**Planned:** introductions without demanding to read his work; a later invitation
+to share a paragraph. Finishing a manuscript must never become a timed task.
+
+## Freya — a familiar ending
+
+**Established:** evening reader, returning to a book she knows, fond of the
+hearth. Quiet is comfortable to her; it is not automatically shyness or sadness.
+
+**Shipped:** reading, dozing and small observations about her familiar book.
+**Planned:** a book conversation that permits keeping the ending private.
+Her life beyond these habits remains open.
+
+## The cat — company without explanation
+
+**Established:** one cat across café and apartment. Explores, rests, seeks laps
+and affection. Lunafreya's first confidant. It has no spoken human dialogue.
+**Shipped:** first-morning hug, daily routines, Gerda's scarf.
+**Planned:** let routines acknowledge new objects and growing familiarity;
+never hunger penalties, neglect guilt or compulsory petting.
+
+## Maintaining the bible
+
+When shipping a beat, add its trigger, saved decisions and any new established
+facts here. Keep implementation details in narrative/architecture documentation.
+Read earlier choices before writing callbacks. Separate possibilities from
+canon, and never describe planned content as already playable.

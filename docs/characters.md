@@ -709,3 +709,11 @@ sign and returning to the counter does she admit the first customer.
 The sign reads **NEW CAFE** in uneven paint on two scrap boards. She has not
 chosen a proper café name; naming it through later patron conversations is a
 future story, not a timer or a choice forced during this introduction.
+
+## Holger's first visit
+
+Holger is now the first arriving customer in a newly opened café. His optional
+introduction establishes him as a retired neighbour and retains his seafaring
+history. Two dialogue choices remember Lunafreya's motivation and first hope
+for the café. Character facts and later proposed beats live in the
+[story bible](story-bible.md). Other regulars retain their existing habits.

@@ -141,3 +141,69 @@
     R.commitLife(w);return false;
   };
 })();
+
+/* Attended conversations. Durable cursors/choices use the existing boolean
+   story flags; no save shape expansion, wall-clock catch-up or expiring beat. */
+(function () {
+  'use strict';
+  const prefix='holger-introduction-line-';
+  SIM.holgerAvailable=function(w) {
+    if(w.moment || w.shop.phase!=='open' || w.memory.flags['holger-introduced'])return null;
+    return w.patrons.find(p => p.regularId==='holger' && !p.outside &&
+      (p.state==='ordering' || p.state==='seated')) || null;
+  };
+  SIM.beginMoment=function(w,lines,owner,finish) {
+    if(w.moment || w.shop.phase!=='open')return false;
+    w.moment={lines:lines,index:0,owner:owner,finish:finish};
+    w.activeCaption=null; w.captionQueue=[];
+    return true;
+  };
+  SIM.startHolger=function(w) {
+    const owner=SIM.holgerAvailable(w);
+    if(!owner)return false;
+    const lines=CAST.holgerIntroduction.map(line => Object.assign({},line));
+    if((w.memory.bonds.holger.visits||0)>1) {
+      lines[0].text="We've shared this room a few times now. I don't think we've properly said hello.";
+      lines[1].text="We haven't, have we? I'm glad you've come back.";
+      lines[3].text="Lunafreya. It's lovely to meet you properly.";
+      lines[14].text="But listen to me, keeping you talking. I'm very glad you've opened, Lunafreya.";
+    }
+    if(owner.state==='seated')lines[4].text="It's good to have somewhere nearby for an espresso. And a little company.";
+    let index=0;
+    while(index<lines.length && w.memory.flags[prefix+index])index++;
+    index=Math.min(index,lines.length-1);
+    SIM.beginMoment(w,lines,owner,function() {
+      w.memory.flags['holger-introduced']=true;
+      const b=w.memory.bonds.holger;
+      if(b)b.warmth=(b.warmth||0)+1;
+    });
+    w.moment.index=index; w.moment.holger=true;
+    return true;
+  };
+  SIM.momentLine=function(w) {
+    const m=w.moment;
+    if(!m)return null;
+    const line=m.lines[m.index];
+    if(line.choices) {
+      const chosen=line.choices.find(c => w.memory.flags[c.flag]);
+      if(chosen)return {speaker:'Holger',text:chosen.reply};
+    }
+    return line;
+  };
+  SIM.advanceMoment=function(w,choice) {
+    const m=w.moment;
+    if(!m || w.introModal)return false;
+    const line=SIM.momentLine(w);
+    if(line.choices) {
+      if(!Number.isInteger(choice) || !line.choices[choice])return false;
+      w.memory.flags[line.choices[choice].flag]=true;
+    } else {
+      if(m.holger)w.memory.flags[prefix+m.index]=true;
+      m.index++;
+      if(m.index===m.lines.length) {m.finish();w.moment=null;}
+    }
+    w.context.memory.save();
+    return true;
+  };
+  SIM.leaveMoment=function(w) {w.moment=null;};
+})();

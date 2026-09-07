@@ -351,3 +351,26 @@ reveal/next, pause and skip controls. Its clock holds when hidden so an unseen
 line cannot disappear. This is an explicit one-time exception to the ordinary
 background progression rule; established café arcs keep their invitation-waits
 contract. Naming the café is left for a future conversation arc.
+
+## Attended character moments — 7 September 2026
+
+The [character and story bible](story-bible.md) records established cast facts,
+shipped beats, saved choices and future directions. Holger is the first real
+arrival in a fresh café. A quiet invitation offers his introduction while he
+is ordering or seated, in either presentation; ignoring it leaves normal life
+running. His introduction has two remembered choices and no purchase effects.
+
+`SIM.beginMoment` holds simulation obligations and absolute timers while
+advancing ambient character animation and particles. The camera eases closer;
+ordinary controls and speech icons recede. Each line waits for input, including
+while hidden or in Settings. `SIM.leaveMoment` releases the hold immediately.
+Holger's cursor uses the existing boolean `flags` map; every acknowledged line
+and chosen answer saves, with completion and bond warmth awarded once. This
+adds story data, not a schema field, so the v6 codec requires no migration.
+Reload restores a waiting invitation and the last unacknowledged line/reply.
+
+Existing Gerda/Nora/street-house payoffs now use this same attended moment
+container. Their pending arc remains pending until the final line is accepted;
+leaving or reloading restarts that short moment without awarding it. Their
+lasting effects and existing save IDs remain unchanged. This supersedes the
+older caption-run-only interaction described above.

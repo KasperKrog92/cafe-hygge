@@ -1,6 +1,6 @@
 param(
-    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro')]
-    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro'),
+    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro', 'holger')]
+    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro', 'holger'),
     [string]$Url = 'http://127.0.0.1:8137/?dev',
     [ValidatePattern('^[a-zA-Z0-9_-]+$')][string]$Label = 'project-check'
 )

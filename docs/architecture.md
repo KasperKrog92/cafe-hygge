@@ -462,3 +462,15 @@ Version 4 saves migrate according to their existing counter variant; earlier
 furnished saves retain full size. `SCENE.room` supplies the navigation bounds,
 while `SCENE.presentation` keeps the apartment full-size. Main refits on a room
 change. Captions and default dev shots follow the active room extent.
+
+## Conversation moments
+
+`CAST.holgerIntroduction` owns the authored lines and branches. The attended
+moment helpers at the end of `sim-intro.js` expose `startHolger`, `momentLine`,
+`advanceMoment` and `leaveMoment`, alongside the generic `beginMoment` used by
+existing arc payoffs. `SIM.update` holds obligation state while a moment is
+active; main presents the camera crop and keyboard-accessible DOM choices.
+The shared scene renderer suppresses transient speech/order bubbles and draws
+standing idle poses during moments without changing saved actor positions.
+The full-scene `__dev.shot()` remains uncropped; use a browser screenshot to
+capture the presentation camera and DOM dialogue together.

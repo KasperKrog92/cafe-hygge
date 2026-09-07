@@ -1413,7 +1413,7 @@
      stage — or completes — and sets its lasting flag, and — for the scarf —
      the cat wears it from now on. Reuses the caption pipeline and the bubble
      system: almost no new runtime muscle (narrative.md §7). */
-  function playBeat(world, arc, owner) {
+  function playBeat(world, arc, owner, attended) {
     const rec = world.memory.arcs[arc.id];
     if (!rec || !rec.pendingBeat) return;
     const playedStage = rec.stage;
@@ -1430,7 +1430,11 @@
         lines.splice(Math.max(0, lines.length - 1), 0, pick(pb.lines));
       }
     }
-    captionRun(world, lines);
+    if (!attended) {
+      SIM.beginMoment(world, lines.map(text => ({speaker:'a quiet moment',text:text})), owner,
+        function () { SIM.withWorld(world, function () { playBeat(world, arc, owner, true); }); });
+      return;
+    }
     if (owner) owner.bubble = { icon: 'heart', until: world.t + 3.4 };
     if (lastingFlag === 'cat-wore-scarf') {
       world.cat.scarf = arc.scarfColor;
@@ -1506,6 +1510,12 @@
   });
 
   SIM.update = function (world, dt) {
+    if (world.moment) {
+      // Hold all obligations and deadlines; only ambient animation breathes.
+      [world.barista, world.cat].concat(world.patrons).forEach(p => {p.animT += dt;});
+      updateParticles(world, dt);
+      return;
+    }
     if(world.shop.phase==='settling') {
       if(!world.firstEntryReady || world.introPaused || world.introHidden || world.introModal)return;
       world.t+=dt;world.clockOffset-=dt;
@@ -1551,13 +1561,14 @@
     const invited = world.memory.life.mode === 'game' ? pendingInvites(world) : {};
     world.patrons.forEach(function (p) {
       if (p.outside) return;
-      draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, p); } });
+      draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment ?
+        Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null}) : p); } });
       if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id] });
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;
     if (!b.introOutside && !b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {
-      SCENE.drawPerson(g, b);
+      SCENE.drawPerson(g, world.moment ? Object.assign({},b,{pose:'stand',path:null,heading:'down'}) : b);
       if (world.shop && world.shop.carryingCat) {
         const lift=b.pose==='hug'?6+Math.round(Math.sin(Math.min(1,b.stateT/3)*Math.PI/2)*3)
           : b.pose==='gather'?Math.round(9*(1-Math.min(1,b.stateT/3))):0;
@@ -1573,7 +1584,7 @@
       if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
     }
     (world.memory.life.mode === 'game' ? anchoredInvites(world) : []).forEach(function (b) { bubbles.push(b); });
-    return { draws: draws, bubbles: bubbles };
+    return { draws: draws, bubbles: world.moment ? [] : bubbles };
   };
 
   R.updateBarista = updateBarista;

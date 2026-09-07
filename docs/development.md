@@ -272,3 +272,18 @@ setup; neither changes production persistence.
 captures the 16:9 viewport, checks the future full-room presentation switch,
 and checks apartment framing. `verify-c0.js` checks every simulated actor
 against the smaller floor boundaries during service and all existing jobs.
+
+## Conversation verification
+
+Run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-holger-ui.ps1`.
+It checks first arrival, both choices, a five-minute obligation hold, resumed
+simulation, isolated save restoration, one-time completion, actual invitation
+and choice buttons, a real browser reload and the final invariant audit.
+Captures and reports are saved to `.art-review/holger-ui/`. The character and
+story bible is [story-bible.md](story-bible.md).
+
+September 7 conversation evidence: all thirteen existing browser suites and
+thirteen Node save/isolation groups passed, plus the dedicated Holger suite
+and actual UI/reload checks at 1440×900 and 1600×900. The Holger suite is now
+included in the full runner. Art captures remain repeatable with zero audit
+problems. These are Chromium desktop results, not native Safari execution.

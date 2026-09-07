@@ -5,11 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Café Hygge — a cozy idle café</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css?v=intro-20260907-1">
+<link rel="stylesheet" href="style.css?v=holger-20260907-1">
 </head>
 <body>
 <div id="stage">
-  <canvas id="cafe"></canvas>
+  <canvas id="cafe" tabindex="-1"></canvas>
+  <button id="meet-holger" hidden type="button">a word with Holger</button>
+  <section id="conversation" hidden aria-label="A quiet conversation">
+    <div aria-live="polite" aria-atomic="true"><h2 id="conversation-speaker"></h2><p id="conversation-text"></p></div>
+    <div id="conversation-answers"></div>
+    <button id="conversation-later" type="button">continue another time</button>
+  </section>
   <div id="intro-controls" hidden aria-label="Opening dialogue">
     <button id="intro-next" type="button">next <small>space</small></button>
     <button id="intro-pause" type="button" aria-pressed="false">pause</button>
@@ -121,16 +127,16 @@
 <script src="js/scene-fx.js?v=intro-20260907-1"></script>
 <script src="js/scene-home.js?v=identity-20260907-1"></script>
 <script src="js/scene-intro.js?v=intro-20260907-1"></script>
-<script src="js/characters-roster.js?v=identity-20260907-1"></script>
+<script src="js/characters-roster.js?v=holger-20260907-1"></script>
 <script src="js/memory.js?v=intro-20260907-1"></script>
-<script src="js/sim-core.js?v=identity-20260907-1"></script>
+<script src="js/sim-core.js?v=holger-20260907-1"></script>
 <script src="js/sim-waterfront.js?v=identity-20260907-1"></script>
 <script src="js/sim-patrons.js?v=identity-20260907-1"></script>
 <script src="js/sim-shop.js?v=identity-20260907-1"></script>
-<script src="js/sim-characters.js?v=intro-20260907-1"></script>
+<script src="js/sim-characters.js?v=holger-20260907-1"></script>
 <script src="js/sim-life.js?v=intro-20260907-1"></script>
-<script src="js/sim-intro.js?v=intro-20260907-1"></script>
+<script src="js/sim-intro.js?v=holger-20260907-1"></script>
 <script src="js/dev.js?v=identity-20260907-1"></script>
-<script src="js/main.js?v=intro-20260907-1"></script>
+<script src="js/main.js?v=holger-20260907-1"></script>
 </body>
 </html>

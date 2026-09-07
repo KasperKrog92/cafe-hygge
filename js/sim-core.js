@@ -272,7 +272,7 @@
 
     // a few patrons are already settled in
     // (seat 10 = the first nook chair, 12 = the first window perch)
-    if(world.memory.life.firstOpening.step===12) {
+    if(world.memory.life.firstOpening.step===12 && (world.memory.bonds.holger || world.memory.life.furniture['full-counter'])) {
       seedPatron(world, 1); seedPatron(world, 10); seedPatron(world, 12);
     }
 
@@ -286,7 +286,8 @@
     // you recognise. His schedule is marked done-for-today inside seedRegular so
     // updateRegulars never brings a second Holger the same café day.
     const holger = CAST.regulars.find(function (r) { return r.id === 'holger'; });
-    if (holger && world.memory.life.firstOpening.step===12) seedRegular(world, holger);
+    if (holger && world.memory.life.firstOpening.step===12 && (world.memory.bonds.holger || world.memory.life.furniture['full-counter']))
+      seedRegular(world, holger, !world.memory.flags['holger-introduced'] && !world.memory.life.furniture.fireside ? world.seats.find(s => !s.taken) : null);
 
     if (SIM._.restoreLife) SIM._.restoreLife(world);
     return world;
@@ -1211,6 +1212,20 @@
 
   function updateSpawning(world, dt) {
     if (world.shop && !world.shop.accepting) return;
+    // On a new café's first opening, the neighbour enters through the real door
+    // before random arrivals or other regulars. Existing histories stay intact.
+    if (!world.memory.bonds.holger && !world.memory.life.furniture['full-counter'] && world.regulars.holger) {
+      world.regulars.holger.force = true;
+      const spec = CAST.regulars.find(r => r.id === 'holger');
+      const p = makeRegular(world, spec);
+      enqueueArrival(world, p, 0, true);
+      world.regulars.holger.lastDay = dayIndex(world);
+      world.regulars.holger.force = false;
+      noteRegularVisit(world, spec);
+      world.spawnT = 22;
+      caption(world, 'A neighbour pauses by the new sign, then steps inside.');
+      return;
+    }
     updateRegulars(world);
     world.spawnT -= dt;
     if (world.spawnT > 0) return;

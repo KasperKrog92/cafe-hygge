@@ -62,6 +62,7 @@
           scarf: '#a94f3f', longHair: false, hairStyle: 1, beard: true
         },
         drink: 'espresso',
+        // Retired seafarer and neighbour; encouragement offered without pressure.
         // tendsFire: an old habit — he keeps the hearth he sits by fed, getting
         // up to lay a log when it burns low (sim-patrons updateSeated)
         traits: { wantsBook: true, ownBook: true, chatty: false, laptop: false, pianist: false, tendsFire: true },
@@ -358,4 +359,28 @@
       }
     ]
   };
+  CAST.holgerIntroduction = [
+    {speaker:'Holger', text:"Good morning. I hoped that sign meant what I thought it meant."},
+    {speaker:'Lunafreya', text:"It does. A café. As of about a minute ago."},
+    {speaker:'Holger', text:"Then my timing has improved since retirement. I'm Holger. I live two doors along."},
+    {speaker:'Lunafreya', text:"Lunafreya. It's lovely to meet you. You're my first customer."},
+    {speaker:'Holger', text:"Well, that's a responsibility. One espresso, please. And no hurry on my account."},
+    {speaker:'Holger', text:"What brought you to this little place? If you don't mind my asking."},
+    {speaker:'Lunafreya', text:'I think…', choices:[
+      {text:"I've wanted a place where people can feel at home.", flag:'luna-beginning-belonging', reply:"Then you've started well. You said hello before you asked what I wanted."},
+      {text:"I needed a new beginning. Something of my own.", flag:'luna-beginning-new-start', reply:"A beginning of your own. Yes. You needn't tell me what came before it."}
+    ]},
+    {speaker:'Holger', text:"I spent thirty years at sea. On my first crossing, I polished the same brass handle six times. Couldn't think what else to do with my hands."},
+    {speaker:'Lunafreya', text:"I've rearranged those cups three times already."},
+    {speaker:'Holger', text:"Then you're ahead of me. It took me a week to admit I was nervous."},
+    {speaker:'Lunafreya', text:'Looking around, I keep thinking…', choices:[
+      {text:"I'd like to make a quiet corner for books someday.", flag:'luna-cafe-books', reply:"I've a few books that could use an outing. When you're ready, we can find them a corner."},
+      {text:"I'd like to learn everyone's names first.", flag:'luna-cafe-neighbours', reply:"Start with mine. The rest will come in their own time. There are some good people on this street."}
+    ]},
+    {speaker:'Holger', text:"There was a little galley table we always crowded around. Terrible coffee. Somehow nobody wanted to leave."},
+    {speaker:'Lunafreya', text:"Do you miss it?"},
+    {speaker:'Holger', text:"Some of the voices. More than the sea, these days."},
+    {speaker:'Holger', text:"But listen to me. First customer, already keeping you talking. I'm very glad you've opened, Lunafreya."},
+    {speaker:'Lunafreya', text:"I'm glad you came in, Holger."}
+  ];
 })();
