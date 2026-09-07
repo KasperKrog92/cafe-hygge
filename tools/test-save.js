@@ -23,7 +23,7 @@ function boot(raw) {
   };
   sandbox.window = sandbox;
   const ctx = vm.createContext(sandbox);
-  for (const file of ['improvements', 'audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro']) {
+  for (const file of ['improvements', 'audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro', 'sim-home']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'js', file + '.js'), 'utf8'), ctx, { filename: file + '.js' });
   }
   return { ctx, data, events, timers, writes: () => writes, prompts: () => prompts,
@@ -37,7 +37,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
     b.run(`
       const ids=['window','table','plant','fireplace'], prices={window:30,table:60,plant:30,fireplace:30};
       for(const first of ids)for(const second of ids) {
-        const w=SIM.create({});w.shop.phase='home';w.memory.life.mode='game';w.memory.life.savings=200;SIM.plan(w,true);
+        const w=SIM.create({});w.shop.phase='home';w.memory.life.homeStory=MEMORY.freshHomeStory(true);w.memory.life.mode='game';w.memory.life.savings=200;SIM.plan(w,true);
         const buy=id=>id==='plant'?SIM.buyPlant(w):SIM.buyProject(w,id);
         if(!buy(first))throw Error('first purchase '+first);
         const pair=first==='window'&&second==='table'||first==='table'&&second==='window';
@@ -59,7 +59,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('early installation accepted '+id);
       }
       for(const mode of ['idle','game'])for(const phase of ['open','home'])for(const planner of [false,true]) {
-        const w=SIM.create({});w.memory.life.mode=mode;w.shop.phase=phase;w.plannerOpen=planner;
+        const w=SIM.create({});w.memory.life.homeStory=MEMORY.freshHomeStory(true);w.memory.life.mode=mode;w.shop.phase=phase;w.plannerOpen=planner;
         if(SIM.buyPlant(w)!==(mode==='game'&&phase==='home'&&planner))throw Error('purchase context');
       }
     `);
@@ -146,7 +146,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
   await test('every shop boundary restores, and work/purchase never repeats', () => {
     const b=boot();
     b.run(`var w=SIM.create({random:SIM.seededRandom(84)}), captured={};
-      w.memory.flags['holger-introduced']=true;
+      w.memory.flags['holger-introduced']=true;w.memory.life.homeStory=MEMORY.freshHomeStory(true);
       w.clockOffset+=(21.5-w.hour)/24*SIM._.DAY_SECONDS;
       for(let i=0;i<6500;i++) {
         SIM.update(w,.25);

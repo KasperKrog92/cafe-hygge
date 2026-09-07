@@ -517,13 +517,16 @@
       const state = MEMORY.codec.fresh(); state.life.furniture = MEMORY.furnishings(true);
       state.life.firstOpening={step:12,time:0};
       state.life.room='full';
-      state.life.daysCompleted=7;state.life.projects.window={stage:'installed',step:4,time:0};
+      state.life.homeStory=MEMORY.freshHomeStory(true);state.life.daysCompleted=7;state.life.projects.window={stage:'installed',step:4,time:0};
       o.memory = MEMORY.createStore({state:state});
     }
     return SIM.create(o);
   };
   D.modestWorld = function(options) {
     const w=SIM.create(options||{});
+    // Ordinary lifecycle fixtures start after attended tutorials. Use
+    // {homeIntro:true} to exercise the real first arrival instead.
+    if(!(options && (options.memory || options.homeIntro)))w.memory.life.homeStory=MEMORY.freshHomeStory(true);
     for(let i=0;i<4000&&w.shop.phase==='settling';i++)SIM.update(w,.25);
     if(w.shop.phase==='settling')throw Error('first setup did not complete');
     if(w.shop.phase==='open')D.greetHolger(w);
@@ -795,7 +798,11 @@
       try { MEMORY.codec.validate(w.memory); } catch(e) { problems.push(e.message); }
       if (w.patrons.length || w.shop.accepting || w.shop.carryingCat) problems.push('home has café service or a carried cat');
       [w.barista,w.cat].forEach(e => {
-        if (!Number.isFinite(e.x) || !Number.isFinite(e.y) || e.x < 150 || e.x > 810 || e.y < 270 || e.y > 510)
+        const h=w.memory.life.homeStory,A=L.home.story;
+        const ladder=e===w.barista && (h.step===9 || h.step===10) && e.x===A.window.x && e.y>=A.ladderTop.y && e.y<=A.window.y;
+        const putCat=e===w.cat && h.step===0 && e.x===L.home.entry.x+8 && e.y>=L.home.entry.y-30 && e.y<=L.home.entry.y;
+        if (!Number.isFinite(e.x) || !Number.isFinite(e.y) || e.x < 150 || e.x > 820 ||
+          (!ladder && !putCat && e.y < 270) || e.y > L.home.floorBottom-16)
           problems.push('home character outside room');
       });
       return problems;

@@ -413,3 +413,13 @@ with a steady invitation once opened. It does not release the café clock or
 serve Holger early. Completing it releases normal service; no later conversation
 inherits this tutorial requirement. The booked window repair, like table work,
 is a practical improvement that may finish autonomously in either mode.
+
+## First home tutorial exception (7 September 2026)
+
+Owner direction makes the first apartment tour and its first planner attended
+in both modes. After unpacking a coat hanger and drapes, the player selects
+both the left-window repair and first table; no other project is offered.
+Neither the choices nor the following explicit bedtime expires. This one-time
+exception does not make later story arcs or purchases mandatory. The saved
+v8 home cursor resumes the tour/bedtime after reload, and established v7 homes
+skip the tutorial without changing savings, purchases or story choices.

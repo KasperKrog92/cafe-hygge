@@ -20,7 +20,7 @@
   const stage = document.getElementById('stage');
 
   const world = SIM.create();
-  world.firstEntryReady = new URLSearchParams(location.search).has('dev') || world.memory.life.firstOpening.step===12;
+  world.firstEntryReady = new URLSearchParams(location.search).has('dev') || (world.memory.life.firstOpening.step===12 && !SIM.homeSceneActive(world));
   window.__world = world; // handy for tinkering in the console
 
   /* ---------- viewport manager ----------
@@ -166,16 +166,19 @@
     }
   }
   function refreshIntro() {
-    const active=SIM.introActive(world) && world.firstEntryReady;
-    introControls.hidden=world.shop.phase!=='settling' || !world.firstEntryReady;
+    const home=SIM.homeSceneActive(world),active=(SIM.introActive(world) || home) && world.firstEntryReady;
+    introControls.hidden=(world.shop.phase!=='settling' && !home) || !world.firstEntryReady;
+    introControls.setAttribute('aria-label',home?'Evening dialogue':'Opening dialogue');
+    document.getElementById('intro-unpack').hidden=home;
     ['intro-next','intro-pause','intro-skip'].forEach(id=>{document.getElementById(id).hidden=!active;});
+    document.getElementById('intro-skip').hidden=!active || home;
     introPause.textContent=world.introPaused?'continue':'pause';
     introPause.setAttribute('aria-pressed',String(!!world.introPaused));
     document.getElementById('intro-next').disabled=!world.dialogue || !!world.introPaused;
     const line=active && world.dialogue?world.dialogue.text:'';
     if(line!==spokenLine) {spokenLine=line;introTranscript.textContent=line?'Lunafreya: '+line:'';}
   }
-  document.getElementById('intro-next').addEventListener('click',()=>{SIM.advanceIntro(world);refreshIntro();});
+  document.getElementById('intro-next').addEventListener('click',()=>{(SIM.homeSceneActive(world)?SIM.advanceHomeDialogue:SIM.advanceIntro)(world);refreshIntro();});
   introPause.addEventListener('click',()=>{world.introPaused=!world.introPaused;SND.stopDialogue();refreshIntro();});
   document.getElementById('intro-skip').addEventListener('click',()=>{SIM.skipIntro(world);refreshIntro();});
   document.getElementById('intro-unpack').addEventListener('click',()=>{SIM.skipUnpacking(world);refreshIntro();});
@@ -188,13 +191,16 @@
     }
     btnMode.textContent = l.mode;
     btnMode.setAttribute('aria-label', 'presentation: ' + l.mode + '; switch to ' + (l.mode === 'idle' ? 'game' : 'idle'));
-    btnPlan.hidden = l.mode !== 'game' || world.shop.phase !== 'home';
-    btnSleep.hidden = btnPlan.hidden;
+    const homeScene=SIM.homeSceneActive(world), required=SIM.homePlanRequired(world);
+    btnPlan.hidden=world.shop.phase!=='home' || homeScene || l.mode!=='game' && !l.homeStory.firstNight;
+    btnSleep.hidden=btnPlan.hidden;btnSleep.disabled=homeScene || required;
+    document.getElementById('close-plan').hidden=required;
     btnHome.hidden = world.shop.phase === 'home' || world.shop.phase==='settling';
     if (!world.plannerOpen && planner.open) planner.close();
-    if (!planner.open) return;
+    if (!world.plannerOpen) return;
     function refreshChoice(button, stage, price, id) {
       const available = stage === 'available';
+      button.hidden=l.homeStory.firstNight && id!=='window' && id!=='table';
       button.disabled = !IMPROVEMENTS.canBuy(world,id);
       button.querySelector('.thought-price > span').textContent = price;
       button.querySelector('.thought-price').hidden = !available;
@@ -208,6 +214,10 @@
     Object.keys(SIM.projects).forEach(function (id) {
       refreshChoice(document.getElementById('buy-' + id), l.projects[id].stage, SIM.projects[id].price,id);
     });
+    if(!planner.open && !settings.open && overlay.classList.contains('gone')) {
+      planner.showModal();
+      if(required)document.getElementById(l.projects.window.stage==='available'?'buy-window':'buy-table').focus();
+    }
   }
   btnMode.addEventListener('click', function () {
     SIM.setMode(world, world.memory.life.mode === 'idle' ? 'game' : 'idle'); refreshLife();
@@ -227,7 +237,7 @@
   });
   document.getElementById('close-plan').addEventListener('click', function () { planner.close(); });
   planner.addEventListener('close', function () { SIM.plan(world,false); btnPlan.focus(); });
-  planner.addEventListener('cancel', function () { SIM.plan(world,false); });
+  planner.addEventListener('cancel', function (e) { if(SIM.homePlanRequired(world)){e.preventDefault();return;} SIM.plan(world,false); });
   controls.addEventListener('focusin', function () { pokeControls(); });
   refreshLife();
 
@@ -332,8 +342,8 @@
   document.addEventListener('keydown', function (e) {
     if (settings.open || planner.open || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
-    if(e.code==='Space' && e.target.tagName!=='BUTTON' && SIM.introActive(world)) {
-      e.preventDefault();SIM.advanceIntro(world);return;
+    if(e.code==='Space' && e.target.tagName!=='BUTTON' && (SIM.introActive(world) || SIM.homeSceneActive(world))) {
+      e.preventDefault();(SIM.homeSceneActive(world)?SIM.advanceHomeDialogue:SIM.advanceIntro)(world);return;
     }
     if(e.key==='Escape' && world.moment){SIM.leaveMoment(world);refreshMoment();return;}
     if (e.key === 'm') btnMute.click();
@@ -360,6 +370,7 @@
   // takes it first, otherwise say hello to the cat. The first hello teaches dialogue.
   canvas.addEventListener('click', function (e) {
     if(world.moment || focusAmount>.02)return;
+    if(SIM.homeSceneActive(world)) {SIM.advanceHomeDialogue(world);return;}
     if(SIM.introActive(world)) {SIM.advanceIntro(world);return;}
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
@@ -438,6 +449,7 @@
   let last = performance.now();
   function advance(nowMs) {
     if (restarting) return;
+    world.introHidden=document.hidden;
     let elapsed = Math.min(90, (nowMs - last) / 1000);
     last = nowMs;
     if (elapsed <= 0) return;
@@ -459,7 +471,7 @@
   document.addEventListener('visibilitychange', function () {
     world.momentHidden=document.hidden;
     if(world.moment){SND.stopDialogue();last=performance.now();return;}
-    if(SIM.introActive(world)) {
+    if(SIM.introActive(world) || SIM.homeSceneActive(world)) {
       world.introHidden=document.hidden;SND.stopDialogue();last=performance.now();return;
     }
     if (!document.hidden) advance(performance.now());

@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 7;
+  const KEY = 'cafe-hygge-save', VERSION = 8;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -54,6 +54,15 @@
       });
       if (version >= 2) validateLife(s.life, version);
       if (version >= 3) validateProjects(s.life, version);
+      if (version >= 8) {
+        const h=s.life.homeStory;
+        requireShape(record(h) && integer(h.step) && h.step>=0 && h.step<=12 &&
+          finite(h.time) && h.time>=0 && h.time<=120 && typeof h.planned==='boolean' &&
+          typeof h.firstNight==='boolean' && integer(h.sleepStep) && h.sleepStep>=-1 && h.sleepStep<=4 &&
+          finite(h.sleepTime) && h.sleepTime>=0 && h.sleepTime<=120 &&
+          (h.sleepFrom===null || record(h.sleepFrom) && finite(h.sleepFrom.x) && finite(h.sleepFrom.y) &&
+          h.sleepFrom.x>=128 && h.sleepFrom.x<=832 && h.sleepFrom.y>=266 && h.sleepFrom.y<=550), 'invalid home story');
+      }
       if (version >= 7) requireShape(integer(s.life.daysCompleted) && s.life.daysCompleted >= 0, 'invalid café days');
       if (version >= 4) {
         requireShape(record(s.life.furniture), 'invalid furniture');
@@ -101,7 +110,10 @@
   function freshLife() {
     return { mode: 'idle', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0,
       plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), furniture: furnishings(false),
-      firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
+      homeStory: freshHomeStory(false), firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
+  }
+  function freshHomeStory(complete) {
+    return {step:complete?12:0,time:0,planned:complete,firstNight:!complete,sleepStep:-1,sleepTime:0,sleepFrom:null};
   }
   function freshIntro(complete) {
     return {line:0,finale:complete?8:0,time:0,skipped:false,complete:complete,sign:complete?'outside':'stored'};
@@ -179,7 +191,15 @@
     // An unfinished first morning receives the same reserved improvement funds.
     if (s.life.firstOpening.step < 12) s.life.savings = Math.max(90,s.life.savings);
     return s;
+  }, 7: function(s) {
+    createCodec(7, {}).validate(s);
+    s.version=8;
+    // Established evenings keep their choices and funds; the first visit is
+    // reserved for saves that have never come home.
+    s.life.homeStory=freshHomeStory(s.life.daysCompleted>0);
+    return s;
   } });
+  MEMORY.freshHomeStory=freshHomeStory;
   MEMORY.VERSION = VERSION;
   MEMORY.furnishings = furnishings;
   MEMORY.codec = codec;

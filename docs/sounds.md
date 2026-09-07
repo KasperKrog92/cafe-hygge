@@ -188,3 +188,11 @@ Profiles for Gerda, Nora, Kasper and Freya are authored alongside the roster.
 The moment simulation triggers syllables only while revealing attended text;
 reveal, advance, cancellation, Settings and hiding stop the current syllable.
 Instant text emits no speech. Narrator-only arc captions remain unvoiced.
+
+## Bedtime whisper
+
+The home goodnight uses the existing `dialogueSyllable` voice at 0.35 of its
+0.032 syllable peak (0.0112), with a slower 1.3 pace. The optional voice `gain`
+is clamped to 0–1 and still passes through the dialogue volume/mute bus.
+Toothbrushing and unpacking currently rely on visible animation, without new
+sound effects.

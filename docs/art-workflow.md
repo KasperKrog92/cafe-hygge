@@ -264,3 +264,23 @@ The compact-room pass is in `.art-review/compact-after/`; `viewport-small.png`
 shows the actual 16:9 canvas and `viewport-expanded.png` verifies the future
 full-room presentation with the same furnishings. Default `__dev.shot()` now
 exports the active room extent; explicit regions still use master coordinates.
+
+## First apartment evening verification
+
+`verify-home.js` exercises both presentation modes, both purchase orders,
+attendance holds, twelve tour and five bedtime save round trips per mode,
+first-evening waiting, next-morning scheduling and the final café audit.
+`tools/verify-home-ui.ps1` checks real reloads, required planner clicks,
+dialogue controls and desktop 16:10/16:9 captures. The contact sheet and
+individual frames are exported by `verify-project.ps1 -Suite home`.
+
+The 7 September home pass passed all sixteen browser suites across the full
+regression and targeted final reruns, plus the Node save/audio regressions.
+The home suite exercised 34 tour/bedtime reloads, both purchase orders and a
+bedside departure. Desktop UI checks covered the required planner and actual
+reloads, including an entry-overlay hold. A normal-entry cappuccino smoke
+completed grind/tamp/pull/steam, pickup and seating with a clean night audit.
+Rendered results are in `.art-review/home-motion-final/` and
+`.art-review/home-ui/`; café art repeatability passed ten images and twelve
+occupancy scenarios in `.art-review/home-art-final/`. All task-owned browser
+sessions were closed after verification.

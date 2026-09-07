@@ -54,16 +54,22 @@ Switch in place without reloading, resetting the clock, duplicating money or
 changing what is installed. There is no separate completed idle café. A person
 who never buys anything still has a pleasant, functioning place indefinitely.
 
-**Evening rule (updated 6 September 2026):** idle mode automatically finishes
-its 90-second apartment routine and starts the next morning. Game mode stays
-at home until the player chooses **go to sleep**, whether the evening thoughts are open
-or closed. After arriving once, Lunafreya and the cat relax on continuous indoor
-routes without returning to the entrance. Reloading
-preserves the evening. Sleep immediately advances to 07:30 and the existing
-short dawn transition, with Lunafreya entering the café carrying the cat. No plan
-is required. Switching to idle resumes automatic departure when the current
-routine finishes. Confirmed purchases proceed the following morning; nothing
-expires while the player lingers.
+**Evening rule (updated 7 September 2026):** the first home arrival is an
+attended, saved sequence in both modes. Lunafreya sets down the cat, talks about
+the kitchen, bathroom, bed, boxes and the exhaustion of moving and opening the
+café, then unpacks a coat hanger and window drapes. At the PC she opens the
+planner. Only the left-window repair (30) and first table (60) are offered;
+both must be selected, in either order, before continuing. This one-time
+first-evening requirement is explicit owner direction, not a rule for later arcs.
+She then idles until **go to sleep**, in both modes. Sleep starts the bathroom
+journey, toothbrushing, closing the drapes, getting into bed with the cat and a
+quiet goodnight before the dawn transition to 07:30. Reload preserves progress.
+
+Later game evenings remain at home until **go to sleep**, which uses the same
+bedtime sequence. Later idle evenings retain their automatic 90-second routine.
+Purchases become scheduled when bedtime finishes; choices do not expire.
+Previously visited v7 apartments migrate as established homes without replaying
+the tutorial or requiring another purchase.
 
 Already authorized practical work may finish while unattended. Its result
 persists, with an optional quiet note among the evening thoughts. Important conversations,
@@ -92,7 +98,7 @@ it does not calculate purchases or building progress from time spent away.
    She carries the street sign back inside as part of the closing routine.
    Unfinished work retains its physical stage and resumes another day.
 6. **Home again:** the apartment offers its own ambient routines and traces
-   of the day. Planning is available, with nothing required to proceed.
+   of the day. After the first evening tutorial, planning is optional.
 
 Apartment life is a full ambient scene: warm light, small sounds, idle movement
 and several activities. It should feel worth watching with the planner closed.
@@ -214,7 +220,7 @@ a particular milestone. Purchases, unpacking and remembered moments add to it.
 
 | State | Visible room | Autonomous evening life |
 | --- | --- | --- |
-| H0 — Just moved in | Bed, basic desk and chair, PC, reading light, suitcase, lots of moving boxes and one accessible book. Small kitchen and bathroom in the bottom left, with basic fixtures and an open dishes box. Sparse furnishings but comfortable, with clear walking routes. | Arrive, put away coat/bag, use PC, read on bed, wind down and sleep; the cat wanders and investigates boxes. The utility rooms are scenery for now. |
+| H0 — Just moved in | Bed, basic desk and chair, PC, reading light, suitcase, lots of moving boxes and one accessible book. Small kitchen and bathroom in the bottom left, with basic fixtures and an open dishes box. Sparse furnishings but comfortable, with clear walking routes. | Arrive, put away coat/bag, use PC, read on bed, wind down and sleep; the cat wanders and investigates boxes. The bathroom is used during the bedtime routine. |
 | H1 — Unpacking | Moving boxes gradually opened, emptied and folded away over several days; folded clothes, personal books and a mug find their places. | Short unpacking sessions mixed with evening activities; the cat explores the changing room and remaining boxes. |
 | H2 — Making it comfortable | Optional rug, curtains, bedside table and plant. | Arrange purchases, water plant and enjoy softer evening lighting. |
 | H3 — A place to linger | Small bookcase and reading chair, more books and a personal wall picture. | Choose between desk, bed and reading corner; occasionally rearrange books. |

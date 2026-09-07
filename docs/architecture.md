@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Twenty-one IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Twenty-two IIFE scripts expose the production globals
 (`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -24,6 +24,7 @@ js/sim-shop.js          → extends SIM    (opening/closing lifecycle factory)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
 js/sim-life.js          → extends SIM    (home, plant, presentation, saved lifecycle)
 js/sim-intro.js         → extends SIM    (first-morning dialogue and opening finale)
+js/sim-home.js         → extends SIM    (saved first apartment tour, first planner, bedtime)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -72,7 +73,7 @@ The planner and purchase APIs share `IMPROVEMENTS.canBuy(world,id)`; one debit
 path commits the choice. `state(life,id)` reads the existing plant or projects
 record without moving saved data. Current save validation and fresh projects
 read the catalogue; historical validation and migration payloads stay literal.
-Schema remains v7. Numeric steps keep their exact order and meaning: adding or
+The v8 home migration leaves the v7 improvement steps unchanged. Numeric steps keep their exact order and meaning: adding or
 reordering phases or adding saved jobs requires an explicit migration, including
 preserving the then-historical v7 validator independently of new definitions.
 
@@ -98,7 +99,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v7, migrated through v1–v6) contains `mode`, integer `savings`, `hour`,
+`memory.life` (v8, migrated through v1–v7) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -111,14 +112,16 @@ ordinary open-café reloads seed only established furnished rooms. New cafés
 restore an unfinished first greeting at the counter without another sale or visit.
 
 `SIM.setMode(world, mode)`, `SIM.plan(world, open)`, `SIM.goToSleep(world)` and
-`SIM.buyPlant(world)` are synchronous public actions. Sleep is accepted only
-at home in game mode; it saves the shared morning transition immediately, so
-repeated clicks cannot advance another day. Game mode holds at home independently
-of planner openness, including after reload; idle departs automatically. Buying checks game mode, home, open planner,
-availability and funds before changing both savings and job in one save.
-Planner openness is presentation-only and is not restored as a blocking dialog.
-Mode switching closes it when moving to idle and never changes world identity,
-time, progress or ownership. Game mode exposes pending story invitations.
+`SIM.buyPlant(world)` are synchronous public actions. Explicit sleep is accepted
+at home in game mode, or in either mode after the required first plan. It saves
+the start of bedtime; repeated clicks cannot advance another day. Dawn and
+purchase scheduling happen only when the bedtime scene finishes. Later game
+evenings wait regardless of planner openness; later idle evenings depart
+automatically. Buying checks the presentation/first-evening context, home,
+planner, availability and funds before saving the debit and job together.
+The first planner reopens until both window and table are selected. Later
+planner openness is presentation-only. Mode switching never changes world
+identity, time, progress or ownership. Game mode exposes pending invitations.
 
 On supported desktop browsers, `main.js` acquires the origin's Web Lock
 `cafe-hygge-life` before creating a production world. A second tab waits without
@@ -303,7 +306,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v7; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v8; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -544,3 +547,14 @@ same accessible invitation. Its two-second opacity cycle stops after the saved
 `holger-invitation-opened` flag is set; reduced-motion users see a steady icon.
 Completing the existing dialogue sets `holger-introduced` and releases service.
 Putting it aside retains the counter hold and exact acknowledged choices.
+
+## Home sequence save (v8)
+
+`life.homeStory` stores the twelve-step first tour cursor/time, whether the
+first window/table plan was completed, the first-night waiting flag, and the
+five-step bedtime cursor/time/start position. `sim-home.js` extends life after
+`sim-intro.js`, reuses the speech reveal/renderer, and reconstructs actor poses
+from saved route time. It never runs café pathfinding against apartment furniture.
+The v7 migration marks previously visited homes established; funds and projects
+remain unchanged. The completed tour cursor also keeps the hanger and drapes
+installed. No additional timer, persistence store or offline progress path exists.

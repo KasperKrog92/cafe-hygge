@@ -262,7 +262,7 @@
     o.type='triangle';o.frequency.setValueAtTime(pitch+(index%7)*7,t);
     o.frequency.linearRampToValueAtTime(pitch-10+(index%5)*9,t+dur);
     o.connect(f);f.connect(g);g.connect(dialogueBus);
-    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.032,t+.015);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.032*(v.gain===undefined?1:Math.max(0,Math.min(1,v.gain))),t+.015);
     g.gain.linearRampToValueAtTime(0,t+dur);
     o.start(t);o.stop(t+dur+.01);dialogueVoice=o;dialogueUntil=t+dur+.012;
     o.onended=function(){o.disconnect();f.disconnect();g.disconnect();if(dialogueVoice===o)dialogueVoice=null;};

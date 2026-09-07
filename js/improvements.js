@@ -43,7 +43,9 @@
   };
   I.canBuy = function (world, id) {
     const d = I.all[id], l = world.memory.life, p = d && I.state(l,id);
-    return !!p && !!world.plannerOpen && world.shop.phase === 'home' && l.mode === 'game' &&
+    const h=l.homeStory, tutorial=h && h.firstNight;
+    if (tutorial && (h.step<12 || (id!=='window' && id!=='table'))) return false;
+    return !!p && !!world.plannerOpen && world.shop.phase === 'home' && (l.mode === 'game' || tutorial) &&
       I.canPlan(l,id) && p.stage === 'available' && l.savings >= d.price &&
       d.requires.every(capability => I.installed(l,capability));
   };

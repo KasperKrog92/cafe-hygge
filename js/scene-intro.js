@@ -49,6 +49,7 @@
       return {text:line.text,visible:w.moment.visible,name:line.speaker,choices:line.choices,
         speaker:line.speaker==='Lunafreya'?w.barista:w.moment.owner||w.barista,moment:true};
     }
+    if(w.shop.phase==='home' && w.dialogue) return {text:w.dialogue.text,visible:w.dialogue.visible,speaker:w.barista,name:'Lunafreya'};
     if(!w.dialogue || w.memory.life.intro.skipped || w.shop.phase!=='settling')return null;
     return {text:w.dialogue.text,visible:w.dialogue.visible,speaker:w.barista,
       name:w.memory.life.intro.line===0?'Lunafreya':null};

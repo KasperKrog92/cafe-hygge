@@ -83,6 +83,13 @@
       window: { x: 535, y: 124, w: 128, h: 112 },
       boxes: [{ x: 280, y: 270 }, { x: 308, y: 270 }, { x: 294, y: 248 },
         { x: 474, y: 280 }, { x: 503, y: 280 }, { x: 493, y: 258 }, { x: 776, y: 422 }],
+      story: {
+        kitchen: {x:321,y:424}, bathroom: {x:549,y:424},
+        bathDoor: {x:549,y:484}, bathLane: {x:549,y:520}, basin: {x:442,y:506}, basinLane: {x:442,y:520},
+        box: {x:503,y:310}, hanger: {x:160,y:298}, hangerWork: {x:178,y:320},
+        window: {x:599,y:280}, ladderTop: {x:599,y:178},
+        pillow: {x:738,y:276}, catPillow: {x:795,y:305}
+      },
       catStops: [{ x: 278, y: 320 }, { x: 490, y: 320 }, { x: 655, y: 374 }]
     },
     firstPlant: { x: 250, y: 210, pickup: { x: 54, y: 300 }, work: { x: 250, y: 268 } },

@@ -18,6 +18,16 @@
      the room, or Lunafreya watching it from the till — and a back view when
      `heading` is 'up' — walking away up the room, or facing the counter
      to order. */
+  SCENE.drawBedSleeper=function(g,p) {
+    const x=Math.round(p.x),y=Math.round(p.y);
+    px(g,x-12,y+7,26,15,p.colors.top);
+    drawHead(g,x,y-9,-1,p.colors,true);
+    px(g,x-18,y+10,40,47,'#7a89a5');
+    px(g,x-16,y+9,36,7,'#94a1b4');
+    px(g,x-13,y+10,30,2,'#b8bfc7');
+    px(g,x-17,y+17,3,34,'#94a1b4');
+    px(g,x+18,y+17,3,37,'#697892');
+  };
   function drawHead(g, x, hy, facing, c, closed) {
     const hairL = shade(c.hair, 0.18);
     const st = c.hairStyle || 0;
@@ -526,6 +536,12 @@
       const lift=p.pose==='hug'?8:0;
       limb(g,x-11,y-35,x-8,y-24-lift,5,c.top);limb(g,x+10,y-35,x+14,y-25-lift,5,c.top);
       limb(g,x-8,y-24-lift,x+3,y-29-lift,4,c.skin);limb(g,x+14,y-25-lift,x+7,y-31-lift,4,c.skin);
+    } else if(p.pose==='brushTeeth') {
+      const dx=Math.round(Math.sin(p.animT*15)*2), f=p.facing;
+      limb(g,x+f*8,y-36,x+f*15,y-31,5,c.top);
+      limb(g,x+f*15,y-31,x+f*12+dx,y-44,4,c.skin);
+      px(g,x+f*8+dx-3,y-46,11,2,'#94a1b4');
+      px(g,x+f*6+dx-2,y-47,4,3,'#f5efdf');
     } else if(p.pose==='unlock') {
       const lock=SCENE.L.intro.lock;
       limb(g,x+10,y-35,x+19,y-47,5,c.top);limb(g,x+19,y-47,lock.x,lock.y+3,4,c.skin);

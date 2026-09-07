@@ -43,6 +43,7 @@
         check(w.shop.phase==='home' && w.hour===hour,'game evening advanced unattended');
         check(SIM.goToSleep(w),'sleep rejected');
         check(!SIM.goToSleep(w),'duplicate sleep accepted');
+        until(w,()=>w.shop.phase==='dawn');
         check(Math.abs(w.hour-7.5)<1e-8 && w.shop.phase==='dawn','sleep did not start morning');
       }
       return nights===3 && w.shop.phase==='open';

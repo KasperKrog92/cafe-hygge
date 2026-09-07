@@ -245,6 +245,8 @@
     }});
   }
   SCENE.drawHome = function(g,w) {
+    const story=w.memory.life.homeStory,A=H.story;
+    const sleeping=story.sleepStep>=3 && w.barista.pose==='tucked';
     px(g,0,0,960,600,'#29242b');
     px(g,128,70,704,H.wallY-70,'#b5a18a');
     px(g,128,70,704,8,'#6e4a33');
@@ -278,6 +280,17 @@
     g.restore();
     px(g,win.x+62,win.y,4,win.h,'#6e4a33'); px(g,win.x,win.y+57,win.w,4,'#6e4a33');
     px(g,win.x-10,win.y+win.h,win.w+20,7,'#c08a58');
+    if(story.step>=10 || story.step===9 && w.homeAction==='reach') {
+      const hanging=story.step===9?Math.min(1,w.homeActionTime/6):1;
+      const closed=story.sleepStep>1?1:story.sleepStep===1?Math.min(1,(w.homeActionTime||0)/4):0;
+      px(g,win.x-15,win.y-10,win.w+30,3,'#5a3d28');
+      const width=Math.round((16+closed*(win.w/2-10))*hanging);
+      [win.x-5,win.x+win.w+5-width].forEach(x=>{
+        px(g,x,win.y-6,width,win.h+18,'#7f8d80');
+        for(let k=3;k<width;k+=7) {px(g,x+k,win.y-4,2,win.h+14,'#a2aa91');px(g,x+k+2,win.y,2,win.h+14,'#69796f');}
+        px(g,x,win.y+win.h+10,width,3,'#69796f');
+      });
+    }
     ell(g,420,347,115,33,'rgba(232,176,74,.09)');
     utilityRoom(g,H.kitchen,false); utilityRoom(g,H.bathroom,true);
     const draws=[];
@@ -289,7 +302,20 @@
       px(g,r.x,r.y+r.h-12,r.w,4,'#e8dfc9');
       px(g,r.x,r.y+r.h,r.w,4,'#6e4a33');
     }}));
-    H.boxes.forEach((b,i)=>draws.push({y:b.y,draw:g=>box(g,b.x,b.y,i===4)}));
+    H.boxes.forEach((b,i)=>draws.push({y:b.y,draw:g=>box(g,b.x,b.y,i===4 && story.step>=6)}));
+    if(story.step>=8 || story.step===7 && w.homeAction==='reach')draws.push({y:A.hanger.y,draw:g=>{
+      const x=A.hanger.x,y=A.hanger.y, q=story.step===7?Math.min(1,w.homeActionTime/5):1;
+      ell(g,x,y+2,17,4,'rgba(20,12,8,.22)');
+      px(g,x-17,y-2,34,4,'#5a3d28');px(g,x-2,y-71*q,4,71*q,'#825638');
+      if(q>.5) {px(g,x-17,y-65,34,4,'#a8764a');px(g,x-18,y-70,4,8,'#c08a58');px(g,x+14,y-70,4,8,'#c08a58');}
+      if(story.step>=8) {px(g,x+5,y-60,13,35,'#647b83');px(g,x+3,y-57,4,22,'#4c5d61');px(g,x+9,y-58,2,30,'#84958e');}
+    }});
+    if(story.step===9 || story.step===10 && w.barista.y<A.window.y)draws.push({y:A.window.y+1,draw:g=>{
+      const x=A.window.x,y=A.window.y;
+      px(g,x-12,y-102,4,102,'#a8764a');px(g,x+9,y-102,4,102,'#825638');
+      for(let k=0;k<5;k++)px(g,x-12,y-102+k*22,25,4,'#c08a58');
+      px(g,x-15,y-104,31,4,'#d5b581');
+    }});
     draws.push({y:H.bag.y,draw:g=>{
       ell(g,H.bag.x,H.bag.y+1,15,4,'rgba(20,12,8,.22)');
       px(g,H.bag.x-12,H.bag.y-25,24,25,'#8f4a35'); px(g,H.bag.x-7,H.bag.y-30,14,4,'#4a3222');
@@ -360,18 +386,22 @@
       if(!w.barista.reading) { px(g,x+24,y+32,15,10,'#a94f3f'); px(g,x+26,y+34,11,2,'#e8dfc9'); }
       px(g,x-22,y-5,4,38,'#4a3222'); px(g,x-33,y-16,27,12,'#e8d5b0');
     }});
-    draws.push({y:w.barista.pose==='sit' ? H.bed.y+H.bed.h+.1 : w.barista.y,draw:g=>{
+    draws.push({y:sleeping || w.barista.pose==='sit' ? H.bed.y+H.bed.h+.1 : w.barista.y,draw:g=>{
       const b=Object.assign({},w.barista,{colors:Object.assign({},w.barista.colors,{apron:false}),bookColor:'#a94f3f'});
-      SCENE.drawPerson(g,b);
+      if(sleeping)SCENE.drawBedSleeper(g,b);else SCENE.drawPerson(g,b);
+      if(story.step===7 && b.pose==='walk') {px(g,b.x-15,b.y-28,30,3,'#a8764a');px(g,b.x+8,b.y-39,3,28,'#825638');}
+      if((story.step===8 || story.step===9) && b.pose==='walk') {px(g,b.x-7,b.y-30,18,13,'#7f8d80');px(g,b.x-4,b.y-27,12,2,'#a2aa91');}
     }});
-    draws.push({y:w.cat.y,draw:g=>SCENE.drawCat(g,w.cat)});
+    draws.push({y:story.sleepStep>=3?H.bed.y+H.bed.h+.2:w.cat.y,draw:g=>SCENE.drawCat(g,w.cat)});
     draws.sort((a,b)=>a.y-b.y); draws.forEach(d=>d.draw(g));
     const glow=g.createRadialGradient(646,301,5,646,301,135);
     glow.addColorStop(0,'rgba(255,201,119,.16)'); glow.addColorStop(1,'rgba(255,201,119,0)');
     g.fillStyle=glow;g.fillRect(510,165,280,280);
     SCENE.drawCaption(g,w);
+    SCENE.drawIntroDialogue(g,w);
     // Only idle departs on this timer. Explicit sleep uses the café dawn fade.
-    const t=w.memory.life.homeTime, fade=w.memory.life.mode === 'game' || w.plannerOpen ? 0 : t<2 ? 1-t/2 : t>88 ? (t-88)/2 : 0;
+    const t=w.memory.life.homeTime, fade=story.firstNight || story.sleepStep>=0 || w.memory.life.mode === 'game' || w.plannerOpen ? 0 : t<2 ? 1-t/2 : t>88 ? (t-88)/2 : 0;
+    if(story.sleepStep===4) {g.globalAlpha=Math.min(1,Math.max(0,(story.sleepTime-1)/3));px(g,0,0,960,600,'#100d14');g.globalAlpha=1;}
     if(fade>0) { g.globalAlpha=fade; px(g,0,0,960,600,'#100d14'); g.globalAlpha=1; }
   };
 })();

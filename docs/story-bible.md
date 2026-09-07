@@ -32,7 +32,8 @@ short arc moments restart when reopened and award their result only at the end.
 **Established:** newly opening this café, living in the apartment, sharing both
 places with the cat. Nervous, practical and quietly hopeful. She wants guests
 to feel welcome and is learning what her own place will become. Her name and
-role are fixed; her reasons and aspirations have room for the reader.
+role are fixed. She moved to a new city and apartment and opened the café within
+a few days, and admits how exhausted she is on the first evening; her reasons and aspirations have room for the reader.
 
 **Voice:** concrete observations, little admissions, affection without speeches.
 She can ask a direct question, admit uncertainty and set a boundary. She should
@@ -41,6 +42,8 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | Beat | Status | Memory / consequence |
 | --- | --- | --- |
 | First morning: cat, setup, cups, two tables, unnamed sign | Shipped | Existing first-morning checkpoint |
+| First evening: apartment tour, one moving box, coat hanger and drapes | Shipped | v8 `life.homeStory`; required window/table plan in both modes, then explicit bedtime |
+| Bedtime: teeth, curtains, bed and a whispered goodnight to the cat | Shipped | Saved bedtime cursor; same cat settles on the pillow |
 | Why this café: a place to belong / a new beginning | Shipped, Holger introduction | `luna-beginning-belonging` / `luna-beginning-new-start` |
 | First hope: a reading corner / learning neighbours' names | Shipped, Holger introduction | `luna-cafe-books` / `luna-cafe-neighbours` |
 | What came before the move | Open | A new beginning does not establish trauma, a former job or a relationship |

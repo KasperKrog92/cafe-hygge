@@ -38,7 +38,7 @@
   }
   for(const first of ['window','table']) {
     let w=SIM.create({random:SIM.seededRandom(42)});
-    SIM.setMode(w,'game');SIM.skipUnpacking(w);__dev.greetHolger(w);until(w,()=>w.shop.phase==='home');SIM.plan(w,true);
+    SIM.setMode(w,'game');SIM.skipUnpacking(w);__dev.greetHolger(w);until(w,()=>w.shop.phase==='home');until(w,()=>SIM.homePlanRequired(w));SIM.plan(w,true);
     const before=w.memory.life.savings,second=first==='window'?'table':'window';
     check(SIM.buyProject(w,first),'first purchase failed');
     w=restore(w);SIM.plan(w,true);

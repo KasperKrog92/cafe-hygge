@@ -15,15 +15,15 @@ entrance: right curtain, hearth and mantel candles, then left curtain. She calls
 carries it to the door, switches off the interior lamps and leaves.
 
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
-one-second dark pause lead into the apartment. In idle mode, Lunafreya spends a
-90-second unattended evening there before the two-second dawn fade leads to
-07:30. After the one-time arrival, game mode repeats only the indoor desk,
-reading and resting routine until **go to sleep** is chosen;
-closing the evening thoughts does not start a new day. The apartment renderer applies
-no timer-based fade in game mode, including at indoor loop boundaries; only
-explicit sleep starts the morning transition. Sleep jumps to 07:30 and the
-same dawn entrance, saving the transition immediately. Reloading a game evening
-keeps Lunafreya home. Switching to idle lets the current routine finish automatically.
+one-second dark pause lead into the apartment. The first arrival plays the saved
+home tour and required two-choice planner described below; both modes then wait
+for **go to sleep**. Later idle evenings run their 90-second unattended routine.
+Game evenings repeat indoor desk, reading and resting activities until sleep is
+chosen. Closing the planner does not start a new day. Explicit sleep saves a
+bedtime sequence first: bathroom, teeth, curtains, shared bed and goodnight.
+Only its completion advances to 07:30 and the dawn entrance. Reload preserves
+that sequence. After the first evening, switching to idle lets the ordinary
+routine finish automatically.
 The café clock holds during home time; elapsed story time still receives real
 dt. Lunafreya comes back
 with the cat and turns on the lamps at the entrance first. She puts the cat
@@ -41,9 +41,9 @@ and the shop returns to its usual routines.
 [explicit simulation contract](architecture.md#shop-lifecycle-contract).
 `world.clockOffset` skips the sleeping hours without jumping `world.t`, so
 caption, weather, movement and story timers receive only actual simulated
-time. The normal arrival schedule rolls into the new café day. This sequence
-needs no clicks, creates no obligations, and never consumes a story invitation.
-Schema v7 retains completed café days, left-window work, home time, wall-clock hour, presentation, savings, plant
+time. The normal arrival schedule rolls into the new café day. The ordinary opening chores
+need no clicks and never consume a story invitation.
+Schema v8 adds the home-story/bedtime cursor and retains completed café days, left-window work, home time, wall-clock hour, presentation, savings, plant
 stage/time, partial table/hearth jobs, the evening choice and a lifecycle checkpoint. Reload holds time spent away and resumes
 rituals/partial work; transient patrons and incomplete orders are not serialized.
 Only established furnished saves keep the seeded-room behavior. New cafés reload
@@ -478,3 +478,14 @@ the right window remains boarded. The worker leaves when finished or at closing.
 Partial work survives nights, reloads and mode changes, independently of
 Lunafreya’s table assembly. Captions mark the arrival and the clear lake view;
 existing door sounds and the normal caption limiter apply.
+
+## Saved first evening
+
+The first arrival at home holds for an attended apartment tour, then a required
+left-window/table planner. Both selections are charged once and persist through
+reloads; other choices and sleep are unavailable until the pair is selected.
+This first evening waits for **go to sleep** in either mode. The café clock stays
+fixed while at home. Bedtime visits the bathroom through its doorway, brushes
+teeth, closes the drapes and tucks Lunafreya and the cat into bed before dawn.
+Ordinary later idle evenings still advance automatically; later game evenings
+wait for sleep and use the bedtime scene. No elapsed time is added on boot.

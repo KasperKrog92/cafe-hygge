@@ -25,7 +25,9 @@
     const l = w.memory.life, p = IMPROVEMENTS.state(l,id);
     l.savings -= IMPROVEMENTS.all[id].price; p.stage = 'purchased';
     if (id === 'plant') p.time = 0;
-    l.plannedTonight = true; commit(w); return true;
+    l.plannedTonight = true;
+    if (SIM.finishHomePlan) SIM.finishHomePlan(w);
+    commit(w); return true;
   }
   SIM.buyProject = function (w, id) {
     return !!PROJECTS[id] && buyImprovement(w,id);
@@ -300,6 +302,8 @@
     if (l.homeTime < 90 || l.mode === 'game') return;
     startMorning(w);
   };
+  R.startMorning = startMorning;
+  R.homePose = homePose;
   function startMorning(w) {
     const l = w.memory.life;
     w.plannerOpen = false;

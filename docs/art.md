@@ -702,3 +702,13 @@ His work anchor is `L.projects.window.work`; the original lane and tables stay c
 Holger’s first invitation uses the existing dots bubble with a slow opacity
 cycle (two seconds, never fully invisible). Its hit target stays fixed and active;
 opening it stops the cycle, and reduced-motion preference keeps it steady.
+
+## First apartment evening props and poses
+
+The first tour opens the box beside the PC, assembles the timber coat hanger
+left of the door and hangs sage drapes on the existing window. A temporary
+stepladder puts Lunafreya's hands at the curtain rod; the cat waits below.
+At bedtime, drapes slide inward, a small blue toothbrush moves at her mouth,
+and the duvet covers her shoulders beneath the pillow; the same cat sleeps
+beside her. All route/prop anchors live in `SCENE.L.home.story`. Apartment
+furniture, ladder, sleeper and cat retain the room's shared depth draw list.

@@ -744,3 +744,16 @@ Mikkel’s booked left-window visit is a separate craftsperson actor, not a patr
 or a second staff member. He carries a toolbox, follows obstacle-aware routes,
 kneels by the sill, works with the existing reach pose, and leaves at completion
 or closing. His saved repair resumes peacefully the next morning if necessary.
+
+## First evening and bedtime — shipped 7 September 2026
+
+`sim-home.js` owns the first apartment tour and explicit bedtime. Lunafreya
+sets down the same cat, visits the kitchen/bathroom/bed, admits her exhaustion,
+opens one box, assembles a coat hanger and hangs drapes using a stepladder.
+She sits at the PC before the two-choice first planner opens. After selecting
+both the left window and first table, ordinary apartment activities resume.
+Both modes wait for the first **go to sleep**. Later explicit sleep follows
+the same bathroom-door route, toothbrushing, curtains and shared bed, with a
+whispered goodnight. Dialogue shares intro reveal/pause/accessibility settings.
+Hidden pages, pause and Settings hold the attended tour and bedtime; later
+ordinary apartment idling continues in the background.

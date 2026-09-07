@@ -231,7 +231,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v7; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v8; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -381,3 +381,11 @@ pickup income and a zero-problem night audit. The first-days UI runner verified
 seven actual page reloads; the dedicated Holger UI runner also preserved a chosen
 reply at the counter. The final older-home-save resumption check passes in
 `.art-review/first-days-resume-fixed/`. All owned browser sessions were closed.
+
+### First home / bedtime checks
+
+Run `tools/verify-project.ps1 -Suite home` for the saved apartment tour and
+bedtime journeys, or `tools/verify-home-ui.ps1` for the actual desktop controls
+and reloads. Both accept a local `-Url`; the UI runner takes the bare root URL.
+`__dev.modestWorld({homeIntro:true})` keeps the first arrival pending for these
+tests. Ordinary modest/furnished fixtures represent post-tutorial lives.
