@@ -243,11 +243,13 @@
       const rub = Math.round(Math.sin(p.stateT*5)*5);
       px(g,x-11,y-10,21,8,c.pants); px(g,x-15,y-5,10,5,'#3a2a1c');
       px(g,x+7,y-14,7,13,c.pants); px(g,x+7,y-3,10,3,'#3a2a1c');
-      px(g,x-10,y-33,20,23,c.top); px(g,x-9,y-22,18,12,'#e8dfc9');
-      px(g,x-11,y-32,5,12,c.top); px(g,x+7,y-32,5,12,c.top);
+      // Work happens beyond her back: only the outer hands/tool edges can
+      // peek around her silhouette, never paint across her torso or sleeves.
       px(g,x-13,y-26,5,8,c.skin); px(g,x+8,y-26,5,8,c.skin);
       px(g,x-9+rub,y-27,17,3,'#96704c'); px(g,x-7+rub,y-24,13,4,'#c9b28a');
       px(g,x-3+rub,y-30,5,5,c.skin);
+      px(g,x-10,y-33,20,23,c.top); px(g,x-9,y-22,18,12,'#e8dfc9');
+      px(g,x-11,y-32,5,12,c.top); px(g,x+7,y-32,5,12,c.top);
       drawHeadBack(g,x,y-48+breathe,facing,c); return;
     }
     if (p.pose === 'pc') {

@@ -2,6 +2,10 @@
 
 ## First-morning speech and handmade sign
 
+Rear-facing kneeling work draws hands and tools before the torso and sleeves.
+Only small outer edges show during assembly or hearth work; the moving hand
+cannot appear through the character's back.
+
 `scene-intro.js` renders cream speech bubbles through `SCENE.composeFrame`.
 Complete sentences are wrapped before revealing at 13 px Georgia, with at most
 three lines. The bubble follows the owner's feet without walk bob and stays
