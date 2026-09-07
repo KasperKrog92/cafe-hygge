@@ -206,7 +206,8 @@
       if (next.kind === 'wait') {
         const terraceDirty = world.waterfront.tables.some(function (tb) { return tb.dirty || tb.cleaning; });
         if (terraceDirty) { R.startTerraceClear(world, b); return false; }
-        if (!world.patrons.length && !b.orders.length && !world.queue.length && b.state === 'idle') s.step++;
+        if (!world.patrons.length && !b.orders.length && !world.queue.length && b.state === 'idle' &&
+            !SIM.visitorActors(world).length) s.step++;
         return false;
       }
       if (next.kind === 'welcome') {

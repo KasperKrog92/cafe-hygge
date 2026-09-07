@@ -8,7 +8,7 @@
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
       phaseIds:['protect','unboard','repair','clean'], duration:18, capability:'left-window', pair:'table' },
-    table: { price:60, destination:'cafe', delivery:'carry', title:'table and chairs',
+    table: { price:60, destination:'cafe', delivery:'keira', title:'table and chairs',
       phases:['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'],
       phaseIds:['unpack','legs','top','chairs','wipe','position'], duration:18, capability:'project-table', pair:'window' },
     fireplace: { price:30, destination:'cafe', delivery:'carry', title:'clean the fireplace',

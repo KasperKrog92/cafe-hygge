@@ -757,3 +757,14 @@ the same bathroom-door route, toothbrushing, curtains and shared bed, with a
 whispered goodnight. Dialogue shares intro reveal/pause/accessibility settings.
 Hidden pages, pause and Settings hold the attended tour and bedtime; later
 ordinary apartment idling continues in the background.
+
+
+## Second-day visitors — shipped 8 September 2026
+
+Keira (she/her) and Tomas (he/him) are stable `CAST.visitors` identities.
+Keira brings a trolley, hands off the first table kit, then exits before
+Lunafreya assembles it. Tomas retains autonomous window repair. They are visitor
+actors with staff-safe routes, no orders or seats, and independent departures.
+Optional saved greetings use existing attended bubbles. Ignored hellos return
+on later 90-second off-duty visits; completed greetings get familiar captions.
+See the story bible for literal scene continuity and architecture for timing.

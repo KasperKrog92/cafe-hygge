@@ -184,10 +184,12 @@
       SIM.withWorld(w,function(){
         const candidates=[];
         if(owner.seat && owner.seat.table>=0)candidates.push(SIM._.busRoute(w,owner.seat.table).slice(-1)[0]);
-        [[-48,0],[48,0],[0,48],[0,-48]].forEach(d=>candidates.push({x:owner.x+d[0],y:owner.y+d[1]}));
+        [[-48,0],[48,0],[-72,0],[72,0],[0,48],[-48,-48],[48,-48],[0,-48]].forEach(d=>candidates.push({x:owner.x+d[0],y:owner.y+d[1]}));
         for(let n=0;n<candidates.length;n++) {
           const probe=Object.assign({},b),at=candidates[n];
-          if(w.patrons.some(p=>!p.outside && Math.hypot(p.x-at.x,p.y-at.y)<28))continue;
+          const room=SCENE.L.rooms[w.memory.life.room];
+          if(at.x<22 || at.x>room.w-22 || at.y<SCENE.L.wallY || at.y>room.floorBottom)continue;
+          if(w.patrons.concat(SIM.visitorActors(w)).some(p=>!p.outside && Math.hypot(p.x-at.x,p.y-at.y)<28))continue;
           SIM._.makePath(probe,at.x,at.y);
           if(probe.path && probe.path.length){route=probe.path;break;}
         }
@@ -247,11 +249,13 @@
       m.chosenSpeaking=false;
     } else {
       if(m.holger)w.memory.flags[prefix+m.index]=true;
+      if(m.visitor)w.memory.flags[m.visitor+'-hello-'+m.lines[m.index].id]=true;
       m.index++;
       if(m.index===m.lines.length) {m.finish();SIM.leaveMoment(w);}
     }
     m.visible=0;m.clock=0;m.syllable=0;
     w.context.memory.save();
+    if(m.visitor)w.context.memory.saveNow();
     return true;
   };
   SIM.leaveMoment=function(w) {

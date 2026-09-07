@@ -387,3 +387,34 @@
     {speaker:'Lunafreya', text:"I'm glad you came in, Holger."}
   ];
 })();
+
+/* Stable working identities and literal first-meeting packets. No purchase effects. */
+(function () {
+  'use strict';
+  CAST.visitors={
+    keira:{name:'Keira',nameStyle:'feminine',pronouns:'she/her',
+      colors:{skin:'#ddb58d',hair:'#49352d',top:'#9c4848',pants:'#3d4a5c',scarf:'#b18d62',longHair:true,hairStyle:3,beard:false},
+      arrival:'Keira stops by, with no trolley to hurry back to.',
+      returning:'Keira waves to Lunafreya. No deliveries this time.',
+      later:"I've come without the trolley today. I'm Keira, by the way.",
+      hello:[
+        {id:'name',speaker:'Keira',text:"The table kit's here. I'm Keira. Is this a good place to leave it?"},
+        {id:'place',speaker:'Lunafreya',text:"Perfect. I'm Lunafreya. I'm still getting used to having room for another table."},
+        {id:'practical',speaker:'Keira',text:"Give yourself room to walk around it. The little bag has all the screws. And one spare, for the floor."},
+        {id:'laugh',speaker:'Lunafreya',text:"The floor already has quite a collection. Come in sometime when you're not carrying anything."},
+        {id:'welcome',speaker:'Keira',text:"I'd like that. It's a nice place to stop."}
+      ]},
+    tomas:{name:'Tomas',nameStyle:'masculine',pronouns:'he/him',
+      colors:{skin:'#ddb58d',hair:'#6b4a30',top:'#718b91',pants:'#4b5260',scarf:null,longHair:false,hairStyle:1,beard:true},
+      arrival:'Tomas pauses by the window on his way along the street.',
+      returning:'Tomas gives Lunafreya a nod, then checks the view rather than the frame.',
+      later:"Tomas. We never quite got to names, did we?",
+      hello:[
+        {id:'name',speaker:'Tomas',text:"Tomas. Here for the left window. The frame's sound underneath, which is a useful start."},
+        {id:'view',speaker:'Lunafreya',text:"I'm Lunafreya. I keep trying to imagine the view without the boards."},
+        {id:'precise',speaker:'Tomas',text:"Mostly water. It moves about, so there's some variety."},
+        {id:'reply',speaker:'Lunafreya',text:"That sounds like exactly enough. Thank you for coming."},
+        {id:'welcome',speaker:'Tomas',text:"You're welcome. I'll keep the doorway clear. You have a café to run."}
+      ]}
+  };
+})();

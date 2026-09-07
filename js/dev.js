@@ -628,10 +628,10 @@
   /* Character turnarounds at exact x2: the roster's actual colours and the
      shipping person renderer. Complements scene crops, never replaces them. */
   D.poses = function () {
-    const out = document.createElement('canvas'); out.width = 960; out.height = 850;
+    const out = document.createElement('canvas'); out.width = 1280; out.height = 850;
     const g = out.getContext('2d'); g.imageSmoothingEnabled = false;
     g.fillStyle = '#e3cfa7'; g.fillRect(0, 0, out.width, out.height);
-    const people = [{ name: 'Lunafreya', colors: world().barista.colors }].concat(CAST.regulars);
+    const people = [{ name: 'Lunafreya', colors: world().barista.colors }].concat(CAST.regulars,Object.values(CAST.visitors));
     const views = ['right', 'left', 'front', 'back', 'reading'];
     people.forEach(function (spec, col) {
       views.forEach(function (view, row) {
@@ -862,6 +862,19 @@
       routeProblems(route, t, t.name, null, /^seat\[/.test(t.name), problems);
     });
 
+    // Working neighbours share the staff planner and must retain real routes.
+    const visitors=SIM.visitorActors(w),identities={};
+    visitors.forEach(function(a) {
+      if(identities[a.visitorId])problems.push('duplicate visitor '+a.visitorId);
+      identities[a.visitorId]=true;
+      if(a.walkBlocked)problems.push(a.name+' cannot reach the current visitor stop');
+      if(a.x<22 || a.x>SCENE.presentation(w).w-22 || a.y<L.wallY || a.y>L.rooms[w.memory.life.room].floorBottom)
+        problems.push(a.name+' outside the visitor floor bounds');
+      if(a.path && a.path.length) {
+        const route=[{x:a.x,y:a.y}].concat(a.path),dest=route[route.length-1];
+        routeProblems(route,dest,a.name,null,true,problems,0);
+      }
+    });
     // Check the path the walker actually planned, not just chore templates.
     const nora = w.barista;
     if (nora.walkBlocked) problems.push('Lunafreya cannot reach her current chore');

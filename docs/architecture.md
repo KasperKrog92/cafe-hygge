@@ -442,7 +442,7 @@ Context services are non-enumerable so detached art clones remain render data.
 
 ## Interruptible project contract
 
-`SIM.projects` defines the two prices, destinations, carry delivery and ordered
+`SIM.projects` defines prices, destinations, delivery actors and ordered
 18-second work phases. `SIM.buyProject(world, id)` accepts one affordable choice
 per home evening (shared with the plant). Savings and `plannedTonight` change
 with the purchase in one immediate save. The flag resets only on entering the
@@ -451,7 +451,7 @@ precedes another kit. No purchase occurs autonomously.
 
 Each v3 `life.projects[id]` record is `{stage, step, time}`. Stages are
 available → purchased → scheduled → arrived → working → installed. Morning
-schedules the purchase; Lunafreya collects the single kit after opening. An arrived
+schedules the purchase; Keira delivers the table kit after opening. An arrived
 kit is owned at its reserved site; a reload places it there rather than replaying
 its transport. Work advances only while Lunafreya is at `L.projects[id].work`.
 Every three-second fastening/stroke is a safe interruption and immediate save;
@@ -558,3 +558,28 @@ from saved route time. It never runs café pathfinding against apartment furnitu
 The v7 migration marks previously visited homes established; funds and projects
 remain unchanged. The completed tour cursor also keeps the hanger and drapes
 installed. No additional timer, persistence store or offline progress path exists.
+
+
+## Recurring visitor contract — 8 September 2026
+
+`sim-visitors.js` loads after sim-intro and before sim-home. `CAST.visitors` owns
+stable identities, appearance and literal scene packets. Visitor actors have
+kind `visitor`, share staff obstacle routing, and never enter customer queues
+or consume seats. Tomas keeps the window project's existing checkpoints.
+Keira leaves `scheduled` unchanged until a three-second handoff at the table
+work anchor commits `arrived`. Her live actor reserves assembly until departure;
+a reload of `arrived` releases that transient reservation without redelivery.
+Unfinished arrivals can return after closing. Closing waits for actual exits.
+
+The save remains v8: existing extensible boolean flags store acknowledged node
+IDs and completion, as for Holger. No field or project phase was added, and
+legacy arrived/working/installed records preserve exact step/time and ownership.
+Holger's positional flags and choices are unchanged. The shared conversation
+advance hook records visitor nodes immediately; ordinary leave/return restores
+Lunafreya's interrupted path and pose. No introduction gates a job.
+
+Off-duty stops use `L.visitors`, last 90 simulation seconds, and occur at most
+once per identity per running café day after day one (Keira from 10, Tomas from
+11, neither after 19). Visits can recur after reload; job ownership and completed
+nodes cannot. Active jobs suppress off-duty duplicates. Invitations appear in
+game mode and remain unconsumed in idle. No calendar or new purchase is needed.

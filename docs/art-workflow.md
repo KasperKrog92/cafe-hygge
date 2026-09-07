@@ -284,3 +284,16 @@ Rendered results are in `.art-review/home-motion-final/` and
 `.art-review/home-ui/`; café art repeatability passed ten images and twelve
 occupancy scenarios in `.art-review/home-art-final/`. All task-owned browser
 sessions were closed after verification.
+
+
+## Second-day visitor review — 8 September 2026
+
+`visitors-before` and `visitors-after` cover repeatable room art; the roster
+sheet includes Keira and Tomas in both profiles, front, back and reading.
+`visitors-ui` holds inspected 16:10/16:9 dialogue captures and actual reload
+results. `visitors-conversations-final` contains in-world trolley, overlapping
+jobs, introductions and installed/next-morning views. Inspection caught an
+empty-path delivery at the door and an out-of-room conversation approach;
+handoff now requires the real work anchor, and conversation targets respect
+the current floor bounds. The focus camera retains speaker feet during zoom.
+All art audits are empty; ten images and twelve occupancy scenarios repeat.

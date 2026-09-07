@@ -14,8 +14,8 @@ It is the long-term creative direction. Read the [story bible](story-bible.md)
 for concise shipped/planned continuity and [narrative.md](narrative.md) for shared
 rules; avoid rereading or duplicating the whole ensemble for an isolated change.
 The [progression roadmap](progression-roadmap.md) owns current implementation
-status. [Second-day visitors](plans/second-day-visitors.md) is the next brief;
-[First books, first connection](plans/first-books.md) follows it.
+status. Second-day visitors are shipped;
+[First books, first connection](plans/first-books.md) is the next brief.
 
 Write only the current slice's scene packets: trigger, known facts, actual
 bubbles, choices, lasting effects, reload/leave behavior and ordinary life
@@ -406,3 +406,37 @@ bedtime journeys, or `tools/verify-home-ui.ps1` for the actual desktop controls
 and reloads. Both accept a local `-Url`; the UI runner takes the bare root URL.
 `__dev.modestWorld({homeIntro:true})` keeps the first arrival pending for these
 tests. Ordinary modest/furnished fixtures represent post-tutorial lives.
+
+
+## Second-day visitors verification — 8 September 2026
+
+Run `tools/verify-project.ps1 -Suite visitors` and `tools/verify-visitors-ui.ps1`.
+The former plays first closing/home, both required purchases, explicit first
+bedtime, second-day delivery/repair, attended and ignored greetings, assembly,
+closing and the next morning in both modes. It exercises save round trips,
+legacy arrived/working/installed kits, safe handoff position, closing before and
+after delivery, no-purchase later hellos, six seats and zero audits.
+The UI runner uses real invitation/advance buttons, reloads all ten acknowledged
+nodes, and preserves exact table checkpoints across actual page reloads.
+
+The final full regression passed 16 suites; its terrace assertion initially
+counted all visiting actors as duplicate Lunafreya drawables. Updating that
+expectation to include the new visitor actors preserves the outside-owner
+check. The targeted waterfront rerun is recorded separately. The first rendered
+review also caught an empty-path handoff at the door; visitors now use staff
+work-site routes and handoff requires actual arrival at the layout anchor.
+Node save/isolation (15 groups), audio preferences and 23 script syntax checks
+pass. Captures/reports are in `.art-review/visitors-final/`,
+`.art-review/visitors-waterfront-final/` and `.art-review/visitors-ui/`.
+These are desktop Chromium checks, not a native Safari execution.
+
+
+Final presentation checks: `visitors-conversations-final` passes visitor and
+Holger suites after bounding conversation approaches to the actual room floor
+and adding wider side approaches around the kit. Actual visitor UI/reloads
+pass at 1440×900 and 1600×900. The camera clamps both the bubble and speakers
+through its zoom transition. The inspected roster sheet now includes both
+visitors in five views. `visitors-after` passes ten repeatable images and twelve
+occupancy scenarios. `visitors-entry` completed a real-time cappuccino in 43.0
+seconds with initialized audio, pickup income and a clean night audit.
+All task-owned browser sessions were confirmed closed.

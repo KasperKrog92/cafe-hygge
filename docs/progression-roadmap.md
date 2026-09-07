@@ -4,8 +4,7 @@ Direction recorded 6 September 2026, with shipped updates through 7 September.
 Shared home life, the plant/table/hearth jobs, C0, the identity swap, first
 introduction and left-window repair are implemented. The build-order section
 and first-day update below distinguish these from proposed later stages.
-Shared improvement preparation is complete (7 September). The next task is
-the second-day visitor introduction below, followed by bookshelf delivery
+Shared improvement preparation is complete (7 September). Second-day visitors are shipped (8 September). The next task is bookshelf delivery
 and separate books. See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
@@ -19,21 +18,18 @@ separate `game` experiment is archived reference material, not the implementatio
 baseline. The old tips are preserved in `archive/idle-2026-09-06` and
 `archive/game-2026-09-06` tags.
 
-## Current next milestone — Second-day visitors
+## Second-day visitors — shipped 8 September 2026
 
-**Owner direction, 7 September:** introduce Keira through the first table-kit
-delivery and Tomas through the left-window repair on day two. The
-[Second-day visitors brief](plans/second-day-visitors.md) is the next task.
-In the current implementation Lunafreya still carries the table kit and the
-window worker is unnamed; the new delivery and personal greetings remain planned.
+Keira (she/her) brings the first table kit on a trolley. Tomas (he/him) repairs
+the booked left window. The 30/60-coin first-evening pairing, two extra chairs,
+and Lunafreya's interruptible assembly are preserved. Delivery is committed at
+the work site; assembly waits for Keira to clear it. Both optional greetings
+save acknowledged nodes and return on later visits without another purchase.
+Existing arrived/working/installed jobs never redeliver or replay construction.
+The visitor suite covers both modes, overlapping jobs, closing, later hellos,
+legacy saves and next morning; the UI runner checks actual page reloads.
 
-Keira delivers the kit, Lunafreya retains the existing assembly, and Tomas repairs
-the window. Preserve first-evening bookings, prices and existing progress.
-Both introductions are optional, saved and available on later visits if ignored;
-jobs and departures do not wait for dialogue. Verify overlapping work and
-service, attendance/reloads and continuity for already established cafés.
-
-## Following milestone — First books, first connection
+## Current next milestone — First books, first connection
 
 The [implementation brief](plans/first-books.md) translates the accepted story
 direction into one complete near-term experience, delivered in reviewable passes:

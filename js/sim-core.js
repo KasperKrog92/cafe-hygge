@@ -610,9 +610,9 @@
   function findWalkPath(e, tx, ty) {
     ensureNavigation();
     const start = { x: e.x, y: e.y }, end = { x: tx, y: ty };
-    const boxes = e.kind === 'barista' ? staffRouteBoxes(start, end) : walkBoxes;
+    const boxes = (e.kind === 'barista' || e.kind === 'visitor') ? staffRouteBoxes(start, end) : walkBoxes;
     if (walkClear(start, end, boxes, start, end)) { e.path = [end]; return; }
-    const nodes = [start, end].concat(e.kind === 'barista' ? cornersFor(boxes) : walkCorners);
+    const nodes = [start, end].concat((e.kind === 'barista' || e.kind === 'visitor') ? cornersFor(boxes) : walkCorners);
     const costs = nodes.map(function () { return Infinity; }), prev = [], done = [];
     costs[0] = 0;
     for (let n = 0; n < nodes.length; n++) {
@@ -640,7 +640,7 @@
 
   function makePath(e, tx, ty) {
     // The light switch is beside the door, before the entrance aisle.
-    if (e.kind === 'barista') { findWalkPath(e, tx, ty); return; }
+    if ((e.kind === 'barista' || e.kind === 'visitor')) { findWalkPath(e, tx, ty); return; }
     const fromDoor = e.x === L.doorSpot.x && e.y === L.doorSpot.y;
     const toDoor = tx === L.doorSpot.x && ty === L.doorSpot.y;
     if (fromDoor === toDoor) { findWalkPath(e, tx, ty); return; }
@@ -669,7 +669,7 @@
 
   function walker(e, dt) {
     if (e.path && e._walkPath !== e.path) {
-      if (e.kind === 'barista' && e.path.length) {
+      if ((e.kind === 'barista' || e.kind === 'visitor') && e.path.length) {
         const target = e.path[e.path.length - 1];
         makePath(e, target.x, target.y);
         e.walkBlocked = !e.path.length;
@@ -679,7 +679,7 @@
     }
     // An unreachable chore is not an arrival. Keep it pending instead of
     // collecting cups or switching lights from the wrong side of the room.
-    if (e.kind === 'barista' && e.walkBlocked) return false;
+    if ((e.kind === 'barista' || e.kind === 'visitor') && e.walkBlocked) return false;
     // Spend the whole movement budget across corners; tiny remaining legs
     // must not teleport or insert a frame-rate-dependent pause.
     let budget = Math.max(0, e.speed * dt);

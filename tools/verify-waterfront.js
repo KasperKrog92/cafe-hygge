@@ -45,7 +45,7 @@
     check(run(w, function () { return !w.patrons.length && w.waterfront.tables.every(function (t) { return !t.dirty && !t.cleaning; }) && w.barista.state === 'idle'; }, 260, function () {
       nora[w.barista.state] = true;
       if (w.barista.state === 'terraceClear' && !frames['nora-clears']) shot(w, 'nora-clears');
-      if (w.barista.outside) check(SIM.entityDrawables(w).draws.length === 1 + w.patrons.filter(function (p) { return !p.outside; }).length, 'Lunafreya duplicated indoors while outside');
+      if (w.barista.outside) check(SIM.entityDrawables(w).draws.length === 1 + SIM.visitorActors(w).length + w.patrons.filter(function (p) { return !p.outside; }).length, 'Lunafreya duplicated indoors while outside');
     }), 'Lunafreya did not clear both departed guests and return home');
     ['terraceOut', 'terraceApproach', 'terraceClear', 'terraceBack', 'terraceHome'].forEach(function (s) { check(nora[s], 'Lunafreya missed ' + s); });
     check(w.waterfront.tables.every(function (t) { return t.owner === null && !t.cup; }), 'outdoor cup/reservation leaked');

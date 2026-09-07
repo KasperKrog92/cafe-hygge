@@ -8,7 +8,8 @@
   function pending(w) {
     // Finish the job already laid out before opening another kit.
     for (const stage of ['working','arrived','scheduled']) {
-      const id=Object.keys(PROJECTS).find(id => PROJECTS[id].delivery !== 'contractor' && w.memory.life.projects[id].stage === stage);
+      const id=Object.keys(PROJECTS).find(id => PROJECTS[id].delivery !== 'contractor' &&
+        !(id==='table' && (stage==='scheduled' || w.deliveryVisitor)) && w.memory.life.projects[id].stage === stage);
       if(id) return id;
     }
     return null;
@@ -97,12 +98,11 @@
     if(w.shop.phase==='home') { w.windowWorker=null;return; }
     if(!a) {
       if(w.shop.phase!=='open' || ['scheduled','arrived','working'].indexOf(p.stage)<0)return;
-      a=w.windowWorker=R.makePatron(w,'Mikkel');
-      a.colors={skin:'#ddb58d',hair:'#6b4a30',top:'#718b91',pants:'#4b5260',scarf:null};
+      a=w.windowWorker=R.makeVisitor(w,'tomas');
       a.x=p.stage==='working'?site.x:L.doorSpot.x;a.y=p.stage==='working'?site.y:L.doorSpot.y;
       a.pose='stand';a.holding=null;a.bubble=null;a.state='arriving';
       R.makePath(a,site.x,site.y);
-      if(p.stage==='scheduled') {p.stage='arrived';R.ringDoor(w);R.caption(w,'a worker arrives to look after the left window.');commit(w);}
+      if(p.stage==='scheduled') {p.stage='arrived';R.ringDoor(w);R.caption(w,'Tomas arrives to look after the left window.');commit(w);}
     }
     a.animT+=dt;
     if(w.shop.phase!=='open' || p.stage==='installed') {

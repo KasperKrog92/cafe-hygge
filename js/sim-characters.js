@@ -1536,7 +1536,7 @@
     if (world.moment) {
       // Hold all obligations and deadlines; only ambient animation breathes.
       SIM.updateMoment(world,dt);
-      [world.barista, world.cat].concat(world.patrons).forEach(p => {p.animT += dt;});
+      [world.barista, world.cat].concat(world.patrons,SIM.visitorActors(world)).forEach(p => {p.animT += dt;});
       updateParticles(world, dt);
       return;
     }
@@ -1568,6 +1568,7 @@
     if (world.shop.phase === 'home') { R.saveLife(world, dt); return; }
     updateSpawning(world, dt);
     R.updateWindowWorker(world,dt);
+    R.updateVisitors(world,dt);
     if (!shopBusy) updateBarista(world, world.barista, dt);
     world.patrons.forEach(function (p) { updatePatron(world, p, dt); });
     world.patrons = world.patrons.filter(function (p) { return !p.gone; });
@@ -1585,16 +1586,29 @@
 
   SIM.entityDrawables = function (world) {
     const draws = [];
-    if(world.windowWorker) {
-      const a=world.windowWorker;
+    SIM.visitorActors(world).forEach(function(a) {
       draws.push({y:a.y,draw:function(g) {
-        SCENE.drawPerson(g,a);
+        SCENE.drawPerson(g,world.moment ? Object.assign({},a,{pose:'stand',path:null}) : a);
         const x=Math.round(a.x),y=Math.round(a.y);
-        g.fillStyle='#6b4a30';g.fillRect(x+13,y-11,15,10);
-        g.fillStyle='#b18d62';g.fillRect(x+17,y-14,7,3);
+        if(a.visitorId==='tomas' && !a.social) {
+          g.fillStyle='#6b4a30';g.fillRect(x+13,y-11,15,10);
+          g.fillStyle='#b18d62';g.fillRect(x+17,y-14,7,3);
+        }
+        if(a.trolley) {
+          // Narrow upright hand trolley, inside the walker's shoulder clearance.
+          g.fillStyle='#4b5260';g.fillRect(x-9,y-30,2,28);g.fillRect(x+8,y-30,2,28);
+          g.fillRect(x-9,y-31,19,2);g.fillRect(x-10,y-5,21,3);
+          g.fillStyle='#302c2a';g.fillRect(x-11,y-3,5,5);g.fillRect(x+7,y-3,5,5);
+          if(!a.trolleyEmpty) {
+            g.fillStyle='#a77e51';g.fillRect(x-8,y-25,17,20);
+            g.fillStyle='#c9a477';g.fillRect(x-8,y-25,17,4);
+            g.fillStyle='#dfbd89';g.fillRect(x-1,y-25,3,20);
+          }
+        }
       }});
-    }
+    });
     const bubbles = [];
+    SIM.visitorInvites(world).forEach(a=>bubbles.push({x:a.x,y:a.y,icon:'dots'}));
     // A pending beat raises a soft, persistent invitation over its seated owner
     // (docs/narrative.md §2) — it waits across sessions and never expires. It
     // takes the owner's bubble slot so it never fights their ambient chatter.

@@ -1,0 +1,89 @@
+/* Café Hygge — two working neighbours. Jobs and greetings have separate lives. */
+(function () {
+  'use strict';
+  const R=SIM._, L=SCENE.L;
+  R.makeVisitor=function(w,id) {
+    const d=CAST.visitors[id],a=R.makePatron(w,d.name);
+    Object.assign(a,{kind:'visitor',visitorId:id,nameStyle:d.nameStyle,colors:Object.assign({},d.colors),
+      speed:34,pose:'stand',holding:null,bubble:null,state:'arriving',path:null});
+    w.visitorDays=w.visitorDays||{};w.visitorDays[id]=w.memory.life.daysCompleted;
+    return a;
+  };
+  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor].concat(w.socialVisitors||[]).filter(Boolean);};
+  SIM.visitorInvites=function(w) {
+    if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
+    return SIM.visitorActors(w).filter(a=>a.state!=='leaving' && (!a.path || !a.path.length) &&
+      !w.memory.flags[a.visitorId+'-introduced']);
+  };
+  SIM.startVisitor=function(w,id) {
+    const a=SIM.visitorInvites(w).find(a=>a.visitorId===id);if(!a)return false;
+    const lines=CAST.visitors[id].hello.map(line=>Object.assign({},line));
+    if(a.social) {
+      lines[0].text=CAST.visitors[id].later;
+      if(id==='keira') {
+        lines[1].text="I'm Lunafreya. It's good to have a moment to say hello.";
+        lines[2].text="I spend so much time bringing things through doors, I forget I can just walk in.";
+      } else {
+        lines[1].text="I'm Lunafreya. It's good to see you with a moment to spare.";
+        lines[4].text="You're welcome. I can stop for a moment. No tools today.";
+      }
+    }
+    let index=0;while(index<lines.length && w.memory.flags[id+'-hello-'+lines[index].id])index++;
+    if(index===lines.length)return false;
+    if(!SIM.beginMoment(w,lines,a,function(){w.memory.flags[id+'-introduced']=true;}))return false;
+    w.moment.visitor=id;w.moment.index=index;return true;
+  };
+  function exit(w,a,dt) {
+    if(a.state!=='leaving'){a.state='leaving';a.pose='stand';R.makePath(a,L.doorSpot.x,L.doorSpot.y);}
+    return R.walker(a,dt);
+  }
+  R.updateVisitors=function(w,dt) {
+    const p=w.memory.life.projects.table,open=w.shop.phase==='open',day=w.memory.life.daysCompleted;
+    w.socialVisitors=w.socialVisitors||[];w.visitorDays=w.visitorDays||{};
+    let a=w.deliveryVisitor;
+    // A scheduled kit has not crossed the handoff boundary. Arrived/working
+    // saves (including old carried kits) already own it and never redeliver.
+    if(!a && open && p.stage==='scheduled' && (!w.windowWorker ||
+        Math.hypot(w.windowWorker.x-L.doorSpot.x,w.windowWorker.y-L.doorSpot.y)>48)) {
+      a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;
+      R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);
+      R.ringDoor(w);R.caption(w,w.memory.flags['keira-introduced']?
+        'Keira is back, steering a table kit through the door.':'Keira brings the table kit in on a little trolley.');
+    }
+    if(a) {
+      a.animT+=dt;
+      if(!open || a.state==='leaving') {
+        if(exit(w,a,dt)){w.deliveryVisitor=null;R.ringDoor(w);}
+      } else if(a.path && a.path.length)R.walker(a,dt);
+      else {
+        if(Math.hypot(a.x-L.projects.table.work.x,a.y-L.projects.table.work.y)>1) {
+          R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);return;
+        }
+        a.state='handoff';a.pose='kneel';a.stateT=(a.stateT||0)+dt;
+        if(p.stage==='scheduled' && a.stateT>=3) {
+          p.stage='arrived';a.trolleyEmpty=true;R.commitLife(w);
+          R.caption(w,'the kit is set down, ready for a quiet moment.');
+        }
+        if(a.stateT>=18)exit(w,a,0);
+      }
+    }
+    // No purchase is needed to meet them. A short later visit uses the same
+    // identity and invitation, without a customer slot, tools or construction.
+    ['keira','tomas'].forEach(function(id,n) {
+      const job=w.memory.life.projects[id==='keira'?'table':'window'];
+      if(!open || day<1 || w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
+        ['purchased','scheduled','arrived','working'].indexOf(job.stage)>=0 ||
+        SIM.visitorActors(w).some(a=>a.visitorId===id))return;
+      const guest=R.makeVisitor(w,id);guest.social=true;guest.visitTime=0;
+      R.makePath(guest,L.visitors[id].x,L.visitors[id].y);w.socialVisitors.push(guest);R.ringDoor(w);
+      R.caption(w,w.memory.flags[id+'-introduced']?CAST.visitors[id].returning:CAST.visitors[id].arrival);
+    });
+    w.socialVisitors=w.socialVisitors.filter(function(a) {
+      a.animT+=dt;
+      if(!open || a.state==='leaving' || a.visitTime>=90)return !exit(w,a,dt);
+      if(a.path && a.path.length)R.walker(a,dt);
+      else {a.state='visiting';a.pose='stand';a.visitTime+=dt;}
+      return true;
+    });
+  };
+})();

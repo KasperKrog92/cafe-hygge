@@ -318,7 +318,7 @@ boundary, but do not build the helper by copying the single-worker state machine
 The subsequently accepted [community direction](plans/community-and-character-stories.md)
 gives this milestone Keira's delivery and Holger's books. The owner then placed
 Keira and Tomas's introductions at the second-day table delivery/window repair,
-so [Second-day visitors](plans/second-day-visitors.md) now precedes the books.
+so [shipped second-day visitors](progression-roadmap.md#second-day-visitors--shipped-8-september-2026) now precedes the books.
 Follow current pass status in [the progression roadmap](progression-roadmap.md)
 and the following [First books brief](plans/first-books.md); the audit's measurements above remain
 historical evidence, not verification of those future features.

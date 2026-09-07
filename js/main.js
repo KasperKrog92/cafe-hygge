@@ -129,6 +129,13 @@
     Object.assign(button.style,{left:at.x+'px',top:at.y+'px',width:width*at.scale+'px',height:height*at.scale+'px'});
   }
   function refreshMoment() {
+    const visitors=SIM.visitorInvites(world);
+    ['keira','tomas'].forEach(function(id){
+      const button=document.getElementById('meet-'+id),a=visitors.find(a=>a.visitorId===id);
+      button.hidden=!a;
+      button.onclick=function(){SIM.startVisitor(world,id);refreshMoment();};
+      if(a)placeHit(button,a.x-24,a.y-102,48,42);
+    });
     world.reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const invited=SIM.holgerAvailable(world);
     meetHolger.hidden=!invited;
@@ -377,6 +384,8 @@
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
     const invited=SIM.holgerAvailable(world);
     if(invited && Math.abs(x-invited.x)<26 && y>invited.y-104 && y<invited.y-58){SIM.startHolger(world);return;}
+    const visitor=SIM.visitorInvites(world).find(a=>Math.abs(x-a.x)<26 && y>a.y-104 && y<a.y-58);
+    if(visitor){SIM.startVisitor(world,visitor.visitorId);return;}
     if (world.memory.life.mode === 'game' && world.shop.phase !== 'home' && SIM.beatAt(world, x, y)) return;
     const cat = world.cat;
     if (Math.hypot(x - cat.x, y - (cat.y - 10)) < 36) SIM.petCat(world);
@@ -410,8 +419,12 @@
       cx=Math.max(view.x,Math.min(cx,bubble.x-12));
       cx=Math.min(view.x+view.w-cw,Math.max(cx,bubble.x+bubble.w+12-cw));
       cy=Math.max(view.y,Math.min(cy,bubble.y-12));
+      const feet=Math.max(world.barista.y,world.moment.owner?world.moment.owner.y:world.barista.y);
+      cy=Math.min(view.y+view.h-ch,Math.max(cy,feet+8-ch));
     }
-    Object.assign(camera,{x:Math.round(view.x+(cx-view.x)*focusAmount),y:Math.round(view.y+(cy-view.y)*focusAmount),w:Math.round(cw),h:Math.round(ch)});
+    // cw/ch already interpolate the zoom; interpolating the clamped origin a
+    // second time can cut off speakers at the bottom of the room mid-transition.
+    Object.assign(camera,{x:Math.round(cx),y:Math.round(cy),w:Math.round(cw),h:Math.round(ch)});
     out.drawImage(master,camera.x,camera.y,camera.w,camera.h,0,0,canvas.width,canvas.height);
 
   }

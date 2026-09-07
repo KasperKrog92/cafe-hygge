@@ -104,6 +104,7 @@
       kettle:{x:708,y:222}, staging:{x:54,y:324},
       tableWork:[{x:196,y:460},{x:414,y:474}]
     },
+    visitors: {keira:{x:300,y:368},tomas:{x:250,y:320}},
     projects: {
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},

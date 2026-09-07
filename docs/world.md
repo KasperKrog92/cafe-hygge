@@ -489,3 +489,14 @@ fixed while at home. Bedtime visits the bathroom through its doorway, brushes
 teeth, closes the drapes and tucks Lunafreya and the cat into bed before dawn.
 Ordinary later idle evenings still advance automatically; later game evenings
 wait for sleep and use the bedtime scene. No elapsed time is added on boot.
+
+
+## Second-day visitors — shipped 8 September 2026
+
+The second morning's booked window and table jobs proceed autonomously.
+Tomas enters first; Keira waits until he clears the doorway by 48 px. She deposits
+the kit at its work site and clears the route before assembly starts. Closing
+lets both actors exit and preserves partial work. Captions announce their
+arrival, kit handoff, and later familiar or unintroduced off-duty stops.
+Attended optional conversations hold obligations through the existing moment
+system; ignored invitations do not hold time, service, work or departure.

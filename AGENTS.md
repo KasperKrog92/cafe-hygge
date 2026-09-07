@@ -36,11 +36,11 @@ Use it as the working creative direction, with details revisable as scenes are
 authored. [The story bible](docs/story-bible.md) separates shipped facts from
 planned writing; [the narrative contract](docs/narrative.md) owns choices,
 attendance and lasting effects. The progression roadmap owns current status
-and build order. Its next brief is [Second-day visitors](docs/plans/second-day-visitors.md):
-Keira delivers the first table kit and Tomas repairs the left window, with
-optional saved introductions. Lunafreya retains table assembly. The current
-carry-based table arrival still needs this delivery change. Bookshelves follow
-as a return visit in [First books, first connection](docs/plans/first-books.md). Acceptance of the larger
+and build order. Second-day visitors shipped on 8 September: Keira delivers the first table kit
+and Tomas repairs the left window, with optional saved introductions.
+Lunafreya retains table assembly. The next brief is
+[First books, first connection](docs/plans/first-books.md), reusing those identities.
+Acceptance of the larger
 plan does not mean its full cast or later systems should be built in one task.
 
 **First-day direction (7 September 2026):** setup ends at 17:30, leaving four
@@ -189,7 +189,7 @@ choices. This one-time tutorial exception does not make later story arcs mandato
   check the live site, HTML or script URLs. The owner will report if a push
   appears not to have reached the site; investigate deployment when asked.
 
-## Architecture (22 scripts, deliberate order)
+## Architecture (23 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -212,16 +212,17 @@ choices. This one-time tutorial exception does not make later story arcs mandato
 | `js/sim-characters.js` | `SIM` | Lunafreya and cat state machines plus the main simulation update and entity-drawable bridge. |
 | `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v6 checkpoints. |
 | `js/sim-intro.js` | `SIM` | Saved first-morning dialogue, cat hug, silent breath and sign placement. |
+| `js/sim-visitors.js` | `SIM` | Keira delivery, recurring visitor actors and optional saved greetings. |
 | `js/sim-home.js` | `SIM` | Saved first apartment tour, required first planner and bedtime sequence. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
 Load order matters: improvements → audio → scene-core → scene-waterfront → scene-bg → scene-furniture →
 scene-people → scene-fx → scene-home → scene-intro → characters-roster → memory → sim-core → sim-waterfront → sim-patrons →
-sim-shop → sim-characters → sim-life → sim-intro → sim-home → dev → main. Scene-core creates `SCENE`; the renderer
+sim-shop → sim-characters → sim-life → sim-intro → sim-visitors → sim-home → dev → main. Scene-core creates `SCENE`; the renderer
 siblings extend it. `characters-roster` then defines `CAST` (the regulars
 roster + story arcs) as pure data, and `memory` loads the `MEMORY` save. The
-eight sim scripts then build `SIM`, reading `CAST` for its regulars and
+nine sim scripts then build `SIM`, reading `CAST` for its regulars and
 reconciling `MEMORY` on boot (`SIM.create` → `reconcileNarrative`); dev consumes
 its `SIM._` debug contract and decorates the boot, and main reads all.
 
@@ -390,7 +391,6 @@ from planned directions.
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/story-bible.md](docs/story-bible.md) | Cast identities and voices, Holger's introduction, remembered choices, shipped and planned story beats |
 | [docs/plans/community-and-character-stories.md](docs/plans/community-and-character-stories.md) | Accepted working ensemble direction, Lunafreya's history, shared arcs, gifts and romance; durable direction, not a disposable execution plan |
-| [docs/plans/second-day-visitors.md](docs/plans/second-day-visitors.md) | Next brief: Keira's first table delivery, Tomas's window repair and optional saved introductions |
 | [docs/plans/first-books.md](docs/plans/first-books.md) | Following brief: Keira returns with the shelf, separate stocking, then attended book conversations |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
 | [docs/characters.md](docs/characters.md) | Lunafreya, patrons, the cat — identities and full behavior state machines |

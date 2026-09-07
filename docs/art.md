@@ -712,3 +712,17 @@ At bedtime, drapes slide inward, a small blue toothbrush moves at her mouth,
 and the duvet covers her shoulders beneath the pillow; the same cat sleeps
 beside her. All route/prop anchors live in `SCENE.L.home.story`. Apartment
 furniture, ladder, sleeper and cat retain the room's shared depth draw list.
+
+
+## Second-day visitors — shipped 8 September 2026
+
+Keira has a dark bun, rust jacket, ochre scarf and navy trousers; Tomas has
+side-parted brown hair, a short beard, blue-grey shirt and slate trousers.
+Both reuse the CH=60 person renderer. Keira's narrow wheeled hand trolley carries
+a strapped ochre kit, becomes empty at handoff, and leaves with her. Tomas keeps
+his wooden tool case. Props follow actor baselines and staff-clearance routes.
+Stationary game-mode invitations and speaker-attached cream bubbles use the
+existing presentation; off-duty visits have neither trolley nor tool case.
+
+Conversation framing keeps both speakers inside the room and camera crop;
+side approaches clear the reserved kit and the zoom retains their feet.

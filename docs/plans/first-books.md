@@ -1,7 +1,7 @@
 # First books, first connection
 
 Implementation brief, 7 September 2026. **Status: follows
-[Second-day visitors](second-day-visitors.md); this milestone is not shipped.** The owner largely accepted
+[shipped second-day visitors](../progression-roadmap.md#second-day-visitors--shipped-8-september-2026); this milestone is not shipped.** The owner largely accepted
 the [ensemble direction](community-and-character-stories.md). This brief makes
 its first release concrete; it does not authorize the whole release at once.
 The [progression roadmap](../progression-roadmap.md)
