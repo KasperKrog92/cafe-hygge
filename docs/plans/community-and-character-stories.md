@@ -21,6 +21,10 @@ for Lunafreya's sister, and a broader naming palette. The replacements below
 are the current working names; this document does not change the runtime cast
 or saved IDs.
 
+**Delivery character revision:** the owner wants the recurring delivery person
+to be a woman. Her working name is **Keira**, drawn from the owner's name list;
+use she/her throughout her scenes, appearance direction and future actor data.
+
 ## 1. The story we are telling
 
 Lunafreya comes to a city where nobody knows her and makes a place where people
@@ -118,7 +122,7 @@ and never prohibit a later wish for both books and neighbors.
 | Opening in ordinary life | What she can reveal | What follows in the present |
 | --- | --- | --- |
 | Holger asks how she learned to run a café | Bookshop work, event evenings, liking the people who stayed afterward | The bookshelf has personal meaning beyond storage |
-| Nico notices a moving box still labeled with the old city | The move took months to decide and days to carry out | At home she unpacks an ordinary mug she kept avoiding |
+| Keira notices a moving box still labeled with the old city | The move took months to decide and days to carry out | At home she unpacks an ordinary mug she kept avoiding |
 | Birgit asks about a familiar closing habit | She often covered everybody else's last task | She admits what she actually likes to eat, rather than choosing for guests |
 | Kasper talks about revising a decision | She accepted the promotion and then withdrew | A remembered answer colors a later scene about changing the café's plans |
 | Nora asks where Lunafreya belongs in a picture of her own room | Her old life contained many occasions she organized but rarely joined | She may choose a portrait in which she is seated with someone |
@@ -146,7 +150,7 @@ required selection or a constraint on the cast's genders or origins.
 | --- | --- | --- |
 | Søren | Tomas | The builder; a grounded, understated name alongside his practical voice |
 | Poul | Marcel | The painter across the lake; distinct from Nora and easy to recognize in conversation |
-| Mikkel | Nico | The delivery person; short, informal and comfortable in a recurring greeting |
+| Mikkel | Keira | The delivery woman; from the owner's name list, a familiar face across deliveries and later off-duty visits |
 | Signe | Saira | The musician; from the owner's list, with an identity that extends beyond music |
 | Rikke | Elody | The gardener; drawn from Elody du Bois in the reference list, using a given name in ordinary café dialogue |
 | Malthe | Ezra | The young adult student and possible helper; from the owner's list |
@@ -186,7 +190,7 @@ them gradually and keep the simultaneous room population bounded.
 | Nora | Being seen and choosing what a place remembers | Paintings and display | Precise, curious, occasionally absorbed past the point of politeness |
 | Kasper | Uncertainty, authorship and changing one's mind | Books, writing and a small reading | Meticulous on the page, less prepared in conversation |
 | Antonia | Comfortable quiet; life around the café's edges | Evening reading and local routes | Self-contained, contented, unexpectedly funny |
-| Nico | The delivery person; turning visits into staying | Bookshelf and later large deliveries | Easy company, excellent with addresses, evasive about his own wishes |
+| Keira | The delivery woman; turning visits into staying | Bookshelf and later large deliveries | Easy company, excellent with addresses, evasive about her own wishes |
 | Tomas | The recurring builder; usefulness and patient craft | Existing window work and later fittings | Economical speech, fastidious work, magnificent understatement |
 | Saira | The musician; shared attention without a performance | Piano and music | Playful, listens closely, habitually makes room for everybody else's part |
 | Marcel | The painter across the lake; time and changing places | The existing facade and future wall painting | Practical, gently opinionated, fond of unremarkable details |
@@ -321,7 +325,7 @@ requiring a report afterward. Eventually she offers to show her a little place
 by the water; the invitation waits for a chosen outing, presented as a brief
 authored scene rather than a new explorable district.
 
-Nico knows the same streets through doorbells and stairs. Their competing
+Keira knows the same streets through doorbells and stairs. Their competing
 descriptions of one address become a running joke. Ezra shows Antonia a bus
 map; she points out that his beautiful new route goes through the lake.
 
@@ -329,31 +333,31 @@ Gift: a postcard of an ordinary local stop with a short note on the back.
 Her deeper contribution is letting Lunafreya be quiet without treating it as
 a request to be cheered up.
 
-### Nico — invited to stay
+### Keira — invited to stay
 
-The same Nico handles the bookshelf and later deliveries. He knows where a
+Keira is the woman who handles the bookshelf and later deliveries. She knows where a
 door sticks, folds packing blankets carefully and remembers the cat. Furniture
 has proper transport and work reservations; a piano uses appropriate additional
-help rather than making him carry it alone.
+help rather than making her carry it alone.
 
-At first he drinks standing up, coat on. He is used to people being pleased
-that something arrived, then forgetting who brought it. He likes his job and
+At first she drinks standing up, coat on. She is used to people being pleased
+that something arrived, then forgetting who brought it. She likes her job and
 has friends elsewhere, but has fallen into treating every visit as a stop.
-The meaningful recurring gesture is a second cup for which he has time.
+The meaningful recurring gesture is a second cup for which she has time.
 
-After the first introduction he can come off duty. Never require repeated
-purchases to unlock his story. He and Tomas already work together sometimes;
-he knows Birgit's early-morning routine and trades route observations with Antonia.
-Privately he takes photographs of small doorways and shop windows, mostly on
-his phone, with no ambition to launch another artistic career.
+After the first introduction she can come off duty. Never require repeated
+purchases to unlock her story. She and Tomas already work together sometimes;
+she knows Birgit's early-morning routine and trades route observations with Antonia.
+Privately she takes photographs of small doorways and shop windows, mostly on
+her phone, with no ambition to launch another artistic career.
 
 Gift: a printed photograph of the café on one of its early delivery mornings,
-with a later matching view. Its importance comes from someone noticing that
-she was building a life while she thought she was only assembling furniture.
+with a later matching view. Its importance comes from Keira noticing that
+Lunafreya was building a life while she thought she was only assembling furniture.
 
 Possible romance: practical familiarity turns into a deliberately chosen visit.
-The first date begins with him arriving without a parcel, checking whether she
-has time and staying through a silence he usually fills with a joke.
+The first date begins with Keira arriving without a parcel, checking whether
+Lunafreya has time and staying through a silence Keira usually fills with a joke.
 
 Voice sample: “Delivery for Lunafreya. The cat has already signed for the wrapping.”
 
@@ -376,7 +380,7 @@ That story gives Lunafreya another angle on making a place perfect before
 letting anybody enjoy it.
 
 He begins visiting without a toolbox. Birgit gives advice about his bread only
-after he asks. Nico teases him about packing more spirit levels than sandwiches.
+after he asks. Keira teases him about packing more spirit levels than sandwiches.
 Gift: a small wooden coat hook or frame made from an agreed offcut, offered for
 the apartment. Friendship does not provide free major upgrades or discounts.
 
@@ -525,7 +529,7 @@ each other and eat the absurd amount of food she brought. Her visit does not
 require expensive furnishings or a partner.
 
 **The cat** remains one animal across both rooms, with no human dialogue. It
-joins the stories by choosing Nico's wrapping, sitting on Kasper's warm
+joins the stories by choosing Keira's wrapping, sitting on Kasper's warm
 laptop, wearing Gerda's existing scarf and interrupting a careful musical pause.
 It is also present in private apartment moments without being used to explain
 every emotion. Any future naming choice should be its own small, optional beat.
@@ -539,7 +543,7 @@ into simultaneous dialogue windows.
 
 | Shared arc | Sequence across visits | What remains afterward |
 | --- | --- | --- |
-| **The first borrowed shelf** | Holger's offer → Nico delivers an empty shelf → Holger presents a small collection → Lunafreya shelves it in spare moments → Ida helps shape the exchange → Antonia or Kasper finds something to read | Working browsing, Holger's bookplate, a remembered organizing preference, people recommending to one another |
+| **The first borrowed shelf** | Holger's offer → Keira delivers an empty shelf → Holger presents a small collection → Lunafreya shelves it in spare moments → Ida helps shape the exchange → Antonia or Kasper finds something to read | Working browsing, Holger's bookplate, a remembered organizing preference, people recommending to one another |
 | **Your side of the water** | Tomas repairs the window → Lunafreya notices Marcel → they meet → Nora and Marcel compare the same light → Lunafreya chooses a detail to preserve in a later picture | A pair of views, a personal connection to the exterior, comments appropriate to actual room changes |
 | **A blanket for this room** | Gerda asks about a pattern → knitting grows → a conversation about Erik if welcomed → attended gift → Lunafreya places it → Calandra later recognizes that her sister's home has acquired other people's kindness | Chosen blanket, small home routine, Gerda receiving care as well as giving it |
 | **Something for four listeners** | Saira develops a motif → Kasper offers a short passage → Nora makes a small program if she is known → Lunafreya chooses music, words or both → a few invited guests gather | New ordinary music/reading habits and a keepsake, without making the café louder or busier by default |
@@ -570,7 +574,7 @@ For the shelf, for example:
 
 1. Holger makes an optional offer. It is remembered and never expires.
 2. The bookshelf can be purchased through ordinary planning regardless of the
-   first dialogue answer. Nico delivers and installs it autonomously.
+   first dialogue answer. Keira delivers and installs it autonomously.
 3. The empty furniture exists, but browsing remains unavailable.
 4. Holger's invitation returns on a normal visit. Accepting his small collection
    is an attended gift moment, with a brief reference to Lunafreya's bookshop past.
@@ -588,7 +592,7 @@ continuation, never a replay of being empty.
 Delivery and repair jobs must finish and release their work areas even when
 their worker has something personal to say. A pending conversation follows the
 person into an off-duty visit. Do not make a worker stand at the door forever
-or require another paid booking to speak to him.
+or require another paid booking to speak to them.
 
 ### Choices that have a future
 
@@ -640,7 +644,7 @@ habit, an invitation or a person arriving without their work equipment.
 Keep existing admission and seat limits. More people in the writing catalogue
 means variety across days, not a larger crowd every afternoon. Introduce the
 five existing regulars properly before bringing everyone new through the door.
-Nico and Tomas can enter naturally through the next practical milestones.
+Keira and Tomas can enter naturally through the next practical milestones.
 
 Use lightweight rotation for later arrivals, preserving early familiar faces.
 People have broad morning, afternoon or evening habits, not appointment timers
@@ -656,11 +660,11 @@ remain between major beats. No counters show a growing backlog.
 
 ## 6. Romance and a life after the confession
 
-Long-term candidates: **Nico, Nora, Kasper and Saira**. Their different rhythms
+Long-term candidates: **Keira, Nora, Kasper and Saira**. Their different rhythms
 offer practical companionship, close observation, tentative verbal intimacy
 and playful shared attention. Each needs a complete friendship regardless of
 romance. Develop one full route first rather than four incomplete promises;
-Nico is the recommended first prototype because he connects naturally to
+Keira is the recommended first prototype because she connects naturally to
 deliveries and already needs a separate off-duty life.
 
 A route grows through several ordinary shared scenes before a clear invitation
@@ -671,7 +675,7 @@ of their own; romance is not a reward for agreeing with everything they say.
 The important scenes come after acknowledging attraction: a first deliberately
 unproductive evening, a small misunderstanding about privacy or time together,
 a conversation that resolves it, and an ordinary morning in which the intimacy
-is visible without a declaration. Examples include Nico sitting with his
+is visible without a declaration. Examples include Keira sitting with her
 coat off, Nora leaving an unfinished sketch untouched, Kasper making tea before
 opening the laptop, and Saira enjoying a silence she need not accompany.
 
@@ -749,12 +753,12 @@ what she said. Let some emotionally important lines remain plain.
 
 These are working content releases, not in-game levels. The next engineering
 milestone remains the bookshelf. [First books, first connection](first-books.md)
-splits the first release into three reviewable passes: Nico's empty-shelf
+splits the first release into three reviewable passes: Keira's empty-shelf
 delivery, usable purchased books, then the attended character conversations.
 
 | Release | Complete player-facing result | Preparation at that boundary |
 | --- | --- | --- |
-| **1. The shelf has people attached** | Nico delivers an empty shelf; purchased books stock it separately; Holger's next optional scene offers a small collection and reveals Lunafreya's former work | Delivery reservations, separate furniture/contents, stable IDs for the new conversation, resumable gift and stocking effects |
+| **1. The shelf has people attached** | Keira delivers an empty shelf; purchased books stock it separately; Holger's next optional scene offers a small collection and reveals Lunafreya's former work | Delivery reservations, separate furniture/contents, stable IDs for the new conversation, resumable gift and stocking effects |
 | **2. Familiar faces become people** | Proper introductions for Gerda, Nora, Kasper and Antonia; Tomas acquires a name and an off-duty visit; first backstory callbacks | Extract general conversation execution before multiplying bespoke scenes; migrate positional history deliberately |
 | **3. Things worth taking upstairs** | One selectable Gerda blanket, supported placement in either room, one apartment recollection and Calandra's first message | Saved gift variants, placement anchors, recipient knowledge, resumable home moments |
 | **4. The neighborhood meets itself** | Marcel's visit, Ida and Elody introductions, book exchange and one shared reading gathering | Identity across worker/patron/exterior roles, fair visit rotation and small group scene staging |
@@ -805,7 +809,7 @@ dependency-free runtime, existing simulation and shared rendering path.
   the protagonist's essential history hostage.
 - **Scheduling:** one fair, bounded arrival path; work reservations released
   independently of invitations; safe entry/exit and explicit ownership of
-  instrument, seat and work area. No duplicate patron/worker versions of Nico.
+  instrument, seat and work area. No duplicate patron/worker versions of Keira.
 - **Memory:** distinguish a world fact, Lunafreya's chosen description and what
   a particular person has been told. Save stable outcomes rather than a complete
   transcript. Extend the versioned schema with migrations as fields are added.
@@ -828,7 +832,7 @@ owned, disposable and cleaned up under the repository's normal workflow.
 The owner largely accepted this plan and its revised naming direction. Its
 working assumptions include Lunafreya's bookshop/café past and withdrawn
 promotion, Calandra as her sister, Erik as Gerda's late husband, the expanded
-cast and Nico/Nora/Kasper/Saira as possible adult romance routes. These remain
+cast and Keira/Nora/Kasper/Saira as possible adult romance routes. These remain
 specific, editable writing decisions rather than a requirement to implement
 every biography or romance exactly as first drafted.
 

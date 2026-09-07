@@ -23,13 +23,13 @@ baseline. The old tips are preserved in `archive/idle-2026-09-06` and
 The [implementation brief](plans/first-books.md) translates the accepted story
 direction into one complete near-term experience, delivered in reviewable passes:
 
-1. **Next implementation task: Nico delivers an empty bookshelf.** Ordinary
+1. **Next implementation task: Keira delivers an empty bookshelf.** Ordinary
    evening purchase, trolley delivery, safe reserved work area, unpacking and
-   a persistent empty shelf. Nico is a named recurring identity. Personal
+   a persistent empty shelf. Keira is a woman with a consistent recurring identity. Personal
    conversations and books are separate following passes.
 2. **Books become usable.** Purchased books, gradual interruptible shelving,
    visible contents and browsing only when usable books are present.
-3. **The shelf acquires a history.** Nico's optional hello/return, Holger's
+3. **The shelf acquires a history.** Keira's optional hello/return, Holger's
    remembered offer and attended gift, and Lunafreya's first disclosure about
    her former bookshop/café work. Gift books share the established stocking path.
 

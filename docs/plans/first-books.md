@@ -9,7 +9,7 @@ is the single current next-task/status reference.
 
 ## The eventual player experience
 
-Lunafreya plans a bookshelf. Nico wheels it in, unpacks it and leaves a visibly
+Lunafreya plans a bookshelf. Keira wheels it in, unpacks it and leaves a visibly
 empty piece of furniture. Books are acquired separately and shelved between
 ordinary duties. Holger later offers a small collection in a conversation that
 remembers Lunafreya's opening answer. While looking through it, she mentions
@@ -19,16 +19,17 @@ shelf. The practical improvement now carries a shared memory.
 Keep three reviewable passes. Each should work through the real day/home loop
 and preserve existing saves before the following pass begins.
 
-## Pass 1 — next task: Nico delivers the empty bookshelf
+## Pass 1 — next task: Keira delivers the empty bookshelf
 
 **Visible result:** an optional bookshelf purchase in an ordinary home planner
-causes Nico to arrive with a trolley during a later open café. He places and
+causes Keira to arrive with a trolley during a later open café. She places and
 unpacks the shelf, removes the wrapping and leaves. The installed shelf is
 empty and persists across days and reloads.
 
-Use the revised working name **Nico** and a consistent appearance/identity so
+The delivery person is a woman named **Keira** (she/her), per the owner's revised
+direction. Give her a consistent appearance/identity so
 later deliveries and off-duty visits can be the same person. A quiet arrival
-caption can name him. His personal introduction is authored in pass 3; delivery
+caption can name her. Her personal introduction is authored in pass 3; delivery
 must never wait for that conversation.
 
 Required behavior:
@@ -44,10 +45,10 @@ Required behavior:
   expansion a hidden prerequisite.
 - Reserve the delivery's working area and affected route for the actual job;
   release reservations at completion or safe closing suspension. Ordinary
-  customers and staff need viable paths while he works. Avoid global service
+  customers and staff need viable paths while she works. Avoid global service
   holds, invisible blockers or a worker who cannot leave.
 - Save purchase, installed state and necessary job progress exactly once. Reload
-  restores a valid phase without duplicate shelves, charges, Nico actors or
+  restores a valid phase without duplicate shelves, charges, Keira actors or
   wrapping. Closing can leave a safe partial job that resumes on a later day.
 - Work proceeds in both presentations. Use the production elapsed-time update
   and ordinary lifecycle; personal story invitations are not part of this job.
@@ -99,7 +100,7 @@ Author two small scene packets before implementing their consequences:
 
 | Scene | Trigger and content | Lasting result |
 | --- | --- | --- |
-| Nico's hello | His first delivery has happened; a waiting optional conversation gives him and Lunafreya a proper introduction. If ignored during work, it returns on an off-duty visit without another purchase. | Remembered introduction and eligibility for future ordinary visits; no free upgrade or romance commitment |
+| Keira's hello | Her first delivery has happened; a waiting optional conversation gives her and Lunafreya a proper introduction. If ignored during work, it returns on an off-duty visit without another purchase. | Remembered introduction and eligibility for future ordinary visits; no free upgrade or romance commitment |
 | Holger's first books | His introduction is complete. A continuation recalls the actual books/neighbors answer, offers a modest collection and lets Lunafreya mention her old bookshop/café work. The gift handover waits until the player attends. | A unique accepted gift, book source/stocking work and evidence that Holger heard this particular fact |
 
 Write the exact bubbles and any meaningful choice, with named scene/node IDs,
@@ -123,8 +124,8 @@ write the packets needed by this release.
 
 Verify both opening answers, promise before/after a shelf purchase, purchased
 books before/after the gift, a full shelf, a reload after choice and gift
-acceptance, an ignored invitation across days, and Nico leaving work without
-losing his pending hello. No gift, charge or disclosure effect repeats.
+acceptance, an ignored invitation across days, and Keira leaving work without
+losing her pending hello. No gift, charge or disclosure effect repeats.
 Finish with a natural guest borrowing a book from the resulting shelf and
 service progressing into home and the next morning.
 
