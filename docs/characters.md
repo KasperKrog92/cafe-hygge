@@ -120,6 +120,9 @@ At each free moment she clears abandoned indoor cups and dirty terrace tables
 before starting another drink or accepting a new order. A drink already in
 progress finishes normally. Next come customers at the counter, improvement
 work, then daily care and small counter-life (chosen every 6–15 s).
+During closing, queued customers and unfinished orders keep this clearing
+priority until service finishes. Without it, customers waiting for a clean
+table and closing waiting for those customers would deadlock each other.
 Customers still walking in do not interrupt improvement work; a customer at
 the front slot or a table needing clearing pauses work after the current
 three-second hand action, preserving progress:

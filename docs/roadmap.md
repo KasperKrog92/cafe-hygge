@@ -6,7 +6,9 @@
 > evening purchases, animated improvements, deliveries and relationships.
 > It contains explicit room stages and an ordered prototype plan. It supersedes
 > this backlog's blanket ban on currencies and upgrades for that direction;
-> patient pacing and no absence penalties remain. These features are not built.
+> patient pacing and no absence penalties remain. The progression roadmap marks
+> the shipped home, projects, first opening and introduction separately from
+> later ideas; this older backlog is not their implementation status.
 
 Unordered ideas, roughly grouped, each judged against the one bar that
 matters: *does it make the café cozier or more glanceable?* (overview.md).

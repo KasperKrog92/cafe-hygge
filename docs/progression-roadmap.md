@@ -1,7 +1,11 @@
 # One life, two ways to spend time with it
 
-Direction recorded 6 September 2026. Milestones 1–3 are implemented;
-the remaining stages are proposed, not authorization to build every item.
+Direction recorded 6 September 2026, with shipped updates through 7 September.
+Shared home life, the plant/table/hearth jobs, C0, the identity swap, first
+introduction and left-window repair are implemented. The build-order section
+and first-day update below distinguish these from proposed later stages.
+The [scalability audit](scalability-audit.md) records preparation for those stages;
+the remaining ideas are not authorization to build every item.
 It grows from the former `idle` café, now the canonical `main` branch. The
 separate `game` experiment is archived reference material, not the implementation
 baseline. The old tips are preserved in `archive/idle-2026-09-06` and

@@ -6,7 +6,8 @@ At 21:30, new arrivals stop. Lunafreya wishes the remaining guests a good night 
 wipes the counter and makes a closing round. Existing orders are finished;
 seated guests have another 12–22 seconds for their last cup before following
 their usual departure (laptop, borrowed book, umbrella and lap cat included).
-She waits for everyone to leave before clearing tables and snuffing their
+While queued service remains, she still clears abandoned cups first, including
+on the terrace. After everyone leaves she clears tables and snuffs their
 candles in a room circuit: reading nook, lower dining tables, piano and artist
 corner, then the upper tables and window ledges from left to right. Back at
 the counter, she puts away the pastries. Her final round heads toward the

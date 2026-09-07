@@ -3,7 +3,8 @@
 Work on the current café on `main`. Start with [AGENTS.md](../AGENTS.md), the
 [progression roadmap](progression-roadmap.md) and the document for the behavior
 being changed. The [pre-development audit](predevelopment-audit.md) records the
-6 September baseline and the remaining preparation. Older handoffs and archived
+6 September baseline. The [scalability audit](scalability-audit.md) records the
+7 September recheck, observed closing deadlock and next preparation priorities. Older handoffs and archived
 branches are reference material, not competing specifications.
 
 ## Compatibility scope
@@ -104,16 +105,40 @@ Use the established comparison tool for visual passes:
 
 | Suite | What it establishes |
 | --- | --- |
-| `art` | Ten repeatable images, eight occupancy/time fixtures, capture isolation, frame composition timing and audit |
+| `art` | Ten repeatable images, twelve explicit modest/furnished occupancy/time fixtures, capture isolation, furnished composition timing and audit |
 | `pathing` | Sampled obstacle clearances and real walker arrival across patron routes |
 | `nora-routing` | Staff route pairs, blocked-route handling and complete care chores |
-| `hours` | Empty/busy closing, cat perches, reopening, two natural nights and pending-story preservation |
+| `hours` | Empty/busy closing, late queued service with dirty indoor/terrace tables, cat perches, reopening, two natural nights and pending-story preservation |
 | `animations` | Movement at different time steps, shoe/body contact and visible animation variations |
 | `animation-journeys` | Real care, cat and seven order-preparation journeys with rendering |
 | `waterfront` | Outdoor orders/seats, weather returns, cleanup, closing and a 50-minute simulation soak |
 | `life` | Three nights per mode (idle automatic, game waits for sleep); chosen plant; stage reloads, identity and duplicate prevention |
 | `projects` | Orders interrupt hand actions; overnight/reload/mode resumption, queued jobs, completed seats and two unattended hour-long runs |
 | `ship` | Sailing ship movement, window visits, seat reservations, disposal and closing |
+| `c0` | Modest/furnished availability, all existing plant/table/hearth subsets, real service, interruptions and installation |
+| `first-opening` | First-entry assembly and checkpoint fixtures |
+| `intro` | First-morning dialogue, attended controls and finale |
+| `holger` | Invitations, conversation choices, resumable dialogue and ordinary moments |
+| `first-days` | Admission pacing, first-day duration, mandatory greeting and paired first purchases |
+
+**Long simulation check:** `node tools/test-soak.js` runs four seeded scenarios
+for six simulated hours each, using the shipped scripts in private Node worlds.
+The small and furnished cafés run ordinary days; seed 84 also makes real evening
+purchases. It samples the audit, save size and narrative stages, tracks population
+bounds, and fails if a shop phase stalls or purchased work never finishes.
+`node tools/test-soak.js 1 furnished:84` reproduces the original closing regression
+quickly; omitting the final argument runs all four scenarios. This is simulation
+coverage, not a browser heap, audio, sleep or Safari test. GitHub Actions runs
+the one-hour-per-scenario form, save/audio regressions and script syntax checks.
+The complete browser suites and actual page-reload/UI checks still run locally.
+
+Use one current verification record for the final code state: list the commands,
+observed failures/corrections and coverage limits. The dated milestone evidence
+below is historical; it does not establish that a later commit passes. When a
+shared rule changes, search all suites for its old expectation. Keep tests of
+observable outcomes alongside state-machine checks; an empty fixture can pass
+without testing the populated scene. Prefer one implementation task writing this
+checkout at a time, and re-read the worktree after an interrupted task.
 
 **Separate normal-entry smoke test:** `./tools/verify-entry.ps1` automates the
 real-time cappuccino journey and exports the report/night image. To inspect manually, open the bare URL, click *step inside*,

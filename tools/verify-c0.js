@@ -79,11 +79,12 @@
       SIM._.enqueueArrival(w,guest,0,true);
       let queued=null,returned=null;
       until(w,()=>{
-        if(w.queue.length&&queued===null)queued=w.t;
-        if(queued!==null&&w.barista.state==='projectHome'&&returned===null)returned=w.t;
+        if(SIM.withWorld(w,()=>SIM._.customerAtCounter(w))&&queued===null)queued=w.t;
+        if(queued!==null&&(w.barista.state==='projectHome'||w.barista.state==='idle')&&returned===null)returned=w.t;
         return guest.state==='seated';
       },240);
-      check(returned!==null&&returned-queued<=3.5,'work did not yield to service');
+      check(queued!==null,'guest never reached the counter');
+      check(returned!==null&&returned-queued<=3.5,'work did not yield to service at the counter');
       check(w.memory.life.savings===funds+1,'served cup credited incorrectly');
       until(w,()=>w.barista.state==='projectWork');SIM.update(w,.5);
       home(w);snapshot(w,'c0-'+id+'-partial-home');

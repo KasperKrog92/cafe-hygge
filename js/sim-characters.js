@@ -111,8 +111,11 @@
 
     switch (b.state) {
       case 'idle': {
-        // Make room before accepting or starting another order.
-        if (world.shop.phase === 'open' && startTableClear(world, b)) break;
+        // Queued service keeps the same clearing priority during closing.
+        // Otherwise guests wait for dirty tables while the closing ritual
+        // waits for those guests, leaving nobody able to clear the tables.
+        if ((world.shop.phase === 'open' || (world.shop.phase === 'closing' &&
+            (world.queue.length || b.orders.length))) && startTableClear(world, b)) break;
         // start an order?
         if (b.orders.length) {
           const order = b.orders[0];

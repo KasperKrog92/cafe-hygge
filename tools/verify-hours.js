@@ -81,6 +81,30 @@
       check(w.tables.every(function (t) { return !t.cake; }), scenario + ': unexpected table cakes');
       results.push({ scenario: scenario, seconds: elapsed, phases: phases, auditProblems: audits.length });
     });
+    // A late queue and dirty table must not wait on each other: queued guests
+    // still require clearing before service while the shop is already closing.
+    for (const terrace of [false, true]) {
+      const w = __dev.furnishedWorld({random:SIM.seededRandom(84)}); window.__world = w;
+      w.patrons=[];w.queue=[];w.counterCups=[];w.umbrellaStand=[];
+      w.seats.forEach(s=>{s.taken=false;});w.tables.forEach(t=>{t.items=[];});
+      w.barista.state='idle';w.barista.orders=[];w.barista.path=[];
+      const guest=SIM._.makePatron(w,'Ellen');guest.ownBook=true;guest.wantsBook=false;guest.outdoor=false;
+      SIM._.enqueueArrival(w,guest,0,true);
+      if(terrace) Object.assign(w.waterfront.tables[0],{owner:null,dirty:true,cleaning:false,cup:'cup'});
+      else w.tables[0].items.push({kind:'cup',owner:null,side:-1});
+      __dev.hour(21.5);
+      let served=false,closed=false;
+      for(let i=0;i<4800;i++) {
+        SIM.update(w,.25);
+        if(guest.state==='seated')served=true;
+        if(w.shop.phase==='home')closed=true;
+        if(closed && w.shop.phase==='open')break;
+      }
+      check(served && closed && w.shop.phase==='open',
+        (terrace?'terrace':'indoor')+': late queue and clearing deadlocked closing');
+      failures.push.apply(failures,__dev.audit(w));
+      results.push({lateQueue:true,terrace,served,closed,reopened:w.shop.phase==='open'});
+    }
     // Natural clock repeats: no dev time jumps between two full overnight runs.
     const w = __dev.furnishedWorld({ random: random }); window.__world = w; __dev.hour(21.5);
     let nights = 0, previous = 'open';

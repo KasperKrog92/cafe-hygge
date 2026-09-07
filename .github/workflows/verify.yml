@@ -6,6 +6,7 @@ on:
 jobs:
   save-isolation:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -13,3 +14,10 @@ jobs:
           node-version: '24'
       - run: node tools/test-save.js
       - run: node tools/test-audio-settings.js
+      - name: Check script syntax
+        run: |
+          for script in js/*.js; do
+            node --check "$script" || exit 1
+          done
+      - name: Exercise ordinary days and evening purchases
+        run: node tools/test-soak.js 1

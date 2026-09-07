@@ -127,7 +127,7 @@ choices. This one-time tutorial exception does not make later story arcs mandato
 - **Repeatable verification:** with this checkout served on port 8137, run
   `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-project.ps1`.
   It runs the Node save/isolation regressions, checks shipped-script syntax,
-  runs the twelve browser suites with
+  runs the browser suites with
   fresh saves between them, exports reports/captures, and confirms session
   cleanup. See [docs/development.md](docs/development.md) for targeted commands,
   the separate normal-entry smoke test and the next preparation tasks.
@@ -366,6 +366,7 @@ from planned directions.
 | [docs/progression-roadmap.md](docs/progression-roadmap.md) | Shared idle/game direction, café/home stages, upgrades and milestones |
 | [docs/development.md](docs/development.md) | Session workflow, verification commands and preparation checklist |
 | [docs/predevelopment-audit.md](docs/predevelopment-audit.md) | Measured baseline, findings, priorities and deferred work |
+| [docs/scalability-audit.md](docs/scalability-audit.md) | September 7 scalability verdict, verified fixes, future boundaries and workflow priorities |
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative design contract: the invitation-waits rule, arc shape, café-day progression, the `MEMORY` save model, conversations |
 | [docs/story-bible.md](docs/story-bible.md) | Cast identities and voices, Holger's introduction, remembered choices, shipped and planned story beats |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes |
