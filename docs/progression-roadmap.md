@@ -376,6 +376,13 @@ direction. A large catalogue or a redesigned whole café would hide that test.
 
 ## Decisions still to settle through the prototype
 
+The first-morning cutscene shipped on 7 September: Lunafreya talks to her cat,
+hugs it, takes a silent breath and puts out a crude **NEW CAFE** sign as her
+last opening action. The café has no chosen in-story name. A later conversation
+with patrons should help her find it over the coming café days; that naming
+arc remains future work. The sign currently stays outside after first opening;
+daily retrieval/replacement can join the planned daily street-sign routine.
+
 - Evening length and how the planner allows lingering without a feeling of hurry.
 - Prices, starting savings and how much progress a normal reading session funds.
 - The apartment's framing; C0's initial furniture is specified above.

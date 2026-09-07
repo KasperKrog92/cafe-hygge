@@ -88,6 +88,7 @@
     return true;
   };
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
+  R.commitLife = commit;
   // First arrival is ordinary visible work, held before service. Every step
   // and partial hand action is saved; existing lives migrate past this once.
   const B=L.basic;
@@ -116,6 +117,8 @@
   R.updateFirstOpening = function(w,dt) {
     const f=w.memory.life.firstOpening,b=w.barista,step=FIRST[f.step];
     if(!step)return;
+    if (R.updateIntro) R.updateIntro(w,dt);
+    if (f.step===11 && R.updateIntroFinale && !R.updateIntroFinale(w,dt)) return;
     b.animT+=dt;w.cat.animT+=dt;
     if(!b.path) { R.makePath(b,step.at.x,step.at.y);b.holding=step.carry||null; }
     if(b.path.length) { R.walker(b,dt);return; }
@@ -123,6 +126,9 @@
     const before=f.time;f.time=Math.min(step.duration,f.time+dt);b.stateT=f.time;
     if(Math.floor(before/3)!==Math.floor(f.time/3))commit(w);
     if(f.time<step.duration)return;
+    if(R.introWaiting && R.introWaiting(w)) {
+      b.pose='stand';b.heading='';return;
+    }
     if(step.install)w.memory.life.furniture[step.install]=true;
     if(step.table!==undefined)installFirstTable(w,step.table);
     if(step.install==='cat-corner') {
@@ -133,6 +139,7 @@
     if(step.install)R.sound.softThump();
     f.step++;f.time=0;b.path=null;b.pose='stand';b.holding=null;
     if(f.step===FIRST.length) {
+      w.memory.life.intro.complete=true;
       w.shop.phase='open';w.shop.accepting=true;w.shop.carryingCat=false;b.state='idle';b.idleT=2;
       w.spawnT=2;R.caption(w,'two little tables, fresh coffee. the door is open.');
     }
@@ -174,6 +181,8 @@
     if (!c) return;
     Object.assign(w.shop, JSON.parse(JSON.stringify(c.shop)));
     Object.assign(w.barista, JSON.parse(JSON.stringify(c.nora)));
+    // The finale derives its held prop, cat and doorway presentation from the save.
+    if (R.restoreIntro) R.restoreIntro(w);
     // Transient guests/orders are not saves. Resume rituals with a clear room;
     // a partially brewed cup cannot turn into another paid sale on reload.
     w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];

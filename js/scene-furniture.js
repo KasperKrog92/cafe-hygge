@@ -23,6 +23,8 @@
 
   SCENE.furnitureDrawables = function (world) {
     const out = [];
+    if(world.memory.life.intro && world.memory.life.intro.sign==='stored')
+      out.push({y:L.intro.signStored.y,draw:function(g){SCENE.drawNewSign(g,L.intro.signStored.x,L.intro.signStored.y);}});
     const C = L.counter;
     const SHADOW = 'rgba(20,12,8,0.2)';
 

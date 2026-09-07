@@ -339,3 +339,15 @@ Version 4 also preserves furnished v3 rooms while adding a resumable first
 opening to fresh saves. Furniture ownership and free setup progress live in
 `life`; migration keeps story arcs, bonds, flags and existing projects intact.
 Setup completion opens the café; narrative payoffs still wait for player input.
+
+Version 6 adds `life.intro`: completed-line cursor, finale stage/time, skipped
+and complete flags, and the sign's stored/carried/outside location. Version-5
+cafés that have opened migrate past the intro without changing their histories.
+Partially assembled saves join the remaining setup; earlier work never replays.
+Reload restarts the current unfinished sentence and restores physical work.
+
+The first-morning conversation auto-advances while attended, with full-line
+reveal/next, pause and skip controls. Its clock holds when hidden so an unseen
+line cannot disappear. This is an explicit one-time exception to the ordinary
+background progression rule; established café arcs keep their invitation-waits
+contract. Naming the café is left for a future conversation arc.

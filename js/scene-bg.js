@@ -483,6 +483,7 @@
     px(g, d.x - 2, d.y + d.h, d.w + 4, 3, '#b18a5c');
     // dark opening behind
     px(g, d.x, d.y, d.w, d.h, '#15100b');
+    if(SCENE.drawIntroPorch)SCENE.drawIntroPorch(g,world);
     // Rotate the leaf continuously about its left hinge, rasterized first so
     // its narrowing window and handle retain whole output pixels.
     if (!doorLeaf) {

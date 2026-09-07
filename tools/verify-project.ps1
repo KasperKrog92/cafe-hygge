@@ -1,6 +1,6 @@
 param(
-    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening')]
-    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening'),
+    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro')]
+    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro'),
     [string]$Url = 'http://127.0.0.1:8137/?dev',
     [ValidatePattern('^[a-zA-Z0-9_-]+$')][string]$Label = 'project-check'
 )
@@ -64,7 +64,7 @@ try {
         $code = Get-Content -Raw -Encoding UTF8 (Join-Path $PSScriptRoot "verify-$name.js")
         # Return thrown assertions as structured failures, while also detecting
         # CLI failures. Keep PNGs out of terminal output; export them separately.
-        $wrapped = "(() => { try { return { ok: true, result: $($code.Trim().TrimEnd(';')) }; } catch (e) { return { ok: false, error: String(e.stack || e) }; } })()"
+        $wrapped = "(async () => { try { return { ok: true, result: await $($code.Trim().TrimEnd(';')) }; } catch (e) { return { ok: false, error: String(e.stack || e) }; } })()"
         # stdin preserves JS quotes under Windows PowerShell's native argument
         # parsing as well as PowerShell 7; UTF-8 preserves captions and names.
         $payload = $wrapped | & $browser --session $testSession eval --stdin
@@ -75,7 +75,7 @@ try {
         $frameCode = @'
 (() => {
   const frames = {};
-  for (const key of ['hoursFrames', 'noraFrames', 'waterfrontFrames', 'shipFrames', 'lifeFrames', 'projectFrames', 'c0Frames', 'firstFrames']) {
+  for (const key of ['hoursFrames', 'noraFrames', 'waterfrontFrames', 'shipFrames', 'lifeFrames', 'projectFrames', 'c0Frames', 'firstFrames', 'introFrames']) {
     if (window[key]) Object.assign(frames, window[key]);
   }
   return frames;

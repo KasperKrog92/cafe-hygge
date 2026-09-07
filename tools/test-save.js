@@ -23,7 +23,7 @@ function boot(raw) {
   };
   sandbox.window = sandbox;
   const ctx = vm.createContext(sandbox);
-  for (const file of ['audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life']) {
+  for (const file of ['audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'js', file + '.js'), 'utf8'), ctx, { filename: file + '.js' });
   }
   return { ctx, data, events, timers, writes: () => writes, prompts: () => prompts,

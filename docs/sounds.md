@@ -23,6 +23,7 @@ This app plays beside someone reading a real book. Rules:
 
 ```
 one-shots ─────────────► sfx ───┐
+intro syllables ───────► voice ┤
 window taps + storm ───► amb ───┤
 crackles + log catch ──► fire ──┼─► master ─► compressor ─► speakers
 music box + night pad ─► music ─┤
@@ -30,6 +31,17 @@ corner felt piano ─────► music ─┤
 Each sfx/music room send returns through its own channel fader.
 Room: 0.31 s delay, feedback 0.34, damped 1700 Hz, wet 0.2.
 ```
+
+The dialogue channel has its own `dialogueVolume` fader (default 0.7) before
+master/compression and no delay send. `dialogueSyllable(index)` uses a triangle
+voice around 205–247 Hz, a 720–1160 Hz lowpass, a 15 ms attack and a short
+75–102 ms envelope at 0.032 peak gain. The reveal controller requests one
+syllable per three letters, leaving punctuation silent. A real audio-clock
+guard prevents overlapping/catch-up bursts. `stopDialogue()` stops the active
+oscillator on pause, reveal, skip, Settings or hiding the tab. Instant text
+silences the speaking sound. Sound defaults preserve that text preference.
+`doorUnlock()` is a quiet 90 ms filtered click at 0.022 gain at the end of the
+first unlocking action. Existing room sounds remain on their original buses.
 
 Settings provides master volume and mute, plus independent 0–100% sliders for
 rain & storms, fireplace, music, and café activity. Zero silences a channel;

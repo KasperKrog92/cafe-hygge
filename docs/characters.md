@@ -689,4 +689,23 @@ Their appearances travel with their names, while apron/smock follow their jobs.
 Legacy internal identifiers (`nora` checkpoints and helpers, `lunafreya` regular ID,
 `lunafreya-paintings` arc and painting flags) stay stable to preserve saves.
 The legacy `__dev.shot("nora")` owner shortcut remains; use `"barista"` for the
-owner and `"artist"` for the studio. No cutscene dialogue is implemented yet.
+owner and `"artist"` for the studio.
+
+## First-morning dialogue and opening pause
+
+`sim-intro.js` adds 22 short remarks to the existing assembly steps. Lunafreya
+speaks to the unnamed cat as “little one”, mixing practical rambling with
+nerves about making this place real. She pauses after imagining someone
+staying all afternoon with a book. Finished hand actions settle into a standing
+pause while the remaining words are read.
+
+The final setup step contains eight saved stages: return to the cat and lift
+it, hug it, put it down, collect the handmade sign, gather herself at the door,
+unlock, step through and place the sign, then come back inside. She closes her
+eyes and takes a seven-second silent breath after her final words. The cat
+hug uses the same carried cat and preserves its scarf. Only after placing the
+sign and returning to the counter does she admit the first customer.
+
+The sign reads **NEW CAFE** in uneven paint on two scrap boards. She has not
+chosen a proper café name; naming it through later patron conversations is a
+future story, not a timer or a choice forced during this introduction.

@@ -1,5 +1,20 @@
 # Art — pixel style guide & layout map
 
+## First-morning speech and handmade sign
+
+`scene-intro.js` renders cream speech bubbles through `SCENE.composeFrame`.
+Complete sentences are wrapped before revealing at 13 px Georgia, with at most
+three lines. The bubble follows the owner's feet without walk bob and stays
+inside the small-room desktop crop. Only the first line carries her name.
+The small dialogue controls sit above the ordinary control bar; complete
+sentences also reach an accessible live region.
+
+The “NEW CAFE” sign uses two uneven scrap boards, nail marks and hand-painted
+3×5 letters (a wider W). `L.intro` owns its storage, pickup and porch anchors.
+It is carried visibly and lowered outside through the clipped doorway; the
+door leaf occludes the porch correctly. The first finale adds closed-eye hug,
+gather, breath and unlocking poses while keeping the existing character size.
+
 ## The first apartment and plant
 
 `scene-home.js` composes a sparse room within the same 960×600 master: warm

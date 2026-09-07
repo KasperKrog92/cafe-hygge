@@ -111,6 +111,22 @@
   const btnSleep = document.getElementById('btn-sleep');
   const btnHome = document.getElementById('btn-home');
   const planner = document.getElementById('planner'), buyPlant = document.getElementById('buy-plant');
+  const introControls=document.getElementById('intro-controls'),introPause=document.getElementById('intro-pause');
+  const introTranscript=document.getElementById('intro-transcript'),instantText=document.getElementById('setting-instant');
+  let spokenLine='';
+  function refreshIntro() {
+    const active=SIM.introActive(world) && world.firstEntryReady;
+    introControls.hidden=!active;
+    introPause.textContent=world.introPaused?'continue':'pause';
+    introPause.setAttribute('aria-pressed',String(!!world.introPaused));
+    document.getElementById('intro-next').disabled=!world.dialogue || !!world.introPaused;
+    const line=active && world.dialogue?world.dialogue.text:'';
+    if(line!==spokenLine) {spokenLine=line;introTranscript.textContent=line?'Lunafreya: '+line:'';}
+  }
+  document.getElementById('intro-next').addEventListener('click',()=>{SIM.advanceIntro(world);refreshIntro();});
+  introPause.addEventListener('click',()=>{world.introPaused=!world.introPaused;SND.stopDialogue();refreshIntro();});
+  document.getElementById('intro-skip').addEventListener('click',()=>{SIM.skipIntro(world);refreshIntro();});
+  instantText.addEventListener('change',()=>{SND.settings.instantText=instantText.checked;SND.stopDialogue();SND.save();});
   function refreshLife() {
     const l = world.memory.life;
     if (shownSavings !== l.savings) {
@@ -121,7 +137,7 @@
     btnMode.setAttribute('aria-label', 'presentation: ' + l.mode + '; switch to ' + (l.mode === 'idle' ? 'game' : 'idle'));
     btnPlan.hidden = l.mode !== 'game' || world.shop.phase !== 'home';
     btnSleep.hidden = btnPlan.hidden;
-    btnHome.hidden = world.shop.phase === 'home';
+    btnHome.hidden = world.shop.phase === 'home' || world.shop.phase==='settling';
     if (!world.plannerOpen && planner.open) planner.close();
     if (!planner.open) return;
     function refreshChoice(button, stage, price) {
@@ -163,6 +179,7 @@
 
   function refreshButtons() {
     const S = SND.settings;
+    instantText.checked=S.instantText;
     btnMute.textContent = S.muted ? '🔇' : '🔊';
     btnMute.classList.toggle('off', S.muted);
     btnMute.setAttribute('aria-label', S.muted ? 'Unmute sound (m)' : 'Mute sound (m)');
@@ -189,9 +206,10 @@
     restoreBurstMute(); refreshButtons();
     settingsMain.hidden = false; resetConfirmation.hidden = true;
     settings.showModal();
+    world.introModal=true;SND.stopDialogue();
   });
   document.getElementById('close-settings').addEventListener('click', function () { settings.close(); });
-  settings.addEventListener('close', function () { pokeControls(); btnSettings.focus(); });
+  settings.addEventListener('close', function () { world.introModal=false;pokeControls(); btnSettings.focus(); });
   settings.addEventListener('cancel', function (e) {
     if (!resetConfirmation.hidden) { e.preventDefault(); showResetConfirmation(false); }
   });
@@ -239,6 +257,7 @@
     controls.classList.remove('hidden');
     refreshButtons();
     pokeControls();
+    this.blur();
   });
 
   btnMute.addEventListener('click', function () {
@@ -259,6 +278,9 @@
   document.addEventListener('keydown', function (e) {
     if (settings.open || planner.open || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+    if(e.code==='Space' && e.target.tagName!=='BUTTON' && SIM.introActive(world)) {
+      e.preventDefault();SIM.advanceIntro(world);return;
+    }
     if (e.key === 'm') btnMute.click();
     if (e.key === 'f') btnFull.click();
   });
@@ -282,6 +304,7 @@
   // a click (client coords → master-canvas coords): a waiting story invitation
   // takes it first, otherwise say hello to the cat. Both are optional and soft.
   canvas.addEventListener('click', function (e) {
+    if(SIM.introActive(world)) {SIM.advanceIntro(world);return;}
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
@@ -347,12 +370,15 @@
   }
   function frame(now) {
     advance(now);
-    render(); refreshLife();
+    render(); refreshLife();refreshIntro();
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
   setInterval(function () { if (document.hidden) advance(performance.now()); }, 250);
   document.addEventListener('visibilitychange', function () {
+    if(SIM.introActive(world)) {
+      world.introHidden=document.hidden;SND.stopDialogue();last=performance.now();return;
+    }
     if (!document.hidden) advance(performance.now());
   });
   }

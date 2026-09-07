@@ -432,3 +432,15 @@ The initial menu offers espresso, cappuccino, chamomile tea and cardamom buns.
 The starting room ends at x=832 and y=516; navigation corners stay within
 x=810 and y=496. Saved room size keeps future expansion independent of furniture.
 The full café retains its old bounds. Apartment framing remains unchanged.
+
+The first morning now includes activity-linked speech and a final cat hug,
+silent breath, unlocking and placement of a handmade “NEW CAFE” sign outside.
+The sign is carried from the supplies by the entrance and lowered onto the
+porch, visible through the open doorway. Its saved location prevents duplicates.
+The café's eventual name remains undecided for future patron conversations.
+
+This one-time attended intro pauses both dialogue and setup when hidden,
+explicitly paused, or while Settings is open. Refocus discards that interval;
+it never catches up missed speech. Skip dialogue releases the attendance hold
+and lets the real assembly/finale finish unattended. No furniture is granted
+by skipping. Ordinary days retain the existing elapsed-time background clock.

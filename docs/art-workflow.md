@@ -1,5 +1,10 @@
 # Art review workflow
 
+The first-morning cutscene is covered by `verify-intro.js` (including a hug,
+silent-breath and porch contact sheet) and `tools/verify-intro-ui.ps1` (actual
+desktop canvas at 16:10 and 16:9, controls and real reloads). The September 7
+captures live in `.art-review/intro-final/` and `.art-review/intro-ui/`.
+
 Start with the running café, then make comparisons repeatable. The shipping
 renderer is the reference: every scene capture goes through `SCENE.composeFrame`.
 Keep the pixel language, CH=60 and the owner's explicit framing instructions.

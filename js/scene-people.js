@@ -226,12 +226,13 @@
     const cycle = walk ? (Math.floor((p.walkDistance || 0) / 6) % 4) : 0;
     const pass = cycle === 1 || cycle === 3;               // passing frames bob up
     const y = Math.round(p.y);
-    const blink = p.animT % 4.7 > 4.57;
+    const blink = p.animT % 4.7 > 4.57 || p.pose==='hug' || p.pose==='breath';
     const stretchLean = p.pose === 'stretch' ? Math.round(Math.sin(p.animT * 1.4) * 2) : 0;
     const playSway = p.playing ? Math.round(Math.sin(p.animT * 1.15)) : 0;
     const x = Math.round(p.x) + stretchLean + playSway;
     const c = p.colors;
-    const breathe = !walk && Math.sin(p.animT * 1.6) > 0.3 ? 1 : 0;
+    const breathe = p.pose==='breath' ? -Math.round(Math.sin(Math.min(1,p.stateT/7)*Math.PI)*3)
+      : p.pose==='hug'?2:!walk && Math.sin(p.animT * 1.6) > 0.3 ? 1 : 0;
     const topD = shade(c.top, -0.18);
 
     ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
@@ -455,10 +456,11 @@
       px(g, x - 10, y - 3, 18, 3, '#3a2a1c');
     }
     // torso with shoulder light, centre fold and hem
-    px(g, x - 10, y - 40, 20, 24, c.top);
+    const shoulderLift=p.pose==='breath'?breathe:0;
+    px(g, x - 10, y - 40+shoulderLift, 20, 24-shoulderLift, c.top);
     px(g, x - 10, y - 37, 3, 19, topD);
     px(g, x + 6, y - 37, 3, 15, shade(c.top, 0.08));
-    px(g, x - 10, y - 40, 20, 2, shade(c.top, 0.12));
+    px(g, x - 10, y - 40+shoulderLift, 20, 2, shade(c.top, 0.12));
     px(g, x - 1, y - 34, 2, 14, topD);
     px(g, x - 10, y - 18, 20, 2, topD);
     if (c.smock) {
@@ -508,7 +510,25 @@
     else drawHead(g, x, y - 56 + breathe, facing, c, blink);
     // arm + held item, with actual hands
     const held = p.holding;
-    if (p.shipWave && !held) {
+    if(held==='sign') {
+      px(g,x-13,y-36,5,10,c.top);px(g,x+8,y-36,5,10,c.top);
+      SCENE.drawNewSign(g,x,y-8,.85);
+      px(g,x-17,y-30,5,4,c.skin);px(g,x+13,y-30,5,4,c.skin);
+      if(p.pose==='unlock') {
+        const lock=SCENE.L.intro.lock;
+        limb(g,x+10,y-35,x+19,y-47,5,c.top);
+        limb(g,x+19,y-47,lock.x,lock.y+3,4,c.skin);
+        px(g,lock.x-2,lock.y,5,2,'#d9a33c');
+      }
+    } else if(p.pose==='hug' || p.pose==='gather') {
+      const lift=p.pose==='hug'?8:0;
+      limb(g,x-11,y-35,x-8,y-24-lift,5,c.top);limb(g,x+10,y-35,x+14,y-25-lift,5,c.top);
+      limb(g,x-8,y-24-lift,x+3,y-29-lift,4,c.skin);limb(g,x+14,y-25-lift,x+7,y-31-lift,4,c.skin);
+    } else if(p.pose==='unlock') {
+      const lock=SCENE.L.intro.lock;
+      limb(g,x+10,y-35,x+19,y-47,5,c.top);limb(g,x+19,y-47,lock.x,lock.y+3,4,c.skin);
+      px(g,lock.x-2,lock.y,5,2,'#d9a33c');
+    } else if (p.shipWave && !held) {
       const hand = Math.round(Math.sin(p.animT * 3) * 3);
       limb(g, x + 8, y - 37, x + 17, y - 34, 5, c.top);
       limb(g, x + 17, y - 34, x + 19 + hand, y - 50, 4, c.skin);

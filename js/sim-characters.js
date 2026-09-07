@@ -1507,7 +1507,7 @@
 
   SIM.update = function (world, dt) {
     if(world.shop.phase==='settling') {
-      if(!world.firstEntryReady)return;
+      if(!world.firstEntryReady || world.introPaused || world.introHidden || world.introModal)return;
       world.t+=dt;world.clockOffset-=dt;
       R.updateFirstOpening(world,dt);updateCaptions(world,dt);R.saveLife(world,dt);return;
     }
@@ -1556,13 +1556,15 @@
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;
-    if (!b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {
+    if (!b.introOutside && !b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {
       SCENE.drawPerson(g, b);
       if (world.shop && world.shop.carryingCat) {
-        SCENE.drawCat(g, Object.assign({}, world.cat, { x: b.x + b.facing * 7, y: b.y - 28,
+        const lift=b.pose==='hug'?6+Math.round(Math.sin(Math.min(1,b.stateT/3)*Math.PI/2)*3)
+          : b.pose==='gather'?Math.round(9*(1-Math.min(1,b.stateT/3))):0;
+        SCENE.drawCat(g, Object.assign({}, world.cat, { x: b.x + b.facing * 7, y: b.y - 28-lift,
           state: 'sleep', surface: 'arms', carried: true, facing: b.facing }));
-        SCENE._.px(g, Math.round(b.x) - 6, Math.round(b.y) - 30, 5, 3, b.colors.skin);
-        SCENE._.px(g, Math.round(b.x) + 9, Math.round(b.y) - 30, 5, 3, b.colors.skin);
+        SCENE._.px(g, Math.round(b.x) - 6, Math.round(b.y) - 30-lift, 5, 3, b.colors.skin);
+        SCENE._.px(g, Math.round(b.x) + 9, Math.round(b.y) - 30-lift, 5, 3, b.colors.skin);
       }
     } });
     const cat = world.cat;

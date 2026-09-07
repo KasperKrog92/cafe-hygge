@@ -5,13 +5,14 @@
   const SND = (window.SND = {});
 
   let ctx = null;
-  let master, sfx, amb, musicBus, fireBus, nightGain;
+  let master, sfx, amb, musicBus, fireBus, nightGain, dialogueBus;
+  let dialogueVoice=null, dialogueUntil=0;
   let noiseBuf = null;
   let stormGain = null;
   let stormLfo1, stormLfo2, stormSwell1, stormSwell2;
 
   const defaults = { volume: 0.7, muted: false, rain: true, fire: true, music: true,
-    rainVolume: 1, fireVolume: 1, musicVolume: 1, cafeVolume: 1 };
+    rainVolume: 1, fireVolume: 1, musicVolume: 1, cafeVolume: 1, dialogueVolume:.7, instantText:false };
   const S = (SND.settings = Object.assign({}, defaults));
   try {
     const saved = JSON.parse(localStorage.getItem('cafe-hygge-audio') || '{}');
@@ -24,8 +25,10 @@
 
   SND.resetSettings = function () {
     const weather = S.rain;
+    const instant = S.instantText;
     Object.assign(S, defaults);
     S.rain = weather; // Sound defaults do not change the chosen weather.
+    S.instantText = instant;
     SND.applyVolume(); SND.applyToggles(); SND.save();
   };
 
@@ -82,6 +85,7 @@
     master.connect(comp);
 
     sfx = gainNode(S.cafeVolume); sfx.connect(master);
+    dialogueBus=gainNode(S.dialogueVolume);dialogueBus.connect(master);
     amb = gainNode(S.rain ? S.rainVolume : 0); amb.connect(master);
     fireBus = gainNode(S.fire ? S.fireVolume : 0); fireBus.connect(master);
     musicBus = gainNode(S.music ? S.musicVolume : 0); musicBus.connect(master);
@@ -116,6 +120,7 @@
   SND.applyToggles = function () {
     if (!ctx) return;
     sfx.gain.setTargetAtTime(S.cafeVolume, ctx.currentTime, 0.05);
+    dialogueBus.gain.setTargetAtTime(S.dialogueVolume,ctx.currentTime,.02);
     amb.gain.setTargetAtTime(S.rain ? S.rainVolume : 0, ctx.currentTime, 0.4);
     fireBus.gain.setTargetAtTime(S.fire ? S.fireVolume : 0, ctx.currentTime, 0.4);
     musicBus.gain.setTargetAtTime(S.music ? S.musicVolume : 0, ctx.currentTime, 0.4);
@@ -245,6 +250,23 @@
   }
 
   /* ---------- the café's sounds ---------- */
+  SND.stopDialogue=function() {
+    if(dialogueVoice) {try{dialogueVoice.stop();}catch(e){} dialogueVoice=null;}
+    dialogueUntil=0;
+  };
+  SND.dialogueSyllable=guard(function(index) {
+    if(!S.dialogueVolume || S.instantText || ctx.currentTime<dialogueUntil)return;
+    const t=ctx.currentTime,dur=.075+(index%4)*.009;
+    const o=ctx.createOscillator(),g=gainNode(0),f=filt('lowpass',720+(index%5)*110);
+    o.type='triangle';o.frequency.setValueAtTime(205+(index%7)*7,t);
+    o.frequency.linearRampToValueAtTime(195+(index%5)*9,t+dur);
+    o.connect(f);f.connect(g);g.connect(dialogueBus);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.032,t+.015);
+    g.gain.linearRampToValueAtTime(0,t+dur);
+    o.start(t);o.stop(t+dur+.01);dialogueVoice=o;dialogueUntil=t+dur+.012;
+    o.onended=function(){o.disconnect();f.disconnect();g.disconnect();if(dialogueVoice===o)dialogueVoice=null;};
+  });
+  SND.doorUnlock=guard(function(){hiss({dur:.09,gain:.022,lp:1400,attack:.005,release:.08});});
 
   SND.doorBell = guard(function () {
     const base = 1244 * (0.98 + Math.random() * 0.04);

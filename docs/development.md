@@ -35,6 +35,13 @@ same session; it does not need a separate branch by default.
 
 ## Verification commands
 
+The first-morning dialogue shipped on 7 September 2026. `intro` is the thirteenth
+browser suite: it checks all 22 lines, eight finale stages, pause/skip/reveal,
+instant text, bounds and private save restoration. `./tools/verify-intro-ui.ps1`
+adds real entry/settings controls, hidden/refocus handling, eight actual browser
+reloads and 1440×900/1600×900 captures. It owns and closes one disposable session.
+The full runner awaits asynchronous suites before reporting their result.
+
 With `?dev`, click the upper-right gold coin to add 100 to the current saved
 balance. Repeat clicks add another 100 each; the balance persists on reload.
 The coin can also be focused and activated with the keyboard. Ordinary URLs

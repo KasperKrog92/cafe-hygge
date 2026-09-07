@@ -166,7 +166,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
   check the live site, HTML or script URLs. The owner will report if a push
   appears not to have reached the site; investigate deployment when asked.
 
-## Architecture (18 scripts, deliberate order)
+## Architecture (20 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -178,6 +178,7 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/scene-people.js` | `SCENE` | People, cat, speech bubbles, and order icons. |
 | `js/scene-fx.js` | `SCENE` | Lighting, particles, and caption rendering, plus `SCENE.composeFrame` — the shared depth-sorted frame composition that both `main.js` `render()` and `__dev.shot()` call. |
 | `js/scene-home.js` | `SCENE` | Sparse apartment and saved plant/table/hearth work drawables. |
+| `js/scene-intro.js` | `SCENE` | First-morning speech bubbles, handmade sign and doorway porch. |
 | `js/characters-roster.js` | `CAST` | The regulars roster **and story arcs** as pure data: each regular's fixed look, drink, habits, usual seat, and line pools; `CAST.arcs` holds each arc's owner, café-day threshold, invitation glyph, and beat. Read by the sim and the audit. |
 | `js/memory.js` | `MEMORY` | The persistent, cross-visit save (`cafe-hygge-save`): versioned JSON blob (arcs, bonds, flags, `lastSeen`), a migration ladder, and a graceful fresh-café fallback. Mirrors `SND.save()`. Loaded before sim-core so world creation reconciles against it. |
 | `js/sim-core.js` | `SIM` | Creates the simulation global; owns world creation, shared movement, clock/weather/door/spawning, captions, and particles. |
@@ -185,16 +186,17 @@ milestone on the current café foundation, keeping later ideas out of that slice
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes; character helpers supplied explicitly. |
 | `js/sim-characters.js` | `SIM` | Lunafreya and cat state machines plus the main simulation update and entity-drawable bridge. |
-| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v5 checkpoints. |
+| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v6 checkpoints. |
+| `js/sim-intro.js` | `SIM` | Saved first-morning dialogue, cat hug, silent breath and sign placement. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass (calls `SCENE.composeFrame` then blits the view rect), UI controls. |
 
 Load order matters: audio → scene-core → scene-waterfront → scene-bg → scene-furniture →
-scene-people → scene-fx → scene-home → characters-roster → memory → sim-core → sim-waterfront → sim-patrons →
-sim-shop → sim-characters → sim-life → dev → main. Scene-core creates `SCENE`; the five renderer
+scene-people → scene-fx → scene-home → scene-intro → characters-roster → memory → sim-core → sim-waterfront → sim-patrons →
+sim-shop → sim-characters → sim-life → sim-intro → dev → main. Scene-core creates `SCENE`; the renderer
 siblings extend it. `characters-roster` then defines `CAST` (the regulars
 roster + story arcs) as pure data, and `memory` loads the `MEMORY` save. The
-six sim scripts then build `SIM`, reading `CAST` for its regulars and
+seven sim scripts then build `SIM`, reading `CAST` for its regulars and
 reconciling `MEMORY` on boot (`SIM.create` → `reconcileNarrative`); dev consumes
 its `SIM._` debug contract and decorates the boot, and main reads all.
 
@@ -250,6 +252,10 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   dt=0.25 once lost ~96% of backgrounded time and starved slow arcs). New
   periodic logic must live in `SIM.update`/`SND.update` (dt-driven), never in
   rAF-only code, and never assume a small dt ceiling below 0.25 s.
+- **The first-morning intro is attended.** Its dialogue and assembly hold when
+  hidden, paused or in Settings. Skipping dialogue releases that attendance
+  hold; actual assembly, hug, breath and sign placement still finish normally.
+  This one-time exception must never stop ordinary background café progression.
 - Settings persist in `localStorage` under `cafe-hygge-audio` via `SND.save()`.
 - **The narrative save is separate** (`cafe-hygge-save` via `MEMORY.save()`) and
   **must migrate, never reset**: growing the save shape is only safe if

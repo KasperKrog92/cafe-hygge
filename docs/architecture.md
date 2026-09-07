@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Eighteen IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Twenty IIFE scripts expose the production globals
 (`SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -13,6 +13,7 @@ js/scene-furniture.js   → extends SCENE  (depth-sorted furniture)
 js/scene-people.js      → extends SCENE  (people, cat, bubbles, icons)
 js/scene-fx.js          → extends SCENE  (lighting, particles, captions, composeFrame)
 js/scene-home.js        → extends SCENE  (apartment and plant work stages)
+js/scene-intro.js       → extends SCENE  (speech bubbles, handmade sign and porch)
 js/characters-roster.js → window.CAST    (regulars roster + story arcs, pure data)
 js/memory.js            → window.MEMORY  (persistent cross-visit save; versioned)
 js/sim-core.js          → window.SIM     (world + shared simulation systems)
@@ -21,9 +22,17 @@ js/sim-patrons.js       → extends SIM    (patron state machine)
 js/sim-shop.js          → extends SIM    (opening/closing lifecycle factory)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
 js/sim-life.js          → extends SIM    (home, plant, presentation, saved lifecycle)
+js/sim-intro.js         → extends SIM    (first-morning dialogue and opening finale)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
+
+The intro controller attaches dialogue gates and an eight-stage finale to the
+existing twelve-step first-opening routine. Saved `life.intro` owns its line
+cursor, finale/time and sign location; transient reveal, pause and hidden state
+belong to the world. Main supplies visibility/input and the renderer draws
+through `composeFrame`. This one-time sequence holds when hidden; the normal
+simulation keeps its elapsed-time clock. No separate cutscene engine is used.
 
 There are **no ES modules on purpose**: `file://` + `<script>` tags means the
 app runs by double-clicking `index.html` with zero tooling. Keep it that way.
@@ -65,7 +74,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v5, migrated through v1/v2/v3/v4) contains `mode`, integer `savings`, `hour`,
+`memory.life` (v6, migrated through v1–v5) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `plant: {stage,time}`, `projects`, `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings and the plant price are
 30 kr; a completed ordinary pickup adds 1 kr. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -269,7 +278,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v5; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v6; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is

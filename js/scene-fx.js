@@ -216,7 +216,8 @@
     SCENE.drawParticles(g, world);
     SCENE.drawLighting(g, world);
     ents.bubbles.forEach(function (b) { SCENE.drawBubble(g, b.x, b.y, b.icon); });
-    SCENE.drawCaption(g, world);
+    if(!world.dialogue)SCENE.drawCaption(g, world);
+    if(SCENE.drawIntroDialogue)SCENE.drawIntroDialogue(g,world);
     if (world.shop && world.shop.fade > 0) {
       g.fillStyle = '#100d14'; g.globalAlpha = world.shop.fade;
       g.fillRect(0, 0, W, H); g.globalAlpha = 1;
