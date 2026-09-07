@@ -712,6 +712,8 @@ At bedtime, drapes slide inward, a small blue toothbrush moves at her mouth,
 and the duvet covers her shoulders beneath the pillow; the same cat sleeps
 beside her. All route/prop anchors live in `SCENE.L.home.story`. Apartment
 furniture, ladder, sleeper and cat retain the room's shared depth draw list.
+The bedside lamp sorts separately at its own foot, behind Lunafreya when she
+stands beside the bed, rather than sharing the bed's foreground baseline.
 
 
 ## Second-day visitors — shipped 8 September 2026

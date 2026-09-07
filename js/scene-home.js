@@ -384,6 +384,10 @@
       px(g,x+30,y+57,26,2,'#8492aa');
       px(g,x,y+b.h-12,width,7,'#6e4a33'); px(g,x+2,y+b.h-12,width-4,2,'#a8764a');
       if(!w.barista.reading) { px(g,x+24,y+32,15,10,'#a94f3f'); px(g,x+26,y+34,11,2,'#e8dfc9'); }
+    }});
+    // Sort the bedside lamp at its own foot, behind the bedside approach.
+    draws.push({y:H.bed.y+33,draw:g=>{
+      const x=H.bed.x,y=H.bed.y;
       px(g,x-22,y-5,4,38,'#4a3222'); px(g,x-33,y-16,27,12,'#e8d5b0');
     }});
     draws.push({y:sleeping || w.barista.pose==='sit' ? H.bed.y+H.bed.h+.1 : w.barista.y,draw:g=>{
