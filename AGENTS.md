@@ -354,7 +354,12 @@ matching doc updated in the same change.
 - Randomness through the local `rnd(a, b)` / `pick(arr)` helpers.
 - Captions are written in a warm, understated narrator voice — lowercase-cozy,
   never jokey-loud. Danish flavor is welcome ("tak!").
-- Character names are Danish. New patrons draw from the `NAMES` pool in `sim-core.js`.
+- Character names may be Danish, international or unusually literary. The
+  Copenhagen/Christianshavn inspiration includes a community with varied
+  backgrounds; do not restrict the cast to Nordic names. Use the story bible
+  for settled names and distinguish proposed display renames from stable save
+  IDs. Random patrons draw from `PATRON_NAMES` in `sim-core.js`; keep their names
+  distinct from named regulars.
 
 ## Docs index
 

@@ -10,6 +10,20 @@ sets out a larger possible ensemble, Lunafreya's backstory, connected progressio
 gifts and romance. It is for owner review; its new histories and names are not
 established canon, and this bible remains authoritative for existing facts.
 
+## Names and the neighborhood
+
+**Owner direction, 7 September 2026:** the Copenhagen/Christianshavn inspiration
+includes a community with varied backgrounds. Character names may be Danish,
+international or unusually literary. The owner's name list is inspiration,
+not a restriction. Write cultural and family details as part of individual
+lives; names alone do not establish nationality or background.
+
+The larger proposal now recommends Tomas, Marcel, Nico, Saira, Elody, Ezra and
+Antonia in place of its earlier seven names, with Calandra as Lunafreya's sister
+and Ida as the librarian. These replacements remain proposed. Freya's shipped
+display name and `freya` save identity are unchanged; a future display rename
+must preserve the same character and history.
+
 ## Writing and choices
 
 The café is a place to belong. People have lives beyond its door, and reveal
