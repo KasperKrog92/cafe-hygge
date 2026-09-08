@@ -67,6 +67,10 @@ public play; helper scheduling and shared households stay at their later boundar
 
 - Game and idle share the same café, apartment, relationships and saved progress.
   Switching modes changes the available interaction, never the world's history.
+- New cafés start in game mode (8 September). Settings contains an **Idle mode**
+  checkbox; turning it off returns to game mode. The choice saves with café
+  progress and survives reloads, including existing idle saves. The ordinary
+  control bar no longer contains a mode switch. Starting over uses game mode.
 - The protagonist remains autonomous: brewing, serving, tidying, relaxing and
   doing improvement work without movement controls or individual work commands.
 - After closing, follow her home. She reads, uses her PC and spends a quiet

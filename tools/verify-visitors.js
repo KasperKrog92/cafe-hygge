@@ -69,7 +69,7 @@
   until(paired,()=>!!paired.deliveryVisitor);
   check(!paired.windowWorker&&paired.memory.life.projects.window.stage==='installed','reload bunched paired jobs');
   // Previously delivered kits can still assemble alongside an unfinished repair.
-  const overlap=__dev.modestWorld();Object.assign(overlap.memory.life.projects.table,{stage:'working',step:1,time:5});
+  const overlap=__dev.modestWorld();SIM.setMode(overlap,'idle');Object.assign(overlap.memory.life.projects.table,{stage:'working',step:1,time:5});
   overlap.memory.life.projects.window.stage='scheduled';
   until(overlap,()=>overlap.memory.life.projects.table.stage==='installed'&&overlap.memory.life.projects.window.stage==='installed');
   check(!overlap.deliveryVisitor,'owned kit redelivered during repair');snap(overlap,'legacy-overlap');

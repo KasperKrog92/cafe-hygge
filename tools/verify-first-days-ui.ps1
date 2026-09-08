@@ -28,7 +28,7 @@ function Reload-Day {
   Click-Day '#cafe'
 }
 function Frame-Day {
-  Eval-Day 'window.uiNow=performance.now();lifeTestFrame(uiNow);if(__world.shop.phase==="home")document.getElementById("btn-mode").focus();true' | Out-Null
+  Eval-Day 'window.uiNow=performance.now();lifeTestFrame(uiNow);if(__world.shop.phase==="home")document.getElementById("btn-settings").focus();true' | Out-Null
 }
 try {
   & $browser --session $testSession --init-script (Join-Path $PSScriptRoot 'life-browser-init.js') open ($Url+'?dev=life-test')

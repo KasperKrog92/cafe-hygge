@@ -32,6 +32,15 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('new cafes use game mode; saved idle choices survive reload and reset returns to game', () => {
+    const b=boot();
+    assert.equal(b.run('MEMORY.state.life.mode'), 'game');
+    b.run("MEMORY.state.life.mode='idle';MEMORY.saveNow();");
+    const restored=boot(b.data.get('cafe-hygge-save'));
+    assert.equal(restored.run('MEMORY.state.life.mode'), 'idle');
+    restored.run('MEMORY.reset();');
+    assert.equal(restored.run('MEMORY.state.life.mode'), 'game');
+  });
   await test('v11 preserves bought/open fireplaces and adds a separate mantel project', () => {
     const b=boot();b.run(`
       for(const stage of ['available','purchased','scheduled','arrived','working','installed']) {
@@ -225,7 +234,10 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         var r=SIM.create({memory:MEMORY.createStore({state:JSON.parse(captured[phase])})});
         if(r.shop.phase!==phase)throw Error('phase reset');
         var funds=r.memory.life.savings;
-        for(let i=0;i<6500&&r.shop.phase!=='open';i++)SIM.update(r,.25);
+        for(let i=0;i<6500&&r.shop.phase!=='open';i++) {
+          if(r.shop.phase==='home')SIM.goToSleep(r);
+          SIM.update(r,.25);
+        }
         if(r.shop.phase!=='open'||r.memory.life.savings!==funds)throw Error('reload '+phase);
       }
       if(w.memory.life.plant.stage!=='installed')throw Error('plant not installed');`);

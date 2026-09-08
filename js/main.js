@@ -108,7 +108,7 @@
   let restarting = false;
   const btnFull = document.getElementById('btn-full');
   const vol = document.getElementById('vol');
-  const btnMode = document.getElementById('btn-mode'), btnPlan = document.getElementById('btn-plan');
+  const settingIdle = document.getElementById('setting-idle'), btnPlan = document.getElementById('btn-plan');
   const btnSleep = document.getElementById('btn-sleep');
   const btnHome = document.getElementById('btn-home');
   const planner = document.getElementById('planner'), buyPlant = document.getElementById('buy-plant');
@@ -147,7 +147,7 @@
     const m=world.moment,line=m&&m.phase==='talk'?SIM.momentLine(world):null;
     momentPanel.hidden=!line;
     stage.classList.toggle('in-conversation',!!m);
-    btnMode.disabled=!!m;btnHome.disabled=!!m || SIM.holgerRequired(world);
+    settingIdle.disabled=!!m;btnHome.disabled=!!m || SIM.holgerRequired(world);
     document.getElementById('conversation-later').textContent=SIM.holgerRequired(world)?'pause conversation':'continue another time';
     const key=line?String(m.index)+line.text:null;
     if(key!==momentKey) {
@@ -200,8 +200,7 @@
       shownSavings = l.savings;
       savingsAmount.textContent = l.savings.toLocaleString('en-GB');
     }
-    btnMode.textContent = l.mode;
-    btnMode.setAttribute('aria-label', 'presentation: ' + l.mode + '; switch to ' + (l.mode === 'idle' ? 'game' : 'idle'));
+    settingIdle.checked = l.mode === 'idle';
     const homeScene=SIM.homeSceneActive(world), required=SIM.homePlanRequired(world);
     btnPlan.hidden=world.shop.phase!=='home' || homeScene || l.mode!=='game' && !l.homeStory.firstNight;
     btnSleep.hidden=btnPlan.hidden;btnSleep.disabled=homeScene || required;
@@ -233,8 +232,8 @@
       if(required)document.getElementById(l.projects.window.stage==='available'?'buy-window':'buy-table').focus();
     }
   }
-  btnMode.addEventListener('click', function () {
-    SIM.setMode(world, world.memory.life.mode === 'idle' ? 'game' : 'idle'); refreshLife();
+  settingIdle.addEventListener('change', function () {
+    SIM.setMode(world, settingIdle.checked ? 'idle' : 'game'); refreshLife();
   });
   btnPlan.addEventListener('click', function () {
     if (SIM.plan(world, true)) { planner.showModal(); refreshLife(); }
@@ -244,7 +243,7 @@
     document.getElementById('buy-' + id).addEventListener('click', function () { SIM.buyProject(world,id); refreshLife(); });
   });
   btnSleep.addEventListener('click', function () {
-    if (SIM.goToSleep(world)) { refreshLife(); btnMode.focus(); }
+    if (SIM.goToSleep(world)) { refreshLife(); btnSettings.focus(); }
   });
   btnHome.addEventListener('click', function () {
     if (__dev.home()) { refreshLife(); btnSleep.focus(); }

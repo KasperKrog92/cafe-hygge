@@ -108,7 +108,7 @@
     return { fresh: fresh, validate: validate, migrate: migrate, decode: decode, encode: encode };
   }
   function freshLife() {
-    return { mode: 'idle', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0,
+    return { mode: 'game', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0,
       plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), furniture: furnishings(false),
       homeStory: freshHomeStory(false), firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
   }
