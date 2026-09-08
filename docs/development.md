@@ -498,3 +498,31 @@ pickup income, seating and a zero-problem night audit (`.art-review/cat-entry/`)
 The installed-seat fixture cleanup is confirmed in `.art-review/cat-project-confirm/`.
 Final exported corner/intro images in `.art-review/cat-complete/` were inspected;
 all task-owned browser sessions were confirmed closed before commit.
+
+
+## Invitations and an active background - 8 September 2026
+
+`tools/verify-project.ps1 -Suite invitations` checks acceptance during an actual
+order, completion through the pass, five chore journeys, an atomic project
+hand action, duplicate clicks and cancellation while queued. A two-minute
+hidden conversation verifies pickup, counter arrival, departure, speaker
+reservation and held service/day clocks; service resumes and the audit passes.
+The suite is included in the full runner and exports waiting/talking frames.
+
+`tools/verify-holger-ui.ps1` also clicks a seated invitation during real brewing,
+checks the queued phase and eventual approach, captures background queueing,
+and dismisses via Escape. Its existing choice, actual reload and desktop
+1440x900 / 1600x900 checks remain. Seeded Holger can now introduce himself
+without an earlier recorded arrival; completion creates the relationship once.
+
+All 21 simulation suites pass across `invitations-regression` and the targeted
+`invitations-final` rerun. The first-days assertion now measures service time
+through the day clock, since ambient time continues during conversation.
+Visitor checks reserve the speaking worker while other work can complete.
+16 Node save/isolation groups, audio settings and 23 script syntax checks pass.
+Actual UI/reload captures are in `.art-review/invitations-ui/`. These are desktop
+Chromium results; native Safari was not run. Every runner closes its session.
+
+The normal-entry cappuccino completed in 32 seconds with audio ready, pickup
+income, seating and a zero-problem night audit (invitations-entry). All owned
+browser sessions were confirmed closed before commit.

@@ -384,13 +384,19 @@ contract. Naming the café is left for a future conversation arc.
 The [character and story bible](story-bible.md) records established cast facts,
 shipped beats, saved choices and future directions. Holger is the first real
 arrival in a fresh café. A quiet invitation offers his introduction while he
-is ordering or seated, in either presentation; ignoring it leaves normal life
-running. His introduction has two remembered choices and no purchase effects.
+is ordering or seated, in either presentation. The mandatory first hello holds
+service and the day clock; later invitations leave normal life running. His
+introduction has two remembered choices and no purchase effects.
 
-`SIM.beginMoment` holds simulation obligations and absolute timers while
-advancing ambient character animation and particles. The camera eases closer;
+`SIM.beginMoment` queues an attended meeting. The day clock, new arrivals and
+new service wait, while existing guests walk, collect ready drinks, read and
+leave. The cat, exterior and other visiting workers keep moving. Only the
+invited speaker is reserved; their stay and work resume after the meeting.
+Ambient time advances without advancing the café hour or story thresholds.
+The camera eases closer once Lunafreya arrives;
 ordinary controls and speech icons recede. Each line waits for input, including
-while hidden or in Settings. `SIM.leaveMoment` releases the hold immediately.
+while hidden or in Settings. `SIM.leaveMoment` cancels a queued invitation
+immediately, or returns Lunafreya before releasing service.
 Holger's cursor uses the existing boolean `flags` map; every acknowledged line
 and chosen answer saves, with completion and bond warmth awarded once. This
 adds story data, not a schema field, so the v6 codec requires no migration.
@@ -409,14 +415,16 @@ Holger's introduction uses a dots bubble in both presentations; existing arc
 icons keep their game-mode visibility. A transparent, keyboard-accessible hit
 button follows Holger's rendered bubble; there is no separate invitation bar.
 
-On invitation, the moment first holds guest obligations. If the characters are
-already within speaking distance (including ordering at the counter), dialogue
-begins there. Otherwise Lunafreya takes a real obstacle-planned route to a table
-service position or a clear nearby standing point. Dialogue waits for arrival.
-When finished or put aside she walks back to the interrupted task's position,
-then resumes its original state and path. Cancelling during approach also returns
-her safely. The moment's approach/talk/return phases are transient: reload leaves
-the durable invitation and acknowledged choices ready for another meeting.
+On invitation, Lunafreya finishes her current drink or chore before approaching.
+An interruptible project finishes its current hand action and puts its tools
+aside; carried items reach their destination. She takes no new job first.
+If already within speaking distance, she begins there; otherwise she follows
+an obstacle-planned route to a clear nearby position. Dialogue waits for arrival.
+When finished or put aside she walks back to the position where she finished
+her task, then resumes ordinary service. Escape during the waiting phase leaves
+the current task untouched; cancelling during approach returns her safely.
+Waiting/approach/talk/return are transient: reload restores the durable invitation
+and acknowledged choices, without awarding an unfinished payoff.
 
 The cream dialogue bubble follows the speaker through the camera zoom. Text
 reveals gradually with punctuation pauses and quiet character-specific syllables.

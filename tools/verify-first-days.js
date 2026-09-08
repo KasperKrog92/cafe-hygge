@@ -11,7 +11,7 @@
     SIM.setMode(w,'game');SIM.skipUnpacking(w);
     check(Math.abs(w.hour-17.5)<.001,'first opening must start at 17:30');
     check(w.patrons.length===0 && w.seats.length===4,'opening seating');
-    const started=w.t, seen=new Set(),arrivals=[];let peak=0;
+    const started=w.t,startedClock=w.t+w.clockOffset, seen=new Set(),arrivals=[];let peak=0;
     until(w,()=>!!SIM.holgerAvailable(w));
     const waiting=w.patrons[0],heldHour=w.hour,heldTime=w.t;
     tick(w,600);
@@ -27,7 +27,8 @@
       check(w.patrons.length<=2,'new café overfilled');
       return w.shop.phase==='closing';
     },245);
-    check(w.t-started>=239 && w.t-started<=241,'opening day length');
+    const serviceTime=w.t+w.clockOffset-startedClock;
+    check(serviceTime>=239 && serviceTime<=241,'opening day length');
     check(arrivals[0].name==='Holger','neighbour was not first');
     for(let i=1;i<arrivals.length;i++)check(arrivals[i].at-arrivals[i-1].at>=89.5,'arrivals bunched');
     until(w,()=>w.shop.phase==='home');

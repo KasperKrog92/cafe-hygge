@@ -46,6 +46,7 @@
     const p=w.memory.life.projects.bookshelf,d=IMPROVEMENTS.projects.bookshelf,
       site=L.projects.bookshelf.work,open=w.shop.phase==='open';
     let a=w.shelfVisitor;
+    if(w.moment && (!a || w.moment.owner===a)){if(a)a.animT+=dt;return;}
     if(!a && open && ['scheduled','arrived','working'].indexOf(p.stage)>=0 &&
         !SIM.visitorActors(w).some(v=>v.visitorId==='keira') &&
         w.memory.life.projects.table.stage!=='scheduled') {
@@ -84,14 +85,14 @@
     let a=w.deliveryVisitor;
     // A scheduled kit has not crossed the handoff boundary. Arrived/working
     // saves (including old carried kits) already own it and never redeliver.
-    if(!a && !w.shelfVisitor && !w.socialVisitors.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && (!w.windowWorker ||
+    if(!w.moment && !a && !w.shelfVisitor && !w.socialVisitors.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && (!w.windowWorker ||
         Math.hypot(w.windowWorker.x-L.doorSpot.x,w.windowWorker.y-L.doorSpot.y)>48)) {
       a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;
       R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);
       R.ringDoor(w);R.caption(w,w.memory.flags['keira-introduced']?
         'Keira is back, steering a table kit through the door.':'Keira brings the table kit in on a little trolley.');
     }
-    if(a) {
+    if(a && (!w.moment || w.moment.owner!==a)) {
       a.animT+=dt;
       if(!open || a.state==='leaving') {
         if(exit(w,a,dt)){w.deliveryVisitor=null;R.ringDoor(w);}
@@ -114,7 +115,7 @@
     ['keira','tomas'].forEach(function(id,n) {
       const job=w.memory.life.projects[id==='keira'?'table':'window'];
       if(id==='keira' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.bookshelf.stage)>=0)return;
-      if(!open || day<1 || w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
+      if(w.moment || !open || day<1 || w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
         ['purchased','scheduled','arrived','working'].indexOf(job.stage)>=0 ||
         SIM.visitorActors(w).some(a=>a.visitorId===id))return;
       const guest=R.makeVisitor(w,id);guest.social=true;guest.visitTime=0;
@@ -123,6 +124,7 @@
     });
     w.socialVisitors=w.socialVisitors.filter(function(a) {
       a.animT+=dt;
+      if(w.moment && w.moment.owner===a)return true;
       if(!open || a.state==='leaving' || a.visitTime>=90)return !exit(w,a,dt);
       if(a.path && a.path.length)R.walker(a,dt);
       else {a.state='visiting';a.pose='stand';a.visitTime+=dt;}

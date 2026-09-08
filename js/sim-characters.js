@@ -1314,7 +1314,7 @@
         cat.counterAfterSniff = false; cat.state = 'loaf'; cat.stateT = 240;
       }
       cat.noticeT -= dt;
-      if (cat.noticeT <= 0 && world.barista.state === 'idle' && quietCafe(world)) {
+      if (!world.moment && cat.noticeT <= 0 && world.barista.state === 'idle' && quietCafe(world)) {
         world.barista.state = 'shooCat'; world.barista.stateT = 0; world.barista.shooed = false;
         world.barista.path = [{ x: cat.x, y: L.baristaHome.y }];
       }
@@ -1509,10 +1509,22 @@
 
   SIM.update = function (world, dt) {
     if (world.moment) {
-      // Hold all obligations and deadlines; only ambient animation breathes.
+      // Service and the day clock wait; the rest of the room keeps living.
+      // Reserve the invited speaker until Lunafreya has finished and returned.
+      const owner=world.moment.owner;
+      world.t+=dt;world.clockOffset-=dt;
       SIM.updateMoment(world,dt);
-      [world.barista, world.cat].concat(world.patrons,SIM.visitorActors(world)).forEach(p => {p.animT += dt;});
+      if(!world.moment || world.moment.phase!=='waiting')world.barista.animT+=dt;
+      R.updateWaterfront(world,dt);updatePassersby(world,dt);updateDoor(world,dt);
+      R.updateWindowWorker(world,dt);R.updateVisitors(world,dt);
+      world.patrons.forEach(function(p) {
+        if(p===owner)p.animT+=dt;
+        else updatePatron(world,p,dt);
+      });
+      world.patrons=world.patrons.filter(p=>!p.gone);
+      updateCat(world,world.cat,dt);
       updateParticles(world, dt);
+      world.activeCaption=null;world.captionQueue=[];
       return;
     }
     if(world.shop.phase==='settling') {
@@ -1564,7 +1576,7 @@
     SIM.visitorActors(world).forEach(function(a) {
       draws.push({y:a.y,draw:function(g) {
         const x=Math.round(a.x),y=Math.round(a.y);
-        let person=world.moment ? Object.assign({},a,{pose:'stand',path:null}) : a;
+        let person=world.moment && world.moment.owner===a ? Object.assign({},a,{pose:'stand',path:null}) : a;
         if(a.shelfDelivery && (a.state==='working'||a.state==='descending')) {
           const p=world.memory.life.projects.bookshelf,s=L.projects.bookshelf;
           // Climb onto the folding steps for the upper board, then step down
@@ -1575,7 +1587,7 @@
             g.fillStyle='#96704c';g.fillRect(x-10,y-s.stoolHeight,21,3);g.fillRect(x-8,y-12,17,3);
           }
           person=Object.assign({},person,{y:y-Math.round(lift)});
-          if(!world.moment && a.state==='working' && p.step>=1 && p.step<=3 && (p.step!==3||lift===s.stoolHeight))
+          if((!world.moment || world.moment.owner!==a) && a.state==='working' && p.step>=1 && p.step<=3 && (p.step!==3||lift===s.stoolHeight))
             person.shelfWorkY=s.rows[3-p.step];
         }
         SCENE.drawPerson(g,person);
@@ -1615,7 +1627,7 @@
     const holger=SIM.holgerAvailable(world);if(holger)invited[holger.id]='dots';
     world.patrons.forEach(function (p) {
       if (p.outside) return;
-      draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment ?
+      draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment && world.moment.owner===p ?
         Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null},
           world.moment.phase==='talk' && world.moment.owner===p ? {heading:'',facing:world.barista.x>p.x?1:-1} : {}) : p); } });
       if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id],

@@ -791,3 +791,14 @@ with care from its western approach. First arrival, the attended hug and daily
 opening lower it onto the same cushion. Closing still collects the wandering
 cat before switching off and leaving. Journeys to the corner use its declared
 approach through the lane; its bed-to-bowls journey stays local.
+
+
+## Invited meetings - 8 September 2026
+
+An accepted invitation reserves its speaker while Lunafreya finishes her current
+activity, then walks over. Drinks finish through placement at the pass; chores
+finish their return route; projects put work aside at a saved hand-action boundary.
+Other guests continue their journeys and may collect ready drinks or leave.
+Customers can reach the counter and wait patiently, but no new order is taken
+until Lunafreya returns. Other workers and the cat remain autonomous. Closing,
+new arrivals and narrative thresholds wait; dialogue never advances unattended.

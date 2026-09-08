@@ -15,14 +15,14 @@
     for(let n=0;n<30;n++)SIM.update(w,.1);check(voices.some(v=>v===CAST.voices.Holger),'Holger voice missing');
     const before={hour:w.hour,t:w.t,spawn:w.spawnT,patrons:w.patrons.map(p=>[p.state,p.stateT,p.x,p.y]),save:JSON.stringify(w.memory)};
     for(let n=0;n<1200;n++)SIM.update(w,.25);
-    check(w.hour===before.hour&&w.t===before.t&&w.spawnT===before.spawn,'clock and arrivals held');
+    check(w.hour===before.hour&&w.t>before.t&&w.spawnT===before.spawn,'day clock and arrivals held while ambience moves');
     check(JSON.stringify(w.patrons.map(p=>[p.state,p.stateT,p.x,p.y]))===JSON.stringify(before.patrons),'guest obligations held');
     check(JSON.stringify(w.memory)===before.save,'unattended progression');
     next(w);for(let n=0;n<30;n++)SIM.update(w,.1);check(voices.some(v=>v===CAST.voices.Lunafreya),'Lunafreya voice missing');
     while(w.moment.index<6)next(w);
     SIM.advanceMoment(w);check(!SIM.advanceMoment(w),'choice cannot advance itself');next(w,branch);
     check(SIM.momentLine(w).speaker==='Lunafreya','chosen answer not spoken');next(w);
-    const saved=MEMORY.codec.encode(w.memory);SIM.leaveMoment(w);travel(w);SIM.update(w,1);check(w.t===before.t,'mandatory hello released café');
+    const saved=MEMORY.codec.encode(w.memory);SIM.leaveMoment(w);travel(w);SIM.update(w,1);check(w.hour===before.hour,'mandatory hello released café');
     const counter=SIM.create({memory:MEMORY.createStore({state:MEMORY.codec.decode(saved).state})});
     check(counter.patrons[0].state==='ordering' && SIM.startHolger(counter),'counter greeting reload');
     check(SIM.momentLine(counter).text===CAST.holgerIntroduction[6].choices[branch].reply,'counter reply lost');
@@ -44,6 +44,8 @@
     check(restored.barista.x===start.x&&restored.barista.y===start.y,'staff duty did not resume at original spot');
     check(!__dev.audit(restored).length,'audit after conversation');
   }
+  const seeded=__dev.furnishedWorld();check(!seeded.memory.bonds.holger&&SIM.startHolger(seeded),'seeded first meeting requires a recorded arrival');
+  finish(seeded,0);check(seeded.memory.bonds.holger.warmth===1,'seeded meeting did not create its bond');
   const w=__dev.furnishedWorld(),arc=CAST.arcs.find(a=>a.anchor);w.memory.arcs[arc.id]={stage:0,progress:arc.rows,pendingBeat:'finished'};
   SIM.beatAt(w,arc.anchor.x,arc.anchor.y+10);check(w.moment&&w.memory.arcs[arc.id].stage===0,'arc awarded early');
   SIM.leaveMoment(w);travel(w);check(w.memory.arcs[arc.id].pendingBeat==='finished','unfinished payoff lost');

@@ -4,7 +4,7 @@
   const R = SIM._, L = SCENE.L, H = L.home;
   const PLANT = SIM.plantProject = IMPROVEMENTS.plant;
   const PROJECTS = SIM.projects = IMPROVEMENTS.projects;
-  function busy(w) { return w.barista.orders.length || R.customerAtCounter(w) || R.needsTableClear(w) || w.shop.phase !== 'open'; }
+  function busy(w) { return w.moment || w.barista.orders.length || R.customerAtCounter(w) || R.needsTableClear(w) || w.shop.phase !== 'open'; }
   function pending(w) {
     // Finish the job already laid out before opening another kit.
     for (const stage of ['working','arrived','scheduled']) {
@@ -95,6 +95,7 @@
   R.updateWindowWorker = function(w,dt) {
     const p=w.memory.life.projects.window,site=L.projects.window.work,d=PROJECTS.window;
     let a=w.windowWorker;
+    if(w.moment && (!a || w.moment.owner===a)){if(a)a.animT+=dt;return;}
     if(w.shop.phase==='home') { w.windowWorker=null;return; }
     if(!a) {
       if(w.shop.phase!=='open' || ['scheduled','arrived','working'].indexOf(p.stage)<0)return;

@@ -178,6 +178,13 @@
   };
   SIM.beginMoment=function(w,lines,owner,finish) {
     if(w.moment || w.shop.phase!=='open')return false;
+    w.moment={lines:lines,index:0,owner:owner,finish:finish,phase:'waiting',visible:0,clock:0,syllable:0};
+    if(w.barista.state==='idle' && !startApproach(w)){w.moment=null;return false;}
+    w.activeCaption=null; w.captionQueue=[];
+    return true;
+  };
+  function startApproach(w) {
+    const m=w.moment,owner=m.owner;
     const b=w.barista,saved={x:b.x,y:b.y,path:b.path,pose:b.pose,heading:b.heading,facing:b.facing};
     let route=null;
     if(owner && Math.hypot(owner.x-b.x,owner.y-b.y)>85) {
@@ -196,16 +203,16 @@
       });
       if(!route)return false;
     }
-    w.moment={lines:lines,index:0,owner:owner,finish:finish,saved:saved,phase:route?'approach':'talk',visible:0,clock:0,syllable:0};
+    m.saved=saved;m.phase=route?'approach':'talk';
     if(route)b.path=route;
-    w.activeCaption=null; w.captionQueue=[];
+    else {b.pose='stand';b.heading='';if(owner)b.facing=owner.x>b.x?1:-1;}
     return true;
-  };
+  }
   SIM.startHolger=function(w) {
     const owner=SIM.holgerAvailable(w);
     if(!owner)return false;
     const lines=CAST.holgerIntroduction.map(line => Object.assign({},line));
-    if((w.memory.bonds.holger.visits||0)>1) {
+    if(w.memory.bonds.holger && (w.memory.bonds.holger.visits||0)>1) {
       lines[0].text="We've shared this room a few times now. I don't think we've properly said hello.";
       lines[1].text="We haven't, have we? I'm glad you've come back.";
       lines[3].text="Lunafreya. It's lovely to meet you properly.";
@@ -217,8 +224,8 @@
     index=Math.min(index,lines.length-1);
     if(!SIM.beginMoment(w,lines,owner,function() {
       w.memory.flags['holger-introduced']=true;
-      const b=w.memory.bonds.holger;
-      if(b)b.warmth=(b.warmth||0)+1;
+      const b=w.memory.bonds.holger || (w.memory.bonds.holger={known:true,warmth:0});
+      b.warmth=(b.warmth||0)+1;
     }))return false;
     w.moment.index=index; w.moment.holger=true;
     w.memory.flags['holger-invitation-opened']=true;w.context.memory.saveNow();
@@ -262,6 +269,7 @@
     const m=w.moment;if(!m || m.phase==='return')return;
     w.context.sound.stopDialogue();
     const b=w.barista;
+    if(m.phase==='waiting'){w.moment=null;return;}
     if(Math.hypot(b.x-m.saved.x,b.y-m.saved.y)<1) {Object.assign(b,m.saved);w.moment=null;return;}
     m.phase='return';
     SIM.withWorld(w,function(){SIM._.makePath(b,m.saved.x,m.saved.y);});
@@ -269,6 +277,11 @@
   SIM.updateMoment=function(w,dt) {
     const m=w.moment,b=w.barista;
     if(w.momentHidden || w.introModal){w.context.sound.stopDialogue();return;}
+    if(m.phase==='waiting') {
+      if(b.state!=='idle')SIM._.updateBarista(w,b,dt);
+      if(b.state==='idle' && !startApproach(w))SIM.leaveMoment(w);
+      return;
+    }
     if(m.phase!=='talk') {
       if(SIM._.walker(b,dt)) {
         if(m.phase==='return'){Object.assign(b,m.saved);w.moment=null;return;}

@@ -28,15 +28,15 @@
     check(Math.hypot(w.deliveryVisitor.x-SCENE.L.projects.table.work.x,w.deliveryVisitor.y-SCENE.L.projects.table.work.y)<1,'handoff away from site');
     check(w.memory.life.projects.table.stage==='scheduled','kit handed off while walking');snap(w,mode+'-trolley');
     if(mode==='game') {
-      talk(w,'keira');const before=JSON.stringify(w.memory.life.projects),hour=w.hour;
-      tick(w,60);check(JSON.stringify(w.memory.life.projects)===before&&w.hour===hour,'attended obligations moved');
+      talk(w,'keira');const before=JSON.stringify(w.memory.life.projects.table),hour=w.hour;
+      tick(w,60);check(JSON.stringify(w.memory.life.projects.table)===before&&w.hour===hour,'speaker work and day clock moved');
       SIM.advanceMoment(w);check(w.memory.flags['keira-hello-name'],'stable node missing');
       SIM.leaveMoment(w);until(w,()=>!w.moment);
       w=restore(w);until(w,()=>SIM.visitorInvites(w).some(a=>a.visitorId==='keira'));
       check(SIM.startVisitor(w,'keira')&&w.moment.index===1,'cursor not resumed');finish(w);
       talk(w,'tomas');finish(w);check(w.memory.flags['tomas-introduced']&&w.memory.flags['keira-introduced'],'greetings not complete');
     } else check(!SIM.visitorInvites(w).length,'idle invitations visible');
-    until(w,()=>w.memory.life.projects.table.stage==='arrived');
+    until(w,()=>['arrived','working','installed'].indexOf(w.memory.life.projects.table.stage)>=0);
     const kit=JSON.stringify(w.memory.life.projects.table);w=restore(w);
     check(JSON.stringify(w.memory.life.projects.table)===kit,'handoff lost');tick(w,.25);check(!w.deliveryVisitor,'duplicate delivery after reload');
     until(w,()=>w.memory.life.projects.table.stage==='installed'&&w.memory.life.projects.window.stage==='installed');

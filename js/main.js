@@ -482,8 +482,11 @@
   requestAnimationFrame(frame);
   setInterval(function () { if (document.hidden) advance(performance.now()); }, 250);
   document.addEventListener('visibilitychange', function () {
+    if(world.moment){
+      // Account for the elapsed interval using its previous attendance state.
+      advance(performance.now());world.momentHidden=document.hidden;SND.stopDialogue();return;
+    }
     world.momentHidden=document.hidden;
-    if(world.moment){SND.stopDialogue();last=performance.now();return;}
     if(SIM.introActive(world) || SIM.homeSceneActive(world)) {
       world.introHidden=document.hidden;SND.stopDialogue();last=performance.now();return;
     }
