@@ -183,6 +183,7 @@
     document.getElementById('intro-unpack').hidden=home;
     ['intro-next','intro-pause','intro-skip'].forEach(id=>{document.getElementById(id).hidden=!active;});
     document.getElementById('intro-skip').hidden=!active || home;
+    document.getElementById('skip-bedtime').hidden=!active || !SIM.homeBedtimeActive(world);
     introPause.textContent=world.introPaused?'continue':'pause';
     introPause.setAttribute('aria-pressed',String(!!world.introPaused));
     document.getElementById('intro-next').disabled=!world.dialogue || !!world.introPaused;
@@ -192,6 +193,9 @@
   document.getElementById('intro-next').addEventListener('click',()=>{(SIM.homeSceneActive(world)?SIM.advanceHomeDialogue:SIM.advanceIntro)(world);refreshIntro();});
   introPause.addEventListener('click',()=>{world.introPaused=!world.introPaused;SND.stopDialogue();refreshIntro();});
   document.getElementById('intro-skip').addEventListener('click',()=>{SIM.skipIntro(world);refreshIntro();});
+  document.getElementById('skip-bedtime').addEventListener('click',()=>{
+    if(SIM.skipBedtime(world)) {refreshIntro();refreshLife();canvas.focus();}
+  });
   document.getElementById('intro-unpack').addEventListener('click',()=>{SIM.skipUnpacking(world);refreshIntro();});
   instantText.addEventListener('change',()=>{SND.settings.instantText=instantText.checked;SND.stopDialogue();SND.save();});
   function refreshLife() {
@@ -243,7 +247,7 @@
     document.getElementById('buy-' + id).addEventListener('click', function () { SIM.buyProject(world,id); refreshLife(); });
   });
   btnSleep.addEventListener('click', function () {
-    if (SIM.goToSleep(world)) { refreshLife(); btnSettings.focus(); }
+    if (SIM.goToSleep(world)) { refreshLife(); refreshIntro(); btnSettings.focus(); }
   });
   btnHome.addEventListener('click', function () {
     if (__dev.home()) { refreshLife(); btnSleep.focus(); }

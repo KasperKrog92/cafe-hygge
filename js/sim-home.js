@@ -27,6 +27,7 @@
   ];
   function state(w) { return w.memory.life.homeStory; }
   SIM.homeTourActive=w=>w.shop.phase==='home' && state(w).step<tour.length;
+  SIM.homeBedtimeActive=w=>w.shop.phase==='home' && state(w).sleepStep>=0;
   SIM.homeSceneActive=w=>SIM.homeTourActive(w) || w.shop.phase==='home' && state(w).sleepStep>=0;
   SIM.homePlanRequired=w=>w.shop.phase==='home' && state(w).firstNight && state(w).step===tour.length && !state(w).planned;
   SIM.finishHomePlan=function(w) {
@@ -97,14 +98,23 @@
     }
     c.target={id:'home',x:c.x,y:c.y,kind:'floor'};
   }
+  function finishBedtime(w) {
+    const h=state(w);
+    h.sleepStep=-1;h.sleepTime=0;h.firstNight=false;h.sleepFrom=null;
+    w.dialogue=null;w.context.sound.stopDialogue();w.introPaused=false;
+    w.homeAction=null;w.homeActionTime=0;R.startMorning(w);
+  }
+  SIM.skipBedtime=function(w) {
+    if(!SIM.homeBedtimeActive(w))return false;
+    finishBedtime(w);return true;
+  };
   function next(w,v) {
     w.dialogue=null;w.context.sound.stopDialogue();
     if(v.sleep) {v.h.sleepStep++;v.h.sleepTime=0;}
     else {v.h.step++;v.h.time=0;}
     if(v.h.step===tour.length && !v.sleep) {w.plannerOpen=true;w.memory.life.homeTime=15;}
     if(v.h.sleepStep===bed.length) {
-      v.h.sleepStep=-1;v.h.sleepTime=0;v.h.firstNight=false;
-      w.homeAction=null;v.h.sleepFrom=null;R.startMorning(w);
+      finishBedtime(w);
     } else pose(w);
     R.commitLife(w);
   }

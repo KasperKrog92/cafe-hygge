@@ -25,7 +25,7 @@ try {
   for(let i=0;i<5000&&w.shop.phase!=='home';i++)SIM.update(w,.25);
   if(w.shop.phase!=='home')throw Error('home never arrived');
   window.homeNow=performance.now();SIM.update(w,.25);lifeTestFrame(homeNow);
-  if(document.getElementById('intro-controls').hidden || !document.getElementById('intro-skip').hidden)throw Error('home controls');
+  if(document.getElementById('intro-controls').hidden || !document.getElementById('intro-skip').hidden || !document.getElementById('skip-bedtime').hidden)throw Error('home controls');
   document.getElementById('intro-pause').click();
   const before=JSON.stringify(w.memory.life.homeStory);SIM.update(w,10);
   if(JSON.stringify(w.memory.life.homeStory)!==before)throw Error('pause failed');
@@ -74,6 +74,7 @@ try {
 '@ | Out-Null
   & $browser --session $testSession click '#btn-sleep'
   if($LASTEXITCODE -ne 0){throw 'Sleep click failed'}
+  Eval-Home "if(document.getElementById('skip-bedtime').hidden)throw Error('skip unavailable after sleep click');true" | Out-Null
   $saves=Eval-Home @'
 (()=>{
   const saves={},w=__world;
@@ -98,10 +99,31 @@ try {
     Eval-Home "if(__world.memory.life.homeStory.sleepStep!==$($save.Name))throw Error('bedtime cursor lost');SIM.update(__world,.01);if(__world.dialogue)__world.dialogue.visible=__world.dialogue.text.length;window.homeNow=performance.now();lifeTestFrame(homeNow);true" | Out-Null
     & $browser --session $testSession screenshot (Join-Path $output "bedtime-$($save.Name).png")
     if($LASTEXITCODE -ne 0){throw 'Bedtime screenshot failed'}
+    & $browser --session $testSession click '#intro-pause'
+    if($LASTEXITCODE -ne 0){throw 'Bedtime pause failed'}
+    & $browser --session $testSession click '#skip-bedtime'
+    if($LASTEXITCODE -ne 0){throw 'Bedtime skip failed'}
+    Eval-Home @'
+(()=>{
+  const w=__world,h=w.memory.life.homeStory;
+  if(w.shop.phase!=='dawn' || h.sleepStep!==-1 || h.firstNight || w.introPaused || w.dialogue)throw Error('skip left bedtime active');
+  if(w.memory.life.projects.window.stage!=='scheduled' || w.memory.life.projects.table.stage!=='scheduled')throw Error('skip lost purchases');
+  if(!document.getElementById('skip-bedtime').hidden || document.activeElement.id!=='cafe')throw Error('skip UI did not close');
+  const saved=MEMORY.codec.decode(localStorage.getItem('cafe-hygge-save')).state;
+  if(saved.life.homeStory.sleepStep!==-1 || saved.life.checkpoint.shop.phase!=='dawn')throw Error('skip not persisted');
+  if(__dev.audit(w).length)throw Error('skip audit failed');
+  return true;
+})()
+'@ | Out-Null
   }
+  & $browser --session $testSession reload
+  if($LASTEXITCODE -ne 0){throw 'Skipped morning reload failed'}
+  & $browser --session $testSession wait --fn '!!window.__world'
+  if($LASTEXITCODE -ne 0){throw 'Skipped morning boot failed'}
+  Eval-Home "if(__world.shop.phase!=='dawn' || SIM.homeSceneActive(__world))throw Error('reload replayed skipped bedtime');true" | Out-Null
   $errors=& $browser --session $testSession errors
   if($LASTEXITCODE -ne 0 -or $errors){throw "Browser errors: $errors"}
-  Write-Output 'PASS: entry audio, dialogue/pause/settings, desktop planner, real selection/reload, explicit sleep and bedtime reloads.'
+  Write-Output 'PASS: entry audio, dialogue/pause/settings, desktop planner, real selection/reload, explicit sleep, bedtime reloads and paused skips from all five stages.'
 } finally {
   & $browser --session $testSession close
   if($LASTEXITCODE -ne 0){throw 'Home browser cleanup failed'}

@@ -773,6 +773,9 @@ both the left window and first table, ordinary apartment activities resume.
 Both modes wait for the first **go to sleep**. Later explicit sleep follows
 the same bathroom-door route, toothbrushing, curtains and shared bed, with a
 whispered goodnight. Dialogue shares intro reveal/pause/accessibility settings.
+Once bedtime starts, **skip bed sequence** goes straight to the usual 07:30 dawn
+transition and schedules purchases. It also works during a paused or reloaded
+bedtime, clears the first-night checkpoint, and saves the completed evening.
 Hidden pages, pause and Settings hold the attended tour and bedtime; later
 ordinary apartment idling continues in the background.
 

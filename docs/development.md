@@ -423,6 +423,11 @@ and reloads. Both accept a local `-Url`; the UI runner takes the bare root URL.
 `__dev.modestWorld({homeIntro:true})` keeps the first arrival pending for these
 tests. Ordinary modest/furnished fixtures represent post-tutorial lives.
 
+The bedtime checks also cover **skip bed sequence** from every saved stage,
+including while paused, purchase scheduling, repeated clicks and the saved dawn
+checkpoint. The desktop UI runner verifies the button appears after **go to
+sleep**, stays hidden during the tour, and does not replay bedtime after reload.
+
 
 ## Second-day visitors verification — 8 September 2026
 

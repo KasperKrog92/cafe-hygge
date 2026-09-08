@@ -119,6 +119,9 @@ first-evening requirement is explicit owner direction, not a rule for later arcs
 She then idles until **go to sleep**, in both modes. Sleep starts the bathroom
 journey, toothbrushing, closing the drapes, getting into bed with the cat and a
 quiet goodnight before the dawn transition to 07:30. Reload preserves progress.
+After pressing **go to sleep**, **skip bed sequence** can finish the evening
+immediately, including after a reload; purchases are scheduled as usual
+(shipped 8 September).
 
 Later game evenings remain at home until **go to sleep**, which uses the same
 bedtime sequence. Later idle evenings retain their automatic 90-second routine.
