@@ -285,6 +285,45 @@ y=576 ── 16:9 crop bottom
 y=600 ── master bottom: 24 px overscan strip (plus 12 px per side)
 ```
 
+### Placement and future room use
+
+Before choosing furniture coordinates, read the [progression roadmap](progression-roadmap.md),
+its upgrade catalogue and the relevant [improvement brief](plans/first-books.md).
+Compare the candidate's full visible silhouette and footprint with both the
+current room and its documented later uses. Check window repair and use, doors,
+exterior sightlines, planned furnishings/improvements, and the space people need
+to deliver, install, use and maintain them. Temporary disrepair, missing furniture
+and features that have not shipped do not release their documented space.
+
+Known constraints, without inventing a complete future layout:
+
+- Both café windows (`L.win` and `L.win2`) are reserved for repaired windows and
+  their exterior views. The roadmap's C3/C5 stages and window-repair catalogue
+  preserve that use. Boards are temporary; do not put a bookshelf in front of
+  either window. Preserve repair access and the documented sill/perch, drape
+  and window-table uses when evaluating nearby furniture.
+- The entrance and its access remain available for guests, delivery workers
+  and the carried street sign. The main lane and counter order/pickup access
+  remain circulation space, including during delivery and installation.
+- The full-room reading nook (`L.library`) is a reference for the later reading
+  chair, lamp, shelf and browsing relationships. Its coordinates do not establish
+  an approved C0 placement: the smaller room must accommodate those relationships
+  without silently relying on the planned room expansion. The roadmap also calls
+  for counter/kitchen growth, piano, art and terrace access; inspect their relevant
+  plans before using space they may need. Unspecified dimensions remain decisions,
+  not invented reservations with guessed coordinates.
+
+Only after this check should placement proceed to collision/path audits and
+rendered review. A zero-problem audit establishes current simulation clearance;
+it cannot approve obscured views or resolve conflicts with future plans. Raise
+the specific conflict or missing layout decision with the owner before placement.
+
+**Owner correction, 8 September 2026:** the bookshelf proposal at (534,258)
+obscures the right window and is rejected. Bookshelf implementation is paused;
+no replacement position is approved. The decision still needed is where the
+C0 shelf and its delivery/browsing access should go while keeping both windows
+and the documented future room uses available.
+
 Tall furniture that can fully hide a walker is declared once in
 `L.occluders` (artist easel, bookshelf, counter) — the layout overlay, `__dev.audit()`,
 and the sim all read that one list. Walk targets must never land inside an

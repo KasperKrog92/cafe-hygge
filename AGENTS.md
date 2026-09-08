@@ -55,6 +55,18 @@ choices. This one-time tutorial exception does not make later story arcs mandato
 
 ## Working with the owner
 
+- **Place furniture against the room's future use as well as today's routes.**
+  Before choosing a location, read the progression roadmap, relevant improvement
+  briefs and [the spatial guidance](docs/art.md#placement-and-future-room-use).
+  Check planned window repair/use, doors, sightlines, later furnishings and
+  improvements, and their delivery, work and interaction access. Boarded windows,
+  temporary disrepair and not-yet-shipped features do not make their places free
+  space. Both café windows must remain available for repair and their eventual
+  views; do not put a bookshelf in front of either. A passing collision/path
+  audit verifies current routes, not placement approval. If a candidate conflicts
+  with documented future use, or the docs leave a necessary layout decision
+  unsettled, raise that specific decision with the owner before placing it.
+  Do not invent the rest of the future layout to resolve it.
 - **Explicit direction is a spec, not a suggestion.** When the owner says how
   something should look or behave — especially art, layout, or framing —
   implement *exactly that*, then show the result. Do not re-derive their intent,
