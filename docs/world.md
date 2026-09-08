@@ -525,3 +525,19 @@ including its watering visit. Food/water consumption and quiet refill sounds
 retain their timing and gains; the two bowls have separate feeding anchors.
 Opening places the cat on its cushion, and closing collects it from the same
 care approach before leaving. The intro describes shelter rather than fire heat.
+
+
+## Gerda and the repaired window — 8 September 2026
+
+Gerda’s regular arrival is gated by the completed left-window repair. Pending
+table construction delays her return; once installed, accepted pillow delivery
+becomes due through the ordinary seat-aware arrival scheduler. It adds no
+independent timer or hidden-tab exception. She brings two pillows, places them
+at the left sill, and joins the normal tea queue with a perch reserved.
+
+New sparse captions mark the clear-window first arrival, warm ordinary returns
+before furnishing, the completed little table, carried knitted pillows, and
+her two placements followed by ordering tea. They use the existing caption
+limiter. Placement uses the existing quiet `softThump`; no new sound is added.
+Her introductions and thanks are manually advanced conversations, never
+automatic captions or deadlines.

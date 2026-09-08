@@ -115,7 +115,7 @@
         umbrella: '#a94f3f',
         arrival: { from: 10, to: 10 + 1 / 2 },
         stay: [240, 360],
-        seat: 'windowPerch',
+        seat: 'leftWindowPerch',
         lines: {
           arrival: ['Gerda comes in with the morning and takes her window seat.'],
           arrivalRain: ['Gerda shakes the rain from her scarf and makes for the warm window.'],
@@ -357,6 +357,45 @@
           'For a while, you have both kept company with someone else\'s patient work.'
         ]
       }
+    ]
+  };
+  CAST.gerdaWindow={
+    hello:[
+      {id:'name',speaker:'Gerda',text:"Hello. I'm Gerda. I was passing, and your window made me stop."},
+      {id:'welcome',speaker:'Lunafreya',text:"I'm Lunafreya. Come in. It's warmer on this side."},
+      {id:'water',speaker:'Gerda',text:"I love sitting by the water. Watching the ships go by, with something on my needles."},
+      {id:'cold',speaker:'Gerda',text:"But the cold gets into my body now. Even on a bright day, I can't sit outside for very long."},
+      {id:'shorter',speaker:'Gerda',text:"I keep telling myself one more boat. Then my hands tell me it's time to go home."},
+      {id:'glass',speaker:'Gerda',text:"When I saw this café's big, clear window, I wondered if I could sit in here. Keep the water, lose the wind."},
+      {id:'room',speaker:'Lunafreya',text:"I'd like that. That deep sill could be a lovely place to sit."},
+      {id:'table',speaker:'Lunafreya',text:"It needs a little table for your tea. And something softer than bare wood."},
+      {id:'pillows',speaker:'Gerda',text:"I have two pillows at home. Knitted the covers myself. Rust red, with little cables like ropes."},
+      {id:'gift',speaker:'Gerda',text:"I'd like to give them to the café, if you'd like them. One for me, perhaps, and one for whoever sits beside me."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Gerda',text:'A warm place by the water...',choices:[
+        {text:"I'd love that. I'll make room for a little window table.",flag:'gerda-hello-yes',reply:"Then the pillows are yours. Whenever you're ready, I'll bring them and settle them in myself."},
+        {text:"That's very kind. Could I settle in a little more first?",flag:'gerda-hello-later',reply:"Of course. Wool keeps perfectly well. I'll still come in for tea, if I may."}
+      ]},
+      {id:'stay',speaker:'Lunafreya',text:"You're welcome here, Gerda. Come and keep warm whenever you like."}
+    ],
+    offer:[
+      {id:'remember',speaker:'Lunafreya',text:"Gerda, I've been thinking about your knitted pillows."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Gerda',text:'That place by the window...',choices:[
+        {text:"I'd like to make that window seat now, if your offer still stands.",flag:'gerda-offer-yes',reply:"It does. I'll bring both pillows when your little table is ready."},
+        {text:"I haven't quite found the moment yet. Thank you for offering.",flag:'gerda-offer-later',reply:"There's no hurry, dear. I'm quite happy with my tea here."}
+      ]}
+    ],
+    thanks:[
+      {id:'fit',speaker:'Gerda',text:"There. The cables face the room. You should see the nice side when you come in."},
+      {id:'hands',speaker:'Lunafreya',text:"They make it look as though this corner has been waiting for you."},
+      {id:'thank',speaker:'Gerda',text:"Thank you, Lunafreya. For the table. For taking a little passing wish seriously."},
+      {id:'water',speaker:'Gerda',text:"I can see the ships from here. And the little ripples they leave behind."},
+      {id:'warm',speaker:'Gerda',text:"My hands are still warm. I haven't once wondered how soon I'll have to leave."},
+      {id:'small',speaker:'Gerda',text:"When you start coming home earlier, you don't notice at first how much smaller your days have become."},
+      {id:'space',speaker:'Gerda',text:"This gives me a bit of mine back. A new cozy knitting place, with the water in it."},
+      {id:'company',speaker:'Lunafreya',text:"And a second pillow. You thought of company before I'd even thought of the table."},
+      {id:'needles',speaker:'Gerda',text:"Well. I can count stitches and listen at the same time. Usually."},
+      {id:'welcome',speaker:'Lunafreya',text:"I'll remember the usually. Make yourself at home, Gerda."},
+      {id:'home',speaker:'Gerda',text:"I think I already have."}
     ]
   };
   CAST.voices={Lunafreya:{pitch:205,filter:720,pace:1},Holger:{pitch:155,filter:620,pace:1.12},

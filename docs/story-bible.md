@@ -188,8 +188,33 @@ gently; his relationship to her and the circumstances are not yet fully authored
 Its attended payoff gives the cat a lasting scarf. Her attention to the painter
 across the water can accompany the street-house story.
 
-**Planned:** introduce her through an ordinary act of care; let Lunafreya ask
-about a pattern or a garden before reaching for a more personal subject.
+**Shipped 8 September — a warm place by the water:** she first enters after
+the left window is repaired. She loves watching ships and knitting by the
+water, but the cold forces her home earlier. Seeing the café’s clear window
+prompts her first visit. She offers two rust-red pillows with cable-knit covers
+she made herself, one for her and one for company. Lunafreya may accept or
+say “not yet”; both are warm answers, and the offer can be reconsidered later.
+Acknowledging acceptance unlocks the optional 40-coin window table/seats plan.
+
+After a chosen project’s next morning, Lunafreya assembles the little table.
+Gerda returns with both pillows, places them separately on the sill, orders
+chamomile tea and takes a left-window perch. Her attended thank-you says that
+coming home earlier has made her days smaller; this warm knitting place gives
+her a bit of her day back. It introduces no new bereavement or diagnosis. The
+second pillow leaves room for company, and Gerda jokes gently about counting
+stitches while listening. She continues knitting here after the cat’s scarf.
+
+The three literal packets are `CAST.gerdaWindow.hello/offer/thanks`. Acknowledged
+nodes save `gerda-<packet>-<node>`; selected replies save `gerda-hello-yes/later`
+or `gerda-offer-yes/later`. Final acknowledgements set `gerda-introduced`,
+`gerda-pillows-accepted` and `gerda-window-thanked`. Completed placements are
+`gerda-pillow-left/right`. Declining keeps that visit’s invitation quiet; a
+later visit can reopen the offer. Thanks can follow her into another visit
+and never expires. Preexisting fully furnished window saves keep their old
+seating via `gerda-window-legacy`, with no invented new dialogue history.
+
+**Planned:** let Lunafreya ask about a pattern or a garden before reaching for
+a more personal subject.
 The accepted plan's working history makes Erik her late husband; the exact
 history remains unauthored, and current lines do not yet identify him that way.
 A later blanket remembers Lunafreya's pattern choice. Gerda also learns to ask

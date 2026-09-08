@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 9;
+  const KEY = 'cafe-hygge-save', VERSION = 10;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -125,13 +125,13 @@
   }
   function validateProjects(l, version) {
     requireShape(record(l.projects) && typeof l.plannedTonight === 'boolean', 'invalid projects');
-    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
+    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=9 ? ['table','fireplace','window','bookshelf'] : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
       // Historical codecs retain their original limits, independent of today's catalogue.
       const d = version === VERSION ? IMPROVEMENTS.projects[id] : null;
-      const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'table' ? 6 : 4;
+      const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'table' ? 6 : id==='bookshelf' ? 5 : 4;
       const stages = d ? d.stages : ['available','purchased','scheduled','arrived','working','installed'];
       requireShape(record(p) && stages.indexOf(p.stage) >= 0 &&
-        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < (d ? d.duration : 18),
+        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < (d ? d.duration : id==='bookshelf' ? 12 : 18),
         'invalid project: ' + id);
       requireShape(p.stage === 'installed' ? p.step === steps && p.time === 0 : p.step < steps, 'invalid project completion');
       if (['available','purchased','scheduled','arrived'].indexOf(p.stage) >= 0)
@@ -203,6 +203,14 @@
     s.version=9;
     s.life.projects.bookshelf={stage:s.life.furniture.bookshelf?'installed':'available',
       step:s.life.furniture.bookshelf?5:0,time:0};
+    return s;
+  }, 9: function(s) {
+    createCodec(9, {}).validate(s);
+    s.version=10;
+    const established=s.life.furniture['window-seats'];
+    s.life.projects.windowSeat={stage:established?'installed':'available',step:established?4:0,time:0};
+    // Preserve already furnished windows without inventing acknowledged dialogue.
+    if(established)s.flags['gerda-window-legacy']=true;
     return s;
   } });
   MEMORY.freshHomeStory=freshHomeStory;

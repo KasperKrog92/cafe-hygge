@@ -108,7 +108,7 @@
   check(SIM.buyProject(w,'table'),'queue table');SIM.goToSleep(w);until(w,()=>w.barista.state==='projectWork');
   home(w);check(SIM.buyProject(w,'fireplace'),'queue fireplace');
   const funds=w.memory.life.savings;
-  SIM.setMode(w,'idle');until(w,()=>Object.values(w.memory.life.projects).every(p=>p.stage==='installed'),7000);
+  SIM.setMode(w,'idle');until(w,()=>['table','fireplace'].every(id=>w.memory.life.projects[id].stage==='installed'),7000);
   check(w.memory.life.savings>=funds,'queued work charged again');
   check(w.tables.filter(t=>t.project==='table').length===1&&w.seats.filter(s=>s.project==='table').length===2,'installed seat set');
   audit(w);snap(w,'both-installed');

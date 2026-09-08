@@ -248,7 +248,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v9; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v10; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -538,3 +538,33 @@ Chromium results; native Safari was not run. Every runner closes its session.
 The normal-entry cappuccino completed in 32 seconds with audio ready, pickup
 income, seating and a zero-problem night audit (invitations-entry). All owned
 browser sessions were confirmed closed before commit.
+
+
+## Gerda’s warm window — 8 September 2026
+
+`tools/verify-project.ps1 -Suite gerda` exercises both presentation modes,
+pre-repair exclusion, optional introductions, every hello cursor and chosen
+reply, repeated “not yet”, ordinary planner debit and next sleep, four exact
+table checkpoints, both pillow placements and closing between them, normal
+tea/seating, thank-you reloads and one-time completion. It performs 41 private
+save round trips and exports day/night, empty perches, carried gifts, assembly
+and conversation frames. `tools/verify-gerda-ui.ps1` uses actual invitation,
+choice, planner and sleep buttons; reloads the selected reply, purchase, four
+assembly phases, first pillow and thank-you cursor; and captures 1440×900 and
+1600×900 views.
+
+All 22 browser suites pass across `gerda-regression` and the targeted
+`gerda-final`/`gerda-shipping` reruns. The old queued-project assertion now
+checks the two purchased jobs, not every catalogue item; furnished fixtures
+include the established window-table record. Seventeen Node save/isolation
+groups, audio settings and all 25 shipped-script syntax checks pass. v10
+migration tests retain v9 shelf checkpoints, Gerda bonds and the cat’s scarf;
+legacy seating is preserved without inventing new conversation acknowledgements.
+
+Actual UI/reload evidence is in `gerda-ui`; art repeatability in `gerda-after`
+passes ten images, twelve occupancy scenarios and zero audits. The normal
+entry cappuccino smoke passed in 33.1 seconds with audio initialized, pickup
+income, seating and a zero-problem night audit (`gerda-entry`). The exported
+room, pillow, assembly and dialogue images were inspected. All owned browser
+sessions were confirmed closed. These are desktop Chromium checks; native
+Safari was not run.

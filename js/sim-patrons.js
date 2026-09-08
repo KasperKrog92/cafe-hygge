@@ -240,6 +240,7 @@
     }
 
     if (R.updateTerracePatron(world, p, dt)) return;
+    if (SIM.updateGerdaPillows(world,p,dt)) return;
 
     switch (p.state) {
       case 'enterDelay': {
@@ -824,7 +825,8 @@
     // knitting — a scarf-arc owner works the needles between sips and glances.
     // The lap visual reads knitProgress; the render's holding branch takes over
     // for a sip, so hands never do two things at once.
-    const knitArc = knittingArc(world, p);
+    const knitArc = knittingArc(world, p) || (p.regularId==='gerda' && world.memory.flags['gerda-pillow-right'] ?
+      {id:'gerda-scarf',rows:5,scarfColor:'#a94f3f'} : null);
     if (knitArc && !p.reading && !p.typing && !p.playing) {
       p.knitting = true;
       const krec = world.memory.arcs[knitArc.id];

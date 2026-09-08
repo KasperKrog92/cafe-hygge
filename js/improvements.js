@@ -5,6 +5,9 @@
   const stages = ['available','purchased','scheduled','arrived','working','installed'];
   // Phase order is the v7 saved numeric step contract. Reordering needs migration.
   I.projects = {
+    windowSeat: { price:40, destination:'cafe', delivery:'carry', title:'left window table and seats',
+      phases:['unwrap the little table','fit the foot and post','fasten the tabletop','smooth the sill'],
+      phaseIds:['unwrap','post','top','sill'], duration:12, capability:'left-window-table', requires:['left-window'] },
     bookshelf: { price:40, destination:'cafe', delivery:'shelf-keira', title:'three little wall shelves',
       phases:['unwrap the shelves','fit the lower shelf','fit the middle shelf','fit the upper shelf','pack the tools'],
       phaseIds:['unwrap','lower','middle','upper','tidy'], duration:12, capability:'empty-bookshelf' },
@@ -26,7 +29,7 @@
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];
-    d.id = id; d.requires = d.requires || []; // Shipped choices have no prerequisites in either room.
+    d.id = id; d.requires = d.requires || [];
     if (id !== 'plant') d.stages = stages;
   });
   I.freshProjects = function () {
@@ -49,6 +52,7 @@
     const h=l.homeStory, tutorial=h && h.firstNight;
     if (tutorial && (h.step<12 || (id!=='window' && id!=='table'))) return false;
     if (id==='bookshelf' && l.furniture.bookshelf) return false;
+    if (id==='windowSeat' && (!world.memory.flags['gerda-pillows-accepted'] || l.furniture['window-seats'])) return false;
     return !!p && !!world.plannerOpen && world.shop.phase === 'home' && (l.mode === 'game' || tutorial) &&
       I.canPlan(l,id) && p.stage === 'available' && l.savings >= d.price &&
       d.requires.every(capability => I.installed(l,capability));

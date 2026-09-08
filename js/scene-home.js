@@ -82,7 +82,18 @@
       if (p.stage==='available'||p.stage==='purchased') return;
       const carried=b.project===id && b.holding==='parcel';
       if (carried) draws.push({y:b.y+.1,draw:g=>box(g,Math.round(b.x)+12,Math.round(b.y)-22,false)});
-      if (id==='bookshelf') {
+      if (id==='windowSeat') {
+        if(p.stage==='scheduled'||p.stage==='installed')return;
+        const t=SCENE.L.winTables[0];
+        draws.push({y:t.base,draw:g=>{
+          if(p.stage==='arrived'||p.step===0) {if(!carried)box(g,t.x,t.base-3,p.stage==='working');return;}
+          px(g,t.x-9,t.base-8,18,4,'#4a3222');px(g,t.x-6,t.base-4,12,4,'#4a3222');
+          px(g,t.x-3,t.y+2,6,t.base-t.y-8,'#5a3d28');px(g,t.x-3,t.y+2,2,t.base-t.y-8,'#6e4c30');
+          if(p.step>=2) {ell(g,t.x,t.y+1,18,6,'#6e4c30');ell(g,t.x,t.y-2,18,6,'#8a6142');ell(g,t.x,t.y-3,14,4,'#96704c');}
+          else {px(g,t.x+9,t.base-21,5,18,'#8a6142');px(g,t.x+9,t.base-23,4,2,'#b08a64');}
+          px(g,t.x+10,t.base-5,8,3,'#7a89a5');
+        }});
+      } else if (id==='bookshelf') {
         if(p.stage==='scheduled'||p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
         const k=a.kit;
         draws.push({y:k.y,draw:g=>{

@@ -45,6 +45,8 @@ The next pass is separate books and interruptible stocking in
 Acceptance of the larger
 plan does not mean its full cast or later systems should be built in one task.
 
+**Gerda’s window — shipped 8 September 2026:** Gerda first visits after the left-window repair. Her optional saved pillow offer unlocks a 40-coin left-window table/seats project. Lunafreya assembles the table after the next sleep; Gerda then carries and places two knitted pillows, orders tea and sits. Her thank-you waits for input. “Not yet” preserves later acceptance. Existing furnished windows keep their legacy seating.
+
 **First-day direction (7 September 2026):** setup ends at 17:30, leaving four
 active service minutes. A new café starts with at most two customers; arrivals
 share a seat-aware timer and grow gradually across saved café days. The first
@@ -203,7 +205,7 @@ choices. This one-time tutorial exception does not make later story arcs mandato
   check the live site, HTML or script URLs. The owner will report if a push
   appears not to have reached the site; investigate deployment when asked.
 
-## Architecture (23 scripts, deliberate order)
+## Architecture (25 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -226,6 +228,8 @@ choices. This one-time tutorial exception does not make later story arcs mandato
 | `js/sim-characters.js` | `SIM` | Lunafreya and cat state machines plus the main simulation update and entity-drawable bridge. |
 | `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v6 checkpoints. |
 | `js/sim-intro.js` | `SIM` | Saved first-morning dialogue, cat hug, silent breath and sign placement. |
+| `js/sim-moments.js` | `SIM` | Shared attended conversations, saved acknowledgements/replies, approach and return; Holger introduction. |
+| `js/sim-gerda.js` | `SIM` | Repaired-window arrival gate, Gerda’s pillow offer, saved gift placement and thank-you invitation. |
 | `js/sim-visitors.js` | `SIM` | Keira delivery, recurring visitor actors and optional saved greetings. |
 | `js/sim-home.js` | `SIM` | Saved first apartment tour, required first planner and bedtime sequence. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing (including URL-shaped saved arc states), fast-forward, scenario forcing, layout overlay, named-region/headless render (`__dev.shot`), invariant audit. Inert unless invoked. |
@@ -233,10 +237,10 @@ choices. This one-time tutorial exception does not make later story arcs mandato
 
 Load order matters: improvements → audio → scene-core → scene-waterfront → scene-bg → scene-furniture →
 scene-people → scene-fx → scene-home → scene-intro → characters-roster → memory → sim-core → sim-waterfront → sim-patrons →
-sim-shop → sim-characters → sim-life → sim-intro → sim-visitors → sim-home → dev → main. Scene-core creates `SCENE`; the renderer
+sim-shop → sim-characters → sim-life → sim-intro → sim-moments → sim-gerda → sim-visitors → sim-home → dev → main. Scene-core creates `SCENE`; the renderer
 siblings extend it. `characters-roster` then defines `CAST` (the regulars
 roster + story arcs) as pure data, and `memory` loads the `MEMORY` save. The
-nine sim scripts then build `SIM`, reading `CAST` for its regulars and
+eleven sim scripts then build `SIM`, reading `CAST` for its regulars and
 reconciling `MEMORY` on boot (`SIM.create` → `reconcileNarrative`); dev consumes
 its `SIM._` debug contract and decorates the boot, and main reads all.
 

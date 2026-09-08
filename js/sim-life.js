@@ -15,6 +15,16 @@
     return null;
   }
   R.installProjects = function (w) {
+    const windowJob=w.memory.life.projects.windowSeat;
+    if (windowJob.stage==='installed' && !w.tables.some(t=>t.tall && t.x===L.winTables[0].x)) {
+      const t=L.winTables[0];
+      w.tables.push({x:t.x,y:t.y,base:t.base,tall:true,tag:'by the left window',furniture:'left-window-table',items:[],candle:0,candleTarget:0});
+    }
+    if (windowJob.stage==='installed' && w.memory.flags['gerda-pillow-right'] && !w.seats.some(s=>s.window && s.perchX===L.winSeats[0].perchX)) {
+      const index=w.tables.findIndex(t=>t.tall && t.x===L.winTables[0].x);
+      L.winSeats.filter(s=>s.win===0).forEach(s=>w.seats.push({x:s.x,y:s.y,perchX:s.perchX,perchY:s.perchY,via:s.via,
+        facing:-s.side,table:index,side:s.side,window:true,armchair:false,taken:false,furniture:'left-window-table'}));
+    }
     if (w.memory.life.projects.table.stage !== 'installed' || w.tables.some(t => t.project === 'table')) return;
     const t = L.projects.table, index = w.tables.length;
     w.tables.push({ x:t.x, y:t.y, tag:t.tag, project:'table', furniture:'project-table', items:[], candle:0, candleTarget:0 });
@@ -72,7 +82,7 @@
       p.time = 0; p.step++;
       if (p.step === d.phases.length) {
         p.stage = 'installed'; R.installProjects(w);
-        R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : 'the hearth is clean; a small fire can glow again.');
+        R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : id==='windowSeat' ? 'a little table beside the water; room for Gerda’s wool and a cup.' : 'the hearth is clean; a small fire can glow again.');
         if (id === 'fireplace') R.addLog(w);
       }
       commit(w);

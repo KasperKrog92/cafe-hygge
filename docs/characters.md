@@ -472,7 +472,8 @@ example of the whole soft-narrative pattern, and it realises the roadmap's older
 - **The beat (chosen).** Tapping it plays a short caption run: Gerda casts off,
   holds the scarf up, and loops it around the cat. A heart blooms over both, the
   `cat-wore-scarf` flag is set for good, and Gerda's bond warms. Afterward she
-  stops knitting and simply visits as a familiar face.
+  simply visits as a familiar face; after her new window pillows are installed,
+  she keeps knitting there without replaying the cat’s gift.
 
 A companion reader who never taps the bubble loses nothing; the café is still
 whole. Dev: `__dev.regular('gerda')`, then `__dev.age(5)` to ripen the scarf and
@@ -809,3 +810,22 @@ Other guests continue their journeys and may collect ready drinks or leave.
 Customers can reach the counter and wait patiently, but no new order is taken
 until Lunafreya returns. Other workers and the cat remain autonomous. Closing,
 new arrivals and narrative thresholds wait; dialogue never advances unattended.
+
+
+## Gerda’s first window — 8 September 2026
+
+Her regular arrival requires the repaired left window; both presentations
+offer a saved optional introduction. She explains the cold shortening her
+waterside visits and offers two self-knitted pillows. Acceptance unlocks the
+window table/seats project; “not yet” can be revisited later. She keeps coming
+for tea before a purchase, with an ordinary seat and no implied window perch.
+
+While her booked table is being assembled she waits to return. Once ready,
+her `gerdaPillows` patron state carries the pillows through the door, walks to
+each left sill approach, and places each during a three-second reach. Closing
+or reload preserves completed placements. After both, she reserves a left
+perch and orders tea through normal service, then sits and knits. Her optional
+thank-you is saved line by line and follows her into later visits. Her preferred
+seat is now specifically a left-window perch, with the normal occupied-seat
+fallback. After the existing cat-scarf payoff, she can keep knitting in her
+new corner without replaying the scarf gift or changing that saved arc.

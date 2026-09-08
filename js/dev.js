@@ -518,7 +518,8 @@
       state.life.firstOpening={step:12,time:0};
       state.life.room='full';
       state.life.homeStory=MEMORY.freshHomeStory(true);state.life.daysCompleted=7;state.life.projects.window={stage:'installed',step:4,time:0};
-      state.life.projects.bookshelf={stage:'installed',step:5,time:0};
+        state.life.projects.bookshelf={stage:'installed',step:5,time:0};
+        state.life.projects.windowSeat={stage:'installed',step:4,time:0};state.flags['gerda-window-legacy']=true;
       o.memory = MEMORY.createStore({state:state});
     }
     return SIM.create(o);
@@ -1039,6 +1040,12 @@
     if (!Array.isArray(L.occluders) || L.occluders.length < 2) problems.push('L.occluders missing or incomplete (expect at least bookshelf + counter)');
     if (!Array.isArray(L.footprints) || !L.footprints.length) problems.push('L.footprints missing (the journey check needs the furniture floor boxes)');
     const jobs=w.memory.life.projects, installedTable=jobs.table.stage==='installed';
+    if(!w.memory.life.furniture['window-seats']) {
+      const windowTable=w.tables.filter(t=>t.tall && t.x===L.winTables[0].x),windowSeats=w.seats.filter(s=>s.window && s.perchX<L.win.x+L.win.w);
+      if(windowTable.length!==(jobs.windowSeat.stage==='installed'?1:0) || windowSeats.length!==
+        (jobs.windowSeat.stage==='installed' && w.memory.flags['gerda-pillow-right']?2:0))problems.push('left window project/seating mismatch');
+    }
+    if(w.memory.flags['gerda-pillow-right'] && !w.memory.flags['gerda-pillow-left'])problems.push('second pillow without first placement');
     if(w.tables.filter(t=>t.project==='table').length!==(installedTable?1:0) ||
         w.seats.filter(s=>s.project==='table').length!==(installedTable?2:0)) problems.push('project table installation/seating mismatch');
     if(w.barista.state==='projectWork') {

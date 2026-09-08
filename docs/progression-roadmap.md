@@ -9,7 +9,9 @@ shipped (8 September), as is Pass 1's three small wall shelves left of the heart
 The cat's bed and bowls now sit against the right-window wall beside the coffee
 station; its former decorative floor plant is removed (8 September). Reserve
 this home when designing later window work or counter growth.
-The next task is separate book purchases and interruptible stocking (Pass 2). See the
+Gerda’s repaired-window introduction and optional left-window table/pillows are
+shipped (8 September), following the owner’s separate requested slice.
+The next book task is separate book purchases and interruptible stocking (Pass 2). See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
 the remaining ideas are not authorization to build every item.
@@ -492,3 +494,19 @@ arrival budget. No first-day couples or influx of overdue regulars. The extra
 table uses the existing interruptible assembly; window work belongs to the
 visiting craftsperson. Both installed improvements persist without an expiring
 payoff or required acknowledgement.
+
+
+## Gerda’s warm window — shipped 8 September 2026
+
+Gerda does not enter before the left window is repaired. Her optional
+introduction offers two self-knitted pillows and explains her love of watching
+ships and water from somewhere warm. Acceptance unlocks a 40-coin window table
+and two sill seats in the ordinary evening planner. “Not yet” is reversible
+on a later visit and does not prevent ordinary tea visits.
+
+After the chosen evening, Lunafreya carries and assembles the little table in
+four interruptible phases. Gerda waits until it is ready, brings both pillows,
+places them, orders tea and sits. Each placement is saved. Her thank-you waits
+for attendance and survives departure/reload. The work uses the documented
+left-window table/perch coordinates; neither the right window nor its cat
+corner changes. No later book, contractor or relationship milestone is included.

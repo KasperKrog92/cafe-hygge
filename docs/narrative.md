@@ -452,3 +452,21 @@ Neither the choices nor the following explicit bedtime expires. This one-time
 exception does not make later story arcs or purchases mandatory. The saved
 v8 home cursor resumes the tour/bedtime after reload, and established v7 homes
 skip the tutorial without changing savings, purchases or story choices.
+
+
+## Gerda’s window invitation — 8 September 2026
+
+The shared moment controller now lives in `sim-moments.js`; Holger and existing
+arc/visitor behavior retain their saved identities. Gerda’s optional hello and
+thank-you invitations appear in both modes once their conditions hold. Café
+life continues while they wait. She enters only after the left-window repair;
+her accepted pillow offer unlocks an optional 40-coin table/seats project.
+“Not yet” leaves the offer available on a later visit, without prompting again
+on the same visit. Choosing acceptance persists the answer immediately; final
+acknowledgement unlocks the project without buying it.
+
+The explicitly accepted gift may be placed autonomously after the purchased
+table is ready. Each pillow is saved independently. Its personal thank-you
+remains a separate attended beat; it never fires when she sits down and never
+expires when she leaves. Gerda’s window invitation takes priority over her
+scarf invitation while available, retaining the scarf’s pending payoff.

@@ -810,3 +810,21 @@ remain available. Future right-window work should retain access from the west;
 its unbuilt repair choreography must be checked when authored. Keep this cat
 home in future counter/kitchen planning. Earlier furnished geometry is a
 reference, not a reason to preserve a conflicting decorative plant.
+
+
+## Gerda’s window table and pillows — 8 September 2026
+
+The new optional project reuses the reserved left `L.winTables[0]` at
+(216,222), baseline 274, and its two `L.winSeats` approaches/perches. No
+right-window furniture is enabled. The small circular top, narrow post and
+foot match the existing window-table art. Lunafreya works from the clear
+anchor `L.projects.windowSeat.work` (216,292); the kit, post and tabletop
+appear in saved stages. Existing repair, drape, shelf and entrance access
+remain available.
+
+Gerda’s two rust-red cable-knit pillows draw against the side frames on the
+sill. Warm highlights trace a few stitches at native scale. The same pillow
+renderer draws her visible carried pair, then a single pillow after the first
+placement. Each permanent pillow appears only after its own saved placement.
+They enable the two perches after both are down. Existing furnished saves
+retain their earlier cushions.

@@ -312,3 +312,15 @@ comparisons with later fireside furnishings. `wall-shelves-ui` adds actual
 16:10/16:9 views and saved job reloads. Inspect both the small gap at native
 scale and Keira's hand/board contact; the future books' envelope must also stay
 clear of window trim and masonry. The new shelves have no permanent floor box.
+
+
+## Gerda’s warm window review — 8 September 2026
+
+`gerda-before` / `gerda-after` cover repeatable room art (ten images, twelve
+occupancy scenarios, zero audits). The `gerda-shipping` scenario captures
+Lunafreya’s four table phases, Gerda carrying two pillows, one saved pillow,
+the completed occupied window, night lighting and enlarged empty perches.
+The two rust-red pillows have sparse cable-knit marks and stay inside the
+existing sill/frame envelope; only the left window gains a table and seats.
+`gerda-ui` contains inspected actual 16:10/16:9 offer, planner and thank-you
+views plus real page reloads. Every runner closes its owned browser session.

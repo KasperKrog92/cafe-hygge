@@ -129,6 +129,10 @@
     Object.assign(button.style,{left:at.x+'px',top:at.y+'px',width:width*at.scale+'px',height:height*at.scale+'px'});
   }
   function refreshMoment() {
+    const gerda=SIM.gerdaAvailable(world),gerdaButton=document.getElementById('meet-gerda');
+    gerdaButton.hidden=!gerda;
+    gerdaButton.onclick=function(){SIM.startGerda(world);refreshMoment();};
+    if(gerda)placeHit(gerdaButton,gerda.x-24,gerda.y+(gerda.pose==='sit'?6:0)-102,48,42);
     const visitors=SIM.visitorInvites(world);
     ['keira','tomas'].forEach(function(id){
       const button=document.getElementById('meet-'+id),a=visitors.find(a=>a.visitorId===id);
@@ -208,6 +212,7 @@
     function refreshChoice(button, stage, price, id) {
       const available = stage === 'available';
       button.hidden=l.homeStory.firstNight && id!=='window' && id!=='table';
+      if(id==='windowSeat')button.hidden=button.hidden || !world.memory.flags['gerda-pillows-accepted'] || l.furniture['window-seats'];
       button.disabled = !IMPROVEMENTS.canBuy(world,id);
       button.querySelector('.thought-price > span').textContent = price;
       button.querySelector('.thought-price').hidden = !available;

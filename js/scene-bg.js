@@ -317,8 +317,11 @@
     px(g, w.x - 12, w.y + w.h + 20, w.w + 24, 2, 'rgba(20,12,8,0.25)');
     // window-seat back cushions against the side frames (perched sitters
     // render in front of them); one plant between the perches
-    if (SCENE.hasFurniture(world,'window-seats')) drawSillCushion(g, w.x + 2, w.y + w.h - 16, CUSHIONS[alt]);
-    if (SCENE.hasFurniture(world,'window-seats')) drawSillCushion(g, w.x + w.w - 14, w.y + w.h - 16, CUSHIONS[alt]);
+    [0,1].forEach(function(side) {
+      const x=side ? w.x+w.w-14 : w.x+2,top=w.y+w.h-16;
+      if(alt===0 && world.memory.flags[side?'gerda-pillow-right':'gerda-pillow-left'])SCENE.drawKnittedPillow(g,x,top);
+      else if(SCENE.hasFurniture(world,'window-seats'))drawSillCushion(g,x,top,CUSHIONS[alt]);
+    });
     if (SCENE.hasFurniture(world,'plants')) drawTinyPlant(g, w.x + w.w / 2 - 6, w.y + w.h + 8);
   }
 
@@ -412,6 +415,19 @@
     px(g, x + 1, top + 22, 10, 2, C.dark);      // rounded base on the sill
     px(g, x + 2, top + 10, 8, 2, C.seam);       // tufting seam
   }
+  SCENE.drawKnittedPillow=function(g,x,top,carried) {
+    if(carried) {
+      px(g,x+1,top,19,2,'#b5654a');px(g,x,top+2,21,10,'#a94f3f');
+      px(g,x+1,top+12,19,2,'#74362f');
+      for(let n=3;n<19;n+=5){px(g,x+n,top+3,2,3,'#d29a75');px(g,x+n+1,top+7,2,3,'#d29a75');}
+      return;
+    }
+    drawSillCushion(g,x,top,{body:'#a94f3f',light:'#b5654a',dark:'#74362f',seam:'#8a3d3d'});
+    for(let y=3;y<20;y+=5) {
+      px(g,x+3,top+y,2,2,'#d29a75');px(g,x+4,top+y+2,2,2,'#b5654a');
+      px(g,x+8,top+y,1,3,'#d29a75');
+    }
+  };
 
   /* ---------- passers-by beyond the glass ----------
      Silhouettes strolling the pavement, positioned in master-canvas x (state

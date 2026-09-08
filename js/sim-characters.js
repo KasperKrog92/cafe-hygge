@@ -1455,6 +1455,9 @@
   SIM.beatAt = function (world, x, y) {
     if (world.shop && (world.shop.away || world.shop.fade > 0)) return null;
     if (!world.memory) return null;
+    const gerda=SIM.gerdaAvailable(world);
+    if(gerda && x>gerda.x-26 && x<gerda.x+26 && y>gerda.y-108 && y<gerda.y+8)
+      return SIM.startGerda(world) ? {id:'gerda-window'} : null;
     const arcs = (CAST && CAST.arcs) || [];
     for (let i = 0; i < arcs.length; i++) {
       const arc = arcs[i];
@@ -1625,11 +1628,15 @@
     // takes the owner's bubble slot so it never fights their ambient chatter.
     const invited = world.memory.life.mode === 'game' ? pendingInvites(world) : {};
     const holger=SIM.holgerAvailable(world);if(holger)invited[holger.id]='dots';
+    const gerda=SIM.gerdaAvailable(world);if(gerda)invited[gerda.id]='dots';
     world.patrons.forEach(function (p) {
       if (p.outside) return;
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment && world.moment.owner===p ?
         Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null},
           world.moment.phase==='talk' && world.moment.owner===p ? {heading:'',facing:world.barista.x>p.x?1:-1} : {}) : p); } });
+      if(p.carryingPillows)draws.push({y:p.y+.1,draw:function(g){
+        for(let n=0;n<p.carryingPillows;n++)SCENE.drawKnittedPillow(g,Math.round(p.x)+4,Math.round(p.y)-34+n*11,true);
+      }});
       if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id],
         alpha:p===holger && SIM.holgerRequired(world) && !world.memory.flags['holger-invitation-opened'] && !world.reducedMotion
           ? .45+.55*(.5+.5*Math.cos(p.animT*Math.PI)) : 1 });

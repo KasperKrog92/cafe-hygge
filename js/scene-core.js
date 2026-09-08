@@ -19,6 +19,7 @@
     if (id === 'shelf-worksite') return !life.furniture.bookshelf &&
       ['arrived','working'].indexOf(life.projects.bookshelf.stage)>=0;
     if (id === 'project-table') return IMPROVEMENTS.installed(life,'project-table');
+    if (id === 'left-window-table') return life.furniture['window-seats'] || IMPROVEMENTS.installed(life,id);
     if (id === 'table-worksite') return ['scheduled','arrived','working','installed'].indexOf(life.projects.table.stage) >= 0;
     if (id === 'first-plant') return IMPROVEMENTS.installed(life,'first-plant');
     if (id === 'hearth') return life.furniture.hearth || IMPROVEMENTS.installed(life,'hearth');
@@ -26,7 +27,7 @@
   };
   SCENE.layoutKey = function (world) {
     const life = world && world.memory && world.memory.life;
-    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'hearth') : 'full';
+    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') : 'full';
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
@@ -114,6 +115,7 @@
         kit:{x:328,y:248,w:20,h:12},stoolHeight:24},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
+      windowSeat: {work:{x:216,y:292}},
       table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
       fireplace: { x: 390, y: 246, work: { x: 390, y: 274 } }
     },
@@ -459,7 +461,7 @@
     else if (/^fireside table/.test(n)) box.furniture = 'fireside';
     else if (/^(side table|reading lamp)/.test(n)) box.furniture = 'nook';
     else if (/^(bookshelf|magazine basket)/.test(n)) box.furniture = 'bookshelf';
-    else if (/^window table/.test(n)) box.furniture = 'window-seats';
+    else if (/^window table/.test(n)) box.furniture = n==='window table 0' ? 'left-window-table' : 'window-seats';
     else if (/^artist/.test(n)) box.furniture = 'studio';
     else if (/^piano/.test(n)) box.furniture = 'piano';
     else if (/^plant /.test(n)) box.furniture = 'plants';

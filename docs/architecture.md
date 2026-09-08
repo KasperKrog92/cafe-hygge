@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Twenty-two IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Twenty-five IIFE scripts expose the production globals
 (`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -24,7 +24,10 @@ js/sim-shop.js          → extends SIM    (opening/closing lifecycle factory)
 js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
 js/sim-life.js          → extends SIM    (home, plant, presentation, saved lifecycle)
 js/sim-intro.js         → extends SIM    (first-morning dialogue and opening finale)
-js/sim-home.js         → extends SIM    (saved first apartment tour, first planner, bedtime)
+js/sim-moments.js       → extends SIM    (shared attended moments and saved replies)
+js/sim-gerda.js         → extends SIM    (window-gated visits, pillow placement and conversations)
+js/sim-visitors.js      → extends SIM    (Keira/Tomas jobs and saved greetings)
+js/sim-home.js          → extends SIM    (saved first apartment tour, first planner, bedtime)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -98,7 +101,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v9, migrated through v1–v8) contains `mode`, integer `savings`, `hour`,
+`memory.life` (v10, migrated through v1–v9) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -305,7 +308,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v9; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v10; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -493,7 +496,7 @@ change. Captions and default dev shots follow the active room extent.
 ## Conversation moments
 
 `CAST.holgerIntroduction` owns the authored lines and branches. The attended
-moment helpers at the end of `sim-intro.js` expose `startHolger`, `momentLine`,
+moment helpers in `sim-moments.js` expose `startHolger`, `momentLine`,
 `advanceMoment` and `leaveMoment`, alongside the generic `beginMoment` used by
 existing arc payoffs. `SIM.update` holds obligation state while a moment is
 active; main presents the camera crop and keyboard-accessible DOM choices.
@@ -627,3 +630,34 @@ are replanned toward their saved destination. Home checkpoints retain their
 existing restoration. No upgrade, intro choice or completed action is reset.
 The runtime cat and care paths are reconstructed, so entrance-side v9
 checkpoints cannot resume pouring into the removed corner.
+
+
+## Gerda’s left window (v10)
+
+`IMPROVEMENTS.projects.windowSeat` is a 40-coin, four-phase carried project.
+Eligibility requires the installed `left-window` capability and the acknowledged
+`gerda-pillows-accepted` flag. The ordinary evening planner schedules it after
+sleep. `sim-life` uses the shared interruptible hand actions and adds the left
+`L.winTables[0]` serving surface once; Gerda’s second pillow enables the two
+`L.winSeats` entries for window 0. Right-window furniture remains independent.
+
+`sim-moments` contains the extracted existing conversation controller. Optional
+`memoryPrefix` saves authored node IDs; `replySpeaker` names the selected reply’s
+speaker. Existing Holger numeric flags and visitor node flags retain their
+meaning. `CAST.gerdaWindow` owns hello, reconsideration and thanks packets;
+`sim-gerda` owns eligibility and completion. Selection saves immediately, but
+the gift unlock waits for final acknowledgement. No dialogue line runs itself.
+
+`gerdaMayVisit` gates even forced regular arrivals on the repaired left window
+and waits during her booked table’s construction. An installed table plus the
+accepted offer makes her delivery due independently of the usual arrival hour.
+`prepareGerdaArrival` starts a real patron carrying two pillows, outside the
+service queue. `gerdaPillows` walks to each existing perch approach and spends
+three seconds placing it. Boolean flags `gerda-pillow-left/right` save completed
+placements separately; closing sends her out and reload resumes the remaining
+pillow. Then she reserves a left perch and joins normal tea service.
+
+v9→v10 validates and retains all existing projects, stories, balances and
+scarves. Already furnished windows get an installed table record and the
+distinct `gerda-window-legacy` flag, preserving their existing seating without
+inventing acknowledgements or replaying this new furnishing story.

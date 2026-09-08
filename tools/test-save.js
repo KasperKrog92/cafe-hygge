@@ -23,7 +23,7 @@ function boot(raw) {
   };
   sandbox.window = sandbox;
   const ctx = vm.createContext(sandbox);
-  for (const file of ['improvements', 'audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro', 'sim-visitors', 'sim-home']) {
+  for (const file of ['improvements', 'audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro', 'sim-moments', 'sim-gerda', 'sim-visitors', 'sim-home']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'js', file + '.js'), 'utf8'), ctx, { filename: file + '.js' });
   }
   return { ctx, data, events, timers, writes: () => writes, prompts: () => prompts,
@@ -32,13 +32,34 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v10 window seats preserve v9 jobs, scarves and established windows', () => {
+    const b=boot();b.run(`
+      for(const furnished of [false,true]) {
+        const old=MEMORY.codec.fresh();old.version=9;delete old.life.projects.windowSeat;
+        old.life.furniture['window-seats']=furnished;old.life.savings=137;
+        old.flags['cat-wore-scarf']=true;old.bonds.gerda={known:true,visits:9,warmth:3};
+        old.life.projects.bookshelf={stage:'working',step:2,time:7.25};
+        const next=MEMORY.codec.decode(JSON.stringify(old));
+        if(next.error||next.state.version!==10||next.state.life.savings!==137||!next.state.flags['cat-wore-scarf']||next.state.bonds.gerda.visits!==9)throw Error('v9 history lost');
+        if(JSON.stringify(next.state.life.projects.bookshelf)!==JSON.stringify(old.life.projects.bookshelf))throw Error('v9 shelf checkpoint lost');
+        if(next.state.life.projects.windowSeat.stage!==(furnished?'installed':'available')||!!next.state.flags['gerda-window-legacy']!==furnished)throw Error('legacy window ownership');
+        if(next.state.flags['gerda-window-thanked']||next.state.flags['gerda-introduced'])throw Error('migration invented conversation');
+      }
+      const bad=MEMORY.codec.fresh();bad.version=9;delete bad.life.projects.windowSeat;bad.life.projects.bookshelf.time=12;
+      if(!MEMORY.codec.decode(JSON.stringify(bad)).error)throw Error('invalid historical shelf accepted');
+      for(const change of [p=>p.time=12,p=>p.step=4,p=>p.stage='installed']) {
+        const s=MEMORY.codec.fresh();s.life.projects.windowSeat={stage:'working',step:1,time:5.5};change(s.life.projects.windowSeat);
+        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid window job accepted');
+      }
+    `);
+  });
   await test('v9 shelf migration preserves old contents and rejects invalid unpacking', () => {
     const b=boot();b.run(`
       for(const furnished of [false,true]) {
         const old=MEMORY.codec.fresh();old.version=8;delete old.life.projects.bookshelf;
         old.life.furniture.bookshelf=furnished;old.life.savings=137;old.flags['keira-hello-name']=true;
         const result=MEMORY.codec.decode(JSON.stringify(old));
-        if(result.error||result.state.version!==9||result.state.life.savings!==137||!result.state.flags['keira-hello-name'])throw Error('v8 lost history');
+        if(result.error||result.state.version!==MEMORY.VERSION||result.state.life.savings!==137||!result.state.flags['keira-hello-name'])throw Error('v8 lost history');
         if(result.state.life.projects.bookshelf.stage!==(furnished?'installed':'available')||result.state.life.furniture.bookshelf!==furnished)throw Error('library ownership migration');
       }
       for(const step of [0,1,2,3,4]) {

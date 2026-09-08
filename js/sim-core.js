@@ -44,6 +44,7 @@
     firesideLeft:  function (s) { return s.armchair && s.facing === 1; },
     firesideRight: function (s) { return s.armchair && s.facing === -1; },
     windowPerch:   function (s) { return !!s.window; },
+    leftWindowPerch: function (s) { return !!s.window && s.perchX < L.win.x+L.win.w; },
     nook:          function (s) { return !!s.nook; },
     artistStool:   function (s) { return !!s.artist; },
     diningTable:   function (s) { return !s.armchair && !s.nook && !s.window && !s.piano && !s.artist && s.table >= 0; }
@@ -1080,6 +1081,7 @@
   }
 
   function enqueueArrival(world, p, delay, ring) {
+    if (SIM.prepareGerdaArrival && SIM.prepareGerdaArrival(world,p,ring)) return p;
     p.queueIdx = world.queue.length;
     world.queue.push(p);
     world.patrons.push(p);
@@ -1224,17 +1226,20 @@
       if(arrived)return;
       const r = world.regulars[spec.id];
       if (!r) return;
+      if (spec.id==='gerda' && !SIM.gerdaMayVisit(world)) return;
       if (day !== r.day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
       // one visit at a time per regular; never two of the same face
       if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return;
-      const due = r.force || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
+      const due = r.force || (spec.id==='gerda' && SIM.gerdaDeliveryDue(world)) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
       const firstDay=!SCENE.hasFurniture(world,'full-counter') && world.memory.life.daysCompleted===0;
       if (!due || arrivalRoom(world)<1 || (firstDay && spec.id!=='holger' && !r.force)) return;
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
       const info = noteRegularVisit(world, spec);
-      caption(world, regularArrivalLine(world, spec, info));
+      caption(world, spec.id==='gerda' && !world.memory.flags['gerda-introduced'] && !world.memory.flags['gerda-window-legacy']
+        ? 'a woman pauses to look through the clear window, then steps inside.'
+        : spec.id==='gerda' && !SCENE.hasFurniture(world,'left-window-table') ? 'Gerda comes in for a warm cup and a little company.' : regularArrivalLine(world, spec, info));
       arrived=true;
     });
     return arrived;
