@@ -26,6 +26,20 @@ results shipped, and update the roadmap before declaring the slice complete.
 
 ## Compatibility scope
 
+**Off-duty customers, 8 September 2026:** Keira and Tomas now use ordinary
+admission, service, seating and departure, with invitations only after seating.
+`verify-project.ps1 -Suite visitors,hearth -Label visitor-customers-final` passes,
+including both modes, full order journeys, single rendering, partial greeting
+restoration, completed greetings and closing. The related bookshelf, invitations,
+hours, waterfront and first-days suites passed in `visitor-customers`; its initial
+visitor fixture incorrectly required simultaneous returns in a two-customer café
+and was corrected to observe each visit. The resumed-dialogue sound assertion
+now checks the actual speaker. Save/isolation, audio and all 25 syntax checks pass.
+`verify-entry.ps1 -Label visitor-customers-entry` passed audio initialization,
+a 30.1-second real-time cappuccino cycle, savings, night lighting and zero audit
+problems. Seated captures were inspected; all owned browser sessions closed.
+Verification used desktop Chromium; native Safari was not run.
+
 Desktop browsers are the current target, including Chrome and Safari. Mobile
 compatibility, responsive mobile layouts and mobile verification are deferred
 until the owner explicitly requests them (6 September 2026).

@@ -1601,7 +1601,7 @@
 
   SIM.entityDrawables = function (world) {
     const draws = [];
-    SIM.visitorActors(world).forEach(function(a) {
+    SIM.visitorActors(world).filter(a=>!a.social).forEach(function(a) {
       draws.push({y:a.y,draw:function(g) {
         const x=Math.round(a.x),y=Math.round(a.y);
         let person=world.moment && world.moment.owner===a ? Object.assign({},a,{pose:'stand',path:null}) : a;
@@ -1653,11 +1653,14 @@
       }});
     });
     const bubbles = [];
-    SIM.visitorInvites(world).forEach(a=>bubbles.push({x:a.x,y:a.y,icon:'dots'}));
     // A pending beat raises a soft, persistent invitation over its seated owner
     // (docs/narrative.md §2) — it waits across sessions and never expires. It
     // takes the owner's bubble slot so it never fights their ambient chatter.
     const invited = world.memory.life.mode === 'game' ? pendingInvites(world) : {};
+    SIM.visitorInvites(world).forEach(function(a) {
+      if(a.social)invited[a.id]='dots';
+      else bubbles.push({x:a.x,y:a.y,icon:'dots'});
+    });
     const holger=SIM.holgerAvailable(world);if(holger)invited[holger.id]='dots';
     const gerda=SIM.gerdaAvailable(world);if(gerda)invited[gerda.id]='dots';
     world.patrons.forEach(function (p) {

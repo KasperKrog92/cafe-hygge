@@ -870,6 +870,7 @@
     visitors.forEach(function(a) {
       if(identities[a.visitorId])problems.push('duplicate visitor '+a.visitorId);
       identities[a.visitorId]=true;
+      if(a.social)return; // Customer seats and journeys use the patron audit below.
       if(a.walkBlocked)problems.push(a.name+' cannot reach the current visitor stop');
       if(a.x<22 || a.x>SCENE.presentation(w).w-22 || a.y<L.wallY || a.y>L.rooms[w.memory.life.room].floorBottom)
         problems.push(a.name+' outside the visitor floor bounds');

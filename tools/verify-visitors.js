@@ -10,7 +10,7 @@
   function talk(w,id){until(w,()=>SIM.visitorInvites(w).some(a=>a.visitorId===id));check(SIM.startVisitor(w,id),'start '+id);until(w,()=>w.moment.phase==='talk');check(w.barista.y<=SCENE.L.rooms[w.memory.life.room].floorBottom,'conversation outside room');const voices=[],sound=w.context.sound.dialogueSyllable;
     w.context.sound.dialogueSyllable=(n,v)=>voices.push(v);
     for(let n=0;n<10;n++)SIM.update(w,.1);
-    check(voices.length>0&&voices.every(v=>v===CAST.voices[CAST.visitors[id].name]),id+' dialogue sound missing');
+    check(voices.length>0&&voices.every(v=>v===CAST.voices[SIM.momentLine(w).speaker]),id+' dialogue sound missing');
     const count=voices.length;w.momentHidden=true;tick(w,1);w.momentHidden=false;
     check(voices.length===count,id+' speech continued while hidden');
     w.context.sound.dialogueSyllable=sound;w.moment.visible=999;snap(w,id+'-hello');}
@@ -75,9 +75,52 @@
   check(!overlap.deliveryVisitor,'owned kit redelivered during repair');snap(overlap,'legacy-overlap');
   // Old completed hellos remain complete; appending story nodes never reopens them.
   const known=__dev.modestWorld();known.memory.life.daysCompleted=1;SIM.setMode(known,'game');
+  known.clockOffset+=(11.5-known.hour)/24*SIM._.DAY_SECONDS;
   for(const id of ['keira','tomas'])known.memory.flags[id+'-introduced']=true;
-  until(known,()=>known.socialVisitors&&known.socialVisitors.length===2);
+  const knownSeen=new Set();
+  until(known,()=>{
+    known.patrons.filter(p=>p.social).forEach(p=>knownSeen.add(p.visitorId));
+    check(!SIM.visitorInvites(known).length,'completed greeting reopened during return');
+    return knownSeen.size===2;
+  });
   check(!SIM.visitorInvites(known).length,'expanded scenes reopened completed greetings');
+  // Returning neighbours take the complete customer journey before inviting.
+  for(const mode of ['idle','game']) {
+    let w=__dev.modestWorld({random:SIM.seededRandom(17)});SIM.setMode(w,mode);
+    w.memory.life.daysCompleted=2;
+    w.clockOffset+=(11.5-w.hour)/24*SIM._.DAY_SECONDS;
+    const seen={keira:new Set(),tomas:new Set()},guests={};
+    until(w,()=>{
+      w.patrons.filter(p=>p.social).forEach(p=>{
+        guests[p.visitorId]=p;seen[p.visitorId].add(p.state);
+        if(p.state!=='seated')check(!SIM.visitorInvites(w).includes(p),'invitation before seating');
+      });
+      return ['keira','tomas'].every(id=>guests[id]&&guests[id].state==='seated');
+    });
+    for(const id of ['keira','tomas']) {
+      const p=guests[id];
+      for(const state of ['enter','queueing','ordering','waitDrink','pickup','toSeat','seated'])
+        check(seen[id].has(state),id+' skipped '+state);
+      check(p.seat&&p.seat.taken&&p.pose==='sit',id+' not seated');
+      check(w.tables[p.seat.table].items.some(it=>it.owner===p.id),id+' missing served cup');
+      check(SIM.visitorInvites(w).includes(p)===(mode==='game'),id+' invitation mode');
+    }
+    check(SIM.entityDrawables(w).draws.length===w.patrons.length+2,'returning visitor drawn twice');
+    snap(w,mode+'-off-duty-seated');
+    if(mode==='game') {
+      talk(w,'keira');const p=guests.keira,stay=p.stay;
+      tick(w,20);check(p.state==='seated'&&p.stay===stay,'seated speaker left during hello');
+      SIM.advanceMoment(w);SIM.leaveMoment(w);until(w,()=>!w.moment);
+      check(w.memory.flags['keira-hello-name']&&!w.memory.flags['keira-introduced'],'partial hello lost');
+      w=restore(w);talk(w,'keira');check(w.moment.index===1,'off-duty reload lost cursor');finish(w);
+      talk(w,'tomas');finish(w);
+    }
+    // No hello is required to leave, and ordinary cleanup releases seats.
+    w.clockOffset+=(21.5-w.hour)/24*SIM._.DAY_SECONDS;
+    until(w,()=>w.shop.phase==='home');
+    check(!w.patrons.length&&!SIM.visitorActors(w).length&&!w.seats.some(s=>s.taken),'off-duty closing stranded customers');
+    if(mode==='idle')check(!w.memory.flags['keira-introduced']&&!w.memory.flags['tomas-introduced'],'unattended hello consumed');
+  }
   for(const stage of ['arrived','working','installed']) {
     let w=__dev.modestWorld();const p=w.memory.life.projects.table;p.stage=stage;p.step=stage==='installed'?6:stage==='working'?2:0;p.time=stage==='working'?4.5:0;
     const raw=JSON.stringify(p),funds=w.memory.life.savings;w=restore(w);

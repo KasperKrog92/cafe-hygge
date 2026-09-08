@@ -58,7 +58,8 @@ gifts and deeper family scenes remain planned. Neither introduction establishes
 romance. Their later visits retain these looks.
 
 Both packets live literally in `CAST.visitors[id].hello`. Trigger: stationary
-job actor, or a later off-duty stop; visible invitations use game mode. Stable
+job actor, or a later off-duty customer seated after ordering and collecting
+coffee; visible invitations use game mode. Stable
 opening nodes remain Keira `name/place/practical/laugh/welcome` and Tomas
 `name/view/precise/reply/welcome`, with their original meaning and order. The
 new conversation follows those five nodes, so older partial greetings resume

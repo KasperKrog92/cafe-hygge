@@ -1359,6 +1359,7 @@
     if (world.spawnT > 0) return;
     world.spawnT = arrivalGap(world);
     if (arrivalRoom(world)<1) return;
+    if(SIM._.arriveSocialVisitor(world))return;
     if(updateRegulars(world))return;
     if (world.memory.life.daysCompleted>0 && arrivalRoom(world)>=2 && random() < 0.22) {
       spawnCouple(world);

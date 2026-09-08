@@ -9,10 +9,11 @@
     w.visitorDays=w.visitorDays||{};w.visitorDays[id]=w.memory.life.daysCompleted;
     return a;
   };
-  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.shelfVisitor].concat(w.socialVisitors||[]).filter(Boolean);};
+  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.shelfVisitor].concat(w.patrons.filter(a=>a.social)).filter(Boolean);};
   SIM.visitorInvites=function(w) {
     if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
-    return SIM.visitorActors(w).filter(a=>a.state!=='leaving' && a.state!=='descending' && !a.mantelLift && (!a.path || !a.path.length) &&
+    return SIM.visitorActors(w).filter(a=>(a.social ? a.state==='seated' && !a.outside :
+      a.state!=='leaving' && a.state!=='descending' && !a.mantelLift) && (!a.path || !a.path.length) &&
       !w.memory.flags[a.visitorId+'-introduced']);
   };
   SIM.startVisitor=function(w,id) {
@@ -85,8 +86,7 @@
     } else if(Math.floor(before/3)!==Math.floor(p.time/3))R.commitLife(w);
   }
   R.updateVisitors=function(w,dt) {
-    const p=w.memory.life.projects.table,open=w.shop.phase==='open',day=w.memory.life.daysCompleted;
-    w.socialVisitors=w.socialVisitors||[];w.visitorDays=w.visitorDays||{};
+    const p=w.memory.life.projects.table,open=w.shop.phase==='open';
     let a=w.deliveryVisitor;
     // A scheduled kit has not crossed the handoff boundary. Arrived/working
     // saves (including old carried kits) already own it and never redeliver.
@@ -94,7 +94,7 @@
     // before Keira arrives. Saved repair progress owns the spacing, so reload
     // cannot bunch the arrivals or restart a timer. Neither hello is required.
     const repair=w.memory.life.projects.window;
-    if(!w.moment && !a && !w.shelfVisitor && !w.socialVisitors.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && !w.windowWorker &&
+    if(!w.moment && !a && !w.shelfVisitor && !w.patrons.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && !w.windowWorker &&
         ['purchased','scheduled','arrived','working'].indexOf(repair.stage)<0) {
       a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;
       R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);
@@ -119,24 +119,25 @@
       }
     }
     updateShelf(w,dt);
-    // No purchase is needed to meet them. A short later visit uses the same
-    // identity and invitation, without a customer slot, tools or construction.
-    ['keira','tomas'].forEach(function(id,n) {
+  };
+  // Called by the shared seat-aware arrival timer. Off duty, the neighbours
+  // belong to the ordinary customer lifecycle, including service and closing.
+  R.arriveSocialVisitor=function(w) {
+    const day=w.memory.life.daysCompleted;
+    w.visitorDays=w.visitorDays||{};
+    if(w.moment || w.shop.phase!=='open' || day<1)return false;
+    return ['keira','tomas'].some(function(id,n) {
       const job=w.memory.life.projects[id==='keira'?'table':'window'];
       if(id==='keira' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.bookshelf.stage)>=0)return;
-      if(w.moment || !open || day<1 || w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
+      if(id==='tomas' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.mantel.stage)>=0)return;
+      if(w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
         ['purchased','scheduled','arrived','working'].indexOf(job.stage)>=0 ||
         SIM.visitorActors(w).some(a=>a.visitorId===id))return;
-      const guest=R.makeVisitor(w,id);guest.social=true;guest.visitTime=0;
-      R.makePath(guest,L.visitors[id].x,L.visitors[id].y);w.socialVisitors.push(guest);R.ringDoor(w);
+      const guest=R.makeVisitor(w,id);guest.social=true;guest.kind='patron';
+      guest.pianist=false;guest.wantsBook=false;guest.ownBook=false;
+      guest.drink=R.DRINKS.find(d=>d.name==='espresso');
+      R.enqueueArrival(w,guest,0,true);
       R.caption(w,w.memory.flags[id+'-introduced']?CAST.visitors[id].returning:CAST.visitors[id].arrival);
-    });
-    w.socialVisitors=w.socialVisitors.filter(function(a) {
-      a.animT+=dt;
-      if(w.moment && w.moment.owner===a)return true;
-      if(!open || a.state==='leaving' || a.visitTime>=90)return !exit(w,a,dt);
-      if(a.path && a.path.length)R.walker(a,dt);
-      else {a.state='visiting';a.pose='stand';a.visitTime+=dt;}
       return true;
     });
   };

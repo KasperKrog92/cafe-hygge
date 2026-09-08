@@ -566,7 +566,7 @@ installed. No additional timer, persistence store or offline progress path exist
 ## Recurring visitor contract — 8 September 2026
 
 `sim-visitors.js` loads after sim-intro and before sim-home. `CAST.visitors` owns
-stable identities, appearance and literal scene packets. Visitor actors have
+stable identities, appearance and literal scene packets. On-duty actors have
 kind `visitor`, share staff obstacle routing, and never enter customer queues
 or consume seats. Tomas keeps the window project's existing checkpoints. A new
 table delivery waits while that repair is purchased/scheduled/arrived/working
@@ -587,11 +587,16 @@ Lunafreya's interrupted path and pose. No introduction gates a job. Expanded
 hellos append stable nodes after the original five (17 Keira lines, 19 Tomas);
 the existing completion flag keeps finished older hellos finished.
 
-Off-duty stops use `L.visitors`, last 90 simulation seconds, and occur at most
+Off-duty visits use kind `patron` in `world.patrons`, normal customer routing,
+espresso orders, seating, stay timers and departure cleanup. `visitorActors`
+includes those patrons for identity and invitation lookup; rendering and ticking
+remain with the customer lifecycle so each actor is processed once. They enter
+through the shared seat-aware spawning timer and occur at most
 once per identity per running café day after day one (Keira from 10, Tomas from
 11, neither after 19). Visits can recur after reload; job ownership and completed
 nodes cannot. Active jobs suppress off-duty duplicates. Invitations appear in
-game mode and remain unconsumed in idle. No calendar or new purchase is needed.
+game mode only while seated, after service, and remain unconsumed in idle.
+No calendar or new purchase is needed.
 
 ## Initial wall shelves (v9)
 
