@@ -509,6 +509,13 @@ state with `?dev&arc=lunafreya-paintings&stage=1&progress=7`.
 
 ## The cat
 
+Walking now faces all four directions, including short vertical and mostly
+vertical diagonal routes. Paw phases follow distance travelled; a lingering
+perch gaze cannot override movement direction. Opening walks use the same
+animation. The existing stretch, grooming, kneading, drinking and playful
+batting routines have distinct moving gestures; awake faces occasionally blink.
+These are visual refinements; routine selection, durations and saves are unchanged.
+
 Orange tabby, no name (it has not told anyone yet). The café's true owner. Once
 Gerda's scarf arc completes it wears a small warm-red scarf for good — a neck
 band `drawCat` carries across its poses, driven by the persisted

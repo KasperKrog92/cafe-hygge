@@ -1,5 +1,28 @@
 # Animation audit — 5 September 2026
 
+## Cat follow-up — 8 September 2026
+
+Added front/back walking and a four-paw distance cycle in all directions,
+including the opening walk. Cat heading follows the dominant travel axis on
+short and diagonal routes; old resting gaze no longer overrides travel.
+Added a bow-and-release stretch, face-washing paw, alternating forepaw knead,
+reaching mote bat, retracting lapping tongue and quiet awake blinks. Sleeping,
+lap breathing, hop anticipation/tuck/landing, window perch and draped shelf
+tails retain their established motion. Vertical and stretching scarves track
+the neck. No new routine, timing, save field or furniture anchor is needed.
+
+`tools/verify-project.ps1 -Suite cat-animations` runs the 18-row pose gallery,
+mirrored/scarf captures, short/diagonal movement checks at 60 Hz and 0.25 s,
+distance-cycle checks, deterministic rendering and live-world/save isolation.
+It exports an enlarged 24-frame animation preview alongside the contact sheets.
+The pass also exercised `animations`, `animation-journeys`, `cat-corner` and
+`hours`: all passed. Final art review repeats ten images across twelve occupancy
+scenarios with zero audit problems. Captures are in `.art-review/cat-motion-final/`
+and `.art-review/cat-after/`.
+Normal entry initialized audio and completed a real-time cappuccino order in
+32 seconds; the night audit and browser error check passed. All task-owned
+browser sessions were closed after export.
+
 Scope: all animation-bearing renderer files, the three simulation files,
 and the main clock/presentation loop. The pass keeps the deliberately small,
 quiet pixel-art motion vocabulary. It does not aim for continuous skeletal

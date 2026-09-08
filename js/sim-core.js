@@ -693,7 +693,13 @@
       e.x += dx / dist * step; e.y += dy / dist * step;
       e.walkDistance = (e.walkDistance || 0) + step;
       budget -= step;
-      if (Math.abs(dx) > 0.6) { e.facing = dx > 0 ? 1 : -1; e.heading = ''; }
+      if (e.kind === 'cat') {
+        // Use the direction of travel, including short and diagonal approaches.
+        // A leftover sideways gaze must never turn a walking cat backwards.
+        if (Math.abs(dy) > Math.abs(dx)) e.heading = dy > 0 ? 'down' : 'up';
+        else { e.heading = ''; e.facing = dx > 0 ? 1 : -1; }
+      }
+      else if (Math.abs(dx) > 0.6) { e.facing = dx > 0 ? 1 : -1; e.heading = ''; }
       else if (dy > 24) e.heading = 'down';
       else if (dy < -24) e.heading = 'up';
       e.pose = 'walk';

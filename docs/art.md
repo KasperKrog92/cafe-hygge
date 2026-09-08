@@ -503,8 +503,17 @@ with a pale tip; walking/loafing bodies carry back stripes, sitting adds a
 muzzle + pink nose, sleeping/lap curl a closed-eye line. New variants are a
 back-view window perch (haunches, shoulder taper, rear ears, sill-curled tail),
 head-down eat/drink with a tiny lapping tongue, kneading loaf with alternating
-2 px front paws, quicker-legged pounce, the stretched mid-hop pose, and a
+front paws pressing in turn, a reaching batting paw, the stretched mid-hop pose, and a
 back-shelf/piano-lid tail that hangs and sways below the board or lid.
+
+Walking has four views: both profiles, a foreshortened front with cream muzzle,
+and a rear with hidden face and a tail rooted at the rump. All four paws use
+offset distance-driven stance/lift phases; the tail follows that distance cycle.
+Vertical views use the dominant travel direction, even on short approaches.
+The opening `shopWalk` shares these sprites. Awake faces blink quietly;
+grooming lifts a cream paw to the face, drinking retracts its tongue, and the
+1.6-second stretch lowers the shoulders and reaches forward before releasing.
+Scarves follow the vertical neck and bowing stretch as well as mirrored poses.
 
 ## Typography
 

@@ -783,15 +783,23 @@
   SCENE.drawCat = function (g, cat) {
     const x = Math.round(cat.x), y = Math.round(cat.y);
     const t = cat.animT;
-    const pose = cat.state;
+    const pose = cat.state === 'shopWalk' ? 'walk' : cat.state;
+    const vertical = pose === 'walk' && (cat.heading === 'up' || cat.heading === 'down');
     // on the back-bar shelf the tail drapes off the board edge instead of the
     // pose's own tail (sleep keeps its tucked curl and skips the drape)
     const drapeTail = (cat.surface === 'backShelf' || cat.surface === 'pianoTop') &&
       (pose === 'loaf' || pose === 'sit' || pose === 'groom');
-    const look = cat.gazeFacing || cat.facing;
+    const look = pose === 'walk' || pose === 'hop' ? cat.facing : cat.gazeFacing || cat.facing;
     const f = look >= 0 ? 1 : -1;
     const body = '#d98d4a', dark = '#b5702e', cream = '#f0e0c8', pink = '#d9738a';
     const twitch = Math.sin(t * 0.9) > 0.97;    // an occasional ear flick
+    const blink = t % 5.7 > 5.5;
+    // Four offset paws: stance moves against travel, swing lifts and reaches.
+    function paw(index) {
+      const q = ((cat.walkDistance || 0) / 16 + [0, 0.5, 0.75, 0.25][index]) % 1;
+      return { reach: Math.round(q < 0.5 ? 4 - q * 16 : -4 + (q - 0.5) * 16),
+        lift: q < 0.5 ? 0 : Math.round(Math.sin((q - 0.5) * Math.PI * 2) * 2) };
+    }
     // An airborne cat has no contact shadow glued to its belly.
     if (pose !== 'hop' && !cat.carried) ell(g, x, y + 2, 14, 4, 'rgba(20,12,8,0.2)');
     g.save();
@@ -812,7 +820,43 @@
       px(g, (f > 0 ? e2 : e1) + 1, hy - 1, 2, 2, pink);
     }
 
-    if (pose === 'hop') {
+    if (vertical) {
+      const front = cat.heading === 'down', direction = front ? 1 : -1;
+      // Foreshortened body, with the far feet underneath and the nearer pair
+      // in front. The rear view keeps the face hidden and tail rooted at rump.
+      for (let i = 0; i < 2; i++) {
+        const p = paw(i);
+        px(g, x + (i ? 3 : -6), y - 8 + p.reach * direction - p.lift, 4, 5, dark);
+      }
+      px(g, x - 7, y - 20, 14, 17, body);
+      px(g, x - 5, y - 21, 10, 4, shade(body, 0.14));
+      px(g, x - 6, y - 15, 3, 2, dark); px(g, x + 3, y - 15, 3, 2, dark);
+      px(g, x - 6, y - 10, 3, 2, dark); px(g, x + 3, y - 10, 3, 2, dark);
+      for (let i = 2; i < 4; i++) {
+        const p = paw(i), py = y - 3 + p.reach * direction - p.lift;
+        px(g, x + (i === 3 ? 3 : -6), py - 3, 4, 6, body);
+        px(g, x + (i === 3 ? 3 : -6), py + 1, 4, 2, cream);
+      }
+      const hy = y - (front ? 20 : 27);
+      if (cat.scarf) {
+        px(g, x - 6, hy + 8, 12, 3, cat.scarf);
+        px(g, x + 3, hy + 10, 3, 4, shade(cat.scarf, -0.16));
+      }
+      px(g, x - 7, hy, 14, 10, body);
+      ears(x - 7, 14, hy);
+      if (front) {
+        px(g, x - 5, hy + 4, 2, blink ? 1 : 2, '#3a5a2a');
+        px(g, x + 3, hy + 4, 2, blink ? 1 : 2, '#3a5a2a');
+        px(g, x - 3, hy + 7, 6, 3, cream); px(g, x - 1, hy + 7, 2, 1, pink);
+      } else {
+        px(g, x - 3, hy + 2, 2, 3, dark); px(g, x + 1, hy + 2, 2, 3, dark);
+      }
+      const sway = Math.round(Math.sin((cat.walkDistance || 0) / 16 * Math.PI * 2) * 2);
+      const tx = front ? x + 7 : x - 2, ty = front ? y - 20 : y - 9;
+      px(g, tx, ty - 8, 3, 10, dark);
+      px(g, tx + sway, ty - 13, 3, 6, dark);
+      px(g, tx + sway, ty - 15, 3, 3, cream);
+    } else if (pose === 'hop') {
       const q = Math.max(0, Math.min(1, (cat.hopT - 0.1) / (cat.hopDur - 0.22)));
       const crouch = q === 0 || q === 1;
       const tuck = Math.round(Math.sin(q * Math.PI) * 4);
@@ -858,7 +902,7 @@
       const dip = Math.round(Math.sin(t * (pose === 'drink' ? 12 : 7)) > 0 ? 1 : 0);
       px(g, x - 16, y - 9 + dip, 11, 8, body);
       ears(x - 16, 11, y - 9 + dip);
-      if (pose === 'drink') px(g, x - 17, y - 1, 4, 1, pink);
+      if (pose === 'drink' && dip) px(g, x - 17, y - 1, 4, 1, pink);
       px(g, x + 10, y - 15, 4, 8, dark); px(g, x + 12, y - 19, 3, 5, dark);
       px(g, x + 12, y - 21, 3, 2, cream);
     } else if (pose === 'sit' || pose === 'groom') {
@@ -872,11 +916,13 @@
       px(g, hx - 5, hy, 14, 9, body);
       ears(hx - 5, 14, hy);
       if (pose === 'sit') {
-        px(g, hx + (f > 0 ? 4 : -5), hy + 3, 2, 2, '#3a5a2a');              // eye
+        px(g, hx + (f > 0 ? 4 : -5), hy + 3, 2, blink ? 1 : 2, '#3a5a2a');   // eye
         px(g, hx + (f > 0 ? 6 : -8), hy + 5, 3, 3, cream);                  // muzzle
         px(g, hx + (f > 0 ? 7 : -7), hy + 5, 2, 2, pink);                   // nose
       } else {
-        px(g, hx + f * 4 - (f > 0 ? 0 : 3), hy + 7, 3, 4, body);            // raised grooming paw
+        const wash = Math.round((1 + Math.sin(t * 5)) * 2);
+        px(g, hx + f * 4 - (f > 0 ? 0 : 3), hy + 5 + wash, 3, 5, cream);
+        px(g, hx + (f > 0 ? 4 : -2), hy + 3, 3, 1, '#8a6142');
       }
       // tail wrapped around the paws, tip curling and swaying
       if (!drapeTail) {
@@ -890,40 +936,55 @@
       const paw = Math.floor(t * 6) % 2;
       px(g, x - 12, y - 12, 24, 10, body);
       px(g, x + 5, y - 19, 10, 9, body); ears(x + 5, 10, y - 19);
-      px(g, x - 8 - paw * 2, y - 3, 7, 4, cream);
-      px(g, x + 1 + paw * 2, y - 3, 7, 4, cream);
+      px(g, x + 5, y - 4 - paw * 2, 5, 4 + paw * 2, cream);
+      px(g, x + 11, y - 6 + paw * 2, 5, 6 - paw * 2, cream);
       px(g, x - 15, y - 8, 5, 6, dark); px(g, x - 16, y - 10, 4, 3, cream);
     } else if (pose === 'stretch') {
-      px(g, x - 12, y - 7, 12, 7, body);
-      px(g, x, y - 12, 12, 12, body);
-      px(g, x + 8, y - 19, 10, 9, body);
-      ears(x + 8, 10, y - 19);
+      const q = Math.max(0, Math.min(1, 1 - (cat.stateT == null ? 0.8 : cat.stateT) / 1.6));
+      const bow = Math.round(Math.sin(q * Math.PI) * 5);
+      px(g, x - 12, y - 14, 12, 11, body); // raised haunches
+      px(g, x - 2, y - 13 + bow, 15, 9 - bow, body);
+      px(g, x - 11, y - 4, 4, 4, dark);
+      px(g, x + 3, y - 3, 12 + bow, 3, cream); // reaching forepaws
+      px(g, x + 8 + bow, y - 19 + bow, 10, 9, body);
+      ears(x + 8 + bow, 10, y - 19 + bow);
+      px(g, x + 13 + bow, y - 15 + bow, 3, 1, '#8a6142');
+      if (cat.scarf) px(g, x + 7 + bow, y - 11 + bow, 8, 3, cat.scarf);
       // tail curved up in two segments
       px(g, x - 15, y - 14, 4, 6, dark);
       px(g, x - 17, y - 19, 3, 5, dark);
       px(g, x - 17, y - 21, 3, 2, cream);
     } else { // walk / loaf / pounce
-      const moving = pose === 'walk' || pose === 'pounce';
-      const step = moving ? (Math.floor(pose === 'walk' ? (cat.walkDistance || 0) / 4 : t * 12) % 2) : 0;
+      const moving = pose === 'walk';
+      if (moving) {
+        for (let i = 0; i < 2; i++) {
+          const p = paw(i);
+          px(g, x + (i ? 6 : -9) + p.reach * f, y - 5 - p.lift, 3, 6, dark);
+        }
+      }
       px(g, x - 12, y - 12, 24, 9, body);
       px(g, x - 8, y - 13, 16, 3, shade(body, 0.14));
       px(g, x - 8, y - 12, 2, 4, dark); px(g, x - 2, y - 12, 2, 5, dark); px(g, x + 4, y - 12, 2, 4, dark);
       px(g, x - 10, y - 5, 7, 2, dark); px(g, x + 5, y - 5, 7, 2, dark);
       if (moving) {
-        px(g, x - 10 + step * 2, y - 3, 3, 4, body); px(g, x + 7 - step * 2, y - 3, 3, 4, body);
-        px(g, x - 3 - step * 2, y - 3, 3, 4, dark); px(g, x + 2 + step * 2, y - 3, 3, 4, dark);
+        for (let i = 2; i < 4; i++) {
+          const p = paw(i), px0 = x + (i === 3 ? 7 : -10) + p.reach * f;
+          px(g, px0, y - 5 - p.lift, 3, 6, body);
+          px(g, px0, y - 1 - p.lift, 3, 2, cream);
+        }
       }
       const hx = x + f * 10 - (f > 0 ? 0 : 8);
       px(g, hx, y - 19, 10, 9, body);
       ears(hx, 10, y - 19);
-      px(g, hx + (f > 0 ? 6 : 1), y - 16, 2, 2, '#3a5a2a');                 // eye
+      px(g, hx + (f > 0 ? 6 : 1), y - 16, 2, blink ? 1 : 2, '#3a5a2a');
       if (pose === 'pounce') {
-        px(g, x + f * 10 - (f > 0 ? 0 : 6), y - 9, 7, 3, body);             // batting paw
-        px(g, x + f * 15 - (f > 0 ? 0 : 3), y - 9, 3, 3, cream);
+        const bat = Math.round((1 + Math.sin(t * 9)) * 2);
+        px(g, x + f * 10 - (f > 0 ? 0 : 6), y - 6 - bat, 7, 3, body);
+        px(g, x + f * (15 + bat) - (f > 0 ? 0 : 3), y - 6 - bat, 3, 3, cream);
       }
       // curved tail: base rises from the rump, tip sways the most
       if (!drapeTail) {
-        const ts = Math.round(Math.sin(t * 5) * 2);
+        const ts = Math.round(Math.sin(moving ? (cat.walkDistance || 0) / 16 * Math.PI * 2 : t * 2) * 2);
         px(g, f > 0 ? x - 15 : x + 11, y - 16, 4, 7, dark);
         px(g, f > 0 ? x - 17 : x + 14, y - 20 + ts, 3, 5, dark);
         px(g, f > 0 ? x - 17 : x + 14, y - 22 + ts, 3, 2, cream);
@@ -938,7 +999,7 @@
       px(g, tx + drape, y + 18, 4, 3, cream);
     }
 
-    if (cat.scarf && pose !== 'hop') catScarf(g, cat.scarf, x, y, f, pose);
+    if (cat.scarf && pose !== 'hop' && pose !== 'stretch' && !vertical) catScarf(g, cat.scarf, x, y, f, pose);
     g.restore();
   };
 
@@ -954,7 +1015,7 @@
     else if (pose === 'sit' || pose === 'groom') { band(x - 6, y - 18, 12); tail(f > 0 ? x + 3 : x - 6, y - 15); }
     else if (pose === 'eat' || pose === 'drink') { band(x - 12, y - 10, 8); tail(x - 11, y - 7); }
     else if (pose === 'knead') { band(x + 1, y - 13, 9); tail(x + 8, y - 10); }
-    else if (pose === 'stretch') { band(x + 2, y - 10, 8); }
+    else if (pose === 'stretch') { band(x + 8, y - 10, 8); }
     else if (pose === 'perch') { band(x - 8, y - 16, 16); }
     else { const nx = f > 0 ? x + 3 : x - 12; band(nx, y - 13, 9); tail(f > 0 ? x + 5 : x - 6, y - 10); }
   }
