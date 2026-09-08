@@ -9,17 +9,18 @@
     w.visitorDays=w.visitorDays||{};w.visitorDays[id]=w.memory.life.daysCompleted;
     return a;
   };
-  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor].concat(w.socialVisitors||[]).filter(Boolean);};
+  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.shelfVisitor].concat(w.socialVisitors||[]).filter(Boolean);};
   SIM.visitorInvites=function(w) {
     if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
-    return SIM.visitorActors(w).filter(a=>a.state!=='leaving' && (!a.path || !a.path.length) &&
+    return SIM.visitorActors(w).filter(a=>a.state!=='leaving' && a.state!=='descending' && (!a.path || !a.path.length) &&
       !w.memory.flags[a.visitorId+'-introduced']);
   };
   SIM.startVisitor=function(w,id) {
     const a=SIM.visitorInvites(w).find(a=>a.visitorId===id);if(!a)return false;
     const lines=CAST.visitors[id].hello.map(line=>Object.assign({},line));
-    if(a.social) {
-      lines[0].text=CAST.visitors[id].later;
+    if(a.social || a.shelfDelivery) {
+      if(a.social)lines[0].text=CAST.visitors[id].later;
+      else lines[0].text="The little shelves are here. I'm Keira. Is this a good place to set them down?";
       if(id==='keira') {
         lines[1].text="I'm Lunafreya. It's good to have a moment to say hello.";
         lines[2].text="I spend so much time bringing things through doors, I forget I can just walk in.";
@@ -34,8 +35,48 @@
     w.moment.visitor=id;w.moment.index=index;return true;
   };
   function exit(w,a,dt) {
+    if(a.shelfDelivery && a.shelfLift>0) {
+      a.state='descending';a.pose='stand';
+      a.shelfLift=Math.max(0,a.shelfLift-dt*12);return false;
+    }
     if(a.state!=='leaving'){a.state='leaving';a.pose='stand';R.makePath(a,L.doorSpot.x,L.doorSpot.y);}
     return R.walker(a,dt);
+  }
+  function updateShelf(w,dt) {
+    const p=w.memory.life.projects.bookshelf,d=IMPROVEMENTS.projects.bookshelf,
+      site=L.projects.bookshelf.work,open=w.shop.phase==='open';
+    let a=w.shelfVisitor;
+    if(!a && open && ['scheduled','arrived','working'].indexOf(p.stage)>=0 &&
+        !SIM.visitorActors(w).some(v=>v.visitorId==='keira') &&
+        w.memory.life.projects.table.stage!=='scheduled') {
+      a=w.shelfVisitor=R.makeVisitor(w,'keira');a.shelfDelivery=true;
+      a.shelfParcel=p.stage==='scheduled';
+      R.makePath(a,site.x,site.y);R.ringDoor(w);
+      R.caption(w,p.stage==='scheduled'?(w.memory.flags['keira-introduced']?
+        'Keira returns with a small bundle of shelves.':'Keira brings a little shelf kit and her folding steps.'):
+        'Keira is back to finish the little wall shelves.');
+    }
+    if(!a)return;
+    a.animT+=dt;
+    if(!open || p.stage==='installed' || a.state==='leaving') {
+      if(exit(w,a,dt)){w.shelfVisitor=null;R.ringDoor(w);}return;
+    }
+    if(a.path && a.path.length){R.walker(a,dt);return;}
+    if(Math.hypot(a.x-site.x,a.y-site.y)>1){R.makePath(a,site.x,site.y);return;}
+    if(p.stage==='scheduled') {p.stage='arrived';a.shelfParcel=false;R.commitLife(w);return;}
+    a.state='working';a.pose=p.step===0||p.step===4?'kneel':'reach';a.heading='up';a.facing=1;
+    const lift=p.step===3?L.projects.bookshelf.stoolHeight:0,current=a.shelfLift||0;
+    if(current!==lift) {
+      a.shelfLift=current<lift?Math.min(lift,current+dt*12):Math.max(lift,current-dt*12);
+      return; // climbing is transient; reload repeats it before saved hand work
+    }
+    p.stage='working';const before=p.time;
+    p.time=Math.min(d.duration,p.time+dt);a.stateT=p.time;
+    if(p.time>=d.duration) {
+      p.time=0;p.step++;
+      if(p.step===d.phases.length){p.stage='installed';R.caption(w,'three little shelves, waiting for their first books.');}
+      R.commitLife(w);
+    } else if(Math.floor(before/3)!==Math.floor(p.time/3))R.commitLife(w);
   }
   R.updateVisitors=function(w,dt) {
     const p=w.memory.life.projects.table,open=w.shop.phase==='open',day=w.memory.life.daysCompleted;
@@ -43,7 +84,7 @@
     let a=w.deliveryVisitor;
     // A scheduled kit has not crossed the handoff boundary. Arrived/working
     // saves (including old carried kits) already own it and never redeliver.
-    if(!a && open && p.stage==='scheduled' && (!w.windowWorker ||
+    if(!a && !w.shelfVisitor && !w.socialVisitors.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && (!w.windowWorker ||
         Math.hypot(w.windowWorker.x-L.doorSpot.x,w.windowWorker.y-L.doorSpot.y)>48)) {
       a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;
       R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);
@@ -67,10 +108,12 @@
         if(a.stateT>=18)exit(w,a,0);
       }
     }
+    updateShelf(w,dt);
     // No purchase is needed to meet them. A short later visit uses the same
     // identity and invitation, without a customer slot, tools or construction.
     ['keira','tomas'].forEach(function(id,n) {
       const job=w.memory.life.projects[id==='keira'?'table':'window'];
+      if(id==='keira' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.bookshelf.stage)>=0)return;
       if(!open || day<1 || w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
         ['purchased','scheduled','arrived','working'].indexOf(job.stage)>=0 ||
         SIM.visitorActors(w).some(a=>a.visitorId===id))return;

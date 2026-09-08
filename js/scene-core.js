@@ -16,6 +16,8 @@
   SCENE.hasFurniture = function (world, id) {
     const life = world && world.memory && world.memory.life;
     if (!life || !life.furniture || !id) return true;
+    if (id === 'shelf-worksite') return !life.furniture.bookshelf &&
+      ['arrived','working'].indexOf(life.projects.bookshelf.stage)>=0;
     if (id === 'project-table') return IMPROVEMENTS.installed(life,'project-table');
     if (id === 'table-worksite') return ['scheduled','arrived','working','installed'].indexOf(life.projects.table.stage) >= 0;
     if (id === 'first-plant') return IMPROVEMENTS.installed(life,'first-plant');
@@ -24,7 +26,7 @@
   };
   SCENE.layoutKey = function (world) {
     const life = world && world.memory && world.memory.life;
-    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'hearth') : 'full';
+    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'hearth') : 'full';
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
@@ -106,6 +108,10 @@
     },
     visitors: {keira:{x:300,y:368},tomas:{x:250,y:320}},
     projects: {
+      // Between the left window's full sill/trim and the hearth masonry.
+      // Three short boards; their future book envelope stays in this wall gap.
+      bookshelf: {x:320,w:18,rows:[172,195,218],work:{x:328,y:252},
+        kit:{x:328,y:248,w:20,h:12},stoolHeight:24},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
@@ -375,6 +381,10 @@
   // Reserved from the outset: loose parts and the completed set share one
   // footprint, so installation never puts furniture across an active route.
   const projectTable = L.projects.table;
+  const shelfKit=L.projects.bookshelf.kit;
+  L.footprints.push({name:'wall shelf kit',furniture:'shelf-worksite',
+    x0:shelfKit.x-shelfKit.w/2,x1:shelfKit.x+shelfKit.w/2,
+    y0:shelfKit.y-8,y1:shelfKit.y});
   L.footprints.push({ name: 'reserved table project', x0: projectTable.x - 34, x1: projectTable.x + 34,
     y0: projectTable.y - 8, y1: projectTable.y + 34, passable: true });
   [-1, 1].forEach(function (side) {

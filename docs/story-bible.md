@@ -53,8 +53,12 @@ nodes are Keira `name/place/practical/laugh/welcome` and Tomas
 `<id>-hello-<node>`; final acknowledgement saves `<id>-introduced`. No choices
 or purchase effects occur. Off-duty opening lines adapt to the present visit;
 unfinished nodes resume. Completed greetings receive familiar arrival captions.
-They leave independently, and return on later café days. Full backstories and
-the bookshelf return remain planned.
+They leave independently, and return on later café days. Keira's return with
+the three little wall shelves keeps the same identity and saved hello nodes.
+An unfinished hello adapts its opening to the small shelf kit and reuses the
+off-duty place/practical lines; it does not replay acknowledged nodes. A completed
+hello receives a familiar arrival caption. This reveals no new backstory.
+Full backstories, book gifts and disclosure remain planned.
 
 ## Writing and choices
 
@@ -222,7 +226,7 @@ Use this table to distinguish identities from what the runtime currently contain
 
 | Name | Working direction | Current implementation boundary |
 | --- | --- | --- |
-| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Shipped table-kit delivery and optional hello; bookshelf remains later |
+| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Table-kit delivery, initial wall-shelf installation and optional saved hello; gifts and deeper scenes remain later |
 | Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Shipped named window worker and optional saved hello |
 | Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
 | Marcel | Painter across the lake; recognizes changing places and people | Existing `street-house` arc stays intact; personal identity and café visits remain to implement |

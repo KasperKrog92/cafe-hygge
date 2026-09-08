@@ -63,8 +63,8 @@ fields, phase names, task timing, paths or render behavior changed in the prepar
 
 ## Shared improvement contract
 
-`js/improvements.js` owns the four shipped choices: plant, window, table and
-fireplace. Definitions hold IDs, prices, destination/delivery, phase labels and
+`js/improvements.js` owns plant, window, table, fireplace and the initial wall
+shelves (`bookshelf`). Definitions hold IDs, prices, destination/delivery, phase labels and
 stable phase IDs, timing, prerequisites (currently empty), installed capabilities
 and the window/table evening pairing. `SIM.projects` and `SIM.plantProject`
 remain aliases for existing consumers.
@@ -80,9 +80,8 @@ preserving the then-historical v7 validator independently of new definitions.
 `installed(life,capability)` supplies existing scene availability checks; owned
 furniture still supplies legacy furnished-room availability. Layout, work-site
 geometry, table seat installation, plant opening animation, contractor routes,
-interruptions and closing remain in their original owners. Bookshelf delivery,
-work-area reservations and empty-shelf versus usable-book availability remain
-the next milestone.
+interruptions and closing remain in their original owners. Keira's wall-shelf
+job uses the same purchase and saved-phase contract; book stocking is the next pass.
 
 ## Shared life and plant contract
 
@@ -99,8 +98,8 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v8, migrated through v1–v7) contains `mode`, integer `savings`, `hour`,
-`homeTime`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window`), `plannedTonight`, and a nullable lifecycle checkpoint containing
+`memory.life` (v9, migrated through v1–v8) contains `mode`, integer `savings`, `hour`,
+`homeTime`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
 → unpack → place → installed. Purchase and stage transitions flush immediately;
@@ -306,7 +305,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v8; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v9; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -571,7 +570,7 @@ work anchor commits `arrived`. Her live actor reserves assembly until departure;
 a reload of `arrived` releases that transient reservation without redelivery.
 Unfinished arrivals can return after closing. Closing waits for actual exits.
 
-The save remains v8: existing extensible boolean flags store acknowledged node
+The original visitor release kept v8: existing extensible boolean flags store acknowledged node
 IDs and completion, as for Holger. No field or project phase was added, and
 legacy arrived/working/installed records preserve exact step/time and ownership.
 Holger's positional flags and choices are unchanged. The shared conversation
@@ -583,3 +582,29 @@ once per identity per running café day after day one (Keira from 10, Tomas from
 11, neither after 19). Visits can recur after reload; job ownership and completed
 nodes cannot. Active jobs suppress off-duty duplicates. Invitations appear in
 game mode and remain unconsumed in idle. No calendar or new purchase is needed.
+
+## Initial wall shelves (v9)
+
+`projects.bookshelf` owns the 40-coin wall-shelf kit, not the legacy floor
+bookcase. Its five stable steps are unwrap/lower/middle/upper/tidy, each twelve
+seconds. `sim-visitors.js` reconstructs one `shelfVisitor` with Keira's existing
+identity. Table delivery takes priority; active shelf work prevents duplicate
+off-duty Keira actors. The small parcel crosses into `arrived` only at the real
+work anchor. Shelf fitting runs in both modes and commits every three seconds
+and on phase changes. Closing sends her out after descending the folding steps;
+partial mounted boards and the kit remain. Reload preserves exact hand progress
+and replays the approach/climb before resuming it, without a new charge or kit.
+
+`L.projects.bookshelf` owns wall rows, work anchor, kit and step height.
+`scene-bg.js` draws only completed boards, in the wall pass. `scene-home.js`
+draws the unfinished kit; its `shelf-worksite` footprint is active only while
+that physical kit exists. Packing releases it. No floor occluder or permanent
+floor reservation remains. The entity renderer lifts Keira onto the steps and
+`scene-people.js` connects fitting hands to the actual shelf row.
+
+v8→v9 preserves all prior jobs, balances and greeting flags. Established saves
+with `furniture.bookshelf` retain their existing bookcase and books and migrate
+the new purchase as already installed, avoiding another charge or duplicate
+furniture. In modest saves, installed `projects.bookshelf` means empty wall
+shelves only. Legacy `furniture.bookshelf` continues to gate the old usable
+library and browsing. Purchased/gift book contents are a separate later pass.

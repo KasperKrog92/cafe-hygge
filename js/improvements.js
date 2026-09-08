@@ -5,6 +5,9 @@
   const stages = ['available','purchased','scheduled','arrived','working','installed'];
   // Phase order is the v7 saved numeric step contract. Reordering needs migration.
   I.projects = {
+    bookshelf: { price:40, destination:'cafe', delivery:'shelf-keira', title:'three little wall shelves',
+      phases:['unwrap the shelves','fit the lower shelf','fit the middle shelf','fit the upper shelf','pack the tools'],
+      phaseIds:['unwrap','lower','middle','upper','tidy'], duration:12, capability:'empty-bookshelf' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
       phaseIds:['protect','unboard','repair','clean'], duration:18, capability:'left-window', pair:'table' },
@@ -45,6 +48,7 @@
     const d = I.all[id], l = world.memory.life, p = d && I.state(l,id);
     const h=l.homeStory, tutorial=h && h.firstNight;
     if (tutorial && (h.step<12 || (id!=='window' && id!=='table'))) return false;
+    if (id==='bookshelf' && l.furniture.bookshelf) return false;
     return !!p && !!world.plannerOpen && world.shop.phase === 'home' && (l.mode === 'game' || tutorial) &&
       I.canPlan(l,id) && p.stage === 'available' && l.savings >= d.price &&
       d.requires.every(capability => I.installed(l,capability));

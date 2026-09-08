@@ -50,7 +50,22 @@
     if(SCENE.hasFurniture(world,'rugs') && SCENE.hasFurniture(world,'cat-corner')) px(g, cc.cushion.x - 20, cc.cushion.y + 20, 42, 2, '#b19b73');
     L.pendants.filter((p,i)=>i===0||SCENE.hasFurniture(world,'full-counter')).forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
+    drawWallShelves(g,world);
   };
+
+  // Wall-mounted boards never enter the floor depth sort or hide walkers.
+  function drawWallShelves(g,w) {
+    if(w.memory.life.furniture.bookshelf)return; // established library stays intact
+    const p=w.memory.life.projects.bookshelf,s=L.projects.bookshelf;
+    const count=p.stage==='installed'?3:p.stage==='working'?Math.max(0,p.step-1):0;
+    s.rows.forEach(function(y,i){
+      if(i<3-count)return;
+      px(g,s.x+1,y+3,s.w,2,'rgba(20,12,8,.22)');
+      px(g,s.x+3,y+3,2,6,'#5a3d28');px(g,s.x+s.w-5,y+3,2,6,'#5a3d28');
+      px(g,s.x,y-2,s.w,3,'#96704c');px(g,s.x,y-2,s.w,1,'#b18d62');
+      px(g,s.x,y+1,s.w,3,'#6e4a33');
+    });
+  }
 
   function drawFloorLight(g, world) {
     const d = world.pal.daylight, lamp = SCENE.lampLevel(world);

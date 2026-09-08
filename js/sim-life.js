@@ -8,7 +8,7 @@
   function pending(w) {
     // Finish the job already laid out before opening another kit.
     for (const stage of ['working','arrived','scheduled']) {
-      const id=Object.keys(PROJECTS).find(id => PROJECTS[id].delivery !== 'contractor' &&
+      const id=Object.keys(PROJECTS).find(id => PROJECTS[id].delivery !== 'contractor' && id!=='bookshelf' &&
         !(id==='table' && (stage==='scheduled' || w.deliveryVisitor)) && w.memory.life.projects[id].stage === stage);
       if(id) return id;
     }

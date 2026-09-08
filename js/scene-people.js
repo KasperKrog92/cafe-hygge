@@ -592,6 +592,13 @@
       px(g, x - 11, y - 50, 5, 14, c.top); px(g, x + 6, y - 50, 5, 14, c.top);
       px(g, x - 8, y - 59, 4, 11, c.skin); px(g, x + 4, y - 59, 4, 11, c.skin);
       px(g, x - 8, y - 62, 4, 4, c.skin); px(g, x + 4, y - 62, 4, 4, c.skin);
+    } else if (p.shelfWorkY != null && !held) {
+      const s=SCENE.L.projects.bookshelf,sy=p.shelfWorkY;
+      const turn=Math.round(Math.sin(p.stateT*7));
+      limb(g,x-10,y-37,s.x+3,sy+3,4,c.top);
+      limb(g,x+9,y-37,s.x+s.w-4,sy+3,4,c.top);
+      px(g,s.x+2,sy,4,4,c.skin);px(g,s.x+s.w-6+turn,sy,4,4,c.skin);
+      px(g,s.x+s.w-4,sy-3,2,4,'#b8bfc7');
     } else if (p.pose === 'reach' && !held) {
       const ax = x + facing * 7 - (facing < 0 ? 4 : 0);
       const chalk = p.state === 'chalk' ? Math.round(Math.sin(p.stateT * 9) * 2) : 0;

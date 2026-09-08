@@ -32,6 +32,25 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v9 shelf migration preserves old contents and rejects invalid unpacking', () => {
+    const b=boot();b.run(`
+      for(const furnished of [false,true]) {
+        const old=MEMORY.codec.fresh();old.version=8;delete old.life.projects.bookshelf;
+        old.life.furniture.bookshelf=furnished;old.life.savings=137;old.flags['keira-hello-name']=true;
+        const result=MEMORY.codec.decode(JSON.stringify(old));
+        if(result.error||result.state.version!==9||result.state.life.savings!==137||!result.state.flags['keira-hello-name'])throw Error('v8 lost history');
+        if(result.state.life.projects.bookshelf.stage!==(furnished?'installed':'available')||result.state.life.furniture.bookshelf!==furnished)throw Error('library ownership migration');
+      }
+      for(const step of [0,1,2,3,4]) {
+        const s=MEMORY.codec.fresh();s.life.projects.bookshelf={stage:'working',step,time:11.75};
+        if(MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('valid shelf work');
+        s.life.projects.bookshelf.time=12;
+        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid shelf work accepted');
+      }
+      const bad=MEMORY.codec.fresh();bad.version=8;delete bad.life.projects.bookshelf;bad.life.projects.window.time=99;
+      if(!MEMORY.codec.decode(JSON.stringify(bad)).error)throw Error('invalid historical window accepted');
+    `);
+  });
   await test('existing improvement purchases and v7 checkpoints retain their contract', () => {
     const b=boot();
     b.run(`

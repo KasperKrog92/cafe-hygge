@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 8;
+  const KEY = 'cafe-hygge-save', VERSION = 9;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -125,7 +125,7 @@
   }
   function validateProjects(l, version) {
     requireShape(record(l.projects) && typeof l.plannedTonight === 'boolean', 'invalid projects');
-    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : ['table','fireplace']).forEach(function (id) {
+    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
       // Historical codecs retain their original limits, independent of today's catalogue.
       const d = version === VERSION ? IMPROVEMENTS.projects[id] : null;
       const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'table' ? 6 : 4;
@@ -197,6 +197,12 @@
     // Established evenings keep their choices and funds; the first visit is
     // reserved for saves that have never come home.
     s.life.homeStory=freshHomeStory(s.life.daysCompleted>0);
+    return s;
+  }, 8: function(s) {
+    createCodec(8, {}).validate(s);
+    s.version=9;
+    s.life.projects.bookshelf={stage:s.life.furniture.bookshelf?'installed':'available',
+      step:s.life.furniture.bookshelf?5:0,time:0};
     return s;
   } });
   MEMORY.freshHomeStory=freshHomeStory;

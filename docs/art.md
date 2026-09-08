@@ -318,11 +318,23 @@ rendered review. A zero-problem audit establishes current simulation clearance;
 it cannot approve obscured views or resolve conflicts with future plans. Raise
 the specific conflict or missing layout decision with the owner before placement.
 
-**Owner correction, 8 September 2026:** the bookshelf proposal at (534,258)
-obscures the right window and is rejected. Bookshelf implementation is paused;
-no replacement position is approved. The decision still needed is where the
-C0 shelf and its delivery/browsing access should go while keeping both windows
-and the documented future room uses available.
+**Owner correction and revised design, 8 September 2026:** the large bookcase
+at (534,258) was rejected for obscuring the right window. The initial purchase
+now uses three short wall-mounted shelves in the small patch left of the hearth.
+`L.projects.bookshelf` places 18-pixel boards at x320–338, y172/195/218. The full
+shadow/bracket envelope ends at x339/y227. Space for 20-pixel book spines starts
+at y152, below the projecting mantel/corbel. The left window's sill ends at
+x318; drapes stay farther left at these heights, and hearth stone starts at
+y228. Both window views, their repair access and the firebox remain clear.
+The wall boards are drawn in the wall pass and have no permanent floor box.
+
+Keira's work anchor is (328,252), with a compact kit at (328,248). Its visible
+unfinished floor box is x318–338, y240–248; folding steps lift her for the top
+board. The kit's reservation lasts only as long as the physical kit, including
+safe overnight partial work; packing removes it. Review with open windows,
+open/closed drapes and the later fireside chairs confirms both the wall
+silhouette and installation route. The large bookcase remains a later idea;
+this placement does not reserve or implement a new cat corner.
 
 Tall furniture that can fully hide a walker is declared once in
 `L.occluders` (artist easel, bookshelf, counter) — the layout overlay, `__dev.audit()`,

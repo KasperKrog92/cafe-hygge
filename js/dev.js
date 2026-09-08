@@ -518,6 +518,7 @@
       state.life.firstOpening={step:12,time:0};
       state.life.room='full';
       state.life.homeStory=MEMORY.freshHomeStory(true);state.life.daysCompleted=7;state.life.projects.window={stage:'installed',step:4,time:0};
+      state.life.projects.bookshelf={stage:'installed',step:5,time:0};
       o.memory = MEMORY.createStore({state:state});
     }
     return SIM.create(o);

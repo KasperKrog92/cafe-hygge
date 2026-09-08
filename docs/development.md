@@ -440,3 +440,28 @@ visitors in five views. `visitors-after` passes ten repeatable images and twelve
 occupancy scenarios. `visitors-entry` completed a real-time cappuccino in 43.0
 seconds with initialized audio, pickup income and a clean night audit.
 All task-owned browser sessions were confirmed closed.
+
+## Initial wall shelves — 8 September 2026
+
+`tools/verify-project.ps1 -Suite bookshelf` exercises the real ordinary planner,
+single debit, kit arrival, five partial-work save round trips per mode, ignored
+and resumed greetings, no browsing from empty boards, service, closing and next
+morning. Closing before delivery, after arrival, during fitting and while on
+the steps preserves the job. The latter explicitly checks a descent before
+exit. v8 furnished libraries retain books and do not receive duplicate shelves.
+
+`tools/verify-bookshelf-ui.ps1` checks an actual planner click and retained funds,
+eight exact job checkpoints through real reloads, and 1440×900 / 1600×900 views.
+The scenario suite also checks space for future book spines, window trim/sill,
+drapes, mantel and hearth, plus installation with later fireside furniture.
+
+Evidence: all 18 suites pass in `.art-review/wall-shelves-regression/`; the final
+steps/closing refinement passes in `.art-review/wall-shelves-final/`.
+16 Node save/isolation groups, audio preferences and 23 script syntax checks
+pass. UI evidence is in `.art-review/wall-shelves-ui/`. Art verification in
+`.art-review/wall-shelves-after/` reports ten repeatable images, twelve occupancy
+scenarios and zero audits. The normal-entry cappuccino completed in 40.8 seconds
+with audio initialized, income, seating and a zero-problem night audit, in
+`.art-review/wall-shelves-entry/`. Exported shelf, installation and future-window
+views were inspected. All owned browser sessions closed. These are desktop
+Chromium checks; no native Safari execution is claimed.

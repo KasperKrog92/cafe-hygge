@@ -1588,8 +1588,32 @@
     const draws = [];
     SIM.visitorActors(world).forEach(function(a) {
       draws.push({y:a.y,draw:function(g) {
-        SCENE.drawPerson(g,world.moment ? Object.assign({},a,{pose:'stand',path:null}) : a);
         const x=Math.round(a.x),y=Math.round(a.y);
+        let person=world.moment ? Object.assign({},a,{pose:'stand',path:null}) : a;
+        if(a.shelfDelivery && (a.state==='working'||a.state==='descending')) {
+          const p=world.memory.life.projects.bookshelf,s=L.projects.bookshelf;
+          // Climb onto the folding steps for the upper board, then step down
+          // before packing. Logical feet stay at the shared floor work anchor.
+          const lift=a.shelfLift||0;
+          if(lift>0 || p.step===3 && a.state==='working') {
+            g.fillStyle='#5a3d28';g.fillRect(x-9,y-s.stoolHeight,3,s.stoolHeight);g.fillRect(x+7,y-s.stoolHeight,3,s.stoolHeight);
+            g.fillStyle='#96704c';g.fillRect(x-10,y-s.stoolHeight,21,3);g.fillRect(x-8,y-12,17,3);
+          }
+          person=Object.assign({},person,{y:y-Math.round(lift)});
+          if(!world.moment && a.state==='working' && p.step>=1 && p.step<=3 && (p.step!==3||lift===s.stoolHeight))
+            person.shelfWorkY=s.rows[3-p.step];
+        }
+        SCENE.drawPerson(g,person);
+        if(a.shelfDelivery && (a.path&&a.path.length || a.state==='leaving')) {
+          // Short boards in a hand-carried parcel; folded steps in the other hand.
+          g.fillStyle='#5a3d28';g.fillRect(x-12,y-29,3,27);g.fillRect(x-7,y-29,3,27);
+          g.fillStyle='#96704c';g.fillRect(x-12,y-27,8,3);g.fillRect(x-12,y-14,8,3);
+          if(a.shelfParcel) {
+            g.fillStyle='#a77e51';g.fillRect(x+4,y-25,18,12);
+            g.fillStyle='#c9a477';g.fillRect(x+4,y-25,18,3);
+            g.fillStyle='#dfbd89';g.fillRect(x+12,y-25,3,12);
+          }
+        }
         if(a.visitorId==='tomas' && !a.social) {
           g.fillStyle='#6b4a30';g.fillRect(x+13,y-11,15,10);
           g.fillStyle='#b18d62';g.fillRect(x+17,y-14,7,3);

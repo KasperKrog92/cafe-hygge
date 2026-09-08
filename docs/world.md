@@ -43,7 +43,7 @@ and the shop returns to its usual routines.
 caption, weather, movement and story timers receive only actual simulated
 time. The normal arrival schedule rolls into the new café day. The ordinary opening chores
 need no clicks and never consume a story invitation.
-Schema v8 adds the home-story/bedtime cursor and retains completed café days, left-window work, home time, wall-clock hour, presentation, savings, plant
+Schema v9 adds initial wall-shelf work while retaining the v8 home-story/bedtime cursor, completed café days, left-window work, home time, wall-clock hour, presentation, savings, plant
 stage/time, partial table/hearth jobs, the evening choice and a lifecycle checkpoint. Reload holds time spent away and resumes
 rituals/partial work; transient patrons and incomplete orders are not serialized.
 Only established furnished saves keep the seeded-room behavior. New cafés reload
@@ -59,6 +59,18 @@ pair. The planner shows floating thoughts with pixel gold-coin prices, “chosen
 or a completion checkmark.
 There are no item descriptions, instructions or notebook panel; savings and unfinished jobs never expire. The
 plant has no floor footprint; the table uses a reserved area until complete. No costs accrue from absence.
+
+The optional 40-coin **three little wall shelves** purchase appears on ordinary
+evenings. Keira carries a small kit and folding steps, unwraps it, fits three
+boards left of the hearth and packs up. Work can finish while unattended in
+either mode; closing/reload retain fitted boards and partial work. The kit
+reserves only its visible floor space until packed. Empty shelves do not enable
+browsing. The first required window/table plan remains unchanged.
+
+Shelf captions use the ordinary quiet queue: first arrival, “Keira brings a
+little shelf kit and her folding steps”; familiar arrival, “Keira returns with
+a small bundle of shelves”; resumption, “Keira is back to finish the little
+wall shelves”; completion, “three little shelves, waiting for their first books.”
 New captions: “home, with a book and a familiar little shadow.” and
 “a little green by the window.” Both use the ordinary caption queue.
 

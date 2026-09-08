@@ -297,3 +297,18 @@ empty-path delivery at the door and an out-of-room conversation approach;
 handoff now requires the real work anchor, and conversation targets respect
 the current floor bounds. The focus camera retains speaker feet during zoom.
 All art audits are empty; ten images and twelve occupancy scenarios repeat.
+
+## Initial wall-shelf review — 8 September 2026
+
+The rejected floor bookcase exposed a gap in review: current route clearance
+did not protect the window's later view. Apply the future-use placement check
+in art.md before choosing coordinates. The owner's replacement is three short
+wall-mounted boards left of the hearth, not a moved or reduced floor bookcase.
+
+`wall-shelves-before` / `wall-shelves-after` cover unchanged room composition
+and repeatability. `wall-shelves-final` contains empty boards, hand-carried kit,
+installation on folding steps, descent at closing, and open-window/closed-drape
+comparisons with later fireside furnishings. `wall-shelves-ui` adds actual
+16:10/16:9 views and saved job reloads. Inspect both the small gap at native
+scale and Keira's hand/board contact; the future books' envelope must also stay
+clear of window trim and masonry. The new shelves have no permanent floor box.

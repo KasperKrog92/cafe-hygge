@@ -4,6 +4,9 @@
 > work autonomously in either mode. This is not a personal story payoff.
 > Story invitations remain saved until chosen in game mode; idle hides their
 > controls without consuming them. Both modes share the same progress and home.
+> The initial wall shelves follow this rule too: authorized delivery and fitting
+> can finish unattended, leaving empty boards. Keira's greeting waits separately;
+> book stocking, Holger's gift and personal disclosure remain later passes.
 >
 > **Owner-directed tutorial exception (7 September 2026):** the new café’s first
 > Holger introduction is mandatory in both modes. He waits at the counter;

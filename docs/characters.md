@@ -761,6 +761,14 @@ ordinary apartment idling continues in the background.
 
 ## Second-day visitors — shipped 8 September 2026
 
+Keira's subsequent wall-shelf job uses a small hand-carried kit and folding
+steps. She unwraps, fits lower/middle/upper boards and packs tools in five
+twelve-second phases. Her hands meet the active wall row; she climbs for the
+top board, descends before packing or leaving at closing, and repeats the
+approach/climb after a reload before continuing saved fitting progress.
+The optional existing hello resumes at its saved node; completed introductions
+receive a familiar arrival caption. No conversation is required for installation.
+
 Keira (she/her) and Tomas (he/him) are stable `CAST.visitors` identities.
 Keira brings a trolley, hands off the first table kit, then exits before
 Lunafreya assembles it. Tomas retains autonomous window repair. They are visitor

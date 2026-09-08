@@ -1,7 +1,9 @@
 # First books, first connection
 
-Implementation brief, 7 September 2026. **Status: follows
-[shipped second-day visitors](../progression-roadmap.md#second-day-visitors--shipped-8-september-2026); this milestone is not shipped.** The owner largely accepted
+Implementation brief, revised 8 September 2026. **Pass 1 shipped with three small
+wall-mounted shelves in the patch left of the hearth, per owner direction.
+Passes 2 and 3 remain planned.** It follows the
+[shipped second-day visitors](../progression-roadmap.md#second-day-visitors--shipped-8-september-2026). The owner largely accepted
 the [ensemble direction](community-and-character-stories.md). This brief makes
 its first release concrete; it does not authorize the whole release at once.
 The [progression roadmap](../progression-roadmap.md)
@@ -9,9 +11,9 @@ is the single current next-task/status reference.
 
 ## The eventual player experience
 
-After her first table delivery, Keira returns when Lunafreya plans a bookshelf.
-She wheels it in, unpacks it and leaves a visibly
-empty piece of furniture. Books are acquired separately and shelved between
+After her first table delivery, Keira returns when Lunafreya plans the first shelves.
+She carries a small kit and folding steps, unpacks it and fixes three short
+boards to the wall left of the hearth. They remain empty. Books are acquired separately and shelved between
 ordinary duties. Holger later offers a small collection in a conversation that
 remembers Lunafreya's opening answer. While looking through it, she mentions
 her former bookshop/café work. A guest eventually borrows something from the
@@ -20,12 +22,23 @@ shelf. The practical improvement now carries a shared memory.
 Keep three reviewable passes. Each should work through the real day/home loop
 and preserve existing saves before the following pass begins.
 
-## Pass 1 — Keira returns with the empty bookshelf
+## Pass 1 — Keira installs three little wall shelves
 
-**Visible result:** an optional bookshelf purchase in an ordinary home planner
-causes Keira to arrive with a trolley during a later open café. She places and
-unpacks the shelf, removes the wrapping and leaves. The installed shelf is
-empty and persists across days and reloads.
+The initial purchase is **three little wall shelves, 40 coins**. Each board is
+18 master pixels wide, from x320 to x338, with shelf surfaces at y172,195,218.
+Keira works at (328,252). Five 12-second phases unwrap the kit, fit the lower,
+middle and upper boards, then pack the tools. Folding steps support the upper
+reach. Boards appear as each fitting completes; a partial kit persists safely.
+The full bookcase is a possible later upgrade, outside this pass.
+
+The [future-use check](../art.md#placement-and-future-room-use) covers the
+window trim/sill/drapes, future book height, mantel/corbel, hearth and fireside
+access. There is no permanent floor footprint. Only the visible unfinished kit
+reserves floor space, released when packed; installed boards remain on the wall.
+
+**Visible result:** the optional ordinary-evening purchase causes Keira to
+bring and install the little shelves during a later open café. She packs the
+wrapping and tools and leaves. The empty shelves persist across days and reloads.
 
 The delivery person is a woman named **Keira** (she/her), per the owner's revised
 direction. Give her a consistent appearance/identity so
@@ -55,20 +68,18 @@ Required behavior:
 - Work proceeds in both presentations. Use the production elapsed-time update
   and ordinary lifecycle; personal story invitations are not part of this job.
 
-At implementation start, inspect the scene and record a reasonable shelf price,
-footprint and work durations in this brief. These are routine design choices
-to demonstrate in a capture, not already settled numbers in the accepted story.
-Use the existing shelf art where it fits, adapting its visible contents and
-framing rather than inventing an unrelated furniture style.
+Use the existing warm wood and bracket palette. No large carcass, oversized
+trolley load or decorative books belongs to this initial shelf purchase.
 
-Start from `js/improvements.js`, the availability/layout helpers in
-`js/scene-core.js`, the shelf drawing in `js/scene-furniture.js`, the existing
-window worker in the life simulation, and versioned state in `js/memory.js`.
+The catalogue is in `js/improvements.js`, shared anchors in `js/scene-core.js`,
+wall boards in `js/scene-bg.js`, the kit in `js/scene-home.js`, and Keira's
+saved job in `js/sim-visitors.js` with versioned state in `js/memory.js`.
 Inspect current callers before choosing extraction boundaries. Preserve
 historical validators and numeric checkpoint meanings when adding the new
-state; the current baseline is schema v8.
+state. Schema v9 adds `projects.bookshelf` without changing the old projects.
+Established furnished saves retain their original library and usable books.
 
-Pass 1 is done when the actual planner → delivery → installed-empty-shelf path
+Pass 1 is done when the actual planner → kit delivery → installed-empty-shelves path
 works, a full ordinary service/closing/home/reopening cycle finishes with the
 new job, interruption/reload checkpoints preserve it, established furnished
 saves keep working, and `__dev.audit()` reports zero problems. Review desktop

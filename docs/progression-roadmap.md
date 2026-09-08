@@ -4,8 +4,9 @@ Direction recorded 6 September 2026, with shipped updates through 7 September.
 Shared home life, the plant/table/hearth jobs, C0, the identity swap, first
 introduction and left-window repair are implemented. The build-order section
 and first-day update below distinguish these from proposed later stages.
-Shared improvement preparation is complete (7 September). Second-day visitors are shipped (8 September). The next task is bookshelf delivery
-and separate books. See the
+Shared improvement preparation is complete (7 September). Second-day visitors are
+shipped (8 September), as is Pass 1's three small wall shelves left of the hearth.
+The next task is separate book purchases and interruptible stocking (Pass 2). See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
 the remaining ideas are not authorization to build every item.
@@ -34,11 +35,11 @@ legacy saves and next morning; the UI runner checks actual page reloads.
 The [implementation brief](plans/first-books.md) translates the accepted story
 direction into one complete near-term experience, delivered in reviewable passes:
 
-1. **Keira returns with an empty bookshelf.** Ordinary
-   evening purchase, trolley delivery, safe reserved work area, unpacking and
-   a persistent empty shelf. Reuse Keira's established identity and remembered
-   greeting; book stocking and the Holger gift remain separate following passes.
-2. **Books become usable.** Purchased books, gradual interruptible shelving,
+1. **Three little wall shelves — shipped 8 September.** Ordinary 40-coin
+   evening purchase, Keira's small kit and folding steps, saved installation
+   of three short empty boards left of the hearth. Her identity and remembered
+   greeting continue. No window is blocked; a large bookcase remains a later idea.
+2. **Books become usable — next pass.** Purchased books, gradual interruptible shelving,
    visible contents and browsing only when usable books are present.
 3. **The shelf acquires a history.** Keira's returning-visitor continuity, Holger's
    remembered offer and attended gift, and Lunafreya's first disclosure about
@@ -157,7 +158,7 @@ The starting café must already meet its standard of warmth and believable life.
 | --- | --- | --- |
 | C0 — First opening | A smaller room matching the tighter reference framing; boarded-over windows, small counter and coffee equipment, a tiny cake stand, warm lighting and entrance equipment. No room rugs, drapes, wall menu, matcha or mantel decoration; hearth unused. Lunafreya arrives carrying the cat, sets out the entrance and counter equipment, then visibly assembles two tables and their chairs. | Setup starts on the player's first entry, runs autonomously and saves its progress. Customers enter only after both table sets are ready. Simple coffee, chamomile tea and cardamom buns support complete service; patrons bring their own books. |
 | C1 — Settling in | First plant, small table assembled, cleaned hearth, a few personal touches. | More places to settle; watering, fire tending and improvement work become part of the day. |
-| C2 — A reading place | Delivered bookshelf, then partially and eventually fully stocked shelves; an optional reading chair and lamp. | Browsing and borrowed-book reading become available as their furniture and contents are ready. Holger's familiarity can support a reading-corner story. |
+| C2 — A reading place | Three short wall shelves first, then separately acquired books; an optional reading chair and lamp. A larger bookcase is a later upgrade idea. | Browsing and borrowed-book reading become available as their furniture and contents are ready. Holger's familiarity can support a reading-corner story. |
 | C3 — A cared-for café | Repainted walls, repaired window frames, coordinated small furnishings; the room keeps its familiar layout. | Contractor visits provide temporary daytime activity; completed work improves appearance without making the previous room feel like failure. |
 | C4 — A neighborhood gathering place | Optional piano, art display and developed planting. | Music, exhibited work and deeper regular relationships, each supported by its own small sequence. |
 | C5 — Room beyond the windows | Furnished terrace, outdoor planting and the equipment needed to serve it. | Existing waterfront ambience and terrace service join the developed café. The view becomes visible when the boarded windows are opened. |
@@ -217,7 +218,8 @@ Each row specifies a visible journey, not an instant menu toggle.
 | First potted plant | A valid shelf or sill position | Carried in a bag; unpacked and placed during morning setup. | Plant appears at its anchor; ordinary watering joins her routine. |
 | Additional table and chairs | Reserved floor space and clear routes | Small kit brought in or delivered; she unpacks, lays out parts, assembles in free periods, wipes and positions it. | New seating is enabled only after the whole set is usable. |
 | Prepare the fireplace | Existing safe but unused hearth | She brings cleaning supplies; kneels, brushes, gathers ash and wipes in several sessions. | Clean hearth supports the current fire and tending behavior. Structural chimney work, if ever added, belongs to a professional. |
-| Bookshelf | A reserved wall/floor position | Delivery person wheels it in on a trolley, positions it, unpacks it and removes wrapping. | An installed empty bookshelf; book browsing remains unavailable. |
+| Initial wall shelves (shipped) | The checked small wall patch left of the hearth | Keira brings a small kit and folding steps, unwraps, fits three short boards and packs up. | Empty wall shelves; book browsing remains unavailable. |
+| Larger bookcase (later idea) | Future layout decision; preserve both windows and their access | Delivery/unpacking design remains later work. | A larger library; not part of the initial purchase. |
 | First box of books | Installed bookshelf | She brings books, puts the box down and shelves a handful at a time between duties. | Shelf visibly fills; usable books enable browsing before every shelf is full. |
 | More books | Shelf capacity remaining | Another box and further shelving sessions on a later day. | Fuller shelves and more variety; no requirement to fill every shelf. |
 | Reading chair and lamp | Clear reading-corner position | Chair delivered and unpacked; she places the lamp and arranges the corner. | Reading seat and evening light become active together. |
@@ -387,8 +389,9 @@ The first apartment/plant milestone below subsequently added the minimal life an
    H1 unpacking and the first returning-patron conversation remain separate work.
 5. **First visitor job — left-window repair implemented 7 September 2026.**
    The worker arrives, removes boards, repairs and cleans the left pane, then
-   leaves. Partial work resumes after closing or reload. Bookshelf delivery,
-   separate books and gradual stocking remain later milestones.
+   leaves. Partial work resumes after closing or reload. Initial wall-shelf
+   delivery/installation followed on 8 September; separate books and gradual
+   stocking remain the next milestone.
 6. **Grow both places and their stories.** Add reading corner, home comforts,
    relationship gifts, music, art and terrace in small complete sequences.
    Extend the menu and counter through the K stages, proving visible food sales

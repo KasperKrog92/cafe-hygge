@@ -38,7 +38,9 @@ planned writing; [the narrative contract](docs/narrative.md) owns choices,
 attendance and lasting effects. The progression roadmap owns current status
 and build order. Second-day visitors shipped on 8 September: Keira delivers the first table kit
 and Tomas repairs the left window, with optional saved introductions.
-Lunafreya retains table assembly. The next brief is
+Lunafreya retains table assembly. Initial wall shelves shipped on 8 September:
+Keira installs three short, empty boards in the patch left of the hearth.
+The next pass is separate books and interruptible stocking in
 [First books, first connection](docs/plans/first-books.md), reusing those identities.
 Acceptance of the larger
 plan does not mean its full cast or later systems should be built in one task.

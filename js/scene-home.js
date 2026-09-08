@@ -82,7 +82,21 @@
       if (p.stage==='available'||p.stage==='purchased') return;
       const carried=b.project===id && b.holding==='parcel';
       if (carried) draws.push({y:b.y+.1,draw:g=>box(g,Math.round(b.x)+12,Math.round(b.y)-22,false)});
-      if (id==='table') {
+      if (id==='bookshelf') {
+        if(p.stage==='scheduled'||p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
+        const k=a.kit;
+        draws.push({y:k.y,draw:g=>{
+          ell(g,k.x,k.y,13,3,'rgba(20,12,8,.18)');
+          px(g,k.x-k.w/2,k.y-k.h,k.w,k.h,'#a77e51');
+          px(g,k.x-k.w/2,k.y-k.h,k.w,3,'#c9a477');
+          if(p.stage==='arrived'||p.step===0)px(g,k.x-1,k.y-k.h,3,k.h,'#dfbd89');
+          else {
+            const remaining=Math.max(0,4-p.step);
+            for(let n=0;n<remaining;n++)px(g,k.x-8,k.y-k.h-2-n*3,16,2,'#96704c');
+            px(g,k.x-8,k.y-5,9,2,'#b8bfc7');px(g,k.x-8,k.y-5,3,3,'#6e4a33');
+          }
+        }});
+      } else if (id==='table') {
         if(p.stage==='installed') return; // normal furniture renderer + real seats
         draws.push({y:a.y+32,draw:g=>{
           const x=a.x,y=a.y;
