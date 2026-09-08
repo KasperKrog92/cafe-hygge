@@ -32,6 +32,27 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v13 preserves history and migrates saved service time without offline popularity', () => {
+    const b=boot();b.run(`
+      for(const full of [false,true])for(const days of [0,1,5,20]) {
+        const old=MEMORY.codec.fresh();old.version=12;delete old.life.openSeconds;
+        old.life.daysCompleted=days;old.life.furniture['full-counter']=full;
+        old.life.savings=71;old.flags.kept=true;old.lastSeen=1;
+        const r=MEMORY.codec.decode(JSON.stringify(old));
+        const expected=Math.min(11700,full?Math.max(5,days)*780:days?240+(days-1)*780:0);
+        if(r.error||r.state.life.openSeconds!==expected||r.state.life.savings!==71||!r.state.flags.kept)
+          throw Error('popularity migration lost history');
+        const w=SIM.create({memory:MEMORY.createStore({state:r.state})});
+        if(w.memory.life.openSeconds!==expected)throw Error('boot added offline time');
+      }
+      for(const n of [-1,11701,NaN,Infinity,undefined]) {
+        const s=MEMORY.codec.fresh();s.life.openSeconds=n;
+        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid popularity accepted');
+      }
+      const s=MEMORY.codec.fresh();s.life.openSeconds=417.25;
+      if(MEMORY.codec.decode(MEMORY.codec.encode(s)).state.life.openSeconds!==417.25)throw Error('partial time lost');
+    `);
+  });
   await test('new cafes use game mode; saved idle choices survive reload and reset returns to game', () => {
     const b=boot();
     assert.equal(b.run('MEMORY.state.life.mode'), 'game');

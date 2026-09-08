@@ -1,6 +1,6 @@
 param(
-    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'cat-animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro', 'holger', 'first-days', 'home', 'visitors', 'bookshelf', 'cat-corner', 'invitations', 'gerda', 'hearth', 'ambience', 'dinner')]
-    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'cat-animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro', 'holger', 'first-days', 'home', 'visitors', 'bookshelf', 'cat-corner', 'invitations', 'gerda', 'hearth', 'ambience', 'dinner'),
+    [ValidateSet('art', 'pathing', 'nora-routing', 'hours', 'animations', 'cat-animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro', 'holger', 'first-days', 'home', 'visitors', 'bookshelf', 'cat-corner', 'invitations', 'gerda', 'hearth', 'ambience', 'dinner', 'arrivals')]
+    [string[]]$Suite = @('art', 'pathing', 'nora-routing', 'hours', 'animations', 'cat-animations', 'animation-journeys', 'waterfront', 'ship', 'life', 'projects', 'c0', 'first-opening', 'intro', 'holger', 'first-days', 'home', 'visitors', 'bookshelf', 'cat-corner', 'invitations', 'gerda', 'hearth', 'ambience', 'dinner', 'arrivals'),
     [string]$Url = 'http://127.0.0.1:8137/?dev',
     [ValidatePattern('^[a-zA-Z0-9_-]+$')][string]$Label = 'project-check'
 )

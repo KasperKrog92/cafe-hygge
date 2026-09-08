@@ -26,6 +26,27 @@ results shipped, and update the roadmap before declaring the slice complete.
 
 ## Compatibility scope
 
+**Popularity and occupancy, 8 September 2026:** `verify-project.ps1 -Label
+arrivals-final` passed 25 of 26 suites. The visitor customer-journey fixture
+still assumed three concurrent guest slots at day-two familiarity; it now
+explicitly uses five saved service days for that simultaneous-visit check.
+`verify-project.ps1 -Suite visitors -Label arrivals-visitors-final` passes after
+that fixture correction; production behavior needed no further change. All 26
+suites are covered, including 16 real-service occupancy scenarios and audits.
+The mature four/six/eight-seat scenarios averaged 100% seated occupancy after
+the opening ramp, and the sixteen-seat scenarios averaged 91–92% (seeds 42/84).
+These are daytime/evening simulation samples, not a strict fullness guarantee.
+
+All 21 save/isolation groups, audio settings and 25 shipped-script syntax checks
+pass. `verify-arrivals-ui.ps1 -Label arrivals-reloads-final` preserves partial
+service time and migrates a v12 save through actual page reloads with zero audit
+problems. `node tools/test-soak.js 1` passes four one-hour scenarios, twelve café
+days and 240 audit samples, including optional work and automatic nights.
+`verify-entry.ps1 -Label arrivals-entry-final` passes the real entry/audio flow,
+a 30.5-second cappuccino cycle, income, night lighting and audit. Populated
+small/full café captures were inspected; every owned browser session closed.
+Browser verification used desktop Chromium; native Safari was not run.
+
 **Off-duty customers, 8 September 2026:** Keira and Tomas now use ordinary
 admission, service, seating and departure, with invitations only after seating.
 `verify-project.ps1 -Suite visitors,hearth -Label visitor-customers-final` passes,
@@ -178,6 +199,7 @@ Use the established comparison tool for visual passes:
 | `intro` | First-morning dialogue, attended controls and finale |
 | `holger` | Invitations, conversation choices, resumable dialogue and ordinary moments |
 | `first-days` | Admission pacing, first-day duration, mandatory greeting and paired first purchases |
+| `arrivals` | Real-service occupancy at 4/6/8/16 customer seats and three popularity stages; two mature-café seeds, queue/capacity bounds, dirty-seat admission, evening target, saved service time and audits |
 
 **Long simulation check:** `node tools/test-soak.js` runs four seeded scenarios
 for six simulated hours each, using the shipped scripts in private Node worlds.
@@ -264,7 +286,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v11; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v13; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 

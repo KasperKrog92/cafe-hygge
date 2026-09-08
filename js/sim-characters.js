@@ -1581,6 +1581,8 @@
     updateDoor(world, dt);
     const shopBusy = shop.update(world, dt);
     if (world.shop.phase === 'home') { R.saveLife(world, dt); return; }
+    if(world.shop.phase==='open' && world.shop.accepting)
+      world.memory.life.openSeconds=Math.min(11700,world.memory.life.openSeconds+dt);
     updateSpawning(world, dt);
     R.updateWindowWorker(world,dt);
     R.updateVisitors(world,dt);

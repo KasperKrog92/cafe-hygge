@@ -68,7 +68,7 @@ const result = vm.runInContext(`(() => {
         report.samples++;
         __dev.audit(w).forEach(addFailure);
         report.maxSaveBytes = Math.max(report.maxSaveBytes, saveBytes(MEMORY.codec.encode(w.memory)));
-        if (w.patrons.length>7 || w.captionQueue.length>2) addFailure('unbounded patron/caption population');
+        if (w.patrons.length>w.seats.length+w.waterfront.tables.length || w.captionQueue.length>2) addFailure('unbounded patron/caption population');
         for (const [id,a] of Object.entries(w.memory.arcs))
           if (a.stage !== startStage[id]) addFailure('unattended narrative payoff: '+id);
       }

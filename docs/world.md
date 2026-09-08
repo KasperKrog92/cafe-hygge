@@ -199,8 +199,8 @@ renderer clips it behind the glass, weather, mullions and curtains.
   resumes. Closing waits for outdoor guests and Lunafreya's final terrace cleanup
   before the indoor closing round and curtains.
 - These tables and exterior positions are separate from indoor seats and the
-  floor route planner. Outdoor people remain in `world.patrons` (the same total
-  cap of seven); their original entity draws at half scale beyond the glass,
+  floor route planner. Outdoor people remain in `world.patrons`, bounded by
+  reserved terrace places separately from indoor occupancy; their entity draws at half scale beyond the glass,
   never also in the room. No narrative save shape changes are required.
   Dev: `__dev.spawn({outdoor:true, pianist:false, wantsBook:true, ownBook:true})`
   in fair weather exercises the full ordering journey.
@@ -482,17 +482,50 @@ by skipping. Ordinary days retain the existing elapsed-time background clock.
 
 Walk-ins and regulars share one arrival timer. On day one Holger enters first;
 other regulars and couples wait for later days. After the mandatory hello, the
-next arrival is 90–130 seconds away. Occupancy starts at two, rises by one for
-every two completed café days, and never exceeds actual indoor seating or the
-seven-daytime/four-evening limit. Admission counts people waiting for seats and
-excludes seats with abandoned dishes. Later arrival intervals shorten gradually,
-with extra spacing after dark; overdue regulars cannot enter on the same tick.
-A full café simply receives no new entrant.
+next arrival is 90–130 seconds away, with at most two guests present during the
+short first opening. Later days use the occupancy rule below. Admission counts
+people waiting for seats and excludes seats with abandoned dishes; overdue
+regulars cannot enter on the same tick. A full café receives no new entrant.
 
 `life.daysCompleted` increases once on arriving home, persists through reload,
 and never accrues while the app is closed. Existing furnished saves migrate as
 established cafés; unfinished first mornings receive at least 90 savings.
 Already-open existing saves keep their balance and opening hour.
+
+### Popularity and occupancy — shipped 8 September 2026
+
+Arrivals respond to installed customer seating and quietly saved service time.
+The target rises smoothly from 50% to 75% over five full service days, then to
+95% over fifteen. A service day is 780 running seconds (roughly thirteen café
+hours). Round to the nearest guest; the four-seat first opening retains its
+two-person limit and slower arrival spacing. The piano and artist stool are
+activity stations, excluded from general seating and its occupied count.
+
+`life.openSeconds` (schema v13) accrues only in accepting, open café simulation
+ticks, saturating at 11,700 seconds. Hidden play counts; setup, held conversations,
+home, closing, paused play and time with the app closed do not. It never decays
+and needs no score, purchase or attended story. Existing saves receive one-time
+credit from completed café days (four minutes for the first opening); old furnished
+rooms receive at least five service days. Partial time saves with ordinary life
+checkpoints and reload adds no time.
+
+All walk-ins, regulars and off-duty neighbours share one timer. Below target,
+an opportunity takes 20–34 seconds; a deficit of two or more guests advances it
+twice as fast. At target or without a clean unreserved seat, the opportunity
+waits. Incoming orders count toward occupancy and reserve admission capacity;
+at most three guests may be waiting to obtain a seat. Departing guests count
+toward occupancy until they leave, but no longer reserve a clean seat. Couples
+require room for both. Working contractors are separate actors. Terrace guests
+use their own reservation and do not suppress indoor arrivals. Night retains
+the same occupancy target; actual closing still stops new arrivals.
+
+After opening day, guests linger longer as the café grows familiar: the minimum
+visit is `180 + 25 × target guests + 360 × familiarity` seconds, varied ±10%,
+where familiarity runs from zero to one across fifteen service days. Authored
+or ordinary stays that are already longer are preserved. This gives one barista
+time to serve and tidy while the room fills with settled readers. Closing still
+uses its existing last-cup departures. Fullness is a target the café returns to,
+with a natural opening ramp and brief gaps during departures, service and cleanup.
 
 The booked worker enters the following open café with a toolbox, walks to
 `L.projects.window.work`, protects the sill, removes boards, repairs the frame,

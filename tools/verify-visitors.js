@@ -85,9 +85,11 @@
   });
   check(!SIM.visitorInvites(known).length,'expanded scenes reopened completed greetings');
   // Returning neighbours take the complete customer journey before inviting.
+  // This simultaneous-visit fixture needs three slots, including Holger;
+  // opening-day familiarity intentionally offers only two in a four-seat cafe.
   for(const mode of ['idle','game']) {
     let w=__dev.modestWorld({random:SIM.seededRandom(17)});SIM.setMode(w,mode);
-    w.memory.life.daysCompleted=2;
+    w.memory.life.daysCompleted=5;w.memory.life.openSeconds=5*780;
     w.clockOffset+=(11.5-w.hour)/24*SIM._.DAY_SECONDS;
     const seen={keira:new Set(),tomas:new Set()},guests={};
     until(w,()=>{

@@ -319,10 +319,13 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    shares the off hand with a carried drink or closed laptop.
 
 **Spawning:** new cafés start with at most two customers and 90–130 seconds
-between first-day arrivals after Holger’s mandatory greeting. The limit grows
-by one for every two completed days, capped by real seating and seven daytime /
-four evening guests. Regulars share the walk-in timer; waiting guests and dirty
-seats reduce admission. Later-day gaps shorten gradually. Only established
+between first-day arrivals after Holger’s mandatory greeting. Later occupancy
+targets 50%, 75% and eventually 95% of installed customer seating as saved open
+time grows. Regulars share the walk-in timer; waiting guests and dirty seats
+reduce admission, and no more than three guests await a seat. Arrivals speed up
+when well below target; evenings keep the same fullness. Later visits gain a
+capacity/familiarity-based minimum stay so the room fills with settled readers;
+longer authored stays and normal closing departures are preserved. Only established
 furnished cafés pre-seat the familiar room at boot; a modest café restores only
 an unfinished first greeting at the counter. See world.md for the shared budget.
 
@@ -646,7 +649,8 @@ regulars, couples, pianists, laptop users and borrowers retain their indoor
 journeys. The same patron and the same ordered drink travel
 `terraceDoor → terraceWalk → terraceSit → terraceLeave`. They sit for 100–240 s,
 sip every 12–25 s, and turn pages if they brought their own book. Outdoor
-people remain within the shared seven-patron cap and hold no indoor seat.
+people hold their own reserved terrace place and no indoor seat; they do not
+reduce the indoor occupancy target.
 
 After ten seconds of sustained rain, `terraceReturn` carries the drink back
 through the entrance and reserves an indoor seat; if no seat is available the

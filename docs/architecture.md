@@ -101,8 +101,8 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v12, migrated through v1–v11) contains `mode`, integer `savings`, `hour`,
-`homeTime`, `homeDinner: {time,done}`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
+`memory.life` (v13, migrated through v1–v12) contains `mode`, integer `savings`, `hour`,
+`homeTime`, `homeDinner: {time,done}`, `daysCompleted`, `openSeconds` (0–11700, saved active service time for popularity), `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
 → unpack → place → installed. Purchase and stage transitions flush immediately;
@@ -309,7 +309,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v12; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v13; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -387,7 +387,7 @@ or console calls:
 | Call | Does |
 | --- | --- |
 | `__dev.hour(h)` | jump the in-world clock (no arg: read it) |
-| `__dev.study({hour, rain, seats})` | detached, fixed art world; optional seat-index array (up to seven, empty array for empty furniture). Clones existing layout, clears live activity, poses readers; never tick or bind it as `__world` |
+| `__dev.study({hour, rain, seats})` | detached, fixed art world; optional seat-index array (up to installed seating, empty array for empty furniture). Clones existing layout, clears live activity, poses readers; never tick or bind it as `__world` |
 | `__dev.review(opts)` / `__dev.poses()` | ten PNG data URLs for a fixed day/night scene, empty scene, six detail crops and character turnarounds / just the roster turnarounds |
 | `__dev.ff(seconds)` | fast-forward the sim in 0.25 s ticks (`SND.update` skipped, one-shots muted) |
 | `__dev.spawn(opts)` | a real patron through the front-door flow with chosen traits (`wantsBook`, `ownBook`, `chatty`, `drink`, `name`, `umbrella`, `laptop`, `pianist`); `couple: true` returns a linked pair |
@@ -527,9 +527,14 @@ browser captures also show the camera crop and the put-aside control.
 
 ## First-day admission, repair and required greeting
 
-`spawnCap`, `arrivalRoom` and `arrivalGap` in sim-core share one admission budget
+`arrivalTarget`, `arrivalRoom` and `arrivalGap` in sim-core share one admission budget
 between walk-ins and regulars. The budget includes pending seat demand and dirty
-seats; familiarity derives from saved completed café days, never real-world age.
+seats; familiarity derives from saved `life.openSeconds`, never real-world age.
+General seating sets a 50% → 75% → 95% target over fifteen service days; the
+first opening retains its two-person cap. Activity stations and terrace
+reservations are separate. Pending seat demand is bounded at three. The normal
+open simulation tick adds popularity time; life persistence saves it and the
+v12 → v13 migration credits completed days once. See world.md for visit pacing.
 The one-time setup finale commits 17:30 with its completed step, so reload never
 replays the afternoon jump. `enterHome` increments `daysCompleted` only once.
 

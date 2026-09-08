@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 12;
+  const KEY = 'cafe-hygge-save', VERSION = 13;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -69,6 +69,8 @@
           typeof d.done==='boolean', 'invalid home dinner');
       }
       if (version >= 7) requireShape(integer(s.life.daysCompleted) && s.life.daysCompleted >= 0, 'invalid café days');
+      if (version >= 13) requireShape(finite(s.life.openSeconds) && s.life.openSeconds >= 0 &&
+        s.life.openSeconds <= 11700, 'invalid café popularity time');
       if (version >= 4) {
         requireShape(record(s.life.furniture), 'invalid furniture');
         FURNITURE.forEach(id => requireShape(typeof s.life.furniture[id] === 'boolean', 'invalid furniture: ' + id));
@@ -113,7 +115,7 @@
     return { fresh: fresh, validate: validate, migrate: migrate, decode: decode, encode: encode };
   }
   function freshLife() {
-    return { mode: 'game', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0,
+    return { mode: 'game', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0, openSeconds: 0,
       plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), furniture: furnishings(false),
       homeStory: freshHomeStory(false), homeDinner:{time:0,done:false}, firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
   }
@@ -233,6 +235,15 @@
     // An established evening continues in place; dinner joins the next arrival.
     s.life.homeDinner={time:0,done:!!(s.life.checkpoint && s.life.checkpoint.shop.phase==='home' &&
       s.life.homeStory.step===12 && s.life.homeStory.planned)};
+    return s;
+  }, 12: function(s) {
+    createCodec(12, {}).validate(s);
+    s.version=13;
+    // Credit saved service history once, never wall-clock absence. The short
+    // first opening contributes four minutes; later days approximate 13 hours.
+    s.life.openSeconds=Math.min(11700,s.life.furniture['full-counter'] ?
+      Math.max(5,s.life.daysCompleted)*780 : s.life.daysCompleted ?
+      240+(s.life.daysCompleted-1)*780 : 0);
     return s;
   } });
   MEMORY.freshHomeStory=freshHomeStory;

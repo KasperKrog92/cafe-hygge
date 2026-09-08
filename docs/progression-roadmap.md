@@ -518,8 +518,16 @@ without penalty until completion; acknowledged replies survive reload. This
 one-time attended exception works in idle and game, as the owner requested.
 Later days return to ordinary hours and autonomous progression.
 
-The new café starts with a two-customer cap, grows gradually with completed café
-days and always respects usable seating. Walk-ins and regulars share one spaced
+The new café starts with a two-customer cap. As of 8 September, later occupancy
+grows with saved open service time: 50% of usable customer seats initially,
+75% after about five service days, and 95% after fifteen, rounded to whole guests.
+There is no popularity decay, meter or required interaction. Arrivals respond to
+the gap below that target, including in the evening, and established guests stay
+longer so the room becomes a lived-in reading place. Opening, departures and
+cleanup allow natural temporary gaps. Working visitors and reserved terrace
+customers do not consume the indoor target; off-duty neighbours do. See
+[world.md](world.md#popularity-and-occupancy--shipped-8-september-2026) for timing,
+save migration and capacity rules. Walk-ins and regulars share one spaced
 arrival budget. No first-day couples or influx of overdue regulars. The extra
 table uses the existing interruptible assembly; window work belongs to the
 visiting craftsperson. Both installed improvements persist without an expiring

@@ -1141,20 +1141,31 @@
 
   /* ---------- spawning ---------- */
 
-  function spawnCap(world) {
-    const established=SCENE.hasFurniture(world,'full-counter');
-    const familiarity=established ? 7 : Math.min(7,2+Math.floor(world.memory.life.daysCompleted/2));
-    return Math.min(world.seats.length,familiarity,world.daylight > 0.3 ? 7 : 4);
+  function arrivalFirstDay(world) {
+    return !SCENE.hasFurniture(world,'full-counter') && world.memory.life.daysCompleted===0;
+  }
+  function arrivalTarget(world) {
+    // The piano and easel are activity stations, not general customer seats.
+    const capacity=world.seats.filter(s => !s.piano && !s.artist).length;
+    const days=world.memory.life.openSeconds/780;
+    const fullness=.5+.25*Math.min(1,days/5)+.2*Math.max(0,Math.min(1,(days-5)/10));
+    return Math.min(capacity,arrivalFirstDay(world) ? 2 : Math.max(1,Math.round(capacity*fullness)));
+  }
+  function arrivalPopulation(world) {
+    // Terrace customers have their own reserved places. Workers are separate
+    // actors; off-duty neighbours are ordinary patrons and count here.
+    return world.patrons.filter(p => !p.gone && p.terraceTable==null &&
+      !(p.seat && (p.seat.artist || p.seat.piano))).length;
   }
   function arrivalRoom(world) {
-    const clean=world.seats.filter(s => !s.taken && (s.table<0 ||
+    const clean=world.seats.filter(s => !s.piano && !s.artist && !s.taken && (s.table<0 ||
       !world.tables[s.table].items.some(it => it.owner===null && it.side===s.side))).length;
-    const waiting=world.patrons.filter(p => !p.seat && !p.outside).length;
-    return Math.max(0,Math.min(spawnCap(world)-world.patrons.length,clean-waiting));
+    const waiting=world.patrons.filter(p => !p.gone && !p.seat && p.terraceTable==null &&
+      ['returnBook','return','collectUmbrella','exit'].indexOf(p.state)<0).length;
+    return Math.max(0,Math.min(arrivalTarget(world)-arrivalPopulation(world),clean-waiting,3-waiting));
   }
   function arrivalGap(world) {
-    const days=SCENE.hasFurniture(world,'full-counter') ? 7 : world.memory.life.daysCompleted;
-    return days===0 ? rnd(90,130) : rnd(1,1.35)*(Math.max(40,85-days*7)+(1-world.daylight)*25);
+    return arrivalFirstDay(world) ? rnd(90,130) : rnd(20,34);
   }
 
   function applyArrivalTraits(world, p) {
@@ -1355,7 +1366,10 @@
       return;
     }
     if(SIM.holgerRequired && SIM.holgerRequired(world))return;
-    world.spawnT -= dt;
+    // Keep one pending opportunity while full/dirty. When well below target,
+    // fill gradually at twice the near-target pace, with at most three waiting.
+    if(arrivalRoom(world)<1)return;
+    world.spawnT -= dt*(!arrivalFirstDay(world) && arrivalTarget(world)-arrivalPopulation(world)>=2 ? 2 : 1);
     if (world.spawnT > 0) return;
     world.spawnT = arrivalGap(world);
     if (arrivalRoom(world)<1) return;
@@ -1566,6 +1580,7 @@
     dayIndex: dayIndex, candleTables: candleTables,
     snapCandles: snapCandles, updateCandles: updateCandles,
     updateFire: updateFire, addLog: addLog,
+    arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom,
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };

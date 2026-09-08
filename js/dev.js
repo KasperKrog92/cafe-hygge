@@ -350,7 +350,7 @@
   function walkTargets(w) {
     const t = [];
     w.seats.forEach(function (s, i) { t.push({ x: s.x, y: s.y, via: s.via, name: 'seat[' + i + ']' }); });
-    for (let i = 0; i < 7; i++) {           // spawn cap is 7 — audit the worst case
+    for (let i = 0; i < 7; i++) {           // retain all authored queue/wait anchors, including dev-forced crowds
       const q = SIM._.queueSlot(i);
       t.push({ x: q.x, y: q.y, name: 'queueSlot(' + i + ')' });
       const ws = SIM._.waitSpot(i);
@@ -518,6 +518,7 @@
       state.life.firstOpening={step:12,time:0};
       state.life.room='full';
       state.life.homeStory=MEMORY.freshHomeStory(true);state.life.daysCompleted=7;state.life.projects.window={stage:'installed',step:4,time:0};
+      state.life.openSeconds=7*780;
         state.life.projects.bookshelf={stage:'installed',step:5,time:0};
         state.life.projects.windowSeat={stage:'installed',step:4,time:0};state.flags['gerda-window-legacy']=true;state.flags['fireplace-unlocked']=true;
         state.life.projects.mantel={stage:'installed',step:3,time:0};
@@ -554,8 +555,8 @@
      Custom seat indices let a review cover any occupancy without a live wait. */
   D.study = function (opts) {
     opts = opts || {};
-    if (opts.seats && opts.seats.length > 7) throw new Error('[dev] study keeps the seven-patron cap');
     const w = structuredClone(opts.world || world());
+    if (opts.seats && opts.seats.length > w.seats.length) throw new Error('[dev] study exceeds installed seating');
     w.clockOffset = 0;
     w.shop = { phase: 'open', elapsed: 0, step: 0, task: null, fade: 0, lights: 1, lastCall: false,
       curtains: [0, 0], stocked: true, accepting: true, carryingCat: false, away: false };
@@ -1233,7 +1234,8 @@
     w.counterCups.forEach(function (c) {
       if (!live[c.owner]) problems.push('counter cup owned by departed patron ' + c.owner);
     });
-    if (w.patrons.length > 7) problems.push(w.patrons.length + ' patrons exceed the spawn cap (7)');
+    if (w.patrons.length > w.seats.length+(SCENE.hasFurniture(w,'terrace') ? w.waterfront.tables.length : 0))
+      problems.push(w.patrons.length + ' patrons exceed installed indoor and terrace seating');
     if (w.shop) {
       const shop = w.shop;
       if (['open', 'closing', 'leaving', 'night', 'dawn', 'entering', 'opening'].indexOf(shop.phase) < 0) problems.push('unknown shop phase');

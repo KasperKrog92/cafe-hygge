@@ -554,6 +554,13 @@
           p.state = 'seated'; p.stateT = 0;
           p.stay = (p.isRegular && p.spec) ? rnd(p.spec.stay[0], p.spec.stay[1])
             : (p.coupleStay || rnd(100, 260));
+          // A familiar reading place supports longer visits. Give service and
+          // cleanup room to breathe as seating grows, rather than filling the
+          // queue faster than Lunafreya can make drinks. Keep opening day short.
+          if(world.memory.life.daysCompleted>0 || SCENE.hasFurniture(world,'full-counter')) {
+            const linger=180+R.arrivalTarget(world)*25+360*world.memory.life.openSeconds/11700;
+            p.stay=Math.max(p.stay,linger*rnd(.9,1.1));
+          }
           if (p.seat.table >= 0) {
             world.tables[p.seat.table].items.push({ side: p.seat.side, kind: p.drink.kind, owner: p.id,
               hot: p.drink.kind === 'glass' ? 0 : 45, hidden: false });

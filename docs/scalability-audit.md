@@ -123,7 +123,9 @@ OS sleep/resume test or browser heap-retention investigation was performed.
 At the baseline, the 20 shipped JavaScript files total 631,664 bytes and 13,171
 lines, including the dev harness. Compressing each locally with gzip totals
 about 185 kB; that is a size estimate, not a measured production download.
-The existing seven-patron admission cap bounds the main character simulation.
+The baseline used a seven-patron admission cap. The 8 September occupancy pass
+replaces it with installed seating, a three-guest pending-seat limit, and
+separate reserved terrace places; the simulation remains physically bounded.
 History is saved as compact records, rather than an accumulating event replay.
 
 More players each run their own local café. They do not add simulation work to
