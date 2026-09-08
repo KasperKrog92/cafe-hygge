@@ -324,3 +324,20 @@ The two rust-red pillows have sparse cable-knit marks and stay inside the
 existing sill/frame envelope; only the left window gains a table and seats.
 `gerda-ui` contains inspected actual 16:10/16:9 offer, planner and thank-you
 views plus real page reloads. Every runner closes its owned browser session.
+
+## Sparse fireplace and later mantel review — 8 September 2026
+
+`hearth-before` / `hearth-after` cover repeatable room art: ten images,
+twelve occupancy scenarios and zero audits. The initial fireplace has three
+nailed boards over an empty opening, with no shelf, corbels or decorations.
+The first purchase removes those boards and enables the fire while keeping the
+upper masonry bare. The later mantel purchase adds the shelf, clock, candles
+and plant at the existing fireplace position; it does not add the legacy wall
+picture elsewhere in the room.
+
+The `hearth-regression` scenario exports each construction phase and finished
+state. `hearth-ui` adds inspected actual 16:10/16:9 boarded, dialogue, planner,
+work and completed views, including seven real work-phase reloads. Check Tomas’s
+reach from the ladder, his descent before departure, and the rested fire during
+his visit. Gerda’s fireplace follow-up remains readable with both characters
+framed. All task-owned browser sessions were confirmed closed.

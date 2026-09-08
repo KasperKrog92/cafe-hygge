@@ -829,3 +829,20 @@ thank-you is saved line by line and follows her into later visits. Her preferred
 seat is now specifically a left-window perch, with the normal occupied-seat
 fallback. After the existing cat-scarf payoff, she can keep knitting in her
 new corner without replaying the scarf gift or changing that saved arc.
+
+
+## Gerda’s fireplace remark and Tomas’s mantel visit — 8 September 2026
+
+Gerda’s introduction now includes her hope of sitting by an opened fireplace.
+Finishing that conversation unlocks its first purchase regardless of the
+pillow decision. Earlier completed introductions receive a separate two-line
+invitation, saved as `gerda-hearth-hope/reply`. It never chooses or purchases
+an upgrade for the player.
+
+Lunafreya’s first fireplace job is unboarding, sweeping, clearing the flue and
+laying the first fire; its existing service-interruption rhythm remains.
+Tomas handles the separate later mantel purchase through his existing job
+actor and identity. He prepares supports at the hearth, climbs to mount the
+shelf and arrange its clock, candles and plant, then climbs down. His optional
+hello remains available on the floor or a later visit. Neither dialogue nor
+absence prevents the practical work from finishing.

@@ -47,6 +47,8 @@ plan does not mean its full cast or later systems should be built in one task.
 
 **Gerda’s window — shipped 8 September 2026:** Gerda first visits after the left-window repair. Her optional saved pillow offer unlocks a 40-coin left-window table/seats project. Lunafreya assembles the table after the next sleep; Gerda then carries and places two knitted pillows, orders tea and sits. Her thank-you waits for input. “Not yet” preserves later acceptance. Existing furnished windows keep their legacy seating.
 
+**Fireplace direction (8 September 2026):** the initial firebox is boarded and has no mantel shelf or decorations. Gerda’s attended fireplace remark unlocks the 30-coin reopening project independently of her pillow offer. Lunafreya removes the boards and makes a working, still-bare hearth. A separate later 40-coin purchase has Tomas fit the mantel shelf and place its clock, candles and plant. Earlier introductions receive a short saved follow-up; existing purchases and decorated fireplaces are preserved.
+
 **First-day direction (7 September 2026):** setup ends at 17:30, leaving four
 active service minutes. A new café starts with at most two customers; arrivals
 share a seat-aware timer and grow gradually across saved café days. The first
@@ -226,7 +228,7 @@ choices. This one-time tutorial exception does not make later story arcs mandato
 | `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
 | `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes; character helpers supplied explicitly. |
 | `js/sim-characters.js` | `SIM` | Lunafreya and cat state machines plus the main simulation update and entity-drawable bridge. |
-| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects and first-opening assembly, v6 checkpoints. |
+| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects, Tomas’s window/mantel work and first-opening assembly. |
 | `js/sim-intro.js` | `SIM` | Saved first-morning dialogue, cat hug, silent breath and sign placement. |
 | `js/sim-moments.js` | `SIM` | Shared attended conversations, saved acknowledgements/replies, approach and return; Holger introduction. |
 | `js/sim-gerda.js` | `SIM` | Repaired-window arrival gate, Gerda’s pillow offer, saved gift placement and thank-you invitation. |

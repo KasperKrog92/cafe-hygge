@@ -195,6 +195,13 @@ prompts her first visit. She offers two rust-red pillows with cable-knit covers
 she made herself, one for her and one for company. Lunafreya may accept or
 say “not yet”; both are warm answers, and the offer can be reconsidered later.
 Acknowledging acceptance unlocks the optional 40-coin window table/seats plan.
+She also says she looks forward to the fireplace being opened. Lunafreya hopes
+to remove the boards and get a fire going, leaving the shelf and little things
+for later. Completing their hello unlocks the separate 30-coin reopening
+project, including when the pillow offer is deferred. If the fireplace already
+works, those two lines acknowledge its existing warmth instead of claiming
+it is still boarded. Earlier completed introductions get a short, optional
+`hearth` conversation on a later visit; existing choices never replay.
 
 After a chosen project’s next morning, Lunafreya assembles the little table.
 Gerda returns with both pillows, places them separately on the sill, orders
@@ -204,11 +211,13 @@ her a bit of her day back. It introduces no new bereavement or diagnosis. The
 second pillow leaves room for company, and Gerda jokes gently about counting
 stitches while listening. She continues knitting here after the cat’s scarf.
 
-The three literal packets are `CAST.gerdaWindow.hello/offer/thanks`. Acknowledged
+The four literal packets are `CAST.gerdaWindow.hello/hearth/offer/thanks`. Acknowledged
 nodes save `gerda-<packet>-<node>`; selected replies save `gerda-hello-yes/later`
 or `gerda-offer-yes/later`. Final acknowledgements set `gerda-introduced`,
 `gerda-pillows-accepted` and `gerda-window-thanked`. Completed placements are
-`gerda-pillow-left/right`. Declining keeps that visit’s invitation quiet; a
+`gerda-pillow-left/right`. `fireplace-unlocked` is set only on completion of
+her hello or the later two-line hearth exchange, whose cursor saves
+`gerda-hearth-hope/reply`. Declining keeps that visit’s invitation quiet; a
 later visit can reopen the offer. Thanks can follow her into another visit
 and never expires. Preexisting fully furnished window saves keep their old
 seating via `gerda-window-legacy`, with no invented new dialogue history.

@@ -140,16 +140,17 @@
           px(g,x+17,y+23,10,4,'#7a89a5'); px(g,x+17,y+29,9,2,'#b8bfc7'); px(g,x+25,y+28,5,4,'#a8764a');
         }});
       } else if (id==='fireplace') {
+        if(p.stage==='scheduled'||p.stage==='installed')return;
         draws.push({y:a.y+3,draw:g=>{
           const x=a.x,y=a.y;
-          // Ash and soot disappear in remembered sections; no future decay.
-          if(p.stage!=='installed') {
+          // Removed boards and a small brush wait beside the work, then leave.
+          if(p.stage==='working') {
             const n=p.step;
+            const boards=n>0?3:3-SCENE.fireplaceBoards(w);
+            for(let i=0;i<boards;i++)px(g,x-22,y-5-i*3,35,2,'#8a6d49');
             for(let i=0;i<8-n*2;i++) px(g,x-19+i*5,y-17+(i%2)*3,4,2,'#62574b');
             px(g,x+23,y-5,13,13,'#69756b'); px(g,x+24,y-7,11,3,'#a9afa0');
             px(g,x+25,y-14,2,9,'#96704c'); px(g,x+22,y-15,8,3,'#c9b28a');
-          } else {
-            px(g,x-27,y-12,54,2,'#d5c3a5'); px(g,x-22,y-10,44,2,'#b6a48d');
           }
         }});
       }

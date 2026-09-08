@@ -61,7 +61,7 @@
   // Choose, interrupt, close, reload and resume each project in the small room.
   // Disable unrelated arrivals only for the controlled interruption trace.
   for(const id of ['plant','table','fireplace']) {
-    let w=__dev.modestWorld({random:SIM.seededRandom(143)});w.memory.life.savings=180;
+    let w=__dev.modestWorld({random:SIM.seededRandom(143)});w.memory.flags['fireplace-unlocked']=true;w.memory.life.savings=180;
     home(w);const before=w.memory.life.savings;
     check(id==='plant'?SIM.buyPlant(w):SIM.buyProject(w,id),'C0 purchase failed');
     check(!SIM.buyPlant(w)&&!SIM.buyProject(w,'table')&&!SIM.buyProject(w,'fireplace'),'duplicate purchase');

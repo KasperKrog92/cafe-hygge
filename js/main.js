@@ -213,6 +213,8 @@
       const available = stage === 'available';
       button.hidden=l.homeStory.firstNight && id!=='window' && id!=='table';
       if(id==='windowSeat')button.hidden=button.hidden || !world.memory.flags['gerda-pillows-accepted'] || l.furniture['window-seats'];
+      if(id==='fireplace')button.hidden=button.hidden || !world.memory.flags['fireplace-unlocked'];
+      if(id==='mantel')button.hidden=button.hidden || !SCENE.hasFurniture(world,'hearth') || l.furniture['mantel-decor'];
       button.disabled = !IMPROVEMENTS.canBuy(world,id);
       button.querySelector('.thought-price > span').textContent = price;
       button.querySelector('.thought-price').hidden = !available;

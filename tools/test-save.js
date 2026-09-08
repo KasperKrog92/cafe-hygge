@@ -32,6 +32,30 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v11 preserves bought/open fireplaces and adds a separate mantel project', () => {
+    const b=boot();b.run(`
+      for(const stage of ['available','purchased','scheduled','arrived','working','installed']) {
+        const old=MEMORY.codec.fresh();old.version=10;delete old.life.projects.mantel;
+        old.life.projects.fireplace={stage,step:stage==='installed'?4:stage==='working'?2:0,time:stage==='working'?7.5:0};
+        old.life.projects.windowSeat={stage:'working',step:1,time:7.25};old.life.savings=131;
+        old.flags['gerda-introduced']=true;old.flags['gerda-pillows-accepted']=true;
+        const next=MEMORY.codec.decode(JSON.stringify(old));
+        if(next.error||next.state.version!==11||next.state.life.savings!==131)throw Error('v10 migration');
+        if(JSON.stringify(old.life.projects.fireplace)!==JSON.stringify(next.state.life.projects.fireplace)||next.state.life.projects.windowSeat.time!==7.25)throw Error('existing job replayed');
+        if(!!next.state.flags['fireplace-unlocked']!==(stage!=='available')||!!next.state.flags['fireplace-open-legacy']!==(stage==='working'))throw Error('historical opening state');
+        if(next.state.life.projects.mantel.stage!=='available'||!next.state.flags['gerda-introduced'])throw Error('mantel/story history');
+      }
+      const full=MEMORY.codec.fresh();full.version=10;delete full.life.projects.mantel;full.life.furniture=MEMORY.furnishings(true);
+      const n=MEMORY.codec.decode(JSON.stringify(full));
+      if(n.error||n.state.life.projects.mantel.stage!=='installed'||n.state.life.projects.mantel.step!==3||!n.state.flags['fireplace-unlocked'])throw Error('legacy mantel lost');
+      for(const id of ['windowSeat','mantel']) {
+        const bad=MEMORY.codec.fresh();
+        if(id==='windowSeat'){bad.version=10;delete bad.life.projects.mantel;bad.life.projects.windowSeat.time=12;}
+        else bad.life.projects.mantel={stage:'installed',step:2,time:0};
+        if(!MEMORY.codec.decode(JSON.stringify(bad)).error)throw Error('bad '+id+' accepted');
+      }
+    `);
+  });
   await test('v10 window seats preserve v9 jobs, scarves and established windows', () => {
     const b=boot();b.run(`
       for(const furnished of [false,true]) {
@@ -40,7 +64,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         old.flags['cat-wore-scarf']=true;old.bonds.gerda={known:true,visits:9,warmth:3};
         old.life.projects.bookshelf={stage:'working',step:2,time:7.25};
         const next=MEMORY.codec.decode(JSON.stringify(old));
-        if(next.error||next.state.version!==10||next.state.life.savings!==137||!next.state.flags['cat-wore-scarf']||next.state.bonds.gerda.visits!==9)throw Error('v9 history lost');
+        if(next.error||next.state.version!==MEMORY.VERSION||next.state.life.savings!==137||!next.state.flags['cat-wore-scarf']||next.state.bonds.gerda.visits!==9)throw Error('v9 history lost');
         if(JSON.stringify(next.state.life.projects.bookshelf)!==JSON.stringify(old.life.projects.bookshelf))throw Error('v9 shelf checkpoint lost');
         if(next.state.life.projects.windowSeat.stage!==(furnished?'installed':'available')||!!next.state.flags['gerda-window-legacy']!==furnished)throw Error('legacy window ownership');
         if(next.state.flags['gerda-window-thanked']||next.state.flags['gerda-introduced'])throw Error('migration invented conversation');
@@ -77,7 +101,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
     b.run(`
       const ids=['window','table','plant','fireplace'], prices={window:30,table:60,plant:30,fireplace:30};
       for(const first of ids)for(const second of ids) {
-        const w=SIM.create({});w.shop.phase='home';w.memory.life.homeStory=MEMORY.freshHomeStory(true);w.memory.life.mode='game';w.memory.life.savings=200;SIM.plan(w,true);
+        const w=SIM.create({});w.shop.phase='home';w.memory.life.homeStory=MEMORY.freshHomeStory(true);w.memory.life.mode='game';w.memory.life.savings=200;w.memory.flags['fireplace-unlocked']=true;SIM.plan(w,true);
         const buy=id=>id==='plant'?SIM.buyPlant(w):SIM.buyProject(w,id);
         if(!buy(first))throw Error('first purchase '+first);
         const pair=first==='window'&&second==='table'||first==='table'&&second==='window';

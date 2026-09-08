@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 10;
+  const KEY = 'cafe-hygge-save', VERSION = 11;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -125,13 +125,13 @@
   }
   function validateProjects(l, version) {
     requireShape(record(l.projects) && typeof l.plannedTonight === 'boolean', 'invalid projects');
-    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=9 ? ['table','fireplace','window','bookshelf'] : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
+    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=10 ? ['table','fireplace','window','bookshelf','windowSeat'] : version>=9 ? ['table','fireplace','window','bookshelf'] : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
       // Historical codecs retain their original limits, independent of today's catalogue.
       const d = version === VERSION ? IMPROVEMENTS.projects[id] : null;
       const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'table' ? 6 : id==='bookshelf' ? 5 : 4;
       const stages = d ? d.stages : ['available','purchased','scheduled','arrived','working','installed'];
       requireShape(record(p) && stages.indexOf(p.stage) >= 0 &&
-        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < (d ? d.duration : id==='bookshelf' ? 12 : 18),
+        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < (d ? d.duration : id==='bookshelf'||id==='windowSeat' ? 12 : 18),
         'invalid project: ' + id);
       requireShape(p.stage === 'installed' ? p.step === steps && p.time === 0 : p.step < steps, 'invalid project completion');
       if (['available','purchased','scheduled','arrived'].indexOf(p.stage) >= 0)
@@ -211,6 +211,16 @@
     s.life.projects.windowSeat={stage:established?'installed':'available',step:established?4:0,time:0};
     // Preserve already furnished windows without inventing acknowledged dialogue.
     if(established)s.flags['gerda-window-legacy']=true;
+    return s;
+  }, 10: function(s) {
+    createCodec(10, {}).validate(s);
+    s.version=11;
+    const l=s.life,p=l.projects.fireplace,decorated=l.furniture['mantel-decor'];
+    l.projects.mantel={stage:decorated?'installed':'available',step:decorated?3:0,time:0};
+    // Already bought/working fires retain their exact balance and hand progress.
+    // Earlier fireboxes were open; never put boards over work already underway.
+    if(p.stage!=='available'||l.furniture.hearth)s.flags['fireplace-unlocked']=true;
+    if(p.stage==='working')s.flags['fireplace-open-legacy']=true;
     return s;
   } });
   MEMORY.freshHomeStory=freshHomeStory;

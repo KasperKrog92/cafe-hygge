@@ -367,6 +367,8 @@
       {id:'cold',speaker:'Gerda',text:"But the cold gets into my body now. Even on a bright day, I can't sit outside for very long."},
       {id:'shorter',speaker:'Gerda',text:"I keep telling myself one more boat. Then my hands tell me it's time to go home."},
       {id:'glass',speaker:'Gerda',text:"When I saw this café's big, clear window, I wondered if I could sit in here. Keep the water, lose the wind."},
+      {id:'hearth',speaker:'Gerda',text:"And I'm looking forward to that fireplace being opened. A little fire on a cold afternoon would be lovely."},
+      {id:'hearth-reply',speaker:'Lunafreya',text:"I'd like that too. First I'll get those boards off and make it ready for a fire. The shelf and little things can come later."},
       {id:'room',speaker:'Lunafreya',text:"I'd like that. That deep sill could be a lovely place to sit."},
       {id:'table',speaker:'Lunafreya',text:"It needs a little table for your tea. And something softer than bare wood."},
       {id:'pillows',speaker:'Gerda',text:"I have two pillows at home. Knitted the covers myself. Rust red, with little cables like ropes."},
@@ -376,6 +378,10 @@
         {text:"That's very kind. Could I settle in a little more first?",flag:'gerda-hello-later',reply:"Of course. Wool keeps perfectly well. I'll still come in for tea, if I may."}
       ]},
       {id:'stay',speaker:'Lunafreya',text:"You're welcome here, Gerda. Come and keep warm whenever you like."}
+    ],
+    hearth:[
+      {id:'hope',speaker:'Gerda',text:"I've been looking at that fireplace, Lunafreya. I'm looking forward to it being opened. A little fire on a cold afternoon would be lovely."},
+      {id:'reply',speaker:'Lunafreya',text:"I'd like that too. First I'll get those boards off and make it ready for a fire. The shelf and little things can come later."}
     ],
     offer:[
       {id:'remember',speaker:'Lunafreya',text:"Gerda, I've been thinking about your knitted pillows."},

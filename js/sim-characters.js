@@ -1580,6 +1580,12 @@
       draws.push({y:a.y,draw:function(g) {
         const x=Math.round(a.x),y=Math.round(a.y);
         let person=world.moment && world.moment.owner===a ? Object.assign({},a,{pose:'stand',path:null}) : a;
+        if(a.project==='mantel' && (a.state==='working'||a.state==='descending')) {
+          const h=L.projects.mantel.ladderHeight;
+          g.fillStyle='#5a3d28';g.fillRect(x-12,y-h,3,h);g.fillRect(x+10,y-h,3,h);
+          g.fillStyle='#96704c';for(let n=0;n<=h;n+=16)g.fillRect(x-12,y-n,25,3);
+          person=Object.assign({},person,{y:y-Math.round(a.mantelLift||0)});
+        }
         if(a.shelfDelivery && (a.state==='working'||a.state==='descending')) {
           const p=world.memory.life.projects.bookshelf,s=L.projects.bookshelf;
           // Climb onto the folding steps for the upper board, then step down

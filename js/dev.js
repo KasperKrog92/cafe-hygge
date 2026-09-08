@@ -519,7 +519,8 @@
       state.life.room='full';
       state.life.homeStory=MEMORY.freshHomeStory(true);state.life.daysCompleted=7;state.life.projects.window={stage:'installed',step:4,time:0};
         state.life.projects.bookshelf={stage:'installed',step:5,time:0};
-        state.life.projects.windowSeat={stage:'installed',step:4,time:0};state.flags['gerda-window-legacy']=true;
+        state.life.projects.windowSeat={stage:'installed',step:4,time:0};state.flags['gerda-window-legacy']=true;state.flags['fireplace-unlocked']=true;
+        state.life.projects.mantel={stage:'installed',step:3,time:0};
       o.memory = MEMORY.createStore({state:state});
     }
     return SIM.create(o);

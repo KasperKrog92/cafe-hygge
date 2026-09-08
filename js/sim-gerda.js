@@ -12,8 +12,9 @@
   };
   function chapter(w) {
     const f=w.memory.flags;
-    if(f['gerda-window-legacy'])return null;
+    if(f['gerda-window-legacy'])return !f['fireplace-unlocked'] && !SCENE.hasFurniture(w,'hearth') ? 'hearth' : null;
     if(!f['gerda-introduced'])return 'hello';
+    if(!f['fireplace-unlocked'] && !SCENE.hasFurniture(w,'hearth'))return 'hearth';
     if(!f['gerda-pillows-accepted'])return 'offer';
     if(f['gerda-pillow-right'] && !f['gerda-window-thanked'])return 'thanks';
     return null;
@@ -28,13 +29,19 @@
   SIM.startGerda=function(w) {
     const p=SIM.gerdaAvailable(w),part=chapter(w);if(!p)return false;
     const lines=CAST.gerdaWindow[part].map(line=>Object.assign({},line));
+    if(part==='hello' && SCENE.hasFurniture(w,'hearth')) {
+      lines.find(l=>l.id==='hearth').text="And you have a working fireplace. A little fire on a cold afternoon is something to look forward to.";
+      lines.find(l=>l.id==='hearth-reply').text="I'm glad it's ready. A warm window and a little fire. That sounds like a good afternoon.";
+    }
     if(part==='hello' && w.memory.bonds.gerda && (w.memory.bonds.gerda.visits||0)>1)
       lines[0].text="I've been meaning to say a proper hello. I'm Gerda. That clear window caught my eye today.";
     const prefix='gerda-'+part+'-',f=w.memory.flags;
     let index=0;while(index<lines.length && f[prefix+lines[index].id])index++;
     if(index===lines.length)return false;
     if(!SIM.beginMoment(w,lines,p,function() {
+      if(part==='hello'||part==='hearth')f['fireplace-unlocked']=true;
       if(part==='thanks')f['gerda-window-thanked']=true;
+      else if(part==='hearth')return;
       else {
         if(part==='hello')f['gerda-introduced']=true;
         if(f['gerda-'+part+'-yes'])f['gerda-pillows-accepted']=true;

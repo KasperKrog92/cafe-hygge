@@ -541,3 +541,17 @@ her two placements followed by ordering tea. They use the existing caption
 limiter. Placement uses the existing quiet `softThump`; no new sound is added.
 Her introductions and thanks are manually advanced conversations, never
 automatic captions or deadlines.
+
+
+## A first fire, then a mantel — 8 September 2026
+
+The first fireplace project removes its boards and restores a usable bare
+hearth; the existing fire tending, heat glow and audio then become available.
+Its completion caption marks the first small fire catching.
+
+A later 40-coin mantel project uses Tomas’s independent daytime job schedule.
+He arrives with a shelf and packed decorations; a completion caption marks
+the shelf, clock and candlelight. The fire rests while he is working above it,
+and returns when he has descended and left. Only this later installation adds
+mantel candle routines, flames and clock chimes. Closing saves the work and
+lets him climb down before departure. All timing remains dt-driven.

@@ -11,6 +11,8 @@ station; its former decorative floor plant is removed (8 September). Reserve
 this home when designing later window work or counter growth.
 Gerda’s repaired-window introduction and optional left-window table/pillows are
 shipped (8 September), following the owner’s separate requested slice.
+The fireplace now has two separate upgrades: Gerda unlocks its bare reopening;
+a later purchase adds the mantel and decorations.
 The next book task is separate book purchases and interruptible stocking (Pass 2). See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;
@@ -166,7 +168,7 @@ The starting café must already meet its standard of warmth and believable life.
 | State | Room and equipment | Life it supports |
 | --- | --- | --- |
 | C0 — First opening | A smaller room matching the tighter reference framing; boarded-over windows, small counter and coffee equipment, a tiny cake stand, warm lighting and entrance equipment. No room rugs, drapes, wall menu, matcha or mantel decoration; hearth unused. Lunafreya arrives carrying the cat, sets out the entrance and counter equipment, then visibly assembles two tables and their chairs. | Setup starts on the player's first entry, runs autonomously and saves its progress. Customers enter only after both table sets are ready. Simple coffee, chamomile tea and cardamom buns support complete service; patrons bring their own books. |
-| C1 — Settling in | First plant, small table assembled, cleaned hearth, a few personal touches. | More places to settle; watering, fire tending and improvement work become part of the day. |
+| C1 — Settling in | First plant, small table assembled, reopened bare hearth, a few personal touches. | More places to settle; watering, fire tending and improvement work become part of the day. |
 | C2 — A reading place | Three short wall shelves first, then separately acquired books; an optional reading chair and lamp. A larger bookcase is a later upgrade idea. | Browsing and borrowed-book reading become available as their furniture and contents are ready. Holger's familiarity can support a reading-corner story. |
 | C3 — A cared-for café | Repainted walls, repaired window frames, coordinated small furnishings; the room keeps its familiar layout. | Contractor visits provide temporary daytime activity; completed work improves appearance without making the previous room feel like failure. |
 | C4 — A neighborhood gathering place | Optional piano, art display and developed planting. | Music, exhibited work and deeper regular relationships, each supported by its own small sequence. |
@@ -510,3 +512,26 @@ places them, orders tea and sits. Each placement is saved. Her thank-you waits
 for attendance and survives departure/reload. The work uses the documented
 left-window table/perch coordinates; neither the right window nor its cat
 corner changes. No later book, contractor or relationship milestone is included.
+
+
+## Fireplace opening and later mantel — shipped 8 September 2026
+
+The starting firebox is boarded, empty and without a mantel. Gerda’s remark
+about looking forward to a fire unlocks the first project when acknowledged
+as part of her introduction. Her pillow answer does not gate it. Saves with a
+completed older introduction receive a short saved follow-up on a later visit.
+
+1. **Reopen the fireplace — 30 coins.** On the next morning Lunafreya removes
+   three boards, sweeps the firebox, clears the flue and lays the first fire.
+   Work yields to service and saves its partial strokes. The completed hearth
+   works and rejoins ordinary fire tending; it still has no mantel or ornaments.
+2. **Mantel shelf and decorations — 40 coins.** Available after the hearth
+   works, as a separate evening choice. Tomas brings the shelf, prepares its
+   supports, climbs his ladder to mount it, and places a clock, two candles and
+   a little plant. The fire rests during his visit. He climbs down before
+   leaving, including at closing; unfinished work resumes on a later morning.
+
+The decorations reuse the established mantel’s location. No wall shelving,
+window view, right-window cat corner or furniture layout is changed. Older
+working jobs retain their exact progress; established decorated fireplaces
+retain their shelf and objects without buying them again.

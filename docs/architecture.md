@@ -101,7 +101,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v10, migrated through v1–v9) contains `mode`, integer `savings`, `hour`,
+`memory.life` (v11, migrated through v1–v10) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -308,7 +308,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v10; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v11; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -661,3 +661,35 @@ v9→v10 validates and retains all existing projects, stories, balances and
 scarves. Already furnished windows get an installed table record and the
 distinct `gerda-window-legacy` flag, preserving their existing seating without
 inventing acknowledgements or replaying this new furnishing story.
+
+
+## Fireplace stages (v11)
+
+The existing `fireplace` project retains four 18-second phase slots and its
+30-coin price, with new phase IDs `unboard/sweep/flue/light`. Its purchase
+requires `fireplace-unlocked`, saved after Gerda’s hello or the short `hearth`
+packet for earlier introductions. Already purchased jobs remain authorized.
+The new `mantel` project costs 40 coins, requires the installed `hearth`
+capability, and saves three 18-second slots: `supports/shelf/decorate`.
+
+`SCENE.fireplaceBoards` reads current unboarding work (one board per six
+seconds); the wall pass draws them dynamically over the empty firebox. Logs
+require an installed hearth. `SCENE.mantelShelf` is independent of that
+capability and becomes true after mounting or established decoration ownership.
+`mantel-decor` combines the old furniture flag with the new installed project.
+Both states participate in the static background cache key. The unrelated old
+wall picture remains tied to its original furniture flag.
+
+`updateWindowWorker` now selects window or mantel work and binds the active
+project ID to Tomas. Mantel work uses `L.projects.mantel.work` and a transient
+80-pixel ladder lift. Body rendering follows the lift while route coordinates
+stay on the floor. Greetings wait until he is on the floor; his old saved hello
+nodes remain intact. Work and the fire pause appropriately, he descends before
+closing/departure, and leaving a completed job relights the hearth.
+
+v10→v11 validates the historical window-seat limits, adds the mantel record,
+retains all existing balances and exact fireplace checkpoints, and keeps
+`fireplace-open-legacy` for a previously open firebox already being worked on.
+Old purchased/working/installed fires (or inherited functional hearths) retain
+purchase authorization via `fireplace-unlocked`. Existing mantel decoration
+marks the new project installed without inventing Gerda acknowledgements.

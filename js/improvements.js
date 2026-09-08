@@ -17,9 +17,12 @@
     table: { price:60, destination:'cafe', delivery:'keira', title:'table and chairs',
       phases:['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'],
       phaseIds:['unpack','legs','top','chairs','wipe','position'], duration:18, capability:'project-table', pair:'window' },
-    fireplace: { price:30, destination:'cafe', delivery:'carry', title:'clean the fireplace',
-      phases:['brush the cooled hearth','gather the ash','wipe the stone','polish the hearth'],
-      phaseIds:['brush','ash','wipe','polish'], duration:18, capability:'hearth' }
+    fireplace: { price:30, destination:'cafe', delivery:'carry', title:'reopen the fireplace',
+      phases:['remove the boards','sweep the firebox','clear the flue','lay the first fire'],
+      phaseIds:['unboard','sweep','flue','light'], duration:18, capability:'hearth' },
+    mantel: { price:40, destination:'cafe', delivery:'contractor', title:'mantel shelf and decorations',
+      phases:['prepare the supports','fit the mantel shelf','set out the clock, candles and plant'],
+      phaseIds:['supports','shelf','decorate'], duration:18, capability:'mantel-decor', requires:['hearth'] }
   };
   I.plant = { price:30, destination:'cafe', delivery:'carry',
     phases:['scheduled','carry','unpack','place','installed'],
@@ -53,6 +56,8 @@
     if (tutorial && (h.step<12 || (id!=='window' && id!=='table'))) return false;
     if (id==='bookshelf' && l.furniture.bookshelf) return false;
     if (id==='windowSeat' && (!world.memory.flags['gerda-pillows-accepted'] || l.furniture['window-seats'])) return false;
+    if (id==='fireplace' && !world.memory.flags['fireplace-unlocked']) return false;
+    if (id==='mantel' && l.furniture['mantel-decor']) return false;
     return !!p && !!world.plannerOpen && world.shop.phase === 'home' && (l.mode === 'game' || tutorial) &&
       I.canPlan(l,id) && p.stage === 'available' && l.savings >= d.price &&
       d.requires.every(capability => I.installed(l,capability));

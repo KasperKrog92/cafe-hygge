@@ -23,11 +23,12 @@
     if (id === 'table-worksite') return ['scheduled','arrived','working','installed'].indexOf(life.projects.table.stage) >= 0;
     if (id === 'first-plant') return IMPROVEMENTS.installed(life,'first-plant');
     if (id === 'hearth') return life.furniture.hearth || IMPROVEMENTS.installed(life,'hearth');
+    if (id === 'mantel-decor') return life.furniture[id] || IMPROVEMENTS.installed(life,id);
     return life.furniture[id] === true;
   };
   SCENE.layoutKey = function (world) {
     const life = world && world.memory && world.memory.life;
-    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') : 'full';
+    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') + ':' + SCENE.mantelShelf(world) + ':' + SCENE.hasFurniture(world,'mantel-decor') : 'full';
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
@@ -51,7 +52,17 @@
   };
   SCENE.hearthWork = function (world) {
     const p = world.memory && world.memory.life.projects.fireplace;
-    return !SCENE.hasFurniture(world, 'hearth') || !!p && ['scheduled','arrived','working'].indexOf(p.stage) >= 0;
+    return !SCENE.hasFurniture(world, 'hearth') || !!p && ['scheduled','arrived','working'].indexOf(p.stage) >= 0 ||
+      !!world.windowWorker && world.windowWorker.project==='mantel';
+  };
+  SCENE.mantelShelf=function(world) {
+    const p=world.memory.life.projects.mantel;
+    return SCENE.hasFurniture(world,'mantel-decor') || p.stage==='working' && p.step>=2;
+  };
+  SCENE.fireplaceBoards=function(world) {
+    const p=world.memory.life.projects.fireplace;
+    if(SCENE.hasFurniture(world,'hearth') || world.memory.flags['fireplace-open-legacy'] || p.step>0)return 0;
+    return p.stage==='working' ? Math.max(0,3-Math.floor(p.time/6)) : 3;
   };
   SCENE.VIEW_W = 960;
   SCENE.VIEW_H = 540;
@@ -117,7 +128,8 @@
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},
       table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
-      fireplace: { x: 390, y: 246, work: { x: 390, y: 274 } }
+      fireplace: { x: 390, y: 246, work: { x: 390, y: 274 } },
+      mantel: {work:{x:390,y:254},ladderHeight:80}
     },
     wallY: 232,               // where wall meets floor
     door: { x: 28, y: 130, w: 52, h: 102 },   // 1.7 CH

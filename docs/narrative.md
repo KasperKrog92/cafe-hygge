@@ -470,3 +470,14 @@ table is ready. Each pillow is saved independently. Its personal thank-you
 remains a separate attended beat; it never fires when she sits down and never
 expires when she leaves. Gerda’s window invitation takes priority over her
 scarf invitation while available, retaining the scarf’s pending payoff.
+
+
+## Gerda’s fireplace hope — 8 September 2026
+
+Her introduction now also unlocks the 30-coin fireplace reopening. This is
+independent of accepting her pillows: a “not yet” for window seating cannot
+lock out a fire. Earlier introductions receive a short saved `hearth` packet;
+partial newer hellos resume by their existing stable node IDs. Existing
+functional fireplaces get context-appropriate lines. The unlock saves only
+when the conversation finishes, and never makes a purchase. Tomas’s separate
+later mantel installation is already authorized practical work once booked.

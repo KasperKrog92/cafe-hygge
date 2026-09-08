@@ -248,7 +248,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v10; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v11; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -568,3 +568,28 @@ income, seating and a zero-problem night audit (`gerda-entry`). The exported
 room, pillow, assembly and dialogue images were inspected. All owned browser
 sessions were confirmed closed. These are desktop Chromium checks; native
 Safari was not run.
+
+## Gerda’s first fire and later mantel — 8 September 2026
+
+`tools/verify-project.ps1 -Suite hearth` checks the independent fireplace
+unlock in both modes, including a deferred pillow offer and an earlier saved
+introduction. It exercises the 30-coin reopening and later 40-coin mantel,
+next-day arrivals, four fireplace and three mantel checkpoints, staged board
+removal, the bare working fire, shelf/decor ordering, ladder descent at closing
+and next-morning resumption. Twenty-two private save round trips pass.
+`tools/verify-hearth-ui.ps1` uses actual invitation, planner and sleep buttons,
+reloads a partial follow-up and both purchases, and reloads all seven work
+phases. It captures the boarded opening, dialogue, purchases, work and completed
+states at 1440×900 and 1600×900 in `hearth-ui`.
+
+The full `hearth-regression` run passes all 23 browser suites, 18 Node
+save/isolation groups, audio checks and all 25 shipped-script syntax checks.
+The Gerda suite now covers 45 private reloads with the added introduction
+lines. v11 migration coverage preserves old fireplace purchases, progress,
+savings and existing mantel decoration, alongside v10 window-seat checkpoints.
+The repeatable `hearth-after` art review passes ten images, twelve occupancy
+scenarios and zero audits. The normal-entry `hearth-entry` smoke passes audio,
+a real-time cappuccino cycle (29.7 seconds), pickup income, seating and a
+zero-problem night audit. Rendered room, work and dialogue captures were
+inspected; all owned browser sessions were confirmed closed. These are desktop
+Chromium checks; native Safari was not run.

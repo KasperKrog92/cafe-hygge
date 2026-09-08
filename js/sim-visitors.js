@@ -12,12 +12,16 @@
   SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.shelfVisitor].concat(w.socialVisitors||[]).filter(Boolean);};
   SIM.visitorInvites=function(w) {
     if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
-    return SIM.visitorActors(w).filter(a=>a.state!=='leaving' && a.state!=='descending' && (!a.path || !a.path.length) &&
+    return SIM.visitorActors(w).filter(a=>a.state!=='leaving' && a.state!=='descending' && !a.mantelLift && (!a.path || !a.path.length) &&
       !w.memory.flags[a.visitorId+'-introduced']);
   };
   SIM.startVisitor=function(w,id) {
     const a=SIM.visitorInvites(w).find(a=>a.visitorId===id);if(!a)return false;
     const lines=CAST.visitors[id].hello.map(line=>Object.assign({},line));
+    if(a.project==='mantel') {
+      lines[0].text="I'm Tomas. I've brought the mantel shelf. Shall we give those candles somewhere to stand?";
+      lines[2].text="A shelf needs to look as though it's always belonged there. That's the part I like.";
+    }
     if(a.social || a.shelfDelivery) {
       if(a.social)lines[0].text=CAST.visitors[id].later;
       else lines[0].text="The little shelves are here. I'm Keira. Is this a good place to set them down?";

@@ -828,3 +828,20 @@ renderer draws her visible carried pair, then a single pillow after the first
 placement. Each permanent pillow appears only after its own saved placement.
 They enable the two perches after both are down. Existing furnished saves
 retain their earlier cushions.
+
+
+## Bare fireplace and later mantel — 8 September 2026
+
+The modest café’s initial firebox has three nailed horizontal timber boards
+across its opening and no visible logs. Its existing masonry, plastered flue
+and low hearth stone remain, but the projecting wooden mantel and corbels
+are absent. Unboarding removes one board at each saved six-second boundary.
+The first completed improvement adds only a functional fire and its logs.
+
+The later mantel project reuses the established shelf/corbel envelope at
+y132–152 and its clock, two candles and plant. The shelf appears once mounted;
+its decorations appear after the final phase. `L.projects.mantel.work` is
+(390,254), directly in front of the existing firebox. Tomas uses a narrow
+ladder with an 80-pixel rise, entirely within the hearth frontage; he descends
+before leaving. The existing left wall shelves, window sills and drapes keep
+their clearance. This purchase adds no unrelated wall picture.

@@ -53,6 +53,7 @@
     }
     L.pendants.filter((p,i)=>i===0||SCENE.hasFurniture(world,'full-counter')).forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
+    drawFireplaceBoards(g,world);
     drawWallShelves(g,world);
   };
 
@@ -204,7 +205,7 @@
     if(SCENE.hasFurniture(world,'rugs')) rugWeave(g, 390, 450, 168, 74, '#c9a04a');
     if (SCENE.hasFurniture(world,'nook')) rugWeave(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#c9b28a');
 
-    if(SCENE.hasFurniture(world,'mantel-decor')) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
+    if(world.memory.life.furniture['mantel-decor']) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
     drawFireplaceStatic(g,world);
     if(SCENE.hasFurniture(world,'wall-menu')) drawMenuBoard(g);
     if(SCENE.hasFurniture(world,'full-counter')) drawShelves(g);
@@ -626,18 +627,21 @@
     px(g, f.boxX - 6, f.boxTop - 12, f.boxW + 12, 8, '#86493c');
     for (let x = f.boxX - 4; x < f.boxX + f.boxW + 6; x += 10)
       px(g, x, f.boxTop - 12, 2, 8, '#5f3229');
-    // mantel on little corbels, shadow beneath
+    // The mantel belongs to the later decorative purchase, not the basic fire.
+    if(SCENE.mantelShelf(world)) {
     px(g, f.x - 10, 132, f.w + 20, 10, '#5a3d28');
     px(g, f.x - 10, 132, f.w + 20, 4, '#7a5238');
     px(g, f.x - 10, 142, f.w + 20, 2, 'rgba(20,10,6,0.35)');
     px(g, f.x - 4, 144, 8, 8, '#5a3d28');
     px(g, f.x + f.w - 4, 144, 8, 8, '#5a3d28');
+    }
     // firebox
     px(g, f.boxX, f.boxTop, f.boxW, f.boxBot - f.boxTop, '#17100d');
     px(g, f.boxX - 4, f.boxTop - 4, f.boxW + 8, 4, '#4a2a22');
     px(g, f.boxX - 4, f.boxTop, 4, f.boxBot - f.boxTop, '#4a2a22');
     px(g, f.boxX + f.boxW, f.boxTop, 4, f.boxBot - f.boxTop, '#4a2a22');
-    // logs: bark ticks + end-grain rings
+    // The unopened firebox is empty; logs arrive with its first working fire.
+    if(SCENE.hasFurniture(world,'hearth')) {
     px(g, f.boxX + 6, f.boxBot - 12, 36, 7, '#5a3520');
     px(g, f.boxX + 12, f.boxBot - 12, 2, 7, '#4a2c1a');
     px(g, f.boxX + 24, f.boxBot - 12, 2, 7, '#4a2c1a');
@@ -649,6 +653,7 @@
     px(g, f.boxX + 5, f.boxBot - 10, 2, 2, '#5a3520');
     ell(g, f.boxX + 38, f.boxBot - 15, 3, 2, '#8a6142');
     px(g, f.boxX + 37, f.boxBot - 16, 2, 2, '#57371f');
+    }
     // hearth stone with joints
     px(g, f.x - 4, f.boxBot + 3, f.w + 8, 7, shade('#8a8378', -0.2));
     px(g, f.x - 6, f.boxBot, f.w + 12, 5, '#8a8378');
@@ -669,6 +674,16 @@
     drawTinyPlant(g, 404, 132);
   }
 
+  function drawFireplaceBoards(g,world) {
+    const f=L.fire,n=SCENE.fireplaceBoards(world),height=Math.ceil((f.boxBot-f.boxTop)/3);
+    for(let i=3-n;i<3;i++) {
+      const y=f.boxTop+i*height,h=Math.min(height-1,f.boxBot-y);
+      px(g,f.boxX,y,f.boxW,h,'#8a6d49');px(g,f.boxX,y,f.boxW,2,'#a88a60');
+      px(g,f.boxX,y+h-2,f.boxW,2,'#6e543a');
+      px(g,f.boxX+8,y+6,f.boxW-18,1,'#7b5f40');
+      [4,f.boxW-6].forEach(x=>px(g,f.boxX+x,y+4,2,2,'#4b4540'));
+    }
+  }
   function drawFireDynamic(g, world) {
     if (SCENE.hearthWork(world)) return;
     const f = L.fire, t = world.t;
