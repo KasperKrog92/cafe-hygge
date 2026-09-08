@@ -779,9 +779,16 @@ receive a familiar arrival caption. No conversation is required for installation
 
 Keira (she/her) and Tomas (he/him) are stable `CAST.visitors` identities.
 Keira brings a trolley, hands off the first table kit, then exits before
-Lunafreya assembles it. Tomas retains autonomous window repair. They are visitor
+Lunafreya assembles it. Tomas retains autonomous window repair; a new paired
+table delivery waits for him to finish and leave, spacing their first meetings.
+Already delivered kits keep their progress and may be assembled during repair.
+They are visitor
 actors with staff-safe routes, no orders or seats, and independent departures.
-Optional saved greetings use existing attended bubbles. Ignored hellos return
+Optional saved greetings use existing attended bubbles: Keira's 17 lines reveal
+her neighbourhood observations, shopfront photographs and standing coffee habit;
+Tomas's 19 lines introduce his careful craft and his daughter's unfinished cupboard.
+The original five nodes retain their order and meaning, and new lines follow;
+completed older introductions never reopen. Ignored hellos return
 on later 90-second off-duty visits; completed greetings get familiar captions.
 See the story bible for literal scene continuity and architecture for timing.
 

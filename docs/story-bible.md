@@ -1,6 +1,6 @@
 # Character and story bible
 
-This is the continuing writing reference for Café Hygge. Updated 7 September
+This is the continuing writing reference for Café Hygge. Updated 8 September
 2026. **Shipped** means playable; **planned** means a direction for later work,
 not a promise that a trigger or scene already exists. The invitation-waits rule
 in [narrative.md](narrative.md) applies to every character.
@@ -39,26 +39,42 @@ persist and return on later no-purchase visits. Work never requires dialogue.
 ## Keira and Tomas — the working neighbours
 
 Keira is a woman (she/her), with dark hair in a bun, a rust jacket, ochre scarf
-and navy trousers. Easy company, attentive to practical details. Her first
-hello names the kit's screw bag and its spare screw; Lunafreya invites her to
-come without a delivery. Tomas is a man (he/him), with side-parted brown hair,
-a short beard, blue-grey work shirt and slate trousers. Precise and dry: the
-view is mostly water, with some variety because it moves. Neither scene reveals
-family history or establishes romance. Their later visits retain these looks.
+and navy trousers. Easy company, attentive to practical details. Her expanded
+17-line hello starts with the kit's screw bag and spare screw. She knows local
+doors by their quirks and photographs shopfronts, lamps and handwritten signs
+for herself. Lunafreya admits repeatedly going outside to look at her own sign.
+Keira will ask before photographing the café; no photograph or permission is
+awarded here. She usually drinks standing up, watching the van. Lunafreya makes
+room for her to return, put her coat down and sit without a delivery.
+
+Tomas is a man (he/him), with side-parted brown hair, a short beard, blue-grey
+work shirt and slate trousers. His expanded 19-line hello keeps his dry
+description of moving water, then shows his interest in useful old wood and
+well-placed handles. He is making a small cupboard for his daughter's new flat
+and overthinking its hinges and shelves; she wants the plain version for her
+towels. He has not finished it or resolved that habit. Lunafreya invites him to
+return with news. These details seed the later cupboard story; his bread-making,
+gifts and deeper family scenes remain planned. Neither introduction establishes
+romance. Their later visits retain these looks.
 
 Both packets live literally in `CAST.visitors[id].hello`. Trigger: stationary
 job actor, or a later off-duty stop; visible invitations use game mode. Stable
-nodes are Keira `name/place/practical/laugh/welcome` and Tomas
-`name/view/precise/reply/welcome`. Each acknowledged node saves
+opening nodes remain Keira `name/place/practical/laugh/welcome` and Tomas
+`name/view/precise/reply/welcome`, with their original meaning and order. The
+new conversation follows those five nodes, so older partial greetings resume
+normally and completed introductions stay complete. Each acknowledged node saves
 `<id>-hello-<node>`; final acknowledgement saves `<id>-introduced`. No choices
-or purchase effects occur. Off-duty opening lines adapt to the present visit;
+or purchase effects occur. Future callbacks to these new details must check
+their own acknowledged nodes: an older `introduced` flag alone does not mean
+the photographs or cupboard have been discussed. Off-duty opening lines adapt to the present visit;
 unfinished nodes resume. Completed greetings receive familiar arrival captions.
 They leave independently, and return on later café days. Keira's return with
 the three little wall shelves keeps the same identity and saved hello nodes.
 An unfinished hello adapts its opening to the small shelf kit and reuses the
 off-duty place/practical lines; it does not replay acknowledged nodes. A completed
-hello receives a familiar arrival caption. This reveals no new backstory.
-Full backstories, book gifts and disclosure remain planned.
+hello receives a familiar arrival caption. The same expanded introduction can
+be finished during that job or an off-duty visit. Full backstories, book gifts
+and Lunafreya's former-work disclosure remain planned.
 
 ## Writing and choices
 
@@ -226,8 +242,8 @@ Use this table to distinguish identities from what the runtime currently contain
 
 | Name | Working direction | Current implementation boundary |
 | --- | --- | --- |
-| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Table-kit delivery, initial wall-shelf installation and optional saved hello; gifts and deeper scenes remain later |
-| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Shipped named window worker and optional saved hello |
+| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries and expanded saved hello establish her shopfront photographs and standing coffee habit; gifts and deeper scenes remain later |
+| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair and expanded saved hello introduce his daughter's cupboard; its later progress, bread-making and gifts remain planned |
 | Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
 | Marcel | Painter across the lake; recognizes changing places and people | Existing `street-house` arc stays intact; personal identity and café visits remain to implement |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |

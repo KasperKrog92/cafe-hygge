@@ -22,8 +22,19 @@
     check(SIM.buyProject(w,'window')&&SIM.buyProject(w,'table'),'paired first purchases');
     check(w.memory.life.savings===funds-90,'prices');tick(w,100);check(w.shop.phase==='home','first bedtime wait');
     check(SIM.goToSleep(w),'sleep');until(w,()=>w.shop.phase==='open');
-    until(w,()=>w.deliveryVisitor && w.windowWorker);snap(w,mode+'-overlap');
-    check(new Set(SIM.visitorActors(w).map(a=>a.visitorId)).size===2,'duplicate actor');
+    until(w,()=>!!w.windowWorker);const repairArrival=w.t+w.clockOffset;
+    check(!w.deliveryVisitor,'first arrivals bunched');snap(w,mode+'-window-first');
+    if(mode==='game') {
+      talk(w,'tomas');const before=JSON.stringify(w.memory.life.projects.window),hour=w.hour;
+      tick(w,60);check(JSON.stringify(w.memory.life.projects.window)===before&&w.hour===hour&&!w.deliveryVisitor,'repair meeting rushed');
+      finish(w);
+    }
+    until(w,()=>{
+      check(!w.deliveryVisitor||(!w.windowWorker&&w.memory.life.projects.window.stage==='installed'),'delivery interrupted window visit');
+      return !!w.deliveryVisitor;
+    });
+    const arrivalGap=w.t+w.clockOffset-repairArrival;
+    check(arrivalGap>=72,'visits not spaced by active cafe time');snap(w,mode+'-table-later');
     until(w,()=>w.deliveryVisitor.state==='handoff');
     check(Math.hypot(w.deliveryVisitor.x-SCENE.L.projects.table.work.x,w.deliveryVisitor.y-SCENE.L.projects.table.work.y)<1,'handoff away from site');
     check(w.memory.life.projects.table.stage==='scheduled','kit handed off while walking');snap(w,mode+'-trolley');
@@ -34,7 +45,7 @@
       SIM.leaveMoment(w);until(w,()=>!w.moment);
       w=restore(w);until(w,()=>SIM.visitorInvites(w).some(a=>a.visitorId==='keira'));
       check(SIM.startVisitor(w,'keira')&&w.moment.index===1,'cursor not resumed');finish(w);
-      talk(w,'tomas');finish(w);check(w.memory.flags['tomas-introduced']&&w.memory.flags['keira-introduced'],'greetings not complete');
+      check(w.memory.flags['tomas-introduced']&&w.memory.flags['keira-introduced'],'greetings not complete');
     } else check(!SIM.visitorInvites(w).length,'idle invitations visible');
     until(w,()=>['arrived','working','installed'].indexOf(w.memory.life.projects.table.stage)>=0);
     const kit=JSON.stringify(w.memory.life.projects.table);w=restore(w);
@@ -48,8 +59,25 @@
     check(w.seats.length===6&&w.memory.life.projects.table.stage==='installed','next morning repeated work');
     SIM.setMode(w,'game');
     if(mode==='idle'){talk(w,'keira');finish(w);talk(w,'tomas');finish(w);}
-    snap(w,mode+'-next-morning');results.push({mode,days:w.memory.life.daysCompleted,seats:w.seats.length});
+    snap(w,mode+'-next-morning');results.push({mode,arrivalGap,days:w.memory.life.daysCompleted,seats:w.seats.length});
   }
+  // Reload a partially repaired paired booking: retain spacing and progress.
+  let paired=__dev.modestWorld();paired.memory.life.projects.table.stage='scheduled';
+  Object.assign(paired.memory.life.projects.window,{stage:'working',step:1,time:7});
+  paired=restore(paired);tick(paired,.25);
+  check(paired.windowWorker&&!paired.deliveryVisitor&&paired.memory.life.projects.window.step===1,'reload bypassed spacing or replayed repair');
+  until(paired,()=>!!paired.deliveryVisitor);
+  check(!paired.windowWorker&&paired.memory.life.projects.window.stage==='installed','reload bunched paired jobs');
+  // Previously delivered kits can still assemble alongside an unfinished repair.
+  const overlap=__dev.modestWorld();Object.assign(overlap.memory.life.projects.table,{stage:'working',step:1,time:5});
+  overlap.memory.life.projects.window.stage='scheduled';
+  until(overlap,()=>overlap.memory.life.projects.table.stage==='installed'&&overlap.memory.life.projects.window.stage==='installed');
+  check(!overlap.deliveryVisitor,'owned kit redelivered during repair');snap(overlap,'legacy-overlap');
+  // Old completed hellos remain complete; appending story nodes never reopens them.
+  const known=__dev.modestWorld();known.memory.life.daysCompleted=1;SIM.setMode(known,'game');
+  for(const id of ['keira','tomas'])known.memory.flags[id+'-introduced']=true;
+  until(known,()=>known.socialVisitors&&known.socialVisitors.length===2);
+  check(!SIM.visitorInvites(known).length,'expanded scenes reopened completed greetings');
   for(const stage of ['arrived','working','installed']) {
     let w=__dev.modestWorld();const p=w.memory.life.projects.table;p.stage=stage;p.step=stage==='installed'?6:stage==='working'?2:0;p.time=stage==='working'?4.5:0;
     const raw=JSON.stringify(p),funds=w.memory.life.savings;w=restore(w);
@@ -65,5 +93,5 @@
     check(!SIM.visitorActors(w).length&&w.memory.life.projects.table.stage===stage,'closing changed handoff');
     SIM.setMode(w,'game');SIM.goToSleep(w);until(w,()=>w.memory.life.projects.table.stage==='installed');snap(w,'resumed-'+delivered);
   }
-  window.lifeFrames=frames;return {results,checks:['first evening','overlap','attended and ignored','saved nodes','handoff reload','legacy progress','closing before and after handoff','later no-purchase hello','next morning','zero audits']};
+  window.lifeFrames=frames;return {results,checks:['first evening','spaced visits in both modes','spacing after reload','legacy overlapping work','attended and ignored','saved nodes','completed legacy greetings','handoff reload','legacy progress','closing before and after handoff','later no-purchase hello','next morning','zero audits']};
 })()

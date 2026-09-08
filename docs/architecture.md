@@ -564,7 +564,11 @@ installed. No additional timer, persistence store or offline progress path exist
 `sim-visitors.js` loads after sim-intro and before sim-home. `CAST.visitors` owns
 stable identities, appearance and literal scene packets. Visitor actors have
 kind `visitor`, share staff obstacle routing, and never enter customer queues
-or consume seats. Tomas keeps the window project's existing checkpoints.
+or consume seats. Tomas keeps the window project's existing checkpoints. A new
+table delivery waits while that repair is purchased/scheduled/arrived/working
+or its actor is still present, giving the paired first visits separate space.
+The project stage survives reload; no new timer or save field is needed.
+Already arrived/working table kits remain independent of the repair.
 Keira leaves `scheduled` unchanged until a three-second handoff at the table
 work anchor commits `arrived`. Her live actor reserves assembly until departure;
 a reload of `arrived` releases that transient reservation without redelivery.
@@ -575,7 +579,9 @@ IDs and completion, as for Holger. No field or project phase was added, and
 legacy arrived/working/installed records preserve exact step/time and ownership.
 Holger's positional flags and choices are unchanged. The shared conversation
 advance hook records visitor nodes immediately; ordinary leave/return restores
-Lunafreya's interrupted path and pose. No introduction gates a job.
+Lunafreya's interrupted path and pose. No introduction gates a job. Expanded
+hellos append stable nodes after the original five (17 Keira lines, 19 Tomas);
+the existing completion flag keeps finished older hellos finished.
 
 Off-duty stops use `L.visitors`, last 90 simulation seconds, and occur at most
 once per identity per running café day after day one (Keira from 10, Tomas from

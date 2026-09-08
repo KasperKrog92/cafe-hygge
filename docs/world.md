@@ -506,7 +506,12 @@ wait for sleep and use the bedtime scene. No elapsed time is added on boot.
 ## Second-day visitors — shipped 8 September 2026
 
 The second morning's booked window and table jobs proceed autonomously.
-Tomas enters first; Keira waits until he clears the doorway by 48 px. She deposits
+Tomas enters first; Keira's new table delivery waits until the booked repair is
+installed and he has left. His walking and four 18-second work phases give the
+first meetings breathing room. The saved project stage preserves this order
+after reload; no greeting is required, and an already delivered kit can still
+be assembled alongside unfinished window work. Without a pending window job,
+the table delivery proceeds normally. Keira deposits
 the kit at its work site and clears the route before assembly starts. Closing
 lets both actors exit and preserves partial work. Captions announce their
 arrival, kit handoff, and later familiar or unintroduced off-duty stops.

@@ -29,6 +29,10 @@ the booked left window. The 30/60-coin first-evening pairing, two extra chairs,
 and Lunafreya's interruptible assembly are preserved. Delivery is committed at
 the work site; assembly waits for Keira to clear it. Both optional greetings
 save acknowledged nodes and return on later visits without another purchase.
+The 8 September introduction pass expands Keira's hello to 17 lines and Tomas's
+to 19, planting their photography/staying and cupboard stories. Tomas now
+finishes his window visit before Keira brings a newly scheduled table kit;
+saved work and completed introductions remain intact.
 Existing arrived/working/installed jobs never redeliver or replay construction.
 The visitor suite covers both modes, overlapping jobs, closing, later hellos,
 legacy saves and next morning; the UI runner checks actual page reloads.

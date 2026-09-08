@@ -403,7 +403,19 @@
         {id:'place',speaker:'Lunafreya',text:"Perfect. I'm Lunafreya. I'm still getting used to having room for another table."},
         {id:'practical',speaker:'Keira',text:"Give yourself room to walk around it. The little bag has all the screws. And one spare, for the floor."},
         {id:'laugh',speaker:'Lunafreya',text:"The floor already has quite a collection. Come in sometime when you're not carrying anything."},
-        {id:'welcome',speaker:'Keira',text:"I'd like that. It's a nice place to stop."}
+        {id:'welcome',speaker:'Keira',text:"I'd like that. It's a nice place to stop."},
+        {id:'round',speaker:'Lunafreya',text:"Do you deliver around here often? I'm still learning which street is which."},
+        {id:'doors',speaker:'Keira',text:"Most mornings. I know the doors better than the street names. Green one by the bridge: lift the handle, then knock."},
+        {id:'map',speaker:'Lunafreya',text:"That sounds more useful than my map."},
+        {id:'pictures',speaker:'Keira',text:"It is, until someone paints a door. I take pictures of the little shops sometimes. You notice what changes."},
+        {id:'reason',speaker:'Lunafreya',text:"For your deliveries?"},
+        {id:'details',speaker:'Keira',text:"Just for me. A lamp in a window, a handwritten sign. Things people have bothered with."},
+        {id:'sign',speaker:'Lunafreya',text:"I kept going outside to look at mine after I put it up. As if it might look different the third time."},
+        {id:'permission',speaker:'Keira',text:"That's exactly the sort of thing. I'll ask before I photograph yours."},
+        {id:'cup',speaker:'Lunafreya',text:"Next time, I'll find you a cup. You can put your coat down."},
+        {id:'habit',speaker:'Keira',text:"I usually drink mine standing up. One hand on the cup, one eye on the van."},
+        {id:'room',speaker:'Lunafreya',text:"There'll be room for you as well as whatever you've brought."},
+        {id:'stay',speaker:'Keira',text:"Then perhaps I'll leave the van out of it. I'd like to see what this place looks like sitting down."}
       ]},
     tomas:{name:'Tomas',nameStyle:'masculine',pronouns:'he/him',
       colors:{skin:'#ddb58d',hair:'#6b4a30',top:'#718b91',pants:'#4b5260',scarf:null,longHair:false,hairStyle:1,beard:true},
@@ -415,7 +427,21 @@
         {id:'view',speaker:'Lunafreya',text:"I'm Lunafreya. I keep trying to imagine the view without the boards."},
         {id:'precise',speaker:'Tomas',text:"Mostly water. It moves about, so there's some variety."},
         {id:'reply',speaker:'Lunafreya',text:"That sounds like exactly enough. Thank you for coming."},
-        {id:'welcome',speaker:'Tomas',text:"You're welcome. I'll keep the doorway clear. You have a café to run."}
+        {id:'welcome',speaker:'Tomas',text:"You're welcome. I'll keep the doorway clear. You have a café to run."},
+        {id:'trade',speaker:'Lunafreya',text:"Do you mostly work on places like this?"},
+        {id:'useful',speaker:'Tomas',text:"Windows, cupboards. The odd door that needs persuading. I like seeing a thing still being used."},
+        {id:'keep',speaker:'Lunafreya',text:"I like that you look for what can stay."},
+        {id:'handles',speaker:'Tomas',text:"Old wood's often fine. Handles tell you more. You can usually see where a hand wants to go."},
+        {id:'own',speaker:'Lunafreya',text:"Do you make things for yourself as well?"},
+        {id:'cupboard',speaker:'Tomas',text:"A cupboard for my daughter's new flat. Small one. The drawings are becoming rather large."},
+        {id:'changing',speaker:'Lunafreya',text:"What keeps changing?"},
+        {id:'towels',speaker:'Tomas',text:"The hinges. Then the shelves. She asked for somewhere to put towels."},
+        {id:'simple',speaker:'Lunafreya',text:"Perhaps leave room for the towels."},
+        {id:'plain',speaker:'Tomas',text:"Her exact view. She's chosen the plain version. I'm trying to stop improving it."},
+        {id:'lasting',speaker:'Lunafreya',text:"You want it to last."},
+        {id:'finished',speaker:'Tomas',text:"Yes. Though it ought to be finished before she moves again."},
+        {id:'news',speaker:'Lunafreya',text:"I'd like to hear how it turns out. You can come in just to tell me."},
+        {id:'return',speaker:'Tomas',text:"I might. It would make a change to arrive without something that needs fixing."}
       ]}
   };
 })();

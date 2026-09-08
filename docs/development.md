@@ -416,8 +416,20 @@ bedtime, second-day delivery/repair, attended and ignored greetings, assembly,
 closing and the next morning in both modes. It exercises save round trips,
 legacy arrived/working/installed kits, safe handoff position, closing before and
 after delivery, no-purchase later hellos, six seats and zero audits.
-The UI runner uses real invitation/advance buttons, reloads all ten acknowledged
-nodes, and preserves exact table checkpoints across actual page reloads.
+The UI runner uses real invitation/advance buttons, reloads every acknowledged
+node from the current scene data, and preserves exact table checkpoints across
+actual page reloads. The expanded introductions contain 36 nodes in total.
+
+The introduction pass also tests separated first arrivals in both modes (about
+81 active café seconds apart in seed 17), partial-repair reloads, previously
+delivered kits alongside repair, and completed legacy hellos staying complete.
+`visitor-hellos` passes visitor, bookshelf, first-days and invitation suites,
+16 Node save/isolation groups, audio checks and all 23 shipped-script syntax
+checks. `visitor-hellos-ui` passes all 36 acknowledged-line page reloads and
+four exact kit checkpoints; new dialogue captures were inspected at 1440×900
+and 1600×900. `visitor-hellos-entry` completes a real-time cappuccino in 33.7
+seconds with audio, income, night lighting and zero audit problems. All owned
+browser sessions were closed. These runs use desktop Chromium.
 
 The final full regression passed 16 suites; its terrace assertion initially
 counted all visiting actors as duplicate Lunafreya drawables. Updating that

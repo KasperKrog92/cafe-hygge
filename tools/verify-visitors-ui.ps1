@@ -32,16 +32,17 @@ try {
   foreach($id in @('keira','tomas')) {
     Eval-Visitor "(()=>{const w=__dev.modestWorld();w.memory.life.daysCompleted=1;w.memory.life.mode='game';w.memory.life.hour=10;w.memory.life.projects.table.stage='scheduled';w.memory.life.projects.window.stage='scheduled';MEMORY.state=JSON.parse(MEMORY.codec.encode(w.memory));MEMORY.saveNow();return true;})()" | Out-Null
     Reload-Visitor
-    for($line=0;$line -lt 5;$line++) {
+    $lineCount=Eval-Visitor "CAST.visitors['$id'].hello.length"
+    for($line=0;$line -lt $lineCount;$line++) {
       Eval-Visitor "(()=>{const w=__world;for(let n=0;n<6000&&!SIM.visitorInvites(w).some(a=>a.visitorId==='$id');n++)SIM.update(w,.25);if(!SIM.visitorInvites(w).some(a=>a.visitorId==='$id'))throw Error('missing invitation');lifeTestFrame(performance.now());return true;})()" | Out-Null
       Click-Visitor "#meet-$id"
       Eval-Visitor "(()=>{const w=__world;for(let n=0;n<2000&&w.moment.phase!=='talk';n++)SIM.update(w,.25);if(w.moment.index!==$line)throw Error('wrong restored cursor');w.moment.visible=999;lifeTestFrame(performance.now());return true;})()" | Out-Null
-      if($line -eq 0) {
+      if($line -eq 0 -or $line -eq 10) {
         foreach($width in @(1440,1600)) {
           & $browser --session $testSession set viewport $width 900
           if($LASTEXITCODE -ne 0){throw 'Viewport failed'}
           Eval-Visitor 'lifeTestFrame(performance.now());true' | Out-Null
-          & $browser --session $testSession screenshot (Join-Path $output "$id-dialogue-$width.png")
+          & $browser --session $testSession screenshot (Join-Path $output "$id-dialogue-$line-$width.png")
           if($LASTEXITCODE -ne 0){throw 'Capture failed'}
         }
       }
@@ -63,7 +64,7 @@ try {
   }
   $pageErrors=& $browser --session $testSession errors
   if($LASTEXITCODE -ne 0 -or $pageErrors){throw "Browser errors: $pageErrors"}
-  'Both actual invitation buttons, ten acknowledged-line reloads, completed greetings, four exact kit checkpoints and zero audits: PASS' | Tee-Object (Join-Path $output 'result.txt')
+  'Both actual invitation buttons, every acknowledged-line reload, completed greetings, four exact kit checkpoints and zero audits: PASS' | Tee-Object (Join-Path $output 'result.txt')
 } finally {
   & $browser --session $testSession close
   $closed=$LASTEXITCODE -eq 0

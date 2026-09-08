@@ -27,6 +27,7 @@
       } else {
         lines[1].text="I'm Lunafreya. It's good to see you with a moment to spare.";
         lines[4].text="You're welcome. I can stop for a moment. No tools today.";
+        lines.find(line=>line.id==='return').text="I can do that. A cupboard report, with my coffee.";
       }
     }
     let index=0;while(index<lines.length && w.memory.flags[id+'-hello-'+lines[index].id])index++;
@@ -85,8 +86,12 @@
     let a=w.deliveryVisitor;
     // A scheduled kit has not crossed the handoff boundary. Arrived/working
     // saves (including old carried kits) already own it and never redeliver.
-    if(!w.moment && !a && !w.shelfVisitor && !w.socialVisitors.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && (!w.windowWorker ||
-        Math.hypot(w.windowWorker.x-L.doorSpot.x,w.windowWorker.y-L.doorSpot.y)>48)) {
+    // Give the paired first visits separate space: Tomas finishes and leaves
+    // before Keira arrives. Saved repair progress owns the spacing, so reload
+    // cannot bunch the arrivals or restart a timer. Neither hello is required.
+    const repair=w.memory.life.projects.window;
+    if(!w.moment && !a && !w.shelfVisitor && !w.socialVisitors.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && !w.windowWorker &&
+        ['purchased','scheduled','arrived','working'].indexOf(repair.stage)<0) {
       a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;
       R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);
       R.ringDoor(w);R.caption(w,w.memory.flags['keira-introduced']?
