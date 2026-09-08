@@ -128,6 +128,8 @@
         }
         b.pose = task.kind === 'wipe' || task.kind === 'table' ? 'wipe' : 'reach';
         b.heading = 'up';
+        if(task.kind==='bowls') {b.pose='catCare';b.facing=1;b.heading='';}
+        if(task.kind==='putCat') {b.facing=1;b.heading='';}
         if (task.kind === 'greet') { b.pose = 'stand'; b.heading = 'down'; }
         if (task.kind === 'cat' && !s.carryingCat) {
           b.pose = 'stand';
@@ -152,9 +154,9 @@
           tb.items = tb.items.filter(function (it) { return it.owner !== null; });
           tb.candle = tb.candleTarget = 0; SND.swish();
         } else if (task.kind === 'putCat') {
-          s.carryingCat = false; cat.x = b.x; cat.y = b.y;
+          s.carryingCat = false; cat.x = L.catCorner.cushion.x; cat.y = L.catCorner.cushion.y;
           cat.surface = 'floor'; cat.state = 'sit'; cat.stateT = 2; cat.path = null;
-          cat.target = { id: 'free', x: cat.x, y: cat.y, kind: 'floor' };
+          cat.target = L.catSpots.find(s=>s.id==='cushion');
           b.holding = null;
         }
         else if (task.kind === 'stock') { s.stocked = opening; SND.clink(0.5, 0.025); }

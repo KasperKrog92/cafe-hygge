@@ -247,6 +247,24 @@
 
     ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
 
+    if (p.pose === 'catCare') {
+      // Side-on crouch: the pour meets the actual bowl, below the window sill.
+      const kinds=p.refillKinds||['food','water'];
+      const kind=kinds.length>1 && p.stateT>.8 ? 'water' : kinds[0];
+      const at=SCENE.L.catCorner[kind],hx=at.x-3,hy=at.y-10;
+      px(g,x-11,y-10,20,8,c.pants);px(g,x-14,y-4,12,4,'#3a2a1c');
+      px(g,x+6,y-15,7,13,c.pants);px(g,x+6,y-3,11,3,'#3a2a1c');
+      px(g,x-8,y-32,19,22,c.top);px(g,x-5,y-26,15,15,'#e8dfc9');
+      limb(g,x-5,y-28,x+6,y-16,4,topD);
+      limb(g,x+7,y-28,hx-8,hy+2,5,c.top);
+      limb(g,hx-8,hy+2,hx,hy,4,c.skin);
+      drawHead(g,x+4,y-47,1,c,false);
+      px(g,hx-4,hy-6,8,7,kind==='water'?'#e8dfc9':'#b18a5c');
+      px(g,hx+3,hy-2,3,3,c.skin);
+      if(p.stateT>.3 && p.stateT<1.6)
+        px(g,at.x,at.y-7,1,3,kind==='water'?'#8fb2bf':'#9b6a35');
+      return;
+    }
     if (p.pose === 'kneel') {
       // One knee on the mat, the other foot planted; brush strokes meet the
       // hearth lip without stretching a standing sprite into the masonry.
@@ -522,7 +540,13 @@
     else drawHead(g, x, y - 56 + breathe, facing, c, blink);
     // arm + held item, with actual hands
     const held = p.holding;
-    if(held==='sign') {
+    if(p.catHand) {
+      const at=p.catHand;
+      limb(g,x-10,y-35,x-3,y-23,5,c.top);
+      limb(g,x-3,y-23,at.x-11,at.y-2,4,c.skin);
+      limb(g,x+10,y-35,x+17,y-24,5,c.top);
+      limb(g,x+17,y-24,at.x+4,at.y-2,4,c.skin);
+    } else if(held==='sign') {
       px(g,x-13,y-36,5,10,c.top);px(g,x+8,y-36,5,10,c.top);
       SCENE.drawNewSign(g,x,y-8,.85);
       px(g,x-17,y-30,5,4,c.skin);px(g,x+13,y-30,5,4,c.skin);

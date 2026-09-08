@@ -690,35 +690,30 @@
 
   function drawCatCushion(g) {
     const C = L.catCorner.cushion;
-    ell(g, C.x, C.y, 22, 6, 'rgba(20,12,8,0.2)');
-    ell(g, C.x, C.y - 3, 22, 8, '#8a6142');
-    ell(g, C.x, C.y - 4, 21, 7, '#b18a5c');
-    ell(g, C.x, C.y - 5, 18, 5, '#a94f3f');
-    for (let bx = -16; bx <= 16; bx += 8)
-      px(g, C.x + bx, C.y, 3, 2, '#8a6142');
-    px(g, C.x - 13, C.y - 6, 6, 2, '#7a3535');
-    px(g, C.x + 8, C.y - 4, 5, 2, '#7a3535');
-    px(g, C.x - 2, C.y - 3, 4, 2, 'rgba(90,35,30,0.35)');
+    ell(g,C.x,C.y,17,6,'rgba(20,12,8,0.2)');
+    ell(g,C.x,C.y-4,17,9,'#8a6142');
+    ell(g,C.x,C.y-5,16,8,'#b18a5c');
+    ell(g,C.x,C.y-4,14,6,'#a94f3f');
+    px(g,C.x-12,C.y-8,24,2,'#7a3535');
+    for(let bx=-12;bx<=12;bx+=6)px(g,C.x+bx,C.y,2,2,'#8a6142');
+    px(g,C.x-7,C.y-3,5,2,'#bc6550');
   }
 
   function drawCatBowls(g, bowls) {
-    const F = L.catCorner.food, W = L.catCorner.water;
-    const foodQ = Math.ceil(Math.max(0, Math.min(1, bowls.food)) * 3);
-    const waterQ = Math.ceil(Math.max(0, Math.min(1, bowls.water)) * 4);
-    ell(g, F.x, F.y + 1, 10, 3, 'rgba(20,12,8,0.18)');
-    ell(g, F.x, F.y - 1, 10, 4, '#8f4a35');
-    px(g, F.x - 8, F.y - 4, 16, 4, '#b5654a');
-    ell(g, F.x, F.y - 4, 8, 3, '#6e3d2c');
-    if (foodQ) {
-      ell(g, F.x, F.y - 4 - foodQ, 6 + foodQ, 2 + foodQ, '#9b6a35');
-      px(g, F.x - 3, F.y - 5 - foodQ, 2, 2, '#c08a48');
-      px(g, F.x + 2, F.y - 3 - foodQ, 2, 2, '#6b4429');
+    const F=L.catCorner.food,W=L.catCorner.water;
+    const foodQ=Math.ceil(Math.max(0,Math.min(1,bowls.food))*3);
+    const waterQ=Math.ceil(Math.max(0,Math.min(1,bowls.water))*4);
+    [F,W].forEach(function(p,i) {
+      ell(g,p.x,p.y+1,7,2,'rgba(20,12,8,.18)');
+      ell(g,p.x,p.y-1,7,3,i?'#65758a':'#8f4a35');
+      px(g,p.x-6,p.y-4,12,3,i?'#7a89a5':'#b5654a');
+      ell(g,p.x,p.y-4,6,2,i?(waterQ?'#8fb2bf':'#4d5968'):'#6e3d2c');
+    });
+    if(foodQ) {
+      ell(g,F.x,F.y-4,3+foodQ,2,'#9b6a35');
+      px(g,F.x-2,F.y-5,foodQ,1,'#c08a48');
     }
-    ell(g, W.x, W.y + 1, 10, 3, 'rgba(20,12,8,0.18)');
-    ell(g, W.x, W.y - 1, 10, 4, '#65758a');
-    px(g, W.x - 8, W.y - 4, 16, 4, '#7a89a5');
-    ell(g, W.x, W.y - 4, 8, 3, waterQ ? '#8fb2bf' : '#4d5968');
-    if (waterQ) px(g, W.x - 5, W.y - 5, 2 + waterQ * 2, 1, 'rgba(232,244,240,0.8)');
+    if(waterQ)px(g,W.x-3,W.y-5,1+waterQ,1,'rgba(232,244,240,.8)');
   }
 
   function drawMatchaBar(g, world) {

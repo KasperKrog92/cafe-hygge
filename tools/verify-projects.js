@@ -104,7 +104,7 @@
     check(w.tables.length===tables && w.seats.length===seats,'unattended duplicated installation');audit(w);
   }
   // Both purchased projects can coexist: one per evening, old work is retained.
-  const w=__dev.furnishedWorld({random:SIM.seededRandom(16)});w.memory.life.savings=180;home(w);
+  let w=__dev.furnishedWorld({random:SIM.seededRandom(16)});w.memory.life.savings=180;home(w);
   check(SIM.buyProject(w,'table'),'queue table');SIM.goToSleep(w);until(w,()=>w.barista.state==='projectWork');
   home(w);check(SIM.buyProject(w,'fireplace'),'queue fireplace');
   const funds=w.memory.life.savings;
@@ -112,6 +112,9 @@
   check(w.memory.life.savings>=funds,'queued work charged again');
   check(w.tables.filter(t=>t.project==='table').length===1&&w.seats.filter(s=>s.project==='table').length===2,'installed seat set');
   audit(w);snap(w,'both-installed');
+  // Restore the installed save into a clear room: the preceding soak may
+  // leave both new seats occupied by long-staying readers.
+  w=restore(w);w.spawnT=1e9;
   // Prove actual ordinary service can occupy a newly enabled seat.
   const guest=SIM._.makePatron(w,'Mikkel');guest.wantsBook=false;guest.ownBook=true;guest.outdoor=false;
   w.seats.filter(s=>s.project!=='table').forEach(s=>{s.taken=true;});

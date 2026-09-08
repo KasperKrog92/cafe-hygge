@@ -6,7 +6,7 @@
     {step:0,text:'Here we go, little one. Your new second home.'},
     {step:0,text:"I'm glad you didn't see it yesterday while I was cleaning."},
     {step:0,text:'I found a spoon behind the skirting board. Just the one.'},
-    {step:2,text:'Your things go here. I thought you might like the warm corner.'},
+    {step:2,text:'Your things are tucked in beside me. A sheltered little spot, just for you.'},
     {step:2,text:"Of course, you'll pick somewhere else."},
     {step:4,text:'Coffee, tea, something sweet. I can manage that.'},
     {step:4,text:'I keep thinking I ought to have a longer menu.'},
@@ -119,7 +119,7 @@
     w.shop.carryingCat=i.finale===1 || i.finale===2;
     b.holding=w.shop.carryingCat?'cat':i.sign==='carried'?'sign':null;
     b.introOutside=i.finale===6;
-    w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;
+    w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;w.cat.target=L.catSpots.find(s=>s.id==='cushion');
     w.cat.state='sleep';w.cat.surface='floor';w.cat.path=null;
   };
   R.updateIntroFinale=function(w,dt) {
@@ -154,7 +154,7 @@
     if(i.finale===0) {w.shop.carryingCat=true;b.holding='cat';}
     if(i.finale===2) {
       w.shop.carryingCat=false;b.holding=null;
-      w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;
+      w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;w.cat.target=L.catSpots.find(s=>s.id==='cushion');
     }
     if(i.finale===6) {i.sign='outside';b.holding=null;w.context.sound.softThump();}
     i.finale++;i.time=0;b.path=null;b.pose='stand';b.introOutside=false;

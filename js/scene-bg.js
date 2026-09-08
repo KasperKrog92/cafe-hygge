@@ -44,10 +44,13 @@
     if(SCENE.hasFurniture(world,'entrance')) drawDoormat(g, world);      // floor decor at the threshold; under people/furniture
     // A single quiet woven pad gathers the cat's bed and bowls on the room
     // side of the entrance screen; all interaction anchors remain visible.
-    const cc = L.catCorner;
-    if(SCENE.hasFurniture(world,'rugs') && SCENE.hasFurniture(world,'cat-corner')) px(g, cc.cushion.x - 24, cc.cushion.y - 10, 50, 35, '#8a7958');
-    if(SCENE.hasFurniture(world,'rugs') && SCENE.hasFurniture(world,'cat-corner')) px(g, cc.cushion.x - 22, cc.cushion.y - 8, 46, 31, '#9b8965');
-    if(SCENE.hasFurniture(world,'rugs') && SCENE.hasFurniture(world,'cat-corner')) px(g, cc.cushion.x - 20, cc.cushion.y + 20, 42, 2, '#b19b73');
+    const cc = L.catCorner.bounds;
+    // Its small woven pad belongs to the bed, including the modest first day.
+    if(SCENE.hasFurniture(world,'cat-corner')) {
+      px(g,cc.x0,cc.y0,cc.x1-cc.x0,cc.y1-cc.y0,'#8a7958');
+      px(g,cc.x0+2,cc.y0+2,cc.x1-cc.x0-4,cc.y1-cc.y0-4,'#9b8965');
+      px(g,cc.x0+3,cc.y1-3,cc.x1-cc.x0-6,1,'#b19b73');
+    }
     L.pendants.filter((p,i)=>i===0||SCENE.hasFurniture(world,'full-counter')).forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
     drawWallShelves(g,world);

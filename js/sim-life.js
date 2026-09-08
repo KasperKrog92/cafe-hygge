@@ -162,7 +162,7 @@
     if(step.install)w.memory.life.furniture[step.install]=true;
     if(step.table!==undefined)installFirstTable(w,step.table);
     if(step.install==='cat-corner') {
-      w.shop.carryingCat=false;w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;
+      w.shop.carryingCat=false;w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;w.cat.target=L.catSpots.find(s=>s.id==='cushion');
       w.cat.state='sleep';w.cat.surface='floor';w.cat.path=null;
     }
     if(step.install==='cake-stand')w.shop.stocked=true;
@@ -215,6 +215,32 @@
     if (!c) return;
     Object.assign(w.shop, JSON.parse(JSON.stringify(c.shop)));
     Object.assign(w.barista, JSON.parse(JSON.stringify(c.nora)));
+    // Routes are transient geometry, even though lifecycle checkpoints retain
+    // them. Rebind the destination after loading an older layout without
+    // replaying a chore, changing its timer or touching home/story progress.
+    if (w.shop.phase === 'settling') {
+      const f=l.firstOpening, i=l.intro;
+      const at=f.step===11 ? (SIM.introFinale[i.finale]||{}).at : (FIRST[f.step]||{}).at;
+      if(at) {
+        const acting=f.step===11 ? i.time>0 : f.time>0;
+        if(acting) { w.barista.x=at.x;w.barista.y=at.y; }
+        w.barista.path=null;
+      }
+    } else if (['opening','closing'].indexOf(w.shop.phase)>=0) {
+      const b=w.barista,task=w.shop.task;
+      if(task && ['putCat','bowls','cat'].indexOf(task.kind)>=0) {
+        task.route=R.shopRoute(w,task.kind,task.index);
+        if(!w.shop.carryingCat)task.called=false;
+        const at=task.returning ? L.baristaHome : L.catCorner.noraSpot;
+        R.makePath(b,at.x,at.y);
+      } else if(b.path && b.path.length) {
+        const at=b.path[b.path.length-1];R.makePath(b,at.x,at.y);
+      }
+    }
+    if(w.shop.phase==='settling' && l.furniture['cat-corner']) {
+      w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;w.cat.target=L.catSpots.find(s=>s.id==='cushion');
+      w.cat.state='sleep';w.cat.surface='floor';w.cat.path=null;
+    }
     // The finale derives its held prop, cat and doorway presentation from the save.
     if (R.restoreIntro) R.restoreIntro(w);
     // Transient guests/orders are not saves. Resume rituals with a clear room;

@@ -464,7 +464,7 @@
       }
       case 'refillOut': {
         if (walker(b, dt)) {
-          b.state = 'refill'; b.stateT = 0; b.refillPlayed = false;
+          b.state = 'refill'; b.stateT = 0; b.refillPlayed = false; b.facing = 1; b.heading = ''; b.pose = 'catCare';
           b.holding = b.refillKinds.indexOf('water') >= 0 ? 'cup' : null;
         }
         break;
@@ -480,7 +480,7 @@
           b.holding = null;
           if (R.random() < 0.5) caption(world, 'Lunafreya tops up the cat\'s bowl.');
           if (world.cat.waitingBowl && R.random() < 0.25) caption(world, 'The cat supervises the refill closely.');
-          b.state = 'refillHome'; b.stateT = 0;
+          b.state = 'refillHome'; b.stateT = 0; b.pose = 'stand';
           b.path = refillRoute().slice(0, -1).reverse();
           b.path.push({ x: L.baristaHome.x, y: L.baristaHome.y });
         }
@@ -584,55 +584,27 @@
 
   const WATER_STOPS = L.noraCare.water.concat([Object.assign({facing:1},L.firstPlant.work)]);
   function waterStops(world) {
-    return (SCENE.hasFurniture(world,'full-counter')?[0]:[]).concat(SCENE.hasFurniture(world,'plants') ? [1,2] : [])
-      .concat(SCENE.hasFurniture(world,'first-plant') ? [3] : []);
+    return (SCENE.hasFurniture(world,'full-counter')?[0]:[])
+      .concat(SCENE.hasFurniture(world,'plants')?[1]:[])
+      .concat(SCENE.hasFurniture(world,'first-plant')?[2]:[]);
   }
 
   function waterRoute(stop) {
-    const all = [
-      { x: L.baristaHome.x, y: L.baristaHome.y },
-      { x: WATER_STOPS[0].x, y: WATER_STOPS[0].y },
-      { x: L.baristaExitX, y: L.baristaHome.y },
-      { x: WATER_STOPS[1].x, y: WATER_STOPS[1].y },
-      { x: L.baristaExitX, y: L.baristaHome.y },
-      { x: L.baristaExitX, y: L.lane },
-      { x: L.noraCare.plantVia.x, y: L.lane },
-      { x: L.noraCare.plantVia.x, y: L.noraCare.plantVia.y },
-      { x: WATER_STOPS[2].x, y: WATER_STOPS[2].y }
-    ];
-    return all.slice(0, [2, 4, 9][Math.max(0, Math.min(2, stop | 0))]);
+    return [L.baristaHome].concat(waterFromHome(stop));
   }
 
   function waterFromHome(stop) {
-    if (stop === 3) return [L.firstPlant.work];
-    if (stop === 0) return [{ x: WATER_STOPS[0].x, y: WATER_STOPS[0].y }];
-    if (stop === 1) return [
-      { x: L.baristaExitX, y: L.baristaHome.y },
-      { x: WATER_STOPS[1].x, y: WATER_STOPS[1].y }
-    ];
+    if (stop === 2) return [L.firstPlant.work];
+    if (stop === 0) return [WATER_STOPS[0]];
     return [
-      { x: L.baristaExitX, y: L.baristaHome.y },
-      { x: L.baristaExitX, y: L.lane },
+      { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
       { x: L.noraCare.plantVia.x, y: L.lane },
-      { x: L.noraCare.plantVia.x, y: L.noraCare.plantVia.y },
-      { x: WATER_STOPS[2].x, y: WATER_STOPS[2].y }
+      { x: L.noraCare.plantVia.x, y: L.noraCare.plantVia.y }, WATER_STOPS[1]
     ];
   }
 
   function waterHomeRoute(stop) {
-    if (stop === 3) return [L.baristaHome];
-    if (stop === 0) return [{ x: L.baristaHome.x, y: L.baristaHome.y }];
-    if (stop === 1) return [
-      { x: L.baristaExitX, y: L.baristaHome.y },
-      { x: L.baristaHome.x, y: L.baristaHome.y }
-    ];
-    return [
-      { x: L.noraCare.plantVia.x, y: L.noraCare.plantVia.y },
-      { x: L.noraCare.plantVia.x, y: L.lane },
-      { x: L.baristaExitX, y: L.lane },
-      { x: L.baristaExitX, y: L.baristaHome.y },
-      { x: L.baristaHome.x, y: L.baristaHome.y }
-    ];
+    return waterFromHome(stop).slice(0,-1).reverse().concat([L.baristaHome]);
   }
 
   function candleTableIndices(world) {
@@ -909,7 +881,9 @@
     const fromId = routeId((from && from.id) || 'free'), toId = routeId(to.id || 'free');
     const key = fromId + '>' + toId;
     let via = to.via || [];
-    if (CAT_VIA_PAIRS[key] || fromId === 'lapStand' || toId === 'lapStand') {
+    if (CAT_VIA_PAIRS[key] || fromId === 'lapStand' || toId === 'lapStand' ||
+        (['cushion','eat'].indexOf(fromId)>=0 || ['cushion','eat'].indexOf(toId)>=0) &&
+        !(fromId==='cushion' && toId==='eat' || fromId==='eat' && toId==='cushion')) {
       const out = (from && from.approach) || CAT_APPROACH[fromId] || [];
       const into = (to.approach || CAT_APPROACH[toId] || []).slice().reverse();
       via = out.concat(into);
@@ -1086,11 +1060,12 @@
     }
     cat.waitingBowl = '';
     cat.state = kind; cat.stateT = kind === 'eat' ? rnd(6, 10) : rnd(3, 5);
-    cat.needSoundT = 0; cat.facing = -1;
+    cat.needSoundT = 0; cat.facing = kind === 'drink' ? 1 : -1;
   }
 
   function startNeed(cat, kind) {
-    startTravel(cat, { id: 'eat', x: L.catCorner.eatSpot.x, y: L.catCorner.eatSpot.y,
+    const at = kind === 'drink' ? L.catCorner.drinkSpot : L.catCorner.eatSpot;
+    startTravel(cat, { id: 'eat', x: at.x, y: at.y,
       name: 'the cat bowls', kind: 'floor' }, kind);
   }
 
@@ -1650,14 +1625,28 @@
     });
     const b = world.barista;
     if (!b.introOutside && !b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {
-      SCENE.drawPerson(g, world.moment && world.moment.phase==='talk' ? Object.assign({},b,{pose:'stand',path:null}) : b);
+      const life=world.memory.life,first=life.firstOpening,intro=life.intro,task=world.shop.task;
+      const lift=b.pose==='hug'?6+Math.round(Math.sin(Math.min(1,b.stateT/3)*Math.PI/2)*3)
+        : b.pose==='gather'?Math.round(9*(1-Math.min(1,b.stateT/3))):0;
+      let q=0;
+      if(!b.path || !b.path.length) {
+        if(world.shop.phase==='settling' && first.step===0)q=Math.max(0,(first.time-1)/2);
+        else if(world.shop.phase==='settling' && first.step===11 && intro.finale===2)q=intro.time/3;
+        else if(world.shop.phase==='opening' && task && task.kind==='putCat' && !task.returning)q=task.time/2.5;
+      }
+      q=Math.min(1,q);
+      const heldCat={x:b.x+b.facing*7,y:b.y-28-lift};
+      heldCat.x+=(L.catCorner.cushion.x-heldCat.x)*q;
+      heldCat.y+=(L.catCorner.cushion.y-heldCat.y)*q;
+      const gathering=world.shop.phase==='settling' && first.step===11 && intro.finale===0 && b.pose==='gather';
+      const person=q>0 && world.shop.carryingCat ? Object.assign({},b,{catHand:heldCat})
+        : gathering ? Object.assign({},b,{catHand:world.cat}) : b;
+      SCENE.drawPerson(g, world.moment && world.moment.phase==='talk' ? Object.assign({},b,{pose:'stand',path:null}) : person);
       if (world.shop && world.shop.carryingCat) {
-        const lift=b.pose==='hug'?6+Math.round(Math.sin(Math.min(1,b.stateT/3)*Math.PI/2)*3)
-          : b.pose==='gather'?Math.round(9*(1-Math.min(1,b.stateT/3))):0;
-        SCENE.drawCat(g, Object.assign({}, world.cat, { x: b.x + b.facing * 7, y: b.y - 28-lift,
+        SCENE.drawCat(g, Object.assign({}, world.cat, heldCat, {
           state: 'sleep', surface: 'arms', carried: true, facing: b.facing }));
-        SCENE._.px(g, Math.round(b.x) - 6, Math.round(b.y) - 30-lift, 5, 3, b.colors.skin);
-        SCENE._.px(g, Math.round(b.x) + 9, Math.round(b.y) - 30-lift, 5, 3, b.colors.skin);
+        SCENE._.px(g, Math.round(heldCat.x)-13, Math.round(heldCat.y)-2,5,3,b.colors.skin);
+        SCENE._.px(g, Math.round(heldCat.x)+2, Math.round(heldCat.y)-2,5,3,b.colors.skin);
       }
     } });
     const cat = world.cat;

@@ -200,8 +200,7 @@
       { x: 216, y: 222, base: 274 },
       { x: 536, y: 222, base: 274 }
     ],
-    // Low side-on timber screen: its near end shelters the cat corner from
-    // the entrance aisle. Slices share the floor planner and painter baselines.
+    // Low side-on timber screen marking the entrance aisle. Slices share the floor planner and painter baselines.
     entranceScreen: { x: 84, y: 234, dx: 14, depth: 58, w: 8, h: 42 },
     umbrellaStand: { x: 74, y: 296 },
     umbrellaSpot: { x: 74, y: 312 },
@@ -210,12 +209,15 @@
       umbrellaApproach: [{ x: 54, y: 368 }, { x: 54, y: 312 }, { x: 74, y: 312 }],
       umbrellaToDoor: [{ x: 74, y: 312 }, { x: 54, y: 312 }, { x: 54, y: 252 }]
     },
+    // Low wall-backed bed below the right sill, tucked beside the coffee cabinet.
     catCorner: {
-      cushion: { x: 126, y: 262 },
-      food: { x: 116, y: 278 },
-      water: { x: 138, y: 278 },
-      eatSpot: { x: 116, y: 286 },
-      noraSpot: { x: 127, y: 298 }
+      cushion: { x: 620, y: 246 },
+      food: { x: 610, y: 262 },
+      water: { x: 628, y: 262 },
+      eatSpot: { x: 622, y: 267 },
+      drinkSpot: { x: 616, y: 267 },
+      noraSpot: { x: 590, y: 274 },
+      bounds: { x0: 602, x1: 638, y0: 232, y1: 266 }
     },
     // The cat's floor destinations and aerial routes live here with the rest
     // of the room geometry. Aerial anchors are intentionally inside/on their
@@ -226,7 +228,7 @@
       { id: 'bigRug', x: 340, y: 468, name: 'the big rug', kind: 'floor' },
       { id: 'armchair', x: 252, y: 312, name: 'the armchair\'s side', kind: 'floor' },
       { id: 'nookRug', x: 768, y: 550, name: 'the reading nook rug', kind: 'floor' },
-      { id: 'cushion', x: 126, y: 262, name: 'its own cushion', kind: 'floor', catCorner: true }
+      { id: 'cushion', x: 620, y: 246, name: 'its own cushion', kind: 'floor', catCorner: true }
     ],
     catPerches: {
       windows: [
@@ -259,7 +261,7 @@
       bigRug: [{ x: 320, y: 468 }, { x: 320, y: 368 }],
       armchair: [{ x: 236, y: 330 }, { x: 236, y: 368 }],
       nookRug: [{ x: 760, y: 368 }],
-      cushion: [{ x: 160, y: 300 }, { x: 160, y: 368 }],
+      cushion: [{ x: 590, y: 274 }, { x: 590, y: 368 }],
       window1Stand: [{ x: 248, y: 368 }],
       window2Stand: [{ x: 572, y: 368 }],
       bookshelfStand: [{ x: 770, y: 368 }],
@@ -268,7 +270,7 @@
       topShelfStand: [{ x: 700, y: 368 }],
       pianoStand: [{ x: 170, y: 532 }, { x: 170, y: 368 }],
       pianoDismount: [{ x: 170, y: 532 }, { x: 170, y: 368 }],
-      eat: [{ x: 160, y: 300 }, { x: 160, y: 368 }]
+      eat: [{ x: 590, y: 274 }, { x: 590, y: 368 }]
     },
     // An upright seen in profile, back to the room's left edge: the keyboard
     // is a short stub toward the player, and the lid's three lives stack in
@@ -304,7 +306,7 @@
       lamp: { x: 24, y: 452 }
     },
     logPile: { x: 446, y: 252 },     // beside the hearth, leaning on the crate
-    plants: [{ x: 612, y: 262 }, { x: 930, y: 322 }],
+    plants: [{ x: 930, y: 322 }],
     counterPlant: { x: 900, y: 264 },
     menu: { x: 808, y: 112, w: 116, h: 100 },  // chalkboard on the wall behind the counter
     counter: { x: 640, w: 300, slabY: 264, frontY: 278, baseY: 306 }, // 0.7 CH tall
@@ -322,7 +324,6 @@
       chalk: { x: 893, y: 238 }, // close to the wall: raised chalk meets the doodle
       water: [
         { x: 880, y: 286, facing: 1 },
-        { x: 612, y: 286, facing: -1 },
         { x: 908, y: 330, facing: 1 }
       ],
       plantVia: { x: 840, y: 330 },
@@ -433,7 +434,7 @@
   }
   L.footprints.push({ name: 'umbrella stand', x0: L.umbrellaStand.x - 9, x1: L.umbrellaStand.x + 9,
     y0: L.umbrellaStand.y - 8, y1: L.umbrellaStand.y + 2 });
-  L.footprints.push({ name: 'cat corner', x0: 102, x1: 152, y0: 248, y1: 284, catOnly: true });
+  L.footprints.push(Object.assign({ name: 'cat corner', catOnly: true }, L.catCorner.bounds));
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
   L.footprints.push({ name: 'piano', x0: 12, x1: 50, y0: 502, y1: 526 });

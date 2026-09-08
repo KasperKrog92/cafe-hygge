@@ -4,9 +4,8 @@
   const stops = w.seats.concat([L.doorSpot, L.orderSpot, L.pickupSpot,
     L.returnSpot, L.library.browseSpot, L.fire.stand, L.artist.watch, L.umbrellaSpot]);
   for (let i = 0; i < 6; i++) stops.push(R.queueSlot(i), R.waitSpot(i));
-  // Keep the original plant-adjacent stop as a regression even if seats move.
-  const plant = L.footprints.find(b => b.name === 'plant 0');
-  stops.push({x:plant.x0-3,y:L.winSeats[3].y});
+  // Check the window's tight margin beside the relocated cat home.
+  stops.push({x:L.catCorner.bounds.x0-3,y:L.winSeats[3].y});
   const boxes = SCENE.activeGeometry(w,L.occluders).map(o => ({name:o.name,x0:o.x0,x1:o.x1,y0:o.top,y1:o.baseline}))
     .concat(SCENE.activeGeometry(w,L.footprints));
   const inside = (p,b,pad,yp) => p.x>b.x0-pad && p.x<b.x1+pad && p.y>b.y0-yp && p.y<b.y1+yp;

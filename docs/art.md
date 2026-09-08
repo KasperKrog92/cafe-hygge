@@ -247,7 +247,8 @@ y=232 ── wall meets floor (L.wallY — kept high so the floor, the life laye
           approach open. Each carries its own sitter's cup or pastry plate;
           on dining and side tables, candle jars and flames draw before the
           serving items, so drinks and plates overlap them in front;
-          under window 1, `L.catCorner` gathers a red cushion in a wicker bed
+          against the wall below the right window, beside the coffee cabinet,
+          `L.catCorner` gathers a red cushion in a compact wicker bed
           and terracotta food / blue-grey water bowls on a woven pad
           (quantized visible levels)
 y=368 ── the walking lane (L.lane — keep this corridor clear
@@ -260,7 +261,7 @@ y=368 ── the walking lane (L.lane — keep this corridor clear
           (L.entranceScreen / L.umbrellaStand), a woven coir doormat across the
           threshold (L.doormat, centred on doorSpot — damp arrivals wipe their
           shoes on it; darkens with world.rain), plants at the
-          counter's ends (L.plants), rugs
+          counter's right end (L.plants), rugs
           reading nook, bottom right (L.library): bookshelf (2 CH + crown;
           browse spot in front, loanable spines vanish while borrowed), two
           green wing chairs each with a candle side table for the sitter's drink
@@ -678,20 +679,19 @@ uppercase/lowercase and Danish letters, with 26 px line spacing.
 
 ## Entrance bay — 6 September 2026
 
-A side-on, 42 px timber screen separates the door aisle from the cat corner.
+A side-on, 42 px timber screen defines the entrance aisle.
 Its receding cap, recessed near post, brass pegs and hanging sage scarf replace
 the tall freestanding coat stand. Two-pixel slices sort by their own floor
 baselines; four conservative footprint boxes derive from `L.entranceScreen`
-and keep the real routes clear, including the cat's bowl approach. The screen
+and keep the real entrance routes clear. The screen
 is lower than a standing character and does not need a full-height occluder.
 
 The umbrella stand keeps its real drop-off/pickup position and live contents,
 inside a smaller sage ceramic crock.
 Umbrellas are centered as a group inside the recessed opening, drawn over its
 back rim and behind the near lip; their folded fabric continues into the crock.
-The cat's existing cushion and bowls stay
-at their established anchors, gathered on one muted woven pad; a wicker rim
-locates the red cushion. The door retains its hinged animation, with recessed
+The cat's cushion and bowls moved from this bay to the right-window wall
+on 8 September (see below). The door retains its hinged animation, with recessed
 lower panels, a brass lever and a beveled frame/threshold. No save or simulation
 state changes are part of this art pass.
 
@@ -729,7 +729,7 @@ screen; earnings and purchases update its number without revealing it.
 Fresh saves show boarded-over windows, a 176 px counter and 84 px coffee bench.
 The small machine, grinder, kettle, cups and tiny cake stand appear as Lunafreya sets
 them out. There are no room rugs, drapes, wall menu or fireplace decorations.
-Entrance equipment includes the doormat, umbrella stand and cat corner. Two
+First setup includes the entrance doormat/umbrella stand and the wall-backed cat corner beside the coffee station. Two
 table sets appear in assembly stages, then join the usual depth-sorted furniture.
 Optional furniture and its floor geometry share saved availability flags.
 Existing saves retain the fully furnished room.
@@ -781,3 +781,23 @@ existing presentation; off-duty visits have neither trolley nor tool case.
 
 Conversation framing keeps both speakers inside the room and camera crop;
 side approaches clear the reserved kit and the zoom retains their feet.
+
+
+## Cat home beside the coffee station — 8 September 2026
+
+The full-size cat has a compact wicker bed at (620,246), against the wall
+below the lower-right corner of the right window and immediately left of the
+coffee cabinet. Its woven pad is present from C0; it is part of the bed rather
+than a later room-rug purchase. The shared reservation is x602–638/y232–266.
+Food and water bowls sit at (610,262)/(628,262); the cat faces each bowl from
+its own feeding anchor. Lunafreya approaches at (590,274), crouches to pour,
+and gathers/lowers the cat with hands following its body. The bed's baseline
+matches the resting cat so the rim cannot paint over it.
+
+The former decorative floor plant at (612,262) and its watering stop are removed.
+The counter/rightmost plants and purchased first sill plant retain their use.
+The window view, sill-length drapes, window-seat access and coffee staff exit
+remain available. Future right-window work should retain access from the west;
+its unbuilt repair choreography must be checked when authored. Keep this cat
+home in future counter/kitchen planning. Earlier furnished geometry is a
+reference, not a reason to preserve a conflicting decorative plant.

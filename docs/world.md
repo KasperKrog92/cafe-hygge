@@ -512,3 +512,11 @@ lets both actors exit and preserves partial work. Captions announce their
 arrival, kit handoff, and later familiar or unintroduced off-duty stops.
 Attended optional conversations hold obligations through the existing moment
 system; ignored invitations do not hold time, service, work or departure.
+
+
+Cat care (8 September): the bed and bowls occupy the wall-backed right-window
+corner beside the coffee cabinet. The decorative plant formerly there is gone,
+including its watering visit. Food/water consumption and quiet refill sounds
+retain their timing and gains; the two bowls have separate feeding anchors.
+Opening places the cat on its cushion, and closing collects it from the same
+care approach before leaving. The intro describes shelter rather than fire heat.

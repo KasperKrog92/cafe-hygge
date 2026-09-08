@@ -608,3 +608,16 @@ the new purchase as already installed, avoiding another charge or duplicate
 furniture. In modest saves, installed `projects.bookshelf` means empty wall
 shelves only. Legacy `furniture.bookshelf` continues to gate the old usable
 library and browsing. Purchased/gift book contents are a separate later pass.
+
+
+## Cat-corner checkpoint reconciliation — 8 September 2026
+
+Schema remains v9: the relocated cat home changes geometry, not durable state.
+`restoreLife` rebinds an unfinished setup/finale to its current step anchor;
+action timers and dialogue indices remain intact. Opening/closing cat-care
+tasks rebuild their route to `L.catCorner.noraSpot` (or home for a completed
+return), retaining task time and carried-cat state. Other active café paths
+are replanned toward their saved destination. Home checkpoints retain their
+existing restoration. No upgrade, intro choice or completed action is reset.
+The runtime cat and care paths are reconstructed, so entrance-side v9
+checkpoints cannot resume pouring into the removed corner.

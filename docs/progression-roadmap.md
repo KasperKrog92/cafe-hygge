@@ -6,6 +6,9 @@ introduction and left-window repair are implemented. The build-order section
 and first-day update below distinguish these from proposed later stages.
 Shared improvement preparation is complete (7 September). Second-day visitors are
 shipped (8 September), as is Pass 1's three small wall shelves left of the hearth.
+The cat's bed and bowls now sit against the right-window wall beside the coffee
+station; its former decorative floor plant is removed (8 September). Reserve
+this home when designing later window work or counter growth.
 The next task is separate book purchases and interruptible stocking (Pass 2). See the
 [contract](architecture.md#shared-improvement-contract).
 The [scalability audit](scalability-audit.md) records preparation for those stages;

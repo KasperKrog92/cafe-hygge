@@ -248,7 +248,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v8; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v9; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 
@@ -465,3 +465,36 @@ with audio initialized, income, seating and a zero-problem night audit, in
 `.art-review/wall-shelves-entry/`. Exported shelf, installation and future-window
 views were inspected. All owned browser sessions closed. These are desktop
 Chromium checks; no native Safari execution is claimed.
+
+
+## Wall-backed cat corner — 8 September 2026
+
+`tools/verify-project.ps1 -Suite cat-corner` checks both room sizes, actual bowl
+refills and food/water consumption, twelve old entrance-side ritual routes,
+old initial-placement/hug checkpoints and completion without replayed progress.
+It exports the full-size cat sleeping, sitting, kneading, eating/drinking,
+Lunafreya pouring, the intro hug/lowering, open/closed drapes and furnished room.
+Schema stays v9; current layout destinations are reconciled on restore.
+
+Final full regression: all 19 suites, 16 Node save/isolation groups, audio
+preferences and all 23 shipped-script syntax checks pass in `.art-review/cat-complete/`.
+Art review in `.art-review/cat-after/` has ten repeatable images, twelve occupancy
+scenarios and zero audits. Real intro controls/reloads and 1440×900 / 1600×900
+captures are in `.art-review/cat-intro-ui/`; plant/life reloads and two-tab
+ownership checks are in `.art-review/cat-life-reloads/`. Small-room reload,
+expanded and home framing checks pass in `.art-review/cat-room/`.
+
+Verification exposed obsolete fixture assumptions: the pathing check followed
+the removed floor plant's array index; closing assumed the cat still lived left
+of the left window; a post-soak seat test could reserve already occupied seats.
+Those checks now follow the new cat home and test installed seats in a cleared
+restored save. Older UI runners now play the shipped bedtime sequence and
+mandatory Holger introduction before asserting morning/home framing. These
+updates change tests, not those gameplay contracts. Browser sessions are closed
+by each runner. These are Chromium desktop checks, not native Safari execution.
+
+The final normal-entry cappuccino completed in 33.8 seconds with audio ready,
+pickup income, seating and a zero-problem night audit (`.art-review/cat-entry/`).
+The installed-seat fixture cleanup is confirmed in `.art-review/cat-project-confirm/`.
+Final exported corner/intro images in `.art-review/cat-complete/` were inspected;
+all task-owned browser sessions were confirmed closed before commit.

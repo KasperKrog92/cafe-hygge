@@ -39,8 +39,8 @@
             scenario + ': closing crossed to the left window before finishing the right');
           if (s.curtains[1] > 0) check(w.barista.x < SCENE.L.baristaExitX,
             scenario + ': final closing round returned to the counter');
-          if (s.curtains[0] > 0) check(w.barista.x <= SCENE.L.win.x + SCENE.L.win.w,
-            scenario + ': Lunafreya doubled back across the room after the left curtain');
+          if (s.carryingCat) check(w.barista.x <= SCENE.L.catCorner.noraSpot.x,
+            scenario + ': Lunafreya doubled back toward the counter after collecting the cat');
           if (s.task && s.task.kind === 'hearth') check(s.curtains[1] === 1 && s.curtains[0] === 0,
             scenario + ': hearth was not handled between the right and left windows');
         }

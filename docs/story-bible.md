@@ -274,3 +274,9 @@ character has dialogue sounds through the same volume and mute controls.
 These profiles are ready for their authored conversations. Existing third-person
 arc narration remains unvoiced. Speech shares the existing dialogue volume,
 mute and instant-text settings, and stops when the page is hidden.
+
+
+First-morning spatial continuity (8 September): the cat's bed is tucked against
+the right-window wall beside Lunafreya's coffee station. The existing line now
+calls it a sheltered spot beside her; it does not promise heat from the still
+unused fireplace. Dialogue order, remembered choices and the later hug remain.

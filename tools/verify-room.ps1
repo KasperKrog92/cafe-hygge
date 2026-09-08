@@ -16,7 +16,7 @@ try {
  if($LASTEXITCODE -ne 0){throw 'Viewport failed'}
  & $browser --session $testSession wait --fn '!!window.__world'
  if($LASTEXITCODE -ne 0){throw 'Boot failed'}
- Eval-Room '(()=>{for(let i=0;i<5000&&__world.shop.phase==="settling";i++)SIM.update(__world,.25);__world.activeCaption=null;lifeTestFrame(performance.now());const a=__dev.audit();if(a.length)throw Error(a.join(";"));if(cafe.width!==1664||cafe.height!==936)throw Error("small viewport");MEMORY.saveNow();return true})()'
+ Eval-Room '(()=>{for(let i=0;i<5000&&__world.shop.phase==="settling";i++)SIM.update(__world,.25);__dev.greetHolger(__world);__world.activeCaption=null;lifeTestFrame(performance.now());const a=__dev.audit();if(a.length)throw Error(a.join(";"));if(cafe.width!==1664||cafe.height!==936)throw Error("small viewport");MEMORY.saveNow();return true})()'
  & $browser --session $testSession reload
  if($LASTEXITCODE -ne 0){throw 'Reload failed'}
  & $browser --session $testSession wait --fn '!!window.__world'
@@ -27,7 +27,7 @@ try {
  Eval-Room '__world.memory.life.room="full";lifeTestFrame(performance.now());if(cafe.width!==1920||cafe.height!==1080)throw Error("expanded viewport");true'
  & $browser --session $testSession screenshot (Join-Path $output 'viewport-expanded.png')
  if($LASTEXITCODE -ne 0){throw 'Expanded capture failed'}
- Eval-Room '__world.memory.life.room="small";__dev.home();lifeTestFrame(performance.now());if(cafe.width!==1920||cafe.height!==1080)throw Error("home crop");true'
+ Eval-Room '__world.memory.life.room="small";__dev.greetHolger(__world);if(!__dev.home())throw Error("closing did not reach home");lifeTestFrame(performance.now());if(cafe.width!==1920||cafe.height!==1080)throw Error("home crop");true'
  $errors=& $browser --session $testSession errors
  if($LASTEXITCODE -ne 0 -or $errors){throw "Browser errors: $errors"}
  Write-Output 'Small room reload, expanded framing and apartment framing: PASS'

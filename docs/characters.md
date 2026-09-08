@@ -149,9 +149,10 @@ three-second hand action, preserving progress:
   current candle, park the round, serve, and resume at the next unlit stop.
   The chained `candleRoute` is shared with `__dev.audit()`.
 - **Water the plants** (after candle and bowl care): once per café day between
-  09:00 and 16:00, carries a copper can to the counter plant and both floor
-  plants. A customer reaching the counter parks the round after the current plant. The three
-  cumulative `waterRoute` paths are shared with `__dev.audit()`.
+  09:00 and 16:00, carries a copper can to the counter plant, remaining right
+  floor plant and purchased first sill plant when installed. A customer reaching
+  the counter parks the round after the current plant. Their `waterRoute` paths
+  are shared with `__dev.audit()`; the former coffee-side floor plant is removed.
 - **Feed the fire** (after plant care): when the hearth has burned low and no
   fireside regular is already tending it (`world.fire.wantsLog && !claimed`),
   she crosses via the fire's clear column, takes a log in hand for a beat, and
@@ -524,7 +525,7 @@ while the bench and piano voice are free. Safe pairs keep the old straight-line 
 clip furniture use the declared `catRoute` waypoints checked by the audit.
 
 **Needs, without consequences:** `hungerT` rolls 420–720 s and `thirstT`
-500–800 s. The cat walks to `L.catCorner.eatSpot`, eats for 6–10 s (0.34 food),
+500–800 s. The cat walks to `L.catCorner.eatSpot` or `drinkSpot`, faces the corresponding bowl, eats for 6–10 s (0.34 food),
 or drinks for 3–5 s (0.2 water); 80% of meals are followed by a drink. Food
 and water are visible, quantized bowl art in `world.catBowls`. If a bowl is
 empty, the cat sits beside it facing Lunafreya, occasionally meows, and retries
@@ -776,3 +777,10 @@ actors with staff-safe routes, no orders or seats, and independent departures.
 Optional saved greetings use existing attended bubbles. Ignored hellos return
 on later 90-second off-duty visits; completed greetings get familiar captions.
 See the story bible for literal scene continuity and architecture for timing.
+
+
+The cat's home is now against the right-window wall beside the coffee cabinet,
+with care from its western approach. First arrival, the attended hug and daily
+opening lower it onto the same cushion. Closing still collects the wandering
+cat before switching off and leaving. Journeys to the corner use its declared
+approach through the lane; its bed-to-bowls journey stays local.

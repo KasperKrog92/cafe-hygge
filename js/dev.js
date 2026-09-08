@@ -604,7 +604,7 @@
     w.barista = { kind: 'barista', name: 'Lunafreya', colors: structuredClone(world().barista.colors),
       x: L.baristaHome.x, y: L.baristaHome.y, facing: -1, heading: 'down',
       pose: 'stand', state: 'idle', animT: 0, orders: [], holding: null };
-    w.cat = { x: L.catCorner.cushion.x, y: L.catCorner.cushion.y - 2,
+    w.cat = { x: L.catCorner.cushion.x, y: L.catCorner.cushion.y,
       state: 'sleep', surface: 'floor', facing: 1, animT: 0, scarf: null };
     SIM._.snapCandles(w);
     return w;
@@ -922,7 +922,7 @@
     const refillEnd = refill[refill.length - 1];
     routeProblems(refill, refillEnd, 'cat bowl refill', ['counter', 'cat corner'], true, problems);
 
-    // Lunafreya's three-stop watering round and full candle circuit are declared
+    // Lunafreya's remaining plants and purchased sill plant and full candle circuit are declared
     // by the sim, so this checks the geometry she actually walks.
     for (let i = 0; i < 3; i++) {
       const water = SIM._.waterRoute(i);
@@ -952,7 +952,8 @@
       { id: 'pianoStand', x: L.catPerches.piano.stand.x, y: L.catPerches.piano.stand.y },
       { id: 'pianoDismount', x: L.piano.dismount.x, y: L.piano.dismount.y,
         approach: L.catRoutes.pianoDismount },
-      { id: 'eat', x: L.catCorner.eatSpot.x, y: L.catCorner.eatSpot.y, catCorner: true }
+      { id: 'eat', x: L.catCorner.eatSpot.x, y: L.catCorner.eatSpot.y, catCorner: true },
+      { id: 'eat', x: L.catCorner.drinkSpot.x, y: L.catCorner.drinkSpot.y, catCorner: true }
     ]).filter(s => SCENE.catSpotAvailable(w,s.id));
     w.seats.filter(function (s) { return s.armchair || s.nook; }).forEach(function (seat, i) {
       const lap = { id: 'lapStand' + i, x: seat.x + seat.facing * 38, y: seat.y + 16 };

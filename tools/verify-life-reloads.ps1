@@ -73,7 +73,7 @@ try {
   if($LASTEXITCODE -ne 0){throw 'Sleep screenshot failed'}
   & $browser --session $testSession find role button click --name 'go to sleep'
   if($LASTEXITCODE -ne 0){throw 'Sleep UI failed'}
-  Eval-Life "if(__world.shop.phase!=='dawn'||Math.abs(__world.hour-7.5)>1e-8)throw Error('sleep did not start morning');lifeTestFrame(performance.now());if(!document.getElementById('btn-sleep').hidden)throw Error('sleep visible in cafe');true" | Out-Null
+  Eval-Life "if(__world.shop.phase!=='home'||__world.memory.life.homeStory.sleepStep<0)throw Error('sleep did not begin bedtime');for(let n=0;n<1200&&__world.shop.phase==='home';n++)SIM.update(__world,.25);if(__world.shop.phase!=='dawn'||Math.abs(__world.hour-7.5)>1e-8)throw Error('bedtime did not reach morning');lifeTestFrame(performance.now());if(!document.getElementById('btn-sleep').hidden)throw Error('sleep visible in cafe');true" | Out-Null
   & $browser --session $testSession reload
   if($LASTEXITCODE -ne 0){throw 'Morning reload failed'}
   & $browser --session $testSession wait --fn '!!window.__world' | Out-Null
