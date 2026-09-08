@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 11;
+  const KEY = 'cafe-hygge-save', VERSION = 12;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -63,6 +63,11 @@
           (h.sleepFrom===null || record(h.sleepFrom) && finite(h.sleepFrom.x) && finite(h.sleepFrom.y) &&
           h.sleepFrom.x>=128 && h.sleepFrom.x<=832 && h.sleepFrom.y>=266 && h.sleepFrom.y<=550), 'invalid home story');
       }
+      if (version >= 12) {
+        const d=s.life.homeDinner;
+        requireShape(record(d) && finite(d.time) && d.time>=0 && d.time<=180 &&
+          typeof d.done==='boolean', 'invalid home dinner');
+      }
       if (version >= 7) requireShape(integer(s.life.daysCompleted) && s.life.daysCompleted >= 0, 'invalid café days');
       if (version >= 4) {
         requireShape(record(s.life.furniture), 'invalid furniture');
@@ -110,7 +115,7 @@
   function freshLife() {
     return { mode: 'game', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0,
       plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), furniture: furnishings(false),
-      homeStory: freshHomeStory(false), firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
+      homeStory: freshHomeStory(false), homeDinner:{time:0,done:false}, firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
   }
   function freshHomeStory(complete) {
     return {step:complete?12:0,time:0,planned:complete,firstNight:!complete,sleepStep:-1,sleepTime:0,sleepFrom:null};
@@ -125,10 +130,10 @@
   }
   function validateProjects(l, version) {
     requireShape(record(l.projects) && typeof l.plannedTonight === 'boolean', 'invalid projects');
-    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=10 ? ['table','fireplace','window','bookshelf','windowSeat'] : version>=9 ? ['table','fireplace','window','bookshelf'] : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
+    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=11 ? ['table','fireplace','window','bookshelf','windowSeat','mantel'] : version>=10 ? ['table','fireplace','window','bookshelf','windowSeat'] : version>=9 ? ['table','fireplace','window','bookshelf'] : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
       // Historical codecs retain their original limits, independent of today's catalogue.
       const d = version === VERSION ? IMPROVEMENTS.projects[id] : null;
-      const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'table' ? 6 : id==='bookshelf' ? 5 : 4;
+      const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'mantel' ? 3 : id === 'table' ? 6 : id==='bookshelf' ? 5 : 4;
       const stages = d ? d.stages : ['available','purchased','scheduled','arrived','working','installed'];
       requireShape(record(p) && stages.indexOf(p.stage) >= 0 &&
         integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < (d ? d.duration : id==='bookshelf'||id==='windowSeat' ? 12 : 18),
@@ -221,6 +226,13 @@
     // Earlier fireboxes were open; never put boards over work already underway.
     if(p.stage!=='available'||l.furniture.hearth)s.flags['fireplace-unlocked']=true;
     if(p.stage==='working')s.flags['fireplace-open-legacy']=true;
+    return s;
+  }, 11: function(s) {
+    createCodec(11, {}).validate(s);
+    s.version=12;
+    // An established evening continues in place; dinner joins the next arrival.
+    s.life.homeDinner={time:0,done:!!(s.life.checkpoint && s.life.checkpoint.shop.phase==='home' &&
+      s.life.homeStory.step===12 && s.life.homeStory.planned)};
     return s;
   } });
   MEMORY.freshHomeStory=freshHomeStory;

@@ -73,7 +73,7 @@
   // Starting bedtime from the reading seat must leave the bed at its side,
   // then use the clear lane instead of cutting through the mattress corner.
   const reader=__dev.modestWorld();SIM.withWorld(reader,()=>SIM._.enterHome(reader));
-  SIM.setMode(reader,'game');reader.memory.life.homeTime=50;SIM.update(reader,0);
+  SIM.setMode(reader,'game');reader.memory.life.homeDinner.done=true;reader.memory.life.homeTime=50;SIM.update(reader,0);
   check(SIM.goToSleep(reader),'bedside sleep rejected');
   for(let n=0;n<180 && reader.memory.life.homeStory.sleepStep===0;n++) {
     SIM.update(reader,.25);const b=reader.barista,H=SCENE.L.home;

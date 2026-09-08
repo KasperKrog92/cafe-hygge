@@ -43,6 +43,25 @@ Existing arrived/working/installed jobs never redeliver or replay construction.
 The visitor suite covers both modes, overlapping jobs, closing, later hellos,
 legacy saves and next morning; the UI runner checks actual page reloads.
 
+## Apartment supper — shipped 8 September
+
+Once each evening, Lunafreya visits the kitchen, whose light comes on as she
+enters. She quickly puts bread and cheese on a plate, carries it to her computer,
+eats, then rinses the plate and returns to the desk. On the first evening this
+starts after the required planner choices; later evenings start after she settles
+at the PC. The saved routine runs in both modes, including in the background and
+with the ordinary planner open. Explicit bedtime can interrupt any stage without
+an obligation to finish dinner. Kitchen light follows her actual presence.
+
+This is the sparse, just-moved-in meal. Later apartment/kitchen furnishing may
+bring more nourishing meals and a dining or kitchen table, as directed by the
+owner. Those meals, upgrades and table placement remain future work.
+
+The ordinary 90-second evening circuit pauses during supper and resumes afterward;
+later idle mode then leaves automatically. First evenings and game evenings still
+wait for explicit sleep. Reload resumes the meal without adding offline time;
+established pre-v12 evenings continue in place and receive dinner next evening.
+
 ## Current next milestone — First books, first connection
 
 The [implementation brief](plans/first-books.md) translates the accepted story

@@ -83,7 +83,11 @@
       kitchen: {
         x: 128, y: 454, w: 226, h: 96, wallH: 96, doorX: 300, doorW: 42,
         counter: { x: 144, y: 466, w: 106 }, fridge: { x: 254, y: 466 },
-        box: { x: 276, y: 532 }
+        box: { x: 276, y: 532 }, light: {x:238,y:383},
+        door: {x:321,y:478}, lane: {x:321,y:506},
+        prepLane: {x:208,y:506}, prep: {x:208,y:480},
+        sinkLane: {x:164,y:506}, sink: {x:164,y:480},
+        plate: {x:230,y:432}
       },
       bathroom: {
         x: 354, y: 454, w: 224, h: 96, wallH: 96, doorX: 528, doorW: 42,

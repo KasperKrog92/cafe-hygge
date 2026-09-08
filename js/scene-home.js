@@ -193,7 +193,20 @@
     px(g,r.doorX,top+8,r.doorW,4,'#6e4a33');
     px(g,r.doorX,r.y,r.doorW,4,'#c08a58');
   }
-  function kitchenDrawables(draws) {
+  function mealPlate(g,x,y,portions) {
+    ell(g,x,y+1,11,4,'#b5ada0');ell(g,x,y,11,3,'#f5efdf');
+    for(let i=0;i<portions;i++) {
+      px(g,x-7+i*8,y-4,7,4,'#936747');
+      px(g,x-6+i*8,y-5,6,3,'#d5b581');
+      px(g,x-5+i*8,y-5,5,2,'#e8d5b0');
+    }
+  }
+  // Occupancy drives the light, including an interrupted trip back out.
+  SCENE.homeKitchenLit=function(w) {
+    const b=w.barista,k=H.kitchen;
+    return w.shop.phase==='home' && b.x>k.x && b.x<k.x+k.w && b.y>=k.y;
+  };
+  function kitchenDrawables(draws,w) {
     const k=H.kitchen, c=k.counter, f=k.fridge;
     draws.push({y:c.y,draw:g=>{
       ell(g,c.x+c.w/2,c.y+2,c.w/2+3,6,'rgba(20,12,8,.22)');
@@ -216,6 +229,11 @@
       ell(g,c.x+66,c.y-34,3,1,'#3c414d'); ell(g,c.x+87,c.y-34,3,1,'#3c414d');
       px(g,c.x+45,c.y-45,6,7,'#e8dfc9'); px(g,c.x+50,c.y-44,3,4,'#e8dfc9');
       px(g,c.x+5,c.y-27,12,17,'#7a89a5'); px(g,c.x+8,c.y-26,2,14,'#94a1b4');
+      if(w.barista.pose==='supperPrep')mealPlate(g,k.plate.x,k.plate.y,w.homeMeal.progress>.4?2:1);
+      if(w.barista.pose==='supperWash') {
+        mealPlate(g,c.x+25,c.y-34,0);
+        px(g,c.x+32,c.y-43,2,9,'#9cbbb5');
+      }
     }});
     draws.push({y:f.y,draw:g=>{
       ell(g,f.x+15,f.y+2,21,5,'rgba(20,12,8,.22)');
@@ -291,7 +309,8 @@
     // Quantized weather and curtain pixels keep the light map cached while
     // people move. It contains illumination only: never captured furniture.
     const moon=(1-Math.min(1,w.rain)*.65), weather=Math.round(moon*20)/20;
-    const key=[curtain,weather].join(':');
+    const kitchenLit=SCENE.homeKitchenLit(w);
+    const key=[curtain,weather,kitchenLit].join(':');
     if(homeLight.key!==key) {
       if(!homeLight.canvas) {homeLight.canvas=document.createElement('canvas');homeLight.canvas.width=960;homeLight.canvas.height=600;}
       const m=homeLight.canvas.getContext('2d');
@@ -331,6 +350,14 @@
         });
       }
       m.restore();
+      if(kitchenLit) {
+        const k=H.kitchen;
+        m.save();m.beginPath();m.rect(k.x,k.y-k.wallH,k.w,k.h+k.wallH);m.clip();
+        m.fillStyle='#eee0be';m.fillRect(k.x,k.y-k.wallH,k.w,k.h+k.wallH);
+        m.globalCompositeOperation='screen';
+        lightPool(m,k.light.x,k.light.y+58,160,150,'255,201,132',.55);
+        m.restore();
+      }
       // Exterior and luminous shade/screen surfaces keep their own brightness.
       const gap=Math.max(0,curtain-5);
       m.fillStyle='#ffffff';m.fillRect(win.x+gap,win.y,Math.max(0,win.w-gap*2),win.h);
@@ -392,8 +419,14 @@
     utilityRoom(g,H.kitchen,false); utilityRoom(g,H.bathroom,true);
     const draws=[];
     draws.push({y:H.kitchen.y,draw:g=>utilityBackWall(g,H.kitchen,false)});
+    draws.push({y:H.kitchen.y+.1,draw:g=>{
+      const a=H.kitchen.light,on=SCENE.homeKitchenLit(w);
+      px(g,a.x-12,a.y-4,24,10,'#825638');
+      px(g,a.x-10,a.y-3,20,7,on?'#f5dfae':'#b5ada0');
+      px(g,a.x-8,a.y+4,16,2,on?'#e8d5b0':'#84958e');
+    }});
     draws.push({y:H.bathroom.y,draw:g=>utilityBackWall(g,H.bathroom,true)});
-    kitchenDrawables(draws); bathroomDrawables(draws);
+    kitchenDrawables(draws,w); bathroomDrawables(draws);
     [H.kitchen,H.bathroom].forEach(r=>draws.push({y:r.y+r.h,draw:g=>{
       px(g,r.x,r.y+r.h-8,r.w,8,'#b5a18a');
       px(g,r.x,r.y+r.h-12,r.w,4,'#e8dfc9');
@@ -430,6 +463,7 @@
       px(g,x-17,y-32,33,5,'#b8bfc7'); px(g,x-15,y-31,29,2,'#64706d');
       for(let k=0;k<7;k++) px(g,x-14+k*4,y-31,2,1,'#d3d9de');
       px(g,x+21,y-32,5,5,'#b8bfc7');
+      if(w.barista.pose==='supperEat')mealPlate(g,x-32,y-32,w.homeMeal.progress<.4?2:w.homeMeal.progress<.8?1:0);
       const a=H.lamps.desk;
       px(g,a.x-2,a.y+3,3,a.base-a.y-3,'#4a3222');
       px(g,a.x-9,a.base-2,18,3,'#825638');
@@ -496,6 +530,12 @@
     draws.push({y:sleeping || w.barista.pose==='sit' ? H.bed.y+H.bed.h+.1 : w.barista.y,draw:g=>{
       const b=Object.assign({},w.barista,{colors:Object.assign({},w.barista.colors,{apron:false}),bookColor:'#a94f3f'});
       if(sleeping)SCENE.drawBedSleeper(g,b);else SCENE.drawPerson(g,b);
+      if(w.homeMeal && w.homeMeal.carrying) {
+        const x=Math.round(b.x),y=Math.round(b.y),side=b.facing;
+        px(g,x+side*13-3,y-32,6,9,b.colors.top);
+        px(g,x+side*17-4,y-26,8,4,b.colors.skin);
+        mealPlate(g,x+side*20,y-28,w.homeMeal.stage===1?2:0);
+      }
       if(story.step===7 && b.pose==='walk') {px(g,b.x-15,b.y-28,30,3,'#a8764a');px(g,b.x+8,b.y-39,3,28,'#825638');}
       if((story.step===8 || story.step===9) && b.pose==='walk') {px(g,b.x-7,b.y-30,18,13,'#7f8d80');px(g,b.x-4,b.y-27,12,2,'#a2aa91');}
     }});

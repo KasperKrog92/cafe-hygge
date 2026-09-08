@@ -280,7 +280,7 @@
       px(g,x-11,y-32,5,12,c.top); px(g,x+7,y-32,5,12,c.top);
       drawHeadBack(g,x,y-48+breathe,facing,c); return;
     }
-    if (p.pose === 'pc') {
+    if (p.pose === 'pc' || p.pose === 'supperEat') {
       const y = Math.round(p.y) - Math.round((1-p.pcSit)*8);
       // Rear-facing desk sitter: thighs on the cushion, bent knees below
       // the desk, shoulders above the chair back and hands on the keyboard.
@@ -290,6 +290,13 @@
       px(g,x-10,y-46+breathe,20,23-breathe,c.top);
       px(g,x-10,y-43+breathe,3,18,topD); px(g,x+7,y-43+breathe,3,18,topD);
       [-1,1].forEach((side)=>{
+        if(p.pose==='supperEat') {
+          const lift=side<0?Math.max(0,Math.sin(p.animT*1.5))*9:0;
+          limb(g,x+side*12,y-40,x+side*19,y-38,5,c.top);
+          limb(g,x+side*19,y-38,x+side*18,y-44-lift,4,c.skin);
+          if(side<0 && lift>3)px(g,x-20,y-48-lift,5,3,'#d5b581');
+          return;
+        }
         const tap=Math.sin(p.animT*5+side*1.7)>.45 ? 1 : 0;
         px(g,x+side*12-3,y-44+breathe,6,11,c.top);
         px(g,x+side*12-2,y-44,4,9,c.skin);
@@ -560,6 +567,11 @@
       const lift=p.pose==='hug'?8:0;
       limb(g,x-11,y-35,x-8,y-24-lift,5,c.top);limb(g,x+10,y-35,x+14,y-25-lift,5,c.top);
       limb(g,x-8,y-24-lift,x+3,y-29-lift,4,c.skin);limb(g,x+14,y-25-lift,x+7,y-31-lift,4,c.skin);
+    } else if(p.pose==='supperPrep' || p.pose==='supperWash') {
+      const dx=Math.round(Math.sin(p.animT*3)*2);
+      limb(g,x+11,y-36,x+20,y-33,5,c.top);
+      limb(g,x+20,y-33,x+22+dx,y-47,4,c.skin);
+      px(g,x+20+dx,y-49,6,3,p.pose==='supperPrep'?'#d5b581':c.skin);
     } else if(p.pose==='brushTeeth') {
       const dx=Math.round(Math.sin(p.animT*15)*2), f=p.facing;
       limb(g,x+f*8,y-36,x+f*15,y-31,5,c.top);

@@ -41,6 +41,31 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
     restored.run('MEMORY.reset();');
     assert.equal(restored.run('MEMORY.state.life.mode'), 'game');
   });
+  await test('v12 preserves existing evenings and validates dinner checkpoints', () => {
+    const b=boot();b.run(`
+      const old=MEMORY.codec.fresh();old.version=11;delete old.life.homeDinner;
+      old.life.projects.mantel={stage:'working',step:1,time:13};old.life.savings=71;old.flags.kept=true;
+      const r=MEMORY.codec.decode(JSON.stringify(old));
+      if(r.error||r.state.life.savings!==71||!r.state.flags.kept||r.state.life.projects.mantel.time!==13||r.state.life.homeDinner.done)throw Error('dinner migration lost history');
+      const w=SIM.create({random:SIM.seededRandom(42)});
+      w.shop.phase='home';w.memory.life.homeStory=MEMORY.freshHomeStory(true);
+      w.memory.life.homeTime=50;SIM._.saveLife(w,0);
+      const established=JSON.parse(MEMORY.codec.encode(w.memory));established.version=11;delete established.life.homeDinner;
+      const migrated=MEMORY.codec.decode(JSON.stringify(established));
+      if(migrated.error||!migrated.state.life.homeDinner.done||migrated.state.life.homeTime!==50)throw Error('established evening restarted');
+      w.memory.life.homeDinner={time:180,done:false};SIM.update(w,.25);
+      if(!w.memory.life.homeDinner.done)throw Error('completed timer did not settle');
+      MEMORY.codec.validate(w.memory);
+      for(const time of [-1,181,NaN]) {
+        const s=MEMORY.codec.fresh();s.life.homeDinner.time=time;
+        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('bad dinner timer');
+      }
+      for(const time of [0,12.25,80]) {
+        const s=MEMORY.codec.fresh();s.life.homeDinner={time,done:false};
+        if(MEMORY.codec.decode(MEMORY.codec.encode(s)).state.life.homeDinner.time!==time)throw Error('lost dinner time');
+      }
+    `);
+  });
   await test('v11 preserves bought/open fireplaces and adds a separate mantel project', () => {
     const b=boot();b.run(`
       for(const stage of ['available','purchased','scheduled','arrived','working','installed']) {
@@ -49,7 +74,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         old.life.projects.windowSeat={stage:'working',step:1,time:7.25};old.life.savings=131;
         old.flags['gerda-introduced']=true;old.flags['gerda-pillows-accepted']=true;
         const next=MEMORY.codec.decode(JSON.stringify(old));
-        if(next.error||next.state.version!==11||next.state.life.savings!==131)throw Error('v10 migration');
+        if(next.error||next.state.version!==MEMORY.VERSION||next.state.life.savings!==131)throw Error('v10 migration');
         if(JSON.stringify(old.life.projects.fireplace)!==JSON.stringify(next.state.life.projects.fireplace)||next.state.life.projects.windowSeat.time!==7.25)throw Error('existing job replayed');
         if(!!next.state.flags['fireplace-unlocked']!==(stage!=='available')||!!next.state.flags['fireplace-open-legacy']!==(stage==='working'))throw Error('historical opening state');
         if(next.state.life.projects.mantel.stage!=='available'||!next.state.flags['gerda-introduced'])throw Error('mantel/story history');

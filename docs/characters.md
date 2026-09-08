@@ -779,6 +779,19 @@ bedtime, clears the first-night checkpoint, and saves the completed evening.
 Hidden pages, pause and Settings hold the attended tour and bedtime; later
 ordinary apartment idling continues in the background.
 
+Apartment supper (8 September): after first-night planning, or after settling
+at the PC on subsequent evenings, Lunafreya makes a small plate of bread and
+cheese in the kitchen. Seven seconds of preparation, sixteen of eating at the
+computer and four of rinsing are joined by actual walks through the kitchen
+door and clear aisle. Her plate travels with her, loses its food as she eats,
+and is put away at the sink. She returns to the PC and resumes reading/resting.
+The cat rests nearby during supper. This happens once per evening in both modes,
+without a cost or hunger mechanic. `life.homeDinner` saves elapsed work and
+completion (schema v12); a reload neither repeats supper nor advances it offline.
+The planner and hidden tabs allow it to continue. Explicit sleep interrupts
+from her current position and exits the kitchen through its door. Later meals
+and a dining/kitchen table belong to future apartment furnishing.
+
 
 ## Second-day visitors — shipped 8 September 2026
 

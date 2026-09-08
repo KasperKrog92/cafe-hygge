@@ -637,3 +637,25 @@ night audit. Captured caption scenes were inspected and browser cleanup was
 confirmed. The final first-visit wording and filtered arrival pools also pass
 ambience, Holger, first-days, Gerda and hearth in `ambience-shipping`.
 These are desktop Chromium checks.
+
+## Apartment supper — 8 September 2026
+
+`tools/verify-project.ps1 -Suite dinner` follows actual home arrivals in both
+modes, seven meal checkpoints per mode, exact private reloads, kitchen-door
+and bedtime routes, once-per-evening completion, next-evening reset, background
+progress and the ordinary planner. It exports preparation, carrying, eating,
+rinsing and unlit-room frames, all with zero audits. `tools/verify-dinner-ui.ps1`
+adds nine actual page reloads, cooking/eating captures at 1440×900 and 1600×900,
+and real sleep-button interruptions. Its disposable browser uses the existing
+frozen-frame harness and waits for the entry overlay to finish fading.
+
+Dinner, home, hours and life suites pass (`dinner-regression` and `dinner-life`).
+The life suite's old entrance check now permits the kitchen excursion, while
+retaining continuous-movement checks; dinner separately checks the doorway.
+Twenty Node save/isolation groups, audio checks and 25 shipped-script syntax
+checks pass. v12 retains earlier saves and resumes established evenings in place.
+`dinner-after` art verification passes ten repeatable images, twelve occupancy
+scenarios and zero audits. `dinner-entry` passes audio, a real cappuccino cycle
+(38.8 seconds), income, seating and night audit. Rendered apartment captures
+were inspected. Browser sessions are closed by each runner. These are desktop
+Chromium checks; native Safari was not run.

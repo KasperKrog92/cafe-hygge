@@ -17,7 +17,10 @@ carries it to the door, switches off the interior lamps and leaves.
 The clock holds at 22:30 if cleanup takes longer. A two-second fade out,
 one-second dark pause lead into the apartment. The first arrival plays the saved
 home tour and required two-choice planner described below; both modes then wait
-for **go to sleep**. Later idle evenings run their 90-second unattended routine.
+for **go to sleep**. Later idle evenings run their 90-second unattended routine,
+pausing its timer for one autonomous supper: quick bread-and-cheese preparation
+in the lit kitchen, eating at the PC and rinsing the plate. Supper resumes after
+reload and continues in hidden tabs; explicit bedtime can interrupt it.
 Game evenings repeat indoor desk, reading and resting activities until sleep is
 chosen. Closing the planner does not start a new day. Explicit sleep saves a
 bedtime sequence first: bathroom, teeth, curtains, shared bed and goodnight.

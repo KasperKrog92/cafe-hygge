@@ -56,16 +56,56 @@
     const end=points[points.length-1];e.x=end.x;e.y=end.y;return true;
   }
   function routeTime(points) { return points.reduce((n,p,i)=>n+(i?Math.hypot(p.x-points[i-1].x,p.y-points[i-1].y)/36:0),0); }
+  const K=H.kitchen;
+  const kitchenIn=[lane(H.deskSeat),lane(A.kitchen),A.kitchen,K.door,K.lane];
+  const kitchenOut=[K.lane,K.door,A.kitchen,lane(A.kitchen),lane(H.deskSeat)];
+  const supper=[
+    {at:K.prep,via:kitchenIn.concat([K.prepLane]),pose:'supperPrep',duration:7},
+    {at:H.deskSeat,via:[K.prepLane].concat(kitchenOut),pose:'supperEat',duration:16,carry:true},
+    {at:K.sink,via:kitchenIn.concat([K.sinkLane]),pose:'supperWash',duration:4,carry:true},
+    {at:H.deskSeat,via:[K.sinkLane].concat(kitchenOut),pose:'pc',duration:0}
+  ];
+  SIM.homeDinnerActive=w=>w.shop.phase==='home' && !SIM.homeSceneActive(w) &&
+    !SIM.homePlanRequired(w) && !w.memory.life.homeDinner.done && w.memory.life.homeTime>=15;
+  function dinnerScene(w) {
+    let time=w.memory.life.homeDinner.time;
+    for(let i=0;i<supper.length;i++) {
+      const s=supper[i],points=route(i?supper[i-1].at:H.deskSeat,s),arrive=routeTime(points);
+      if(time<arrive+s.duration)return {s,index:i,points,time,arrive};
+      time-=arrive+s.duration;
+    }
+    return null;
+  }
+  function dinnerPose(w) {
+    const v=dinnerScene(w);if(!v)return false;
+    const b=w.barista;
+    b.path=null;b.reading=b.dozing=false;b.pcSit=0;b.holding=null;b.state='idle';
+    const arrived=travel(b,v.points,v.time);
+    if(arrived) {
+      b.pose=v.s.pose;b.heading='up';b.facing=1;b.pcSit=1;
+    }
+    w.homeMeal={stage:v.index,carrying:!arrived && !!v.s.carry,
+      progress:arrived?Math.min(1,(v.time-v.arrive)/v.s.duration):0};
+    return true;
+  }
+  // Sleep can interrupt supper from either side of the kitchen doorway.
+  // Leave through its clear aisle before joining the ordinary bathroom route.
+  function leaveRoom(from) {
+    if(from.x<K.x+K.w && from.y>K.y) return [
+      {x:from.x,y:K.lane.y},K.lane,K.door,A.kitchen,lane(A.kitchen)];
+    return from.x>=H.bed.x?[H.bedApproach,lane(H.bedApproach)]:[lane(from)];
+  }
   function scene(w) {
     const h=state(w),sleep=h.sleepStep>=0,steps=sleep?bed:tour,index=sleep?h.sleepStep:h.step;
     const s=steps[index];if(!s)return null;
     const from=index?steps[index-1].at:sleep?h.sleepFrom || H.deskSeat:H.entry;
-    const points=sleep && index===0?[from].concat(from.x>=H.bed.x?[H.bedApproach,lane(H.bedApproach)]:[lane(from)]).concat(s.via,[s.at]):route(from,s),time=sleep?h.sleepTime:h.time;
+    const points=sleep && index===0?[from].concat(leaveRoom(from)).concat(s.via,[s.at]):route(from,s),time=sleep?h.sleepTime:h.time;
     return {h,s,sleep,index,points,time,arrive:routeTime(points)};
   }
   function pose(w) {
     const v=scene(w);if(!v)return;
     const b=w.barista,c=w.cat,q=Math.max(0,v.time-v.arrive);
+    w.homeMeal=null;
     b.path=null;b.reading=b.dozing=false;b.pcSit=0;b.holding=null;b.state='idle';
     if(travel(b,v.points,v.time)) {
       b.pose=v.s.pose||'stand';b.stateT=q;b.heading=b.pose==='pc'?'up':'';b.facing=1;
@@ -133,10 +173,14 @@
     w.activeCaption=null;w.captionQueue=[];
     if(SIM.homeSceneActive(w))pose(w);
     if(SIM.homePlanRequired(w)) {w.plannerOpen=true;R.homePose(w);}
+    if(SIM.homeDinnerActive(w))dinnerPose(w);
   };
   const oldEnter=R.enterHome;
   R.enterHome=function(w) {
+    if(w.shop.phase==='home')return;
     oldEnter(w);
+    w.memory.life.homeDinner={time:0,done:false};w.homeMeal=null;
+    R.commitLife(w);
     if(SIM.homeTourActive(w)) {w.activeCaption=null;w.captionQueue=[];pose(w);R.commitLife(w);}
   };
   const oldPlan=SIM.plan;
@@ -157,6 +201,7 @@
   const oldHome=R.updateHome;
   R.updateHome=function(w,dt) {
     const h=state(w);
+    w.homeMeal=null;
     if(SIM.homeSceneActive(w)) {
       w.activeCaption=null;w.captionQueue=[];
       if(!w.firstEntryReady || w.introHidden || w.introPaused || w.introModal)return;
@@ -176,6 +221,15 @@
       return;
     }
     if(SIM.homePlanRequired(w)) {w.plannerOpen=true;return;}
+    if(SIM.homeDinnerActive(w)) {
+      w.memory.life.homeDinner.time=Math.min(180,w.memory.life.homeDinner.time+dt);
+      w.barista.animT+=dt;w.cat.animT+=dt;
+      if(!dinnerPose(w)) {
+        w.memory.life.homeDinner.done=true;
+        w.memory.life.homeTime=15;R.homePose(w);R.commitLife(w);
+      }
+      return;
+    }
     if(h.firstNight) {
       // Both modes wait for the explicit first bedtime. Ordinary later idle
       // evenings retain their automatic rhythm.

@@ -46,18 +46,25 @@ contact shadows. Home anchors and the clear walking lane live in
 the bed has an explicit side approach. The floor now ends at y=550, within the
 desktop crop. The walking lane is at y=350, above the rear wall tops, keeping
 passing characters visible. Rear walls are sorted at their y=454 floor line;
-fixture baselines include their projected depth from that wall. These rooms
-are scenery in this art slice; the existing PC/reading/sleep routine remains
-in use. The evening room uses a cool, dark ambient light map, with localized
+fixture baselines include their projected depth from that wall. The kitchen now
+supports supper preparation and rinsing; the bathroom supports bedtime brushing.
+The evening room uses a cool, dark ambient light map, with localized
 warm pools from the desk and bedside lamps and a smaller blue monitor glow.
 `L.home.lamps` owns shade and base positions; the bedside floor lamp stands
 high enough to light the pillow and reading book. Utility-room rear walls block
-these pools, leaving the kitchen and bathroom in shadow. Four subdued moonlit
+these pools, leaving the empty kitchen and bathroom in shadow. A small kitchen
+wall light illuminates its walls, fixtures and floor when Lunafreya crosses the
+door threshold; it turns off as she leaves, including during interrupted bedtime.
+`L.home.kitchen` owns the light, doorway/aisle/work anchors and preparation plate.
+Bread and cheese appear on a cream plate, travel in her hand, and diminish while
+she eats beside the keyboard. Preparation, washing and a slower hand-to-mouth
+desk pose accompany the saved supper routine. Four subdued moonlit
 panes project down-left onto the floor, weakening with rain and narrowing with
 the actual curtain edges until closed. Exterior glass and luminous lamp/screen
 surfaces retain their brightness; people, props and contact shadows share the
 same multiply pass before captions/dialogue. The light map is cached by curtain
-pixels and quantized weather, without capturing or mutating the simulation.
+pixels, quantized weather and kitchen occupancy, without capturing or mutating
+the simulation.
 Small rain streaks keep the scene alive. Boxes remain owned scenery in this slice;
 gradual unpacking belongs to H1.
 

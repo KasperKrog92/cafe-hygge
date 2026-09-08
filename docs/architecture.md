@@ -101,8 +101,8 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v11, migrated through v1–v10) contains `mode`, integer `savings`, `hour`,
-`homeTime`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
+`memory.life` (v12, migrated through v1–v11) contains `mode`, integer `savings`, `hour`,
+`homeTime`, `homeDinner: {time,done}`, `daysCompleted`, `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
 → unpack → place → installed. Purchase and stage transitions flush immediately;
@@ -309,7 +309,7 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v11; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v12; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -699,3 +699,16 @@ retains all existing balances and exact fireplace checkpoints, and keeps
 Old purchased/working/installed fires (or inherited functional hearths) retain
 purchase authorization via `fireplace-unlocked`. Existing mantel decoration
 marks the new project installed without inventing Gerda acknowledgements.
+
+## Apartment supper (v12)
+
+`sim-home.js` overlays one supper per evening on the existing apartment circuit.
+`life.homeDinner` saves elapsed time and completion, reconstructing four routes:
+prepare, carry/eat at the PC, carry/rinse, return to the PC. The ordinary home
+timer holds during supper; progress uses the normal dt update and save cadence.
+First-night planning precedes it. Bedtime takes priority and uses the current
+position plus a kitchen-exit route, without requiring supper to finish.
+`scene-home.js` derives kitchen lighting from occupancy and renders transient
+meal props from the reconstructed phase; rendering writes no save.
+The v11 migration keeps established home evenings in place, introducing supper
+on their next arrival. Fresh homes receive it after first planning.

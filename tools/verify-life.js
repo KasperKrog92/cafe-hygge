@@ -37,7 +37,7 @@
           if(nights===1 && w.memory.life.homeTime===15) snap(w,'home-after-loop');
           [nora,cat].forEach((e,i)=>{
             check(Math.hypot(e.x-positions[i].x,e.y-positions[i].y)<16,'home loop teleported');
-            check(e.x>SCENE.L.home.entry.x+50,'home loop revisited entrance');
+            if(!SIM.homeDinnerActive(w))check(e.x>SCENE.L.home.entry.x+50,'home loop revisited entrance');
           });
         }
         check(w.shop.phase==='home' && w.hour===hour,'game evening advanced unattended');
