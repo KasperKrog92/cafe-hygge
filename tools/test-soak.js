@@ -34,6 +34,9 @@ const result = vm.runInContext(`(() => {
   for (const full of [false, true]) for (const seed of [42, 84]) {
     if (soakScenario !== 'all' && soakScenario !== (full?'furnished':'modest')+':'+seed) continue;
     const w = (full ? __dev.furnishedWorld : __dev.modestWorld)({random: SIM.seededRandom(seed)});
+    // This unattended run needs automatic nights; new cafes default to game
+    // mode, where waiting for the player's bedtime choice is intentional.
+    SIM.setMode(w,'idle');
     const startDays = w.memory.life.daysCompleted, startFunds = w.memory.life.savings;
     const startStage = Object.fromEntries(Object.entries(w.memory.arcs).map(([id,a]) => [id,a.stage]));
     const report = {layout:full?'furnished':'modest',seed,hours:soakHours,samples:0,

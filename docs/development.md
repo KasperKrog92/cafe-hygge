@@ -167,9 +167,11 @@ Use the established comparison tool for visual passes:
 
 **Long simulation check:** `node tools/test-soak.js` runs four seeded scenarios
 for six simulated hours each, using the shipped scripts in private Node worlds.
-The small and furnished cafés run ordinary days; seed 84 also makes real evening
-purchases. It samples the audit, save size and narrative stages, tracks population
-bounds, and fails if a shop phase stalls or purchased work never finishes.
+The small and furnished cafés explicitly start in idle mode for automatic nights;
+the new-café game default intentionally waits for a bedtime choice. Seed 84 also
+makes real evening purchases. It samples the audit, save size and narrative
+stages, tracks population bounds, and fails if a shop phase stalls or purchased
+work never finishes.
 `node tools/test-soak.js 1 furnished:84` reproduces the original closing regression
 quickly; omitting the final argument runs all four scenarios. This is simulation
 coverage, not a browser heap, audio, sleep or Safari test. GitHub Actions runs
