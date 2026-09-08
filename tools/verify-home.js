@@ -1,10 +1,18 @@
 /* First apartment tutorial and bedtime: actual dt journeys and save round trips. */
 (function () {
   'use strict';
-  const frames={},results=[];
+  const frames=window.lifeFrames={},results=[];
   function check(ok,msg){if(!ok)throw Error(msg);}
   function tick(w,n){for(let t=0;t<n;t+=.25)SIM.update(w,.25);}
-  function until(w,fn,limit){for(let t=0;t<(limit||500);t+=.25){if(fn())return;SIM.update(w,.25);}throw Error('home timeout '+JSON.stringify(w.memory.life.homeStory));}
+  function until(w,fn,limit){for(let t=0;t<(limit||500);t+=.25){
+    if(fn())return;SIM.update(w,.25);
+    const h=w.memory.life.homeStory,b=w.barista,r=SCENE.L.home.bathroom;
+    if(w.shop.phase==='home' && h.sleepStep>=0 && h.sleepStep<=1 &&
+      Math.abs(b.x-(r.doorX+r.doorW/2))<1 && Math.abs(b.y-r.y)<10) {
+      check(SCENE.homeDoorOpen(w,true)>.99,'bathroom door closed across her route');
+      if(!frames['bath-door-open'])frames['bath-door-open']=__dev.shot(null,{world:w});
+    }
+  }throw Error('home timeout '+JSON.stringify(w.memory.life.homeStory));}
   function restore(w){SIM._.saveLife(w,0);const raw=MEMORY.codec.encode(w.memory);return SIM.create({random:SIM.seededRandom(17),memory:MEMORY.createStore({state:JSON.parse(raw)})});}
   function snap(w,id){check(!__dev.audit(w).length,'home audit '+id);frames[id]=__dev.shot(null,{world:w});}
   for(const mode of ['idle','game']) {
@@ -12,6 +20,7 @@
     SIM.setMode(w,mode);w.clockOffset+=(21.5-w.hour)/24*SIM._.DAY_SECONDS;
     until(w,()=>w.shop.phase==='home');
     check(w.memory.life.homeStory.step===0,'missed first arrival');
+    check(SCENE.homeDoorOpen(w,false)===1 && SCENE.homeDoorOpen(w,true)===0,'default utility doors');
     check(!SIM.goToSleep(w) && !SIM.skipBedtime(w) && !SIM.plan(w,true),'tutorial can be bypassed');
     if(mode==='game')snap(w,'arrival');
     const hour=w.hour;
@@ -50,6 +59,7 @@
     for(let step=0;step<SIM.homeBedtime.length;step++) {
       until(w,()=>w.memory.life.homeStory.sleepStep===step && w.homeActionTime>.75);
       const before={x:w.barista.x,y:w.barista.y};w=restore(w);
+      if(step===0)check(SCENE.homeDoorOpen(w,true)===0,'bathroom door did not close during brushing');
       check(Math.hypot(w.barista.x-before.x,w.barista.y-before.y)<.001,'bedtime reload moved her '+step);
       const skipped=restore(w),fundsBefore=skipped.memory.life.savings;
       skipped.introPaused=true;

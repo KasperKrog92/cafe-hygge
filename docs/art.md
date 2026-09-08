@@ -28,8 +28,15 @@ occupy the bottom left, bringing one extra open box of dishes. Cream-gray kitche
 tiles and muted sage bathroom tiles distinguish the rooms. The rear walls are
 96 px tall, with a low tiled splash zone and bare upper plaster reserved for
 future shelves and a mirror; only the side/front walls are cut away. Doorways
-sit to the right of each fixture run. The kitchen sink, two-ring cooker/oven
-and small fridge share the rear wall, with no floor strip behind them; one mug
+sit to the right of each fixture run. The kitchen and bathroom entrances have
+paneled wooden doors with brass handles. The kitchen leaf rests open inward
+beside the right jamb; the bathroom is closed
+by default. Its leaf swings open ahead of Lunafreya's bedtime crossing, closes
+while she brushes, and opens again for her exit. The swing is reconstructed
+from her saved route, so reload and attended pauses retain the visible state.
+Door leaves use whole-pixel columns and their projected floor baselines.
+The kitchen sink, two-ring cooker/oven and small fridge share the rear wall,
+with no floor strip behind them; one mug
 and a towel are unpacked. The bathroom basin and toilet cistern sit against
 the back wall, with the bowl facing open floor and clear approach space in
 front. The shower hugs the left bathroom wall, with its pipe and gathered

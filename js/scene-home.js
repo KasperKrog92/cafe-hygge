@@ -201,6 +201,43 @@
       px(g,x-5+i*8,y-5,5,2,'#e8d5b0');
     }
   }
+  SCENE.homeDoorOpen=function(w,bath) {
+    if(!bath)return 1;
+    const h=w.memory.life.homeStory,b=w.barista,r=H.bathroom;
+    // Derive the swing from the saved bedtime journey: open before the
+    // threshold, close behind her, and reopen on the way back out.
+    if(h.sleepStep<0 || h.sleepStep>1)return 0;
+    const doorway=Math.max(0,1-Math.abs(b.x-(r.doorX+r.doorW/2))/34);
+    const approach=Math.max(0,Math.min(1,(b.y-(r.y-66))/30));
+    const inside=Math.max(0,Math.min(1,(r.y+72-b.y)/25));
+    return doorway*Math.min(approach,inside);
+  };
+  function utilityDoor(draws,w,r,bath) {
+    const open=SCENE.homeDoorOpen(w,bath),hinge=r.doorX+r.doorW-4;
+    const width=r.doorW-8,height=r.wallH-12;
+    const tip=hinge-Math.round(width*Math.cos(open*1.8));
+    const depth=Math.round(width*.9*Math.sin(open*1.8));
+    // The free edge swings into the utility room, clear of the doorway's
+    // central route. Whole-pixel columns retain the café's hard pixel edges.
+    draws.push({y:r.y+depth,draw:g=>{
+      const span=tip-hinge;
+      for(let x=Math.min(hinge,tip);x<=Math.max(hinge,tip);x++) {
+        const q=span?(x-hinge)/span:0,base=r.y+Math.round(depth*q);
+        px(g,x,base-height,1,height,'#825638');
+        if(q>.12 && q<.88) {
+          px(g,x,base-height+5,1,43,'#a8764a');
+          px(g,x,base-27,1,21,'#936747');
+          px(g,x,base-height+5,1,2,'#c08a58');
+        }
+      }
+      px(g,tip-1,r.y+depth-height,2,height,'#6e4a33');
+      const handleX=hinge+Math.round(span*.82),handleY=r.y+Math.round(depth*.82)-35;
+      px(g,handleX-1,handleY-2,3,6,'#5a3d28');
+      px(g,handleX-2,handleY,5,2,'#d5b581');
+      px(g,hinge-1,r.y-height+13,2,5,'#64706d');
+      px(g,hinge-1,r.y-16,2,5,'#64706d');
+    }});
+  }
   // Occupancy drives the light, including an interrupted trip back out.
   SCENE.homeKitchenLit=function(w) {
     const b=w.barista,k=H.kitchen;
@@ -426,6 +463,7 @@
       px(g,a.x-8,a.y+4,16,2,on?'#e8d5b0':'#84958e');
     }});
     draws.push({y:H.bathroom.y,draw:g=>utilityBackWall(g,H.bathroom,true)});
+    utilityDoor(draws,w,H.kitchen,false);utilityDoor(draws,w,H.bathroom,true);
     kitchenDrawables(draws,w); bathroomDrawables(draws);
     [H.kitchen,H.bathroom].forEach(r=>draws.push({y:r.y+r.h,draw:g=>{
       px(g,r.x,r.y+r.h-8,r.w,8,'#b5a18a');
