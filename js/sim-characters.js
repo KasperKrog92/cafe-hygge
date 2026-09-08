@@ -7,7 +7,10 @@
   const SND = R.sound;
   const L = R.L;
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
-  const caption = R.caption, captionRun = R.captionRun, walker = R.walker, spawnSteam = R.spawnSteam;
+  const captionRun = R.captionRun, walker = R.walker, spawnSteam = R.spawnSteam;
+  function caption(world, line, options) {
+    return R.caption(world,line,Object.assign({actor:world.barista},options));
+  }
   const CAST = window.CAST;
   const updateClock = R.updateClock, updateWeather = R.updateWeather;
   const updatePassersby = R.updatePassersby;
@@ -251,6 +254,8 @@
           } else {
             b.state = 'pianoPlaying'; b.stateT = 0; b.pose = 'sit';
             b.facing = -1; b.playing = true; SND.pianoStart('nora');
+            if (R.random() < 0.7) caption(world,'Lunafreya plays a little at the piano.',
+              {requires:['piano'],when:w => w.barista.playing});
           }
         }
         break;
@@ -411,7 +416,7 @@
             if (R.random() < 0.6) caption(world, pick([
               'Lunafreya lays a fresh log on the fire; it catches and climbs.',
               'Lunafreya feeds the fire a new log — the flames wake up.'
-            ]));
+            ]),{requires:['fire']});
           }
           if (b.stateT >= 1.2) {
             b.pose = 'stand'; b.state = 'fireHome'; b.stateT = 0;
@@ -694,8 +699,8 @@
   function startStretch(world, b) {
     b.state = 'stretch'; b.stateT = 0; b.pose = 'stretch';
     if (R.random() < 0.3) caption(world, pick([
-      'The café is empty; Lunafreya stretches, unhurried.',
-      'Lunafreya stretches — the cat pretends it wasn\'t watching.'
+      'Lunafreya stretches, unhurried.',
+      'Lunafreya pauses to stretch her shoulders.'
     ]));
   }
 
@@ -712,7 +717,7 @@
     b.path = waterFromHome(b.waterStop);
     if (!b.waterNext && R.random() < 0.4) caption(world, pick([
       'Lunafreya makes the rounds with the watering can.',
-      'The plants get their morning drink.'
+      'Lunafreya carries the watering can over to a plant.'
     ]));
   }
 
@@ -725,8 +730,8 @@
     if (!b.candleCaptioned) {
       b.candleCaptioned = true;
       if (R.random() < 0.6) caption(world, pick([
-        'Lunafreya goes round with a lit taper; the tables glow one by one.',
-        'Dusk. Lunafreya lights the candles.'
+        'Lunafreya takes a taper around the tables.',
+        'Lunafreya sets off to light the candles.'
       ]));
     }
   }
@@ -736,7 +741,7 @@
     world.fire.claimed = true;
     b.state = 'fireOut'; b.stateT = 0; b.holding = null; b.pose = 'stand';
     b.path = fireTendRoute();
-    if (R.random() < 0.4) caption(world, 'Lunafreya crosses to feed the fire.');
+    if (R.random() < 0.4) caption(world, 'Lunafreya crosses to feed the fire.',{requires:['fire']});
   }
 
   function startPiano(world, b) {
@@ -744,7 +749,6 @@
     b.state = 'pianoOut'; b.stateT = 0; b.pose = 'stand'; b.playing = false;
     b.pianoDur = rnd(60, 120); b.path = pianoRoute();
     world.noraPianoNextT = world.t + rnd(600, 1200);
-    if (R.random() < 0.7) caption(world, 'The café is empty; Lunafreya plays a little.');
   }
 
   function startTableClear(world, b) {
@@ -808,7 +812,7 @@
     } else if (r < 0.75) {
       b.state = 'restock'; b.stateT = 0;
       b.path = [SCENE.hasFurniture(world,'full-counter')?L.shop.pastry:L.basic.pastry];
-      if (R.random() < 0.25) caption(world, 'Lunafreya tidies the pastry case.');
+      if (R.random() < 0.25) caption(world, SCENE.hasFurniture(world,'full-counter') ? 'Lunafreya tidies the pastry case.' : 'Lunafreya tidies the little cake stand.');
     }
     // otherwise just stand a while, watching the room
   }
@@ -943,8 +947,16 @@
     return rnd(a, b) * (nightProwl ? 0.65 : 1);
   }
 
+  function catCaption(world, line, options) {
+    const cat = world.cat;
+    return caption(world,line,Object.assign({actor:cat,
+      when:w => !w.shop.carryingCat},options));
+  }
+
   function settleOnFloor(world, cat) {
-    const kneadable = cat.target && ['fire', 'bigRug', 'nookRug', 'cushion'].indexOf(cat.target.id) >= 0;
+    const kneadable = cat.target && (cat.target.id === 'cushion' ||
+      cat.target.id === 'nookRug' && SCENE.hasFurniture(world,'nook') ||
+      ['fire','bigRug'].indexOf(cat.target.id)>=0 && SCENE.hasFurniture(world,'rugs'));
     if (kneadable && R.random() < 0.3) {
       cat.state = 'knead'; cat.stateT = rnd(2.5, 4); cat.kneadPlayed = false;
       return;
@@ -953,7 +965,9 @@
     cat.state = r < 0.5 ? 'sleep' : r < 0.8 ? 'loaf' : 'sit';
     cat.stateT = cat.state === 'sleep' ? restTime(world, 40, 100) : restTime(world, 10, 25);
     if (cat.state === 'sleep' && cat.target && cat.target.id === 'fire' && R.random() < 0.5) {
-      caption(world, 'The cat curls up in the warmth of the fire.');
+      catCaption(world, R.captionFacts.fire(world)
+        ? {text:'The cat curls up in the warmth of the fire.', requires:['fire']}
+        : 'The cat curls up for a quiet nap.', {holdState:true});
     }
   }
 
@@ -980,13 +994,16 @@
       cat.state = R.random() < 0.3 ? 'sleep' : 'perch';
       cat.stateT = rnd(60, 180); cat.facing = -1;
       if (R.random() < 0.4) {
-        caption(world, world.rain > 0.3 ? 'The cat watches the rain wander down the glass.'
-          : world.daylight < 0.3 ? 'The cat and the streetlamp keep watch together.'
-          : 'The cat watches the street drift by.');
+        const win = cat.x < L.win2.x ? L.win : L.win2;
+        catCaption(world, cat.state === 'sleep' ? {text:'The cat dozes on the window sill.'}
+          : world.rain > 0.3 ? {text:'The cat watches the rain wander down the glass.', requires:['rain']}
+          : world.daylight < 0.3 ? {text:'The cat and the streetlamp keep watch together.', requires:['night']}
+          : {text:'The cat looks out through the glass.'},
+          {holdState:true, when:w => !w.shop.carryingCat && R.captionWindow(w,win)});
       }
     } else if (after.intent === 'bookshelf') {
       cat.state = R.random() < 0.45 ? 'sleep' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
-      if (R.random() < 0.5) caption(world, 'The cat surveys the café from the bookshelf. All is well.');
+      if (R.random() < 0.5) catCaption(world, cat.state === 'sleep' ? 'The cat dozes on top of the bookshelf.' : 'The cat surveys the café from the bookshelf.', {requires:['bookshelf'],holdState:true});
     } else if (after.intent === 'counter') {
       cat.intent = 'counterPad';
       cat.state = 'walk';
@@ -994,7 +1011,7 @@
       cat.facing = -1;
     } else if (after.intent === 'topShelf') {
       cat.state = R.random() < 0.5 ? 'loaf' : 'sit'; cat.stateT = rnd(60, 180); cat.facing = -1;
-      if (R.random() < 0.45) caption(world, 'Lunafreya pretends not to see the cat on the shelf.');
+      if (R.random() < 0.45) catCaption(world, 'The cat settles on the high shelf.', {requires:['full-counter'],holdState:true});
     } else if (after.intent === 'piano') {
       const r = R.random();
       cat.state = r < 0.55 ? 'loaf' : r < 0.8 ? 'sit' : 'sleep';
@@ -1026,13 +1043,13 @@
     if (step.land) SND.softThump();
     if (cat.hopPurpose === 'piano' && step.surface === 'pianoKeys') {
       SND.pianoPlinks();
-      if (R.random() < 0.5) caption(world, 'The cat pads up the keys and claims the piano lid.');
+      if (R.random() < 0.5) catCaption(world, 'A few piano keys sound beneath the cat’s paws.', {requires:['piano']});
     }
     if (cat.hopPurpose === 'topShelf' && cat.ascentMayAbort && step.surface === 'counter' && world.barista.state === 'idle') {
       cat.hopQueue = null; cat.hopAfter = null; cat.hopPurpose = ''; cat.state = 'sit';
       cat.ascentMayAbort = false;
       SND.swish();
-      caption(world, 'Lunafreya catches the cat halfway up. Not today.');
+      catCaption(world, 'Lunafreya catches the cat halfway up. Not today.');
       leavePerch(world, cat);
       return;
     }
@@ -1054,7 +1071,7 @@
     if (empty) {
       cat.state = 'sit'; cat.stateT = rnd(60, 120); cat.waitingBowl = kind; cat.facing = 1;
       cat.retryNeedT = cat.stateT;
-      if (R.random() < 0.7) caption(world, 'The cat sits by the empty bowl, radiating patience.');
+      if (R.random() < 0.7) catCaption(world, 'The cat waits quietly beside the bowl.', {holdState:true,when:w => !w.shop.carryingCat && !!cat.waitingBowl});
       if (R.random() < 0.35) SND.meow();
       return;
     }
@@ -1179,7 +1196,7 @@
     cat.pounceBase = { x: cat.x, y: cat.y };
     world.particles.push({ type: 'mote', x: cat.x + cat.facing * 16, y: cat.y - 20,
       vx: cat.facing * 2, vy: -1.5, age: 0, life: cat.pounceDur, seed: R.random() * 5 });
-    caption(world, R.random() < 0.5 ? 'The cat does battle with a dust mote.' : 'The dust mote wins this round.');
+    catCaption(world, 'The cat paws at a drifting dust mote.', {holdState:true});
   }
 
   function startNextJourney(world, cat) {
@@ -1202,8 +1219,9 @@
     if (lap && R.random() < 0.15) { startLap(cat, lap); return; }
     const spot = pickCatSpot(world, cat);
     startTravel(cat, spot, spot.kind === 'perch' ? spot.id : 'floor');
-    if (R.random() < 0.6) caption(world, 'The cat pads over to ' +
-      (spot.id==='fire'&&!SCENE.hasFurniture(world,'rugs')?'the quiet spot by the hearth':spot.name) + '.');
+    if (R.random() < 0.6) catCaption(world, 'The cat pads over to ' +
+      (spot.id==='fire'&&!SCENE.hasFurniture(world,'rugs')?'the quiet spot by the hearth':spot.name) + '.',
+      {holdState:true,when:w => !w.shop.carryingCat && cat.target === spot && SCENE.catSpotAvailable(w,spot.id)});
     if (R.random() < 0.15) SND.meow();
   }
 
@@ -1304,7 +1322,11 @@
     if (cat.state === 'knead' && !cat.kneadPlayed) {
       cat.kneadPlayed = true;
       SND.purr(2.4);
-      if (R.random() < 0.3) caption(world, 'The cat kneads the rug into shape.');
+      if (R.random() < 0.3) catCaption(world, cat.target && cat.target.id === 'cushion'
+        ? 'The cat kneads its little bed into shape.' : 'The cat kneads the rug into shape.',
+        {holdState:true,when:w => !w.shop.carryingCat && cat.target && (cat.target.id === 'cushion' ||
+          cat.target.id === 'nookRug' && SCENE.hasFurniture(w,'nook') ||
+          ['fire','bigRug'].indexOf(cat.target.id)>=0 && SCENE.hasFurniture(w,'rugs'))});
     }
 
     updateCatGaze(world, cat, dt);
@@ -1492,14 +1514,14 @@
     cat.bubble = { icon: 'heart', until: world.t + 2.2 };
     if (cat.state === 'sleep' && cat.surface !== 'lap') { cat.state = 'sit'; cat.stateT = rnd(6, 12); }
     if (R.random() < 0.4) SND.meow(); else SND.purr(2);
-    caption(world, 'The cat purrs happily.');
+    catCaption(world, 'The cat purrs happily.');
   };
 
   SIM.dislodgeCat = function (world, patron) {
     if (!world || world.cat.lapPatron !== patron) return;
     patron.lapCat = false;
     world.cat.lapPatron = null;
-    if (R.random() < 0.4) caption(world, 'The cat is gently returned to the floor.');
+    if (R.random() < 0.4) catCaption(world, 'The cat is gently returned to the floor.');
     leavePerch(world, world.cat);
   };
 
@@ -1539,7 +1561,10 @@
     // time, sales or closing deadline, including when the tab is unattended.
     if(SIM.holgerRequired(world) && SIM.holgerAvailable(world)) {
       [world.barista,world.cat].concat(world.patrons).forEach(p=>{p.animT+=dt;});
-      updateParticles(world,dt);updateCaptions(world,dt);R.saveLife(world,dt);return;
+      // The service clock is held here; don't freeze a fading caption forever
+      // alongside the mandatory invitation. Ordinary invitations do not do this.
+      world.activeCaption=null;world.captionQueue=[];
+      updateParticles(world,dt);R.saveLife(world,dt);return;
     }
     shop.beforeClock(world, dt);
     world.t += dt;

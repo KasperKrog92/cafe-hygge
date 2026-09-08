@@ -313,9 +313,13 @@ The quiet caption, bottom-left, that makes a glance feel like a story.
 Long captions wrap; cream letters have a dark outline and subtle shadow for
 contrast against the floor, with no backing rectangle.
 
-- Pipeline: `caption(world, text)` → `captionQueue` (cap 2) → shown for 4.4 s
-  with fade in/out → minimum 6 s gap between captions.
-- Voice: warm, understated, present tense, no exclamation-mark enthusiasm
+- Pipeline: `caption(world, text, rules)` → eligible observations in
+  `captionQueue` (cap 2, eight-second expiry) → rechecked and shown for 4.4 s
+  with fade in/out → minimum 6 s gap between starts; sixty-second repeat cooldown.
+  Installed features, actual activities, saved history, weather and location
+  govern admission and display. See [the ambience contract](ambience.md) for
+  the rules, authoring examples and progression verification.
+- Voice: warm, understated, present tense, initial capital enforced centrally, no exclamation-mark enthusiasm
   (one "tak!" allowed). British-cozy rather than game-y.
 - Current triggers: arrivals (rain-aware), orders (`withArticle` for correct
   a/an), Lunafreya serving/tidying/clearing, seat choices ("sinks into the armchair

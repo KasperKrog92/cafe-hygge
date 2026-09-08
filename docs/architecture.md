@@ -161,7 +161,8 @@ writes it. It is exposed as `window.__world` for console debugging. Key fields:
 | `counterCups[]` | finished orders waiting at the pass `{x, y, kind, owner}` |
 | `particles[]` | steam wisps, fire sparks, and one-off dust motes |
 | `brew` | `{active, stage}` — drives the espresso machine's light/stream drawing |
-| `captionQueue[]` / `activeCaption` | ambient narration pipeline (soft cap 2) |
+| `captionQueue[]` / `activeCaption` | ambient observations with live rules, actor, place/day and expiry (soft cap 2); rechecked before and during display |
+| `captionRecent[]` | bounded per-world repeat history (24 entries); runtime only, never persisted |
 | `captionScript[]` | a story beat's caption run — drains ahead of `captionQueue`, never dropped by the cap (`captionRun`) |
 | `memory` | the bound context store (production: `MEMORY.state`): `{version, lastSeen, arcs, bonds, flags, life}`. Set by `reconcileNarrative` at the end of `SIM.create` |
 | `cat.scarf` | the scarf's hex once Gerda's arc completes (`cat-wore-scarf` flag), else `null`; read by `drawCat` |

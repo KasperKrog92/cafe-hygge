@@ -290,8 +290,9 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   routed through a compressor. When adding sounds, err on the side of too
   quiet — this app plays next to someone reading.
 - **Captions are rate-limited** (6 s minimum gap, queue cap 2, shown 4.4 s).
-  Emit captions through `caption(world, text)` only; use `withArticle()` for
-  drink names ("an espresso").
+  Emit captions through `caption(world, text, rules)` only; conditional claims
+  need the live rules in [docs/ambience.md](docs/ambience.md). Initial
+  capitalization is automatic; use `withArticle()` for drink names ("an espresso").
 - **One clock, many drivers** (main.js): `advance(now)` ticks the sim by real
   elapsed time in ≤0.25 s chunks, called from rAF, the hidden-tab interval,
   and refocus — so browser throttling never slows the café (a fixed hidden
@@ -357,7 +358,7 @@ matching doc updated in the same change.
    traits go on the patron object at spawn in `js/sim-core.js`.
 2. Caption it (optional, probability-gated so it stays sparse):
    `caption(world, text)` from `js/sim-core.js` — rate limiting is inside;
-   `withArticle()` for drink names; lowercase-cozy voice.
+   `withArticle()` for drink names; quiet, sentence-case voice.
 3. Sound it (optional): pick an existing `SND` one-shot or add one (see the
    sound playbook); trigger it from the state code, never from render.
 4. Watch it fast: `__dev.spawn({wantsBook, ownBook, drink, chatty})` +
@@ -375,7 +376,7 @@ matching doc updated in the same change.
 - **Caption:** `caption(world, text)` at the trigger site, probability-gated
   (existing gates run 0.12–0.7; only once-per-visit milestones go ungated);
   the shared limiter handles pacing. Voice: warm,
-  understated, lowercase-cozy, Danish flavor welcome. Doc: the caption/event
+  understated, quiet, sentence-case, Danish flavor welcome. Doc: the caption/event
   list in world.md.
 
 ## Conventions
@@ -386,7 +387,7 @@ matching doc updated in the same change.
 - Colors are hex literals chosen from the warm palette in
   [docs/art.md](docs/art.md); reuse existing swatches before inventing new ones.
 - Randomness through the local `rnd(a, b)` / `pick(arr)` helpers.
-- Captions are written in a warm, understated narrator voice — lowercase-cozy,
+- Captions are written in a warm, understated narrator voice — quiet, sentence-case,
   never jokey-loud. Danish flavor is welcome ("tak!").
 - Character names may be Danish, international or unusually literary. The
   Copenhagen/Christianshavn inspiration includes a community with varied

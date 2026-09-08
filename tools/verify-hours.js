@@ -9,7 +9,7 @@
   const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   try {
     ['empty', 'busy', 'topShelf', 'piano'].forEach(function (scenario) {
-      const w = __dev.furnishedWorld({ random: random }); window.__world = w;
+      const w = __dev.furnishedWorld({ random: random }); window.__world = w; SIM.setMode(w,'idle');
       // Remove boot's already-seated cast before adding the scenario's guests.
       // Otherwise the five forced arrivals overfill the seven-person café.
       w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];
@@ -84,7 +84,7 @@
     // A late queue and dirty table must not wait on each other: queued guests
     // still require clearing before service while the shop is already closing.
     for (const terrace of [false, true]) {
-      const w = __dev.furnishedWorld({random:SIM.seededRandom(84)}); window.__world = w;
+      const w = __dev.furnishedWorld({random:SIM.seededRandom(84)}); window.__world = w; SIM.setMode(w,'idle');
       w.patrons=[];w.queue=[];w.counterCups=[];w.umbrellaStand=[];
       w.seats.forEach(s=>{s.taken=false;});w.tables.forEach(t=>{t.items=[];});
       w.barista.state='idle';w.barista.orders=[];w.barista.path=[];
@@ -106,7 +106,7 @@
       results.push({lateQueue:true,terrace,served,closed,reopened:w.shop.phase==='open'});
     }
     // Natural clock repeats: no dev time jumps between two full overnight runs.
-    const w = __dev.furnishedWorld({ random: random }); window.__world = w; __dev.hour(21.5);
+    const w = __dev.furnishedWorld({ random: random }); window.__world = w; SIM.setMode(w,'idle'); __dev.hour(21.5);
     let nights = 0, previous = 'open';
     for (let i = 0; i < 16000; i++) {
       SIM.update(w, 0.25);

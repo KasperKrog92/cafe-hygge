@@ -45,9 +45,10 @@
       R.spawnWaterfront(world, 'ship'); wf.shipT = rnd(720, 1440);
     }
     const ship = R.visibleShip(world);
-    if (ship && !ship.announced) {
+    if (ship && !ship.announced && R.captionFacts.view(world)) {
       ship.announced = true;
-      R.caption(world, 'a wooden sailing ship glides across the lake, its sails full of afternoon light.');
+      R.caption(world, 'A wooden sailing ship glides across the lake.',
+        {requires:['view','daylight'],when:w => R.visibleShip(w) === ship});
     }
     wf.boatT -= dt; wf.birdT -= dt; wf.planeT -= dt;
     if (wf.boatT <= 0) {
@@ -129,7 +130,8 @@
         p.holding = null; p.reading = !!p.ownBook;
         p.terraceStay = rnd(100, 240); p.terraceSip = rnd(8, 18); p.terraceWeatherT = 0; p.terracePage = rnd(15, 30);
         tb.cup = p.drink.kind;
-        if (R.random() < 0.4) R.caption(world, p.name + ' takes a little time by the water.');
+        if (R.random() < 0.4) R.caption(world, p.name + ' takes a little time by the water.',
+          {actor:p,requires:['terrace','view'],holdState:true});
       }
     } else if (p.state === 'terraceSit') {
       p.terraceStay -= dt; p.terraceSip -= dt;
@@ -182,7 +184,7 @@
       if (b.stateT > 2.8) {
         tb.dirty = false; tb.cleaning = false;
         b.holding = 'stack'; b.state = 'terraceBack'; b.stateT = 0; b.pose = 'stand';
-        if (R.random() < 0.3) R.caption(world, 'Lunafreya gathers the cups outside; the water carries the last of the light.');
+        if (R.random() < 0.3) R.caption(world, 'Lunafreya gathers the cups from the terrace.',{actor:b,requires:['terrace','view']});
       }
     } else if (b.state === 'terraceBack') {
       if (outsideStep(b, F.entranceX, dt)) {

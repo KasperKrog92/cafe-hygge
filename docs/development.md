@@ -593,3 +593,26 @@ a real-time cappuccino cycle (29.7 seconds), pickup income, seating and a
 zero-problem night audit. Rendered room, work and dialogue captures were
 inspected; all owned browser sessions were confirmed closed. These are desktop
 Chromium checks; native Safari was not run.
+
+## Progress-aware ambience — 8 September 2026
+
+`tools/verify-project.ps1 -Suite ambience` covers both modes and the full
+fireplace/mantel progression, exact window and curtain visibility, empty
+shelves versus legacy books, character activity/history, caption expiry and
+repeat suppression, capitalization, place/day transitions and story priority.
+Real cat settling events produce boarded/working-hearth captures; two ten-minute
+private simulations recheck every displayed observation and finish with audits.
+The suite is included in the full runner. Authoring rules are in
+[ambience.md](ambience.md).
+
+The first complete run passed 21 of 24 suites. Its art-copy failure was fixed
+by keeping live caption predicates out of cloneable scene data. The overnight
+hours/waterfront fixtures now explicitly select idle mode for automatic nights,
+matching the separately shipped game default. All three failed suites and the
+ambience, Holger and invitation checks passed in `ambience-final`. Save/isolation,
+audio and shipped-script syntax checks passed too. `ambience-entry` completed
+a real-time cappuccino in 29.6 seconds with audio, savings and a zero-problem
+night audit. Captured caption scenes were inspected and browser cleanup was
+confirmed. The final first-visit wording and filtered arrival pools also pass
+ambience, Holger, first-days, Gerda and hearth in `ambience-shipping`.
+These are desktop Chromium checks.

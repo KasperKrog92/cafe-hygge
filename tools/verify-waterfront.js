@@ -8,7 +8,7 @@
   const random = function () { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   function check(ok, text) { if (!ok && failures.indexOf(text) < 0) failures.push(text); }
   function fresh(hour) {
-    const w = __dev.furnishedWorld({ random: random }); window.__world = w;
+    const w = __dev.furnishedWorld({ random: random }); window.__world = w; SIM.setMode(w,'idle');
     w.patrons = []; w.queue = []; w.counterCups = []; w.umbrellaStand = [];
     w.seats.forEach(function (s) { s.taken = false; }); w.tables.forEach(function (t) { t.items = []; });
     w.regulars = {}; w.spawnT = 1e8; w.weatherT = 1e8; w.rain = w.rainTarget = 0; w.storm = false;

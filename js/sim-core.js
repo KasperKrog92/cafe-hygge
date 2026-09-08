@@ -56,9 +56,9 @@
   /* A regular's own line from a spec pool, or a generic fallback when that
      regular has no bespoke pool for the moment. Keeps the continuity captions
      (settle, patient-look, openers) data-driven with a graceful default. */
-  function specLine(spec, key, fallback) {
+  function specLine(spec, key, fallback, world, actor) {
     const pool = spec && spec.lines && spec.lines[key];
-    return (pool && pool.length) ? pick(pool) : fallback;
+    return world ? (pickCaption(world, pool, {actor:actor}) || fallback) : ((pool && pool.length) ? pick(pool) : fallback);
   }
   function nameStyleFor(name) {
     if (PATRON_NAMES.feminine.indexOf(name) >= 0) return 'feminine';
@@ -152,7 +152,7 @@
       catBowls: { food: 1, water: 1 },
       particles: [],
       tables: L.tables.map(function (tb) {
-        return { x: tb.x, y: tb.y, tag: tb.tag, items: [], candle: 0, candleTarget: 0 };
+        return { x: tb.x, y: tb.y, tag: tb.tag === 'near the fire' ? 'near the hearth' : tb.tag, items: [], candle: 0, candleTarget: 0 };
       })
         .concat(LB.sideTables.map(function (st) {
           return { x: st.x, y: st.y, tag: 'in the reading nook', small: true,
@@ -467,8 +467,77 @@
 
   /* ---------- captions ---------- */
 
-  function caption(world, text) {
-    if (world.captionQueue.length < 2) world.captionQueue.push(text);
+  // Ambience reports recent, observable life. These facts share the renderer's
+  // installed capabilities; buying a project never makes its contents usable.
+  const captionFacts = {
+    fire: w => SCENE.hasFurniture(w,'hearth') && !SCENE.hearthWork(w) && w.fire.level > 0.05,
+    view: w => [L.win,L.win2].some(win => captionWindow(w,win)),
+    daylight: w => w.daylight > 0.45,
+    night: w => w.daylight < 0.3,
+    rain: w => w.rain > 0.3,
+    dry: w => w.rain < 0.15,
+    painter: w => captionFacts.view(w) && w.daylight > 0.45 && w.rain < 0.3 &&
+      w.memory.arcs['street-house'] && w.memory.arcs['street-house'].stage === 0,
+    candles: w => w.candles.mantel > 0.05 || w.tables.some(tb => tb.candle > 0.05),
+    empty: w => !w.patrons.length,
+    reading: (w,p) => !!p && p.state === 'seated' && p.reading && !p.dozing,
+    laptop: (w,p) => !!p && p.state === 'seated' && p.laptopActive,
+    painting: (w,p) => !!p && p.state === 'seated' && p.seat.artist &&
+      !p.sketching && w.memory.arcs['lunafreya-paintings'] &&
+      !w.memory.arcs['lunafreya-paintings'].pendingBeat && w.memory.arcs['lunafreya-paintings'].stage < 2,
+    armchair: (w,p) => !!p && p.state === 'seated' && p.seat.armchair,
+    cup: (w,p) => !!p && p.state === 'seated' && p.drink && p.drink.kind !== 'plate',
+    windowSeat: (w,p) => !!p && p.state === 'seated' && p.seat.window &&
+      captionWindow(w,p.seat.x < L.win2.x ? L.win : L.win2)
+  };
+  function captionWindow(world, win) {
+    const index = win === L.win ? 0 : 1;
+    return SCENE.windowOpen(world,win) && (!SCENE.hasFurniture(world,'drapes') || world.shop.curtains[index] < 0.9);
+  }
+  function captionAllowed(world, line, options) {
+    if (!line) return false;
+    const rule = Object.assign({}, typeof line === 'string' ? {text:line} : line, options);
+    const actor = rule.actor;
+    if ((rule.place || 'cafe') !== captionPlace(world)) return false;
+    if (actor && (actor.gone || (actor !== world.cat && actor !== world.barista && world.patrons.indexOf(actor) < 0))) return false;
+    if (rule.requires && !rule.requires.every(id => captionFacts[id]
+      ? captionFacts[id](world,actor) : SCENE.hasFurniture(world,id))) return false;
+    if (rule.flags && !rule.flags.every(id => world.memory.flags[id])) return false;
+    if (rule.minVisits && (!actor || !world.memory.bonds[actor.regularId] ||
+        world.memory.bonds[actor.regularId].visits < rule.minVisits)) return false;
+    return !rule.when || rule.when(world,actor);
+  }
+  function pickCaption(world, pool, options) {
+    const eligible = (pool || []).filter(line => captionAllowed(world,line,options));
+    return eligible.length ? pick(eligible) : null;
+  }
+  function captionCase(text) {
+    return text.trim().replace(/[a-z\u00c0-\u024f]/i, letter => letter.toUpperCase());
+  }
+  function captionPlace(world) { return world.shop && world.shop.phase === 'home' ? 'home' : 'cafe'; }
+  function captionValid(world, entry) {
+    return entry.place === captionPlace(world) && entry.day === world.memory.life.daysCompleted &&
+      world.t <= entry.expires && captionAllowed(world,entry.rule) &&
+      (!entry.actorState || entry.rule.actor.state === entry.actorState);
+  }
+  function caption(world, line, options) {
+    if (!line || world.moment) return false;
+    const rule = Object.assign({}, typeof line === 'string' ? {text:line} : line, options);
+    if (!rule.text || !captionAllowed(world,rule)) return false;
+    const text = captionCase(rule.text);
+    const recent = world.captionRecent || (world.captionRecent = []);
+    const key = rule.key || text;
+    if (recent.some(c => c.key === key && world.t - c.at < (rule.cooldown || 60))) return false;
+    world.captionQueue = world.captionQueue.filter(entry => captionValid(world,entry));
+    if (world.captionQueue.length >= 2 || world.captionQueue.some(entry => entry.key === key)) return false;
+    const entry = {text:text, key:key, place:captionPlace(world),
+      day:world.memory.life.daysCompleted, expires:world.t + (rule.maxAge || 8),
+      actorState:rule.holdState && rule.actor ? rule.actor.state : null};
+    // Like world.context, live predicates/actor references are runtime services,
+    // not cloneable scene data. Detached art copies only need the displayed text.
+    Object.defineProperty(entry,'rule',{value:rule,enumerable:false});
+    world.captionQueue.push(entry);
+    return true;
   }
 
   /* A story beat's caption run (docs/narrative.md §2). Unlike ambient captions
@@ -478,18 +547,26 @@
      the shared limiter, so a beat reads as an unhurried run, not a dump. */
   function captionRun(world, lines) {
     if (!lines || !lines.length) return;
-    lines.forEach(function (line) { world.captionScript.push(line); });
+    lines.forEach(function (line) { world.captionScript.push(captionCase(line)); });
   }
 
   function updateCaptions(world, dt) {
-    if (world.activeCaption && world.t - world.activeCaption.born > 4.4) world.activeCaption = null;
+    if (world.activeCaption && (world.t - world.activeCaption.born > 4.4 ||
+        world.activeCaption.ambient && !captionValid(world,world.activeCaption.ambient))) world.activeCaption = null;
+    world.captionQueue = world.captionQueue.filter(entry => captionValid(world,entry));
     if (!world.activeCaption && world.t - world.lastCapT > 6) {
       // a beat run takes precedence over ambient chatter, then the queue
       if (world.captionScript.length) {
         world.activeCaption = { text: world.captionScript.shift(), born: world.t };
         world.lastCapT = world.t;
       } else if (world.captionQueue.length) {
-        world.activeCaption = { text: world.captionQueue.shift(), born: world.t };
+        const entry = world.captionQueue.shift();
+        world.activeCaption = { text: entry.text, born: world.t, ambient:entry };
+        // Once on screen, keep its normal reading time; facts still recheck.
+        entry.expires = world.t + 4.4;
+        const recent = world.captionRecent || (world.captionRecent = []);
+        recent.push({key:entry.key,at:world.t});
+        if (recent.length > 24) recent.shift();
         world.lastCapT = world.t;
       }
     }
@@ -733,7 +810,7 @@
       p.resumeReading = false;
       p.dozeT = rnd(70, 140);
       world.sleeper = null;
-      if (random() < 0.5) caption(world, p.name + ' blinks awake and finds the line again.');
+      if (random() < 0.5) caption(world, p.name + ' blinks awake and finds the line again.',{actor:p,requires:['reading']});
     }
   }
 
@@ -765,12 +842,6 @@
       const enabled = SND.settings.rain !== false;
       const wasStorm = world.storm;
       world.storm = enabled && next === 1;
-      if (enabled) {
-        if (world.storm && !wasStorm) caption(world, 'the sky darkens; a storm settles over the street.');
-        else if (next > 0.5 && world.rainTarget < 0.2) caption(world, 'Rain begins to patter against the window.');
-        else if (next < 0.1 && world.rainTarget > 0.3) caption(world, 'The rain lets up outside.');
-        else if (next > 0.2 && next < 0.5 && world.rainTarget > 0.6) caption(world, 'The rain softens to a drizzle.');
-      }
       // A storm rolled while weather was disabled comes back as ordinary
       // heavy rain if the owner restores the toggle before the next re-roll.
       world.rainTarget = !enabled && next === 1 ? 0.8 : next;
@@ -787,7 +858,20 @@
     }
 
     const effTarget = enabled ? world.rainTarget : 0;
+    const beforeRain = world.rain;
     world.rain += (effTarget - world.rain) * Math.min(1, dt * 0.18);
+    // Describe the weather after it changes, not when its next target is rolled.
+    if (enabled) {
+      if (world.storm && beforeRain <= 0.6 && world.rain > 0.6) {
+        caption(world,'A storm settles over the street.',{requires:['rain'],when:w => w.storm});
+      } else if (beforeRain <= 0.3 && world.rain > 0.3) {
+        caption(world,'Rain begins to patter outside.',{requires:['rain']});
+      } else if (beforeRain >= 0.15 && world.rain < 0.15) {
+        caption(world,'The rain lets up outside.',{requires:['dry']});
+      } else if (beforeRain >= 0.5 && world.rain < 0.5 && effTarget > 0.2) {
+        caption(world,'The rain softens to a drizzle.',{when:w => w.rain > 0.2 && w.rain < 0.5});
+      }
+    }
 
     // Lightning and thunder share the sim clock: the cool flash arrives first,
     // then distance is heard as a one-to-four-second delay before the rumble.
@@ -892,7 +976,9 @@
         p.pauseT -= dt;
         if (!p.glanced) {
           p.glanced = true;
-          if (random() < 0.18) caption(world, 'someone slows on the pavement outside, peeking in.');
+          if (random() < 0.18) caption(world, 'Someone slows on the pavement outside, peeking in.',
+            {when:w => w.passersby.indexOf(p)>=0 && p.pausing && [L.win,L.win2].some(win =>
+              captionWindow(w,win) && p.x > win.x && p.x < win.x + win.w)});
         }
       } else {
         p.x += p.dir * p.speed * dt;
@@ -906,8 +992,8 @@
     world.pal = SCENE.dayPalette(world.hour);
     world.daylight = world.pal.daylight;
     const lampOn = world.pal.lamp > 0.5;
-    if (lampOn && !world.wasLampOn) caption(world, 'The streetlamps flicker on, one by one.');
-    if (!lampOn && world.wasLampOn) caption(world, 'Morning light spills across the floorboards.');
+    if (dt > 0 && lampOn && !world.wasLampOn) caption(world, 'The streetlamps flicker on, one by one.',{requires:['view'],when:w => w.pal.lamp > 0.5});
+    if (dt > 0 && !lampOn && world.wasLampOn) caption(world, 'Morning light returns to the windows.',{requires:['view','daylight']});
     world.wasLampOn = lampOn;
 
     const whole = Math.floor(world.hour);
@@ -972,7 +1058,7 @@
     } else if (!dark && c.wasDark) {
       world.barista.candlePending = false;
       c.forceRound = false;
-      if (random() < 0.35) caption(world, 'Morning light; the candles get to rest.');
+      if (random() < 0.35) caption(world, 'The café brightens; the candles get to rest.',{requires:['candles','daylight']});
     }
 
     if (!dark && !c.forceRound) {
@@ -1131,7 +1217,7 @@
     a.doorCloseT = 0;   // the trailing partner owns the pair's single close
     caption(world, world.rain > 0.4
       ? 'Two come in together out of the rain, under one umbrella.'
-      : 'Two come in together, shoulder to shoulder.');
+      : 'Two come in together, shoulder to shoulder.',{actor:a,when:w => w.patrons.indexOf(b)>=0 && !b.gone});
     return [a, b];
   }
 
@@ -1174,10 +1260,8 @@
     return p;
   }
 
-  function arrivalLine(spec) {
-    return spec.lines && spec.lines.arrival && spec.lines.arrival.length
-      ? pick(spec.lines.arrival)
-      : spec.name + ' steps inside.';
+  function arrivalLine(world, spec, actor) {
+    return pickCaption(world,spec.lines && spec.lines.arrival,{actor:actor}) || spec.name + ' steps inside.';
   }
 
   /* The real calendar day (UTC) — the ruler continuity is measured against,
@@ -1210,13 +1294,17 @@
   /* The opener when a regular arrives: weather first (a wet arrival reads on
      the coat, not the calendar), then recognition for a face Lunafreya already
      knows, else the plain arrival line. Every branch stands alone. */
-  function regularArrivalLine(world, spec, info) {
+  function regularArrivalLine(world, spec, info, actor) {
     const lines = spec.lines || {};
-    if (world.rain > 0.4 && lines.arrivalRain && lines.arrivalRain.length) return pick(lines.arrivalRain);
-    if (info.returning && lines.arrivalReturn && lines.arrivalReturn.length && random() < 0.6) {
-      return pick(lines.arrivalReturn);
+    if (world.rain > 0.4) {
+      const wet = pickCaption(world,lines.arrivalRain,{actor:actor});
+      if (wet) return wet;
     }
-    return arrivalLine(spec);
+    if (info.returning && random() < 0.6) {
+      const familiar = pickCaption(world,lines.arrivalReturn,{actor:actor});
+      if (familiar) return familiar;
+    }
+    return arrivalLine(world,spec,actor);
   }
 
   function updateRegulars(world) {
@@ -1239,7 +1327,7 @@
       const info = noteRegularVisit(world, spec);
       caption(world, spec.id==='gerda' && !world.memory.flags['gerda-introduced'] && !world.memory.flags['gerda-window-legacy']
         ? 'a woman pauses to look through the clear window, then steps inside.'
-        : spec.id==='gerda' && !SCENE.hasFurniture(world,'left-window-table') ? 'Gerda comes in for a warm cup and a little company.' : regularArrivalLine(world, spec, info));
+        : spec.id==='gerda' && !SCENE.hasFurniture(world,'left-window-table') ? 'Gerda comes in for a warm cup and a little company.' : regularArrivalLine(world, spec, info, p),{actor:p});
       arrived=true;
     });
     return arrived;
@@ -1263,7 +1351,7 @@
       world.regulars.holger.force = false;
       if(!world.memory.bonds.holger)noteRegularVisit(world, spec);
       world.spawnT = arrivalGap(world);
-      caption(world, 'A neighbour pauses by the new sign, then steps inside.');
+      caption(world, 'A neighbour pauses by the new sign, then steps inside.',{actor:p});
       return;
     }
     if(SIM.holgerRequired && SIM.holgerRequired(world))return;
@@ -1281,7 +1369,7 @@
     const lines = world.rain > 0.4
       ? [p.name + ' ducks in out of the rain.', p.name + ' slips in from the wet street.']
       : [p.name + ' pushes the door open.', p.name + ' steps inside.', p.name + ' wanders in.'];
-    caption(world, pick(lines));
+    caption(world, pick(lines),{actor:p});
   }
 
   function queueSlot(i) {
@@ -1464,6 +1552,7 @@
     DAY_MS: DAY_MS,
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor, specLine: specLine,
     makePatron: makePatron, borrowBook: borrowBook, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
+    captionAllowed: captionAllowed, pickCaption: pickCaption, captionFacts: captionFacts, captionWindow:captionWindow,
     arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
     arcStages: arcStages, arcRows: arcRows, arcBeat: arcBeat, arcFlag: arcFlag,
     advanceArcs: advanceArcs, updateNarrative: updateNarrative,
@@ -1485,6 +1574,7 @@
   SIM._.caption = bindWorld(SIM._.caption);
   SIM._.captionRun = bindWorld(SIM._.captionRun);
   SIM._.updateCaptions = bindWorld(SIM._.updateCaptions);
+  SIM._.pickCaption = bindWorld(SIM._.pickCaption);
   SIM._.reconcileNarrative = bindWorld(SIM._.reconcileNarrative);
   SIM._.advanceArcs = bindWorld(SIM._.advanceArcs);
   SIM._.updateNarrative = bindWorld(SIM._.updateNarrative);

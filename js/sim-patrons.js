@@ -7,7 +7,10 @@
   const SND = R.sound;
   const L = R.L, LB = R.LB, WIPE_RAIN = R.WIPE_RAIN;
   const rnd = R.rnd, withArticle = R.withArticle, pick = R.pick, holdingFor = R.holdingFor;
-  const caption = R.caption, makePath = R.makePath, walker = R.walker;
+  const makePath = R.makePath, walker = R.walker;
+  function caption(world, p, line, options) {
+    return R.caption(world, line, Object.assign({actor:p, holdState:p.state === 'seated'}, options));
+  }
   const ringDoor = R.ringDoor, queueSlot = R.queueSlot, waitSpot = R.waitSpot;
   const addLog = R.addLog;
   const SEAT_PREFS = R.SEAT_PREFS;
@@ -33,17 +36,17 @@
     return def && rec && rec.stage < R.arcStages(def) ? { def: def, rec: rec } : null;
   }
 
-  function arcMusing(world, spec) {
+  function arcMusing(world, p) {
+    const spec = p.spec;
     const groups = spec.lines.arcMusings || [];
     const available = groups.filter(function (group) {
-      if (!unfinishedArc(world, group.arc)) return false;
+      if (!unfinishedArc(world, group.arc) || !R.captionFacts.windowSeat(world,p) || !R.captionFacts.painter(world)) return false;
       return !group.fairDaylight || (world.daylight > 0.45 && world.rain < 0.3);
     });
     if (!available.length || R.random() >= 0.34) return false;
     const group = pick(available);
     if (!group.lines || !group.lines.length) return false;
-    caption(world, pick(group.lines));
-    return true;
+    return caption(world, p, R.pickCaption(world, group.lines, {actor:p}), {requires:['windowSeat','painter']});
   }
 
   /* A regular's voice, in the narrator's register. Where a caption already
@@ -58,14 +61,16 @@
     const spec = p.spec;
     if (!spec || !spec.lines) return false;
     if (context === 'musing') {
-      if (arcMusing(world, spec)) return true;
+      if (arcMusing(world, p)) return true;
       const back = spec.lines.backstory;
-      if (back && back.length && R.random() < BACKSTORY_GATE) { caption(world, pick(back)); return true; }
+      if (back && back.length && R.random() < BACKSTORY_GATE) {
+        const rules = {actor:p, minVisits:3, flags:['holger','gerda'].indexOf(p.regularId)>=0 ? [p.regularId+'-introduced'] : []};
+        if (caption(world,p,R.pickCaption(world,back,rules),rules)) return true;
+      }
     }
     const pool = spec.lines[context];
     if (!pool || !pool.length || R.random() >= LINE_GATE[context]) return false;
-    caption(world, pick(pool));
-    return true;
+    return caption(world, p, R.pickCaption(world,pool,{actor:p}));
   }
 
   /* The scarf arc's knitting behaviour: a regular whose knitting arc is still
@@ -133,11 +138,12 @@
       const preferred = free.filter(function (s) { return pref(s); });
       if (preferred.length) { patron.usualSeat = true; return pick(preferred); }
       // the usual spot is taken — one patient look, then the normal fallback
-      if (!patron.regularSeatNoted) {
+      const bond = world.memory.bonds[patron.regularId];
+      if (!patron.regularSeatNoted && bond && bond.visits > 1 && world.seats.some(pref)) {
         patron.regularSeatNoted = true;
         if (R.random() < 0.7) {
-          caption(world, R.specLine(patron.spec, 'usualTaken',
-            'The usual spot is taken; ' + patron.name + ' gives it a patient look.'));
+          caption(world, patron, R.specLine(patron.spec, 'usualTaken',
+            'The usual spot is taken; ' + patron.name + ' gives it a patient look.',world,patron));
         }
       }
     }
@@ -264,7 +270,7 @@
         }
         if (p.stateT > 1.3) {
           if (R.random() < 0.28) {
-            caption(world, pick([
+            caption(world, p, pick([
               p.name + ' wipes the rain off their shoes.',
               p.name + ' scuffs the wet off on the doormat.',
               p.name + ' stamps the rain off at the door.'
@@ -285,7 +291,7 @@
         }
         if (!p.shakePlayed) { p.shakePlayed = true; SND.umbrellaShake(); }
         if (p.stateT > 1.1) {
-          if (R.random() < 0.35) caption(world, p.name + ' shakes the rain off the umbrella.');
+          if (R.random() < 0.35) caption(world, p, p.name + ' shakes the rain off the umbrella.');
           p.state = 'parkUmbrella'; p.stateT = 0;
           p.path = L.patronRoutes.doorToUmbrella.slice(1).map(function (q) { return { x: q.x, y: q.y }; });
         }
@@ -319,9 +325,9 @@
           p.bubble = { icon: p.drink.icon, until: world.t + 1.9 };
           if (p.partner && !p.orderCaptioned) {
             p.orderCaptioned = true; p.partner.orderCaptioned = true;
-            caption(world, p.name + ' and ' + p.partner.name + ' order together.');
+            caption(world, p, p.name + ' and ' + p.partner.name + ' order together.');
           } else if (!p.orderCaptioned && !(p.regularId==='holger' && SIM.holgerRequired(world))) {
-            caption(world, p.name + ' orders ' + withArticle(p.drink.name) + '.');
+            caption(world, p, p.name + ' orders ' + withArticle(p.drink.name) + '.');
           }
         }
         break;
@@ -372,7 +378,7 @@
           p.holding = holdingFor(p.drink.kind);
           SND.clink(0.9, 0.05);
           if (p.coupleToGo || (p.partner && !p.seat && !reserveCoupleSeats(world, p))) {
-            caption(world, p.name + ' and ' + p.partner.name + ' take their drinks to go.');
+            caption(world, p, p.name + ' and ' + p.partner.name + ' take their drinks to go.');
             leaveCafe(world, p);
             break;
           }
@@ -382,12 +388,12 @@
             p.state = 'browse'; p.stateT = 0;
             p.browseDur = rnd(2.5, 5.5);
             makePath(p, LB.browseSpot.x, LB.browseSpot.y);
-            if (R.random() < 0.5) caption(world, p.name + ' drifts over to the bookshelf.');
+            if (R.random() < 0.5) caption(world, p, p.name + ' drifts over to the bookshelf.');
             break;
           }
           const seat = p.seat || freeSeat(world, p);
           if (!seat) {
-            caption(world, p.name + ' takes it to go.');
+            caption(world, p, p.name + ' takes it to go.');
             leaveCafe(world, p);
           } else {
             seat.taken = true;
@@ -405,11 +411,11 @@
         if (p.stateT > p.browseDur) {
           R.borrowBook(world, p);
           SND.pageTurn();
-          if (R.random() < 0.6) caption(world, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
+          if (R.random() < 0.6) caption(world, p, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
           const seat = p.seat || freeSeat(world, p);
           if (!seat) {
             p.hasShelfBook = false;
-            caption(world, p.name + ' takes it to go.');
+            caption(world, p, p.name + ' takes it to go.');
             leaveCafe(world, p);
           } else {
             seat.taken = true;
@@ -428,7 +434,7 @@
           R.borrowBook(world, p);
           p.holding = 'book';
           SND.pageTurn();
-          if (R.random() < 0.5) caption(world, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
+          if (R.random() < 0.5) caption(world, p, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
           p.state = 'backToSeat'; p.stateT = 0;
           seatPath(p, p.seat);
         }
@@ -475,7 +481,7 @@
           artist.bubble = { icon: R.random() < 0.18 ? 'heart' : 'dots', until: world.t + 1.8 };
           SND.murmur(p.murmurPitch);
           const pool = artist.spec && artist.spec.lines && artist.spec.lines.overheard;
-          if (pool && pool.length && R.random() < 0.7) caption(world, pick(pool));
+          if (pool && pool.length && R.random() < 0.7) caption(world, artist, R.pickCaption(world,pool,{actor:artist}));
         }
         if (!artist || p.stateT >= p.watchDur) {
           p.state = 'backFromEasel'; p.stateT = 0;
@@ -512,8 +518,8 @@
           if (!p.firePlaced) {
             p.firePlaced = true; p.holding = null; p.pose = 'reach';
             addLog(world);
-            if (R.random() < 0.6) caption(world, R.specLine(p.spec, 'fire',
-              p.name + ' sets a fresh log on the fire; it catches and climbs.'));
+            if (R.random() < 0.6) caption(world, p, R.specLine(p.spec, 'fire',
+              p.name + ' sets a fresh log on the fire; it catches and climbs.',world,p),{requires:['fire']});
           }
           if (p.stateT >= 1.2) {
             p.pose = 'stand'; p.state = 'backToSeat'; p.stateT = 0;
@@ -529,7 +535,7 @@
         if (p.stateT > 1.1) {
           p.hasShelfBook = false;
           SND.pageTurn();
-          if (R.random() < 0.4) caption(world, p.name + ' slips the book back onto the shelf.');
+          if (R.random() < 0.4) caption(world, p, p.name + ' slips the book back onto the shelf.');
           if (p.afterBook === 'return') {
             p.state = 'return'; p.stateT = 0;
             makePath(p, L.returnSpot.x, L.returnSpot.y);
@@ -563,36 +569,43 @@
             p.pianoBursts = 1 + Math.floor(rnd(0, 3));
             p.pianoRestT = rnd(2, 6);
             p.reading = false;
-            if (R.random() < 0.7) caption(world, p.name + ' settles at the piano.');
+            if (R.random() < 0.7) caption(world, p, p.name + ' settles at the piano.');
           } else if (p.seat.artist) {
             p.reading = false; p.paintT = rnd(3, 8);
-            caption(world, R.specLine(p.spec, 'settle', p.name + ' settles at the easel.'));
+            caption(world, p, R.specLine(p.spec, 'settle', p.name + ' settles at the easel.',world,p));
           } else if (p.isRegular && p.usualSeat) {
             // readers settle in with a book; the writer keeps typing, the
             // window-watcher keeps her eyes on the street
             if (!p.laptopActive && (p.wantsBook || p.seat.armchair || p.seat.nook)) p.reading = true;
-            caption(world, R.specLine(p.spec, 'settle', p.name + ' settles into the usual ' + seatNoun(p.seat) + '.'));
-          } else if (p.partner && !p.pairCaptioned) {
+            const bond = world.memory.bonds[p.regularId];
+            caption(world, p, bond && bond.visits > 1
+              ? R.specLine(p.spec, 'settle', p.name + ' settles into the usual ' + seatNoun(p.seat) + '.',world,p)
+              : p.name + ' settles into the ' + seatNoun(p.seat) + '.');
+          } else if (p.partner && !p.pairCaptioned && p.partner.state === 'seated') {
             p.pairCaptioned = true; p.partner.pairCaptioned = true;
-            if (p.seat.window) caption(world, 'Two mugs on one window sill.');
-            else caption(world, p.name + ' and ' + p.partner.name + ' share the table' +
-              (world.tables[p.seat.table].tag ? ' ' + world.tables[p.seat.table].tag : '') + '.');
+            if (p.seat.window) caption(world, p, 'A little company on the window sill.',
+              {when:w => p.partner.state === 'seated' && !!p.partner.seat});
+            else caption(world, p, p.name + ' and ' + p.partner.name + ' share the table' +
+              (world.tables[p.seat.table].tag ? ' ' + world.tables[p.seat.table].tag : '') + '.',
+              {when:w => p.partner.state === 'seated' && !!p.partner.seat});
             if (p.wantsBook || p.seat.armchair) p.reading = true;
           } else if (p.partner) {
             if (p.wantsBook || p.seat.armchair) p.reading = true;
           } else if (p.seat.armchair) {
             p.reading = true;
-            caption(world, p.name + ' sinks into the armchair by the fire.');
+            caption(world, p, R.captionFacts.fire(world)
+              ? {text:p.name + ' sinks into the armchair by the fire.', requires:['fire']}
+              : p.name + ' settles into the armchair.');
           } else if (p.seat.nook) {
             if (p.wantsBook || p.hasShelfBook) p.reading = true;
-            if (R.random() < 0.7) caption(world, p.name + (p.reading ? ' curls up in the reading nook.' : ' settles into the reading nook.'));
+            if (R.random() < 0.7) caption(world, p, p.name + (p.reading ? ' curls up in the reading nook.' : ' settles into the reading nook.'));
           } else if (p.wantsBook) {
             p.reading = true;
-            if (R.random() < 0.5) caption(world, p.name + ' settles in with a book.');
+            if (R.random() < 0.5) caption(world, p, p.name + ' settles in with a book.');
           } else if (p.seat.window) {
-            if (R.random() < 0.6) caption(world, p.name + pick([' perches on the window seat.', ' curls up on the window sill.']));
+            if (R.random() < 0.6) caption(world, p, p.name + pick([' perches on the window seat.', ' curls up on the window sill.']));
           } else if (world.tables[p.seat.table] && world.tables[p.seat.table].tag && R.random() < 0.6) {
-            caption(world, p.name + ' finds a seat ' + world.tables[p.seat.table].tag + '.');
+            caption(world, p, p.name + ' finds a seat ' + world.tables[p.seat.table].tag + '.');
           }
         }
         break;
@@ -608,7 +621,7 @@
           const tipped = R.random() < 0.5;
           if (tipped) SND.coins();
           if (R.random() < 0.5) {
-            caption(world, tipped ? 'a coin in the tip jar — tak!' : p.name + ' returns the cup — tak!');
+            caption(world, p, tipped ? 'a coin in the tip jar — tak!' : p.name + ' returns the cup — tak!');
           }
           leaveCafe(world, p);
         }
@@ -635,7 +648,7 @@
           if (idx >= 0) world.umbrellaStand.splice(idx, 1);
           p.umbrellaParked = false; p.pose = 'stand';
           SND.clink(0.4, 0.025);
-          if (R.random() < 0.3) caption(world, p.name + ' collects the umbrella at the door.');
+          if (R.random() < 0.3) caption(world, p, p.name + ' collects the umbrella at the door.');
           p.state = 'exit'; p.stateT = 0; p.rangBell = false;
           p.path = L.patronRoutes.umbrellaToDoor.slice(1).map(function (q) { return { x: q.x, y: q.y }; });
         }
@@ -705,7 +718,7 @@
         SND.sip();
         if (!p.matchaSipCaptioned && (p.drink.prep === 'matcha_hot' || p.drink.prep === 'matcha_iced')) {
           p.matchaSipCaptioned = true;
-          if (R.random() < 0.2) caption(world, p.name + ' takes a slow, grassy-sweet sip.');
+          if (R.random() < 0.2) caption(world, p, p.name + ' takes a slow, grassy-sweet sip.');
         }
       }
       if (p.sipPhase <= 0) {
@@ -748,14 +761,14 @@
         if (p.pianoRestT <= 0) {
           p.playing = true; p.pianoPlayT = rnd(40, 90);
           SND.pianoStart('patron');
-          if (R.random() < 0.12) caption(world, 'A soft tune drifts across the café.');
+          if (R.random() < 0.12) caption(world, p, 'A soft tune drifts across the café.',{requires:['piano'],when:w => p.playing});
         }
       }
     }
 
     // the window pulls a perched sitter's gaze now and then (head only —
     // the body keeps leaning on its cushion)
-    if (p.seat.window) {
+    if (p.seat.window && R.captionFacts.windowSeat(world,p)) {
       if (p.gazeDur > 0) {
         p.gazeDur -= dt;
         if (p.gazeDur <= 0) { p.gazeFacing = 0; p.gazeT = rnd(20, 50); }
@@ -765,12 +778,13 @@
           p.gazeDur = rnd(3.5, 8);
           p.gazeFacing = -p.seat.facing;
           if (!regularLine(world, p, 'musing') && R.random() < 0.2) {
-            const painter = unfinishedArc(world, 'street-house') && world.daylight > 0.45 && world.rain < 0.3;
-            caption(world, painter && R.random() < 0.45
-              ? p.name + ' follows the painter\'s brush across the road.'
-              : p.name + (world.rain > 0.4 ? ' watches the rain run down the glass.'
-                : world.daylight < 0.3 ? ' watches the streetlamps glow outside.'
-                : ' watches the street drift by for a while.'));
+            const painter = R.captionFacts.painter(world);
+            const line = painter && R.random() < 0.45
+              ? {text:p.name + ' follows the painter\'s brush across the road.', requires:['windowSeat','painter']}
+              : world.rain > 0.4 ? {text:p.name + ' watches the rain run down the glass.', requires:['windowSeat','rain']}
+              : world.daylight < 0.3 ? {text:p.name + ' watches the streetlamps glow outside.', requires:['windowSeat','night']}
+              : {text:p.name + ' looks out through the window for a while.', requires:['windowSeat']};
+            caption(world,p,line);
           }
         }
       }
@@ -783,7 +797,7 @@
         p.pageT = rnd(12, 26);
         p.pageTurn = 0.8;
         SND.pageTurn();
-        if (!regularLine(world, p, 'musing') && R.random() < 0.12) caption(world, p.name + ' turns a page.');
+        if (!regularLine(world, p, 'musing') && R.random() < 0.12) caption(world, p, p.name + ' turns a page.');
       }
     }
 
@@ -814,7 +828,7 @@
         if (p.paintT <= 0) {
           p.paintRemain = rnd(2, 4); p.paintMixing = R.random() < 0.18; p.brushT = 0;
           if (paint.def.paintLines && paint.def.paintLines.length && R.random() < 0.08) {
-            caption(world, pick(paint.def.paintLines));
+            caption(world,p,pick(paint.def.paintLines),{requires:['painting']});
           } else if (R.random() < 0.04) {
             regularLine(world, p, 'musing');
           }
@@ -838,7 +852,7 @@
           p.knitT = rnd(2.2, 4.6);
           SND.needle();
           if (knitArc.knitLines && knitArc.knitLines.length && R.random() < 0.04) {
-            caption(world, pick(knitArc.knitLines));
+            caption(world,p,pick(knitArc.knitLines),{when:w => !!knittingArc(w,p)});
           }
         }
       }
@@ -860,7 +874,7 @@
         p.typingT -= dt;
         if (p.typingT <= 0) {
           p.typingRemain = rnd(2, 3.5); p.keyT = 0;
-          if (!regularLine(world, p, 'musing') && R.random() < 0.1) caption(world, p.name + pick([
+          if (!regularLine(world, p, 'musing') && R.random() < 0.1) caption(world, p, p.name + pick([
             ' types a few quiet lines.',
             ' frowns gently at the screen, then lets it go.'
           ]));
@@ -880,7 +894,7 @@
           p.bubble = { icon: p.partner && R.random() < 0.05 ? 'heart' : 'dots', until: world.t + 1.6 };
           SND.murmur(p.murmurPitch);
           mate.chatReply = rnd(1.2, 2);
-          if (!regularLine(world, p, 'overheard') && R.random() < 0.15) caption(world, 'Soft murmurs drift from the table ' + (world.tables[p.seat.table].tag || 'in the corner') + '.');
+          if (!regularLine(world, p, 'overheard') && R.random() < 0.15) caption(world, p, 'Soft murmurs drift from the table ' + (world.tables[p.seat.table].tag || 'in the corner') + '.');
         }
       }
     }
@@ -906,8 +920,8 @@
       stepDown(p, p.seat);
       p.state = 'toFire'; p.stateT = 0; p.firePlaced = false;
       pathFrom(p, p.seat, L.fire.stand.x, L.fire.stand.y);
-      if (R.random() < 0.7) caption(world, R.specLine(p.spec, 'fireUp',
-        p.name + ' sets down the book and gets up to tend the fire.'));
+      if (R.random() < 0.7) caption(world, p, R.specLine(p.spec, 'fireUp',
+        p.name + ' sets down the book and gets up to tend the fire.',world,p),{requires:['fire']});
       return;
     }
 
@@ -942,7 +956,7 @@
       chairScrape(p, true); stepDown(p, p.seat);
       p.state = 'toEasel'; p.stateT = 0;
       pathFrom(p, p.seat, L.artist.watch.x, L.artist.watch.y);
-      if (R.random() < 0.45) caption(world, p.name + ' drifts over to see what Nora is painting.');
+      if (R.random() < 0.45) caption(world, p, p.name + ' drifts over to see what Nora is painting.');
       return;
     }
 
@@ -955,7 +969,7 @@
       p.state = 'fetchBook'; p.stateT = 0;
       p.browseDur = rnd(2.5, 4.5);
       pathFrom(p, p.seat, LB.browseSpot.x, LB.browseSpot.y);
-      if (R.random() < 0.5) caption(world, p.name + ' wanders over to the bookshelf.');
+      if (R.random() < 0.5) caption(world, p, p.name + ' wanders over to the bookshelf.');
       return;
     }
 
@@ -994,7 +1008,7 @@
     p.dozing = true; p.reading = false; p.resumeReading = true;
     p.dozeRemain = rnd(40, 110); p.zzzT = rnd(4, 8);
     world.sleeper = p;
-    caption(world, p.name + ' has fallen asleep over their book.');
+    caption(world, p, p.name + ' has fallen asleep over their book.');
     return true;
   }
 
@@ -1002,7 +1016,7 @@
     p.dozing = false; p.reading = true; p.resumeReading = false;
     p.dozeT = rnd(70, 140);
     if (world.sleeper === p) world.sleeper = null;
-    if (R.random() < 0.5) caption(world, p.name + ' blinks awake and finds the line again.');
+    if (R.random() < 0.5) caption(world, p, p.name + ' blinks awake and finds the line again.');
   }
 
   function beginDeparture(world, p, dt) {
@@ -1055,7 +1069,7 @@
       p.state = 'exit';
       pathFrom(p, seat, L.doorSpot.x, L.doorSpot.y);
     }
-    if (R.random() < 0.35) caption(world, p.name + ' heads back out into the ' + (world.rain > 0.4 ? 'rain' : (world.daylight < 0.3 ? 'night' : 'afternoon')) + '.');
+    if (R.random() < 0.35) caption(world, p, p.name + ' heads back out into the ' + (world.rain > 0.4 ? 'rain' : (world.daylight < 0.3 ? 'night' : world.hour < 12 ? 'morning' : world.hour < 18 ? 'afternoon' : 'evening')) + '.');
   }
 
   R.seatAfterTerrace = function (world, p) {

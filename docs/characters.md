@@ -432,7 +432,7 @@ window-gaze and reading page-turn and laptop bout → `musing`; the table murmur
 `overheard` pool by design — their narrative is solo; only Gerda's overheard
 pool ever fires, and only when a walk-in shares her window table.
 
-**Voice rules for the pools.** Warm, understated, lowercase-cozy, Danish flavor
+**Voice rules for the pools.** Warm, understated, initial capital, Danish flavor
 welcome — the same narrator voice as every other caption. These passive ambient
 lines still **stand alone**: none may lean on having read a previous one, so the
 glanceable layer never asks the reader to catch up. Continuity now lives one
@@ -441,6 +441,15 @@ reader only ever advances by taking an invitation, never by happening to catch a
 caption. Keep the pools un-plot-heavy and unurgent, and — here — narrated
 fragments, not quoted dialogue. (Quoted back-and-forth is reserved for the
 opt-in conversation beats; see [narrative.md](narrative.md) §6.)
+
+Pools now filter on the actual activity and installed room before choosing a
+line, and recheck it before and during display. A boarded view, unavailable
+fire, ordinary chair, inactive laptop or painting awaiting its reveal cannot
+supply the corresponding musing. Passive backstory requires three visits and,
+for Holger/Gerda, their saved introduction. Arrivals no longer pre-empt seating;
+an absent preferred seat is never called occupied. Cat sleep distinguishes a
+quiet nap from real fire warmth, and kneading names the actual bed or rug.
+See [ambience.md](ambience.md) for the shared authoring and lifetime rules.
 
 Gerda's `arcMusings` add one guarded exception without turning ambient lines
 into plot delivery: while the `street-house` arc is unfinished and the painter

@@ -72,11 +72,11 @@
         stay: [280, 420],
         seat: 'firesideLeft',
         lines: {
-          arrival: ['Holger steps in, as steady as the clock.'],
+          arrival: ['Holger steps inside, unhurried.'],
           arrivalRain: ['Holger comes in out of the wet, hat dripping, unhurried as ever.'],
-          arrivalReturn: ['Holger takes his corner as though he never left it.'],
+          arrivalReturn: ['Holger is back, his book tucked under one arm.'],
           settle: ['Holger lowers himself into the usual armchair and opens his book.'],
-          usualTaken: ['His chair is taken; Holger waits by the fire, patient as the tide.'],
+          usualTaken: ['His chair is taken; Holger looks for another, patient as the tide.'],
           // fireUp: rising to tend the hearth; fire: the log going on. Solo, in
           // his register — a sailor keeping his fire the way he kept a stove.
           fireUp: [
@@ -90,10 +90,10 @@
           // chatty: false — his story is solo, so no overheard pool by design
           overheard: [],
           musing: [
-            'Holger reads the same paragraph twice, in no hurry to move on.',
-            'Holger checks the weather through the window, weighing the ferries.',
-            'Holger lets the espresso go cold, lost in the page.',
-            'Holger nods to himself at something in the book.'
+            {text:'Holger reads the same paragraph twice, in no hurry to move on.', requires:['reading']},
+            {text:'Holger checks the weather through the window.', requires:['view']},
+            {text:'Holger leaves his cup untouched for a moment, lost in the page.', requires:['reading','cup']},
+            {text:'Holger nods to himself at something in the book.', requires:['reading']}
           ],
           backstory: [
             'Holger sailed the Kattegat for thirty years; he still reads the sky out of habit.',
@@ -117,21 +117,21 @@
         stay: [240, 360],
         seat: 'leftWindowPerch',
         lines: {
-          arrival: ['Gerda comes in with the morning and takes her window seat.'],
-          arrivalRain: ['Gerda shakes the rain from her scarf and makes for the warm window.'],
-          arrivalReturn: ['Gerda gives Lunafreya a small wave — an old, easy habit.'],
+          arrival: ['Gerda steps inside and looks around the café.'],
+          arrivalRain: ['Gerda comes in from the rain, her scarf dark with droplets.'],
+          arrivalReturn: ['Gerda gives Lunafreya a small wave from the door.'],
           settle: ['Gerda settles onto the window sill, right where she likes it.'],
-          usualTaken: ['Her window seat is taken; Gerda finds another and watches the street anyway.'],
+          usualTaken: ['Her window seat is taken; Gerda looks for another place to settle.'],
           overheard: [
             'Gerda drifts into a story about the coldest winter she remembers.',
             'Gerda tells someone about the garden she used to keep.',
             'Something at the next chair makes Gerda laugh, warm and unhurried.'
           ],
           musing: [
-            'Gerda watches a cyclist wobble past and smiles to herself.',
-            'Gerda follows a couple down the street until they turn the corner.',
+            {text:'Gerda watches the light on the water for a while.', requires:['view','daylight']},
+            {text:'Gerda looks out through the clear glass.', requires:['view']},
             'Gerda hums something old under her breath.',
-            'Gerda warms her hands on the tea and watches the light change.'
+            {text:'Gerda rests her hands beside her tea and watches the light change.', requires:['cup']}
           ],
           arcMusings: [
             {
@@ -165,17 +165,17 @@
         stay: [300, 460],
         seat: 'diningTable',
         lines: {
-          arrival: ['Kasper drops into a chair with his laptop and a sigh.'],
+          arrival: ['Kasper steps inside with his laptop bag and a quiet sigh.'],
           arrivalRain: ['Kasper hurries in from the rain, shielding the laptop bag.'],
-          arrivalReturn: ['Kasper is back — same chapter, same chair, same sigh.'],
+          arrivalReturn: ['Kasper is back, his laptop bag over his shoulder.'],
           settle: ['Kasper claims the usual table and opens the laptop.'],
-          usualTaken: ['His table is taken; Kasper hovers a beat, then settles for another.'],
+          usualTaken: ['His table is taken; Kasper looks around for another.'],
           overheard: [],
           musing: [
-            'Kasper types a sentence, reads it back, and deletes it.',
-            'Kasper stares at the same chapter he stared at yesterday.',
-            'Kasper mutters at the screen and reaches for the matcha.',
-            'Kasper writes three good lines and looks cautiously pleased.'
+            {text:'Kasper types a sentence, reads it back, and deletes it.', requires:['laptop']},
+            {text:'Kasper lingers over a paragraph on the screen.', requires:['laptop']},
+            {text:'Kasper glances from the screen to his cup.', requires:['laptop','cup']},
+            {text:'Kasper writes a few lines and looks cautiously pleased.', requires:['laptop']}
           ],
           backstory: [
             'Kasper has been on chapter seven since spring; he doesn\'t mention it anymore.',
@@ -200,20 +200,20 @@
         stay: [380, 520],
         seat: 'artistStool',
         lines: {
-          arrival: ['Nora arrives with a paint-smudged satchel and makes for the easel.'],
+          arrival: ['Nora arrives with a paint-smudged satchel.'],
           arrivalRain: ['Nora comes in under a golden umbrella, keeping her brushes dry.'],
-          arrivalReturn: ['Nora returns to the easel and finds yesterday\'s colour waiting.'],
-          settle: ['Nora settles at her little studio above the piano.'],
-          usualTaken: ['Her stool is occupied; Nora opens her sketchbook at a nearby table.'],
+          arrivalReturn: ['Nora is back, a strand of hair caught in her satchel strap.'],
+          settle: ['Nora settles at the easel and looks over her work.'],
+          usualTaken: ['Her stool is occupied; Nora looks for a nearby table.'],
           overheard: [
-            'Nora points out a colour hidden in the firelight.',
+            {text:'Nora points out a colour hidden in the firelight.', requires:['fire']},
             'Nora says the quiet parts are what make a room worth painting.',
-            'A watcher murmurs something; Nora adds one small stroke and smiles.'
+            {text:'Nora listens for a moment, then smiles.', requires:['studio']}
           ],
           musing: [
-            'Nora holds the brush still and lets the room settle first.',
-            'Nora mixes a warmer shadow into the corner of the canvas.',
-            'Nora leans back, squints, and finds the line she was missing.',
+            {text:'Nora pauses over the canvas and lets the room settle first.', requires:['painting']},
+            {text:'Nora studies the shadow in the corner of the canvas.', requires:['painting']},
+            'Nora leans back and takes in the room.',
             'A strand of Nora\'s hair slips loose; she tucks it back with a clean knuckle.'
           ],
           backstory: [
@@ -238,21 +238,21 @@
         stay: [280, 420],
         seat: 'firesideRight',
         lines: {
-          arrival: ['Freya slips in as the lamps come on, her book already in hand.'],
+          arrival: ['Freya slips inside, her book already in hand.'],
           arrivalRain: ['Freya ducks in from the rain, hugging her book dry.'],
-          arrivalReturn: ['Freya returns to the fire, picking up just where she left off.'],
+          arrivalReturn: ['Freya returns with a bookmark peeking out of her book.'],
           settle: ['Freya sinks into the fireside chair, book already open.'],
-          usualTaken: ['Her fireside chair is taken; Freya takes the near one in stride.'],
+          usualTaken: ['Her fireside chair is taken; Freya looks for another seat.'],
           overheard: [],
           musing: [
-            'Freya turns a page and sinks a little deeper into the armchair.',
-            'Freya reads until the words go soft and warm.',
-            'Freya loses her place, finds it, loses it again.',
-            'Freya lets the fire do the talking for a while.'
+            {text:'Freya turns a page and sinks a little deeper into the armchair.', requires:['reading','armchair']},
+            {text:'Freya reads until the words go soft and warm.', requires:['reading']},
+            {text:'Freya loses her place, finds it, loses it again.', requires:['reading']},
+            {text:'Freya lets the fire do the talking for a while.', requires:['fire']}
           ],
           backstory: [
             'Freya has read this one before; she comes back for the ending anyway.',
-            'Freya says the fire here is better than the one at home.'
+            {text:'Freya says the fire here is better than the one at home.', requires:['fire']}
           ]
         }
       }
@@ -324,7 +324,7 @@
         flag: ['lunafreya-cat-painting', 'lunafreya-hearth-painting'],
         paintLines: [
           'Nora lays in another quiet patch of colour.',
-          'The brush whispers over canvas above the piano.',
+          'The brush whispers over the canvas.',
           'Nora mixes the light again, a shade warmer this time.'
         ],
         beat: [

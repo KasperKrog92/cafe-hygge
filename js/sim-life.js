@@ -299,7 +299,7 @@
     w.cat.hopQueue = null; w.cat.hopFrom = w.cat.hopTo = null;
     w.activeCaption = null; w.captionQueue = [];
     R.sound.pianoStop();
-    homePose(w); R.caption(w, 'home, with a book and a familiar little shadow.'); commit(w);
+    homePose(w); R.caption(w, 'Lunafreya and the cat are home for the evening.', {place:'home'}); commit(w);
   };
   // Authored home routes all join the clear lane below desk/boxes/bed. They
   // never invoke the café's furniture planner in this separate room.
