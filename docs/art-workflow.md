@@ -267,6 +267,19 @@ exports the active room extent; explicit regions still use master coordinates.
 
 ## First apartment evening verification
 
+The 8 September apartment lighting pass is captured in `apartment-home-before`
+and `apartment-home-after` (home tour, open/closed curtains and bedtime).
+Inspect `unpacked-evening.png` and `bedtime-3.png` at native 960×600: localized
+lamps and monitor remain readable against a dark room; the utility walls block
+their spill and the curtain closes off the projected moonlight. The home suite
+passed both modes and 34 tour/bedtime save round trips. `apartment-light-after`
+passes café repeatability (ten images, twelve occupancy scenarios) and zero
+audits. Lighting uses a cached illumination map over the current draw list,
+so moving people receive light without being baked into a static room image.
+The normal-entry smoke in `apartment-light-entry` also passed audio startup,
+a real-time cappuccino cycle, night lighting and the audit. All task-owned
+browser sessions were closed after capture.
+
 `verify-home.js` exercises both presentation modes, both purchase orders,
 attendance holds, twelve tour and five bedtime save round trips per mode,
 first-evening waiting, next-morning scheduling and the final café audit.

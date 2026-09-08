@@ -270,6 +270,80 @@
       px(g,sh.x+3,sh.y-12,9,3,'#d9d2c0');
     }});
   }
+  function homeCurtains(w) {
+    const s=w.memory.life.homeStory;
+    const hung=s.step>=10 || s.step===9 && w.homeAction==='reach';
+    const hanging=s.step===9?Math.min(1,w.homeActionTime/6):1;
+    const closed=s.sleepStep>1?1:s.sleepStep===1?Math.min(1,(w.homeActionTime||0)/4):0;
+    return hung?Math.round((16+closed*(H.window.w/2-10))*hanging):0;
+  }
+  const homeLight={key:null,canvas:null};
+  function lightPool(g,x,y,rx,ry,color,alpha) {
+    g.save();g.translate(x,y);g.scale(rx,ry);
+    const glow=g.createRadialGradient(0,0,0,0,0,1);
+    glow.addColorStop(0,'rgba('+color+','+alpha+')');
+    glow.addColorStop(.32,'rgba('+color+','+(alpha*.65)+')');
+    glow.addColorStop(1,'rgba('+color+',0)');
+    g.fillStyle=glow;g.fillRect(-1,-1,2,2);g.restore();
+  }
+  function homeLighting(g,w) {
+    const win=H.window, curtain=homeCurtains(w), lamps=H.lamps;
+    // Quantized weather and curtain pixels keep the light map cached while
+    // people move. It contains illumination only: never captured furniture.
+    const moon=(1-Math.min(1,w.rain)*.65), weather=Math.round(moon*20)/20;
+    const key=[curtain,weather].join(':');
+    if(homeLight.key!==key) {
+      if(!homeLight.canvas) {homeLight.canvas=document.createElement('canvas');homeLight.canvas.width=960;homeLight.canvas.height=600;}
+      const m=homeLight.canvas.getContext('2d');
+      m.fillStyle='#ffffff';m.fillRect(0,0,960,600);
+      m.fillStyle='#454b65';m.fillRect(128,70,704,H.floorBottom+8-70);
+      m.save();
+      // The rear utility walls block the living-room lamps. Their unlit
+      // fixtures retain just enough cool ambient light to read as silhouettes.
+      m.beginPath();m.rect(128,70,704,H.kitchen.y-H.kitchen.wallH-70);
+      m.rect(H.bathroom.x+H.bathroom.w,H.kitchen.y-H.kitchen.wallH,
+        832-H.bathroom.x-H.bathroom.w,H.floorBottom+8-H.kitchen.y+H.kitchen.wallH);m.clip();
+      m.globalCompositeOperation='screen';
+      Object.keys(lamps).forEach(id=>{
+        const a=lamps[id];
+        lightPool(m,a.x,a.y,112,108,'255,201,132',.94);
+        lightPool(m,a.x,a.base+12,id==='desk'?77:100,48,'255,190,112',.36);
+      });
+      // Screen light reaches the keyboard and the face of its seated reader.
+      lightPool(m,H.desk.x,H.desk.y-49,54,59,'155,211,228',.6);
+      const opening=Math.max(0,win.w-Math.max(0,curtain-5)*2)/win.w;
+      lightPool(m,win.x+win.w/2,win.y+win.h-6,110,122,'153,180,229',.48*opening*weather);
+      // Four foreshortened panes fall down-left from the moon. The mullions
+      // stay dark; the same curtain edge narrows the source and its projection.
+      const inset=Math.max(0,curtain-5), left=win.x+inset,right=win.x+win.w-inset;
+      const floor=H.wallY+4;
+      for(let row=0;row<2;row++) {
+        const near=floor+row*39,far=near+35;
+        [[left,win.x+62],[win.x+66,right]].forEach(span=>{
+          const x0=Math.max(left,span[0]),x1=Math.min(right,span[1]);
+          if(x1<=x0)return;
+          const offset=row*22;
+          const wash=m.createLinearGradient(0,floor,0,floor+78);
+          wash.addColorStop(0,'rgba(146,177,224,'+(.3*weather)+')');
+          wash.addColorStop(1,'rgba(146,177,224,'+(.08*weather)+')');
+          m.fillStyle=wash;m.beginPath();m.moveTo(x0-offset,near);m.lineTo(x1-offset,near);
+          m.lineTo(x1-offset-20,far);m.lineTo(x0-offset-20,far);m.closePath();m.fill();
+        });
+      }
+      m.restore();
+      // Exterior and luminous shade/screen surfaces keep their own brightness.
+      const gap=Math.max(0,curtain-5);
+      m.fillStyle='#ffffff';m.fillRect(win.x+gap,win.y,Math.max(0,win.w-gap*2),win.h);
+      Object.keys(lamps).forEach(id=>{const a=lamps[id];m.fillRect(a.x-12,a.y-4,25,12);});
+      m.fillStyle='#e1f2ff';m.fillRect(H.desk.x-18,H.desk.y-62,34,19);
+      homeLight.key=key;
+    }
+    g.save();g.globalCompositeOperation='multiply';g.drawImage(homeLight.canvas,0,0);g.restore();
+    g.save();g.globalCompositeOperation='screen';
+    Object.keys(lamps).forEach(id=>{const a=lamps[id];lightPool(g,a.x,a.y+3,30,24,'255,201,132',.13);});
+    lightPool(g,H.desk.x,H.desk.y-52,26,20,'155,211,228',.1);
+    g.restore();
+  }
   SCENE.drawHome = function(g,w) {
     const story=w.memory.life.homeStory,A=H.story;
     const sleeping=story.sleepStep>=3 && w.barista.pose==='tucked';
@@ -307,17 +381,14 @@
     px(g,win.x+62,win.y,4,win.h,'#6e4a33'); px(g,win.x,win.y+57,win.w,4,'#6e4a33');
     px(g,win.x-10,win.y+win.h,win.w+20,7,'#c08a58');
     if(story.step>=10 || story.step===9 && w.homeAction==='reach') {
-      const hanging=story.step===9?Math.min(1,w.homeActionTime/6):1;
-      const closed=story.sleepStep>1?1:story.sleepStep===1?Math.min(1,(w.homeActionTime||0)/4):0;
       px(g,win.x-15,win.y-10,win.w+30,3,'#5a3d28');
-      const width=Math.round((16+closed*(win.w/2-10))*hanging);
+      const width=homeCurtains(w);
       [win.x-5,win.x+win.w+5-width].forEach(x=>{
         px(g,x,win.y-6,width,win.h+18,'#7f8d80');
         for(let k=3;k<width;k+=7) {px(g,x+k,win.y-4,2,win.h+14,'#a2aa91');px(g,x+k+2,win.y,2,win.h+14,'#69796f');}
         px(g,x,win.y+win.h+10,width,3,'#69796f');
       });
     }
-    ell(g,420,347,115,33,'rgba(232,176,74,.09)');
     utilityRoom(g,H.kitchen,false); utilityRoom(g,H.bathroom,true);
     const draws=[];
     draws.push({y:H.kitchen.y,draw:g=>utilityBackWall(g,H.kitchen,false)});
@@ -359,8 +430,10 @@
       px(g,x-17,y-32,33,5,'#b8bfc7'); px(g,x-15,y-31,29,2,'#64706d');
       for(let k=0;k<7;k++) px(g,x-14+k*4,y-31,2,1,'#d3d9de');
       px(g,x+21,y-32,5,5,'#b8bfc7');
-      px(g,x+32,y-62,3,24,'#4a3222'); px(g,x+23,y-69,21,9,'#e8d5b0');
-      px(g,x+21,y-61,25,3,'#c9a04a');
+      const a=H.lamps.desk;
+      px(g,a.x-2,a.y+3,3,a.base-a.y-3,'#4a3222');
+      px(g,a.x-9,a.base-2,18,3,'#825638');
+      px(g,a.x-11,a.y-4,21,9,'#e8d5b0');px(g,a.x-13,a.y+4,25,3,'#f5dfae');
     }});
     draws.push({y:H.deskSeat.y-.2,draw:g=>{
       const x=H.deskSeat.x,y=H.deskSeat.y;
@@ -412,9 +485,13 @@
       if(!w.barista.reading) { px(g,x+24,y+32,15,10,'#a94f3f'); px(g,x+26,y+34,11,2,'#e8dfc9'); }
     }});
     // Sort the bedside lamp at its own foot, behind the bedside approach.
-    draws.push({y:H.bed.y+33,draw:g=>{
-      const x=H.bed.x,y=H.bed.y;
-      px(g,x-22,y-5,4,38,'#4a3222'); px(g,x-33,y-16,27,12,'#e8d5b0');
+    draws.push({y:H.lamps.bedside.base,draw:g=>{
+      const a=H.lamps.bedside;
+      ell(g,a.x,a.base+2,13,3,'rgba(20,12,8,.22)');
+      px(g,a.x-2,a.y+7,4,a.base-a.y-7,'#4a3222');
+      ell(g,a.x,a.base,11,3,'#6e4a33');
+      px(g,a.x-10,a.y-4,21,3,'#d5b581');px(g,a.x-13,a.y-1,27,9,'#e8d5b0');
+      px(g,a.x-13,a.y+7,27,3,'#f5dfae');
     }});
     draws.push({y:sleeping || w.barista.pose==='sit' ? H.bed.y+H.bed.h+.1 : w.barista.y,draw:g=>{
       const b=Object.assign({},w.barista,{colors:Object.assign({},w.barista.colors,{apron:false}),bookColor:'#a94f3f'});
@@ -424,9 +501,7 @@
     }});
     draws.push({y:story.sleepStep>=3?H.bed.y+H.bed.h+.2:w.cat.y,draw:g=>SCENE.drawCat(g,w.cat)});
     draws.sort((a,b)=>a.y-b.y); draws.forEach(d=>d.draw(g));
-    const glow=g.createRadialGradient(646,301,5,646,301,135);
-    glow.addColorStop(0,'rgba(255,201,119,.16)'); glow.addColorStop(1,'rgba(255,201,119,0)');
-    g.fillStyle=glow;g.fillRect(510,165,280,280);
+    homeLighting(g,w);
     SCENE.drawCaption(g,w);
     SCENE.drawIntroDialogue(g,w);
     // Only idle departs on this timer. Explicit sleep uses the café dawn fade.

@@ -93,6 +93,7 @@
       door: { x: 180, y: 164, w: 54, h: 102 },
       entry: { x: 207, y: 294 }, bag: { x: 258, y: 310 },
       desk: { x: 366, y: 294 }, deskSeat: { x: 366, y: 306 },
+      lamps: { desk: {x:400,y:229,base:256}, bedside: {x:684,y:224,base:299} },
       bed: { x: 704, y: 266, w: 124, h: 84 }, bedSeat: { x: 713, y: 310 }, bedApproach: { x: 683, y: 310 },
       window: { x: 535, y: 124, w: 128, h: 112 },
       boxes: [{ x: 280, y: 270 }, { x: 308, y: 270 }, { x: 294, y: 248 },

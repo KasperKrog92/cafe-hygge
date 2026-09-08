@@ -48,8 +48,17 @@ desktop crop. The walking lane is at y=350, above the rear wall tops, keeping
 passing characters visible. Rear walls are sorted at their y=454 floor line;
 fixture baselines include their projected depth from that wall. These rooms
 are scenery in this art slice; the existing PC/reading/sleep routine remains
-in use. Small rain streaks and a warm
-bedside light keep the scene alive. Boxes remain owned scenery in this slice;
+in use. The evening room uses a cool, dark ambient light map, with localized
+warm pools from the desk and bedside lamps and a smaller blue monitor glow.
+`L.home.lamps` owns shade and base positions; the bedside floor lamp stands
+high enough to light the pillow and reading book. Utility-room rear walls block
+these pools, leaving the kitchen and bathroom in shadow. Four subdued moonlit
+panes project down-left onto the floor, weakening with rain and narrowing with
+the actual curtain edges until closed. Exterior glass and luminous lamp/screen
+surfaces retain their brightness; people, props and contact shadows share the
+same multiply pass before captions/dialogue. The light map is cached by curtain
+pixels and quantized weather, without capturing or mutating the simulation.
+Small rain streaks keep the scene alive. Boxes remain owned scenery in this slice;
 gradual unpacking belongs to H1.
 
 `L.firstPlant` names the entrance parcel position, its reachable work spot and

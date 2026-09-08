@@ -24,6 +24,11 @@ bedtime sequence first: bathroom, teeth, curtains, shared bed and goodnight.
 Only its completion advances to 07:30 and the dawn entrance. Reload preserves
 that sequence. After the first evening, switching to idle lets the ordinary
 routine finish automatically.
+The apartment is lit as an evening interior: warm desk/bedside lamps, a cool
+computer screen and faint moonlight through the window. Kitchen and bathroom
+walls shield their unlit interiors. Rain weakens the moonlight; closing the
+bedtime curtains removes its floor projection. Lighting is renderer-only and
+does not change the clock, saved routines or attendance rules.
 The café clock holds during home time; elapsed story time still receives real
 dt. Lunafreya comes back
 with the cat and turns on the lamps at the entrance first. She puts the cat
