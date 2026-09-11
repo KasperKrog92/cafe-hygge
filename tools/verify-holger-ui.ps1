@@ -38,7 +38,20 @@ window.uiNow=performance.now();lifeTestFrame(uiNow);return !!SIM.holgerAvailable
  if($LASTEXITCODE -ne 0){throw 'Wide capture failed'}
  & $browser --session $testSession click '#conversation-answers button:first-child'
  if($LASTEXITCODE -ne 0){throw 'Choice click failed'}
- Eval-H 'MEMORY.saveNow();true' | Out-Null
+ # Reload an actual v13 file at a chosen-but-unacknowledged reply, proving
+ # browser boot migration as well as the private codec tests.
+ Eval-H @'
+(()=>{
+  const old=JSON.parse(MEMORY.exportText());old.version=13;
+  CAST.holgerIntroduction.forEach((line,index)=>{
+    const key='holger-introduction-node-'+line.id;
+    if(Object.prototype.hasOwnProperty.call(old.flags,key)) {
+      old.flags['holger-introduction-line-'+index]=old.flags[key];delete old.flags[key];
+    }
+  });
+  localStorage.setItem('cafe-hygge-save',JSON.stringify(old));MEMORY.readOnly=true;return true;
+})()
+'@ | Out-Null
  & $browser --session $testSession reload
  if($LASTEXITCODE -ne 0){throw 'Reload failed'}
  & $browser --session $testSession wait --fn '!!window.__world'
@@ -56,6 +69,7 @@ SIM.advanceMoment(w);lifeTestFrame(uiNow+=50);return true;})()
  Eval-H @'
 (()=>{const w=__world;
 if(SIM.momentLine(w).text!==CAST.holgerIntroduction[6].choices[0].reply)throw Error('real reload lost reply');
+if(w.memory.version!==14||!w.memory.flags['holger-introduction-node-why-cafe']||Object.keys(w.memory.flags).some(k=>k.startsWith('holger-introduction-line-')))throw Error('legacy node migration failed');
 for(let n=0;n<3000&&w.moment;n++){if(w.moment.phase==='talk')SIM.advanceMoment(w,SIM.momentLine(w).choices?1:undefined);else SIM.update(w,.1);}lifeTestFrame(uiNow+=30);
 const problems=__dev.audit();if(problems.length)throw Error(JSON.stringify(problems));return {reload:true,audit:problems};})()
 '@ | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $output 'reload.json')

@@ -124,12 +124,12 @@ Holger can offer books before a shelf exists, with the promise saved; handover
 and stocking need coherent conditions. A full shelf uses an appropriate line
 and safely retained collection/bookplate, without deleting purchased books.
 
-Before adding these scenes, inspect the current Holger-specific executor. Make
-the minimum reusable conversation boundary needed for stable nodes, choices,
-completion and one-time effects. If extracting or migrating its positional
-cursor, make that a behavior-preserving commit and pass its old UI/reload checks
-before adding new content. Do not design a universal dialogue editor or move
-every existing arc to a new engine merely for consistency.
+Stable-node preparation shipped separately on 11 September. Reuse
+`SIM.beginSavedMoment` for stable scene prefixes, authored node IDs and saved
+acknowledgements; choice flags and scene-specific completion callbacks retain
+their existing roles. Holger's old positional flags migrate in v14. The old
+UI/reload checks passed before extraction. Do not design a universal dialogue
+editor or move every existing arc to a new engine merely for consistency.
 
 The scene packet for any new conversation records: what triggers it; who knows
 what at entry; the literal dialogue and choices; each remembered result; safe

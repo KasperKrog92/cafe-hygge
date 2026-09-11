@@ -115,6 +115,29 @@ same session; it does not need a separate branch by default.
 
 ## Verification commands
 
+**Stable conversation IDs — 11 September 2026:** save v14 maps every historical
+Holger line acknowledgement to an authored node ID using a frozen v13 list.
+Holger, Gerda and the two visitors share `SIM.beginSavedMoment`; choice flags,
+completed-scene gates and literal dialogue remain unchanged. Context variations
+address IDs, and advancing skips already acknowledged nodes after insertion or
+reordering. First-morning/home routine steps and unsaved arc-payoff packets keep
+their separate contracts.
+
+The five `holger,visitors,gerda,hearth,invitations` browser suites and original
+Holger UI suite passed before extraction (`conversation-ids-before` and
+`conversation-ids-ui-before`). Afterward, all 24 Node save/isolation groups and
+the same five suites passed (`conversation-ids-after`). New regressions cover
+all 17 old Holger resume/completion positions with both answers, a deliberately
+reordered live packet during migration, inserted/reordered nodes, retained
+choice replies and one-time completion. The updated Holger UI runner writes a
+v13 save after a real choice click and reloads it into v14 at the same reply;
+its existing approach, dismissal, background and service checks also pass
+(`conversation-ids-ui-after`). Save-transfer UI passes against v14
+(`conversation-ids-transfer`). These are desktop Chromium checks; native Safari
+was not run. The normal-entry smoke completed audio, a real cappuccino cycle
+(31.4 seconds), night rendering and a zero-problem audit (`conversation-ids-entry`).
+Captures were inspected and each browser session was closed.
+
 The first-morning dialogue shipped on 7 September 2026. `intro` is the thirteenth
 browser suite: it checks all 22 lines, eight finale stages, pause/skip/reveal,
 instant text, bounds and private save restoration. `./tools/verify-intro-ui.ps1`
@@ -302,7 +325,7 @@ paste earlier conversations.
 ## Save and private-world contracts
 
 `MEMORY.codec` exposes pure `fresh`, `validate`, `migrate`, `decode` and `encode`.
-The schema is v13; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress. Invalid saves open a fresh café; `MEMORY.status` exposes
+The schema is v14; v1/v2 saves retain their stories, bonds, flags and apartment/plant progress, and v13 Holger acknowledgements migrate to named nodes. Invalid saves open a fresh café; `MEMORY.status` exposes
 load/write/persistence errors. Unsupported development saves may be replaced,
 per the owner's 6 September direction; recovery copies are not implemented.
 

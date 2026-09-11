@@ -32,6 +32,77 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('v14 migrates every historical Holger checkpoint independently of live dialogue order', () => {
+    const b=boot();b.run(`
+      const packet=CAST.holgerIntroduction.slice();
+      const source=SIM.create({random:SIM.seededRandom(42)});SIM.skipUnpacking(source);
+      for(let n=0;n<1000&&!SIM.holgerAvailable(source);n++)SIM.update(source,.1);
+      const base=MEMORY.codec.encode(source.memory);
+      for(let cursor=0;cursor<=packet.length;cursor++)for(let branch=0;branch<2;branch++) {
+        const old=JSON.parse(base);old.version=13;
+        for(let n=0;n<cursor;n++)old.flags['holger-introduction-line-'+n]=true;
+        for(const pos of [6,10])if(cursor>=pos)old.flags[packet[pos].choices[branch].flag]=true;
+        if(cursor===packet.length)old.flags['holger-introduced']=true;
+        old.flags['keira-hello-name']=true;old.flags['gerda-offer-later']=true;
+        old.life.projects.table={stage:'working',step:2,time:3};
+        old.life.savings=147;const bytes=JSON.stringify(old);
+        CAST.holgerIntroduction=packet.slice().reverse();
+        const migrated=MEMORY.prepareImport(bytes);
+        CAST.holgerIntroduction=packet;
+        if(JSON.stringify(old)!==bytes||migrated.version!==14)throw Error('source mutated or version missing');
+        for(let n=0;n<packet.length;n++) {
+          if(!!migrated.flags['holger-introduction-node-'+packet[n].id] !== (n<cursor))throw Error('historical meaning changed at '+n);
+          if(Object.hasOwn(migrated.flags,'holger-introduction-line-'+n))throw Error('legacy cursor retained');
+        }
+        if(!migrated.flags['keira-hello-name']||!migrated.flags['gerda-offer-later']||migrated.life.savings!==147||migrated.life.projects.table.time!==3)
+          throw Error('unrelated history lost');
+        const w=SIM.create({memory:MEMORY.createStore({state:migrated})});
+        const warmth=w.memory.bonds.holger.warmth;
+        if(cursor===packet.length) {
+          if(SIM.startHolger(w)||w.memory.bonds.holger.warmth!==warmth)throw Error('completed hello replayed');
+        } else {
+          if(!SIM.startHolger(w)||w.moment.lines[w.moment.index].id!==packet[cursor].id)throw Error('wrong resume node '+cursor);
+          if([6,10].includes(cursor)&&SIM.momentLine(w).text!==packet[cursor].choices[branch].reply)throw Error('saved choice reply lost');
+        }
+        const twice=MEMORY.prepareImport(MEMORY.codec.encode(migrated));
+        if(JSON.stringify(twice)!==JSON.stringify(migrated))throw Error('migration repeats');
+      }
+    `);
+  });
+  await test('named conversation progress survives insertion/reordering without repeating acknowledgements or effects', () => {
+    const b=boot();b.run(`
+      const packets=[CAST.holgerIntroduction,...Object.values(CAST.visitors).map(v=>v.hello),...Object.values(CAST.gerdaWindow)];
+      for(const lines of packets) {
+        if(lines.some(l=>!l.id)||new Set(lines.map(l=>l.id)).size!==lines.length)throw Error('missing or duplicate authored node ID');
+      }
+      const packet=CAST.holgerIntroduction.slice();
+      const w=SIM.create({random:SIM.seededRandom(42)});SIM.skipUnpacking(w);
+      for(let n=0;n<1000&&!SIM.holgerAvailable(w);n++)SIM.update(w,.1);
+      for(let n=0;n<6;n++)w.memory.flags['holger-introduction-node-'+packet[n].id]=true;
+      w.memory.flags['luna-beginning-new-start']=true;
+      const warmth=w.memory.bonds.holger.warmth;
+      CAST.holgerIntroduction=[{id:'test-inserted',speaker:'Holger',text:'Test insertion.'},...packet.slice(0,6).reverse(),...packet.slice(6)];
+      if(!SIM.startHolger(w)||w.moment.lines[w.moment.index].id!=='test-inserted')throw Error('new node not offered');
+      w.moment.visible=999;SIM.advanceMoment(w);
+      if(w.moment.lines[w.moment.index].id!=='beginning'||SIM.momentLine(w).text!==packet[6].choices[1].reply)throw Error('acknowledged nodes replayed');
+      const saved=w.context.memory.exportText();
+      const restored=SIM.create({memory:MEMORY.createStore({state:MEMORY.prepareImport(saved)})});
+      if(!SIM.startHolger(restored)||restored.moment.lines[restored.moment.index].id!=='beginning')throw Error('named reload failed');
+      for(let n=0;n<200&&restored.moment;n++) {
+        if(restored.moment.phase!=='talk'){SIM.update(restored,.25);continue;}
+        restored.moment.visible=999;SIM.advanceMoment(restored,SIM.momentLine(restored).choices?0:undefined);
+      }
+      if(restored.moment||!restored.memory.flags['holger-introduced']||restored.memory.bonds.holger.warmth!==warmth+1)throw Error('completion effects failed');
+      if(SIM.startHolger(restored)||restored.memory.bonds.holger.warmth!==warmth+1)throw Error('completion repeated');
+      if(!restored.memory.flags['luna-beginning-new-start']||restored.memory.flags['luna-beginning-belonging'])throw Error('choice changed');
+      // Variations bind to IDs too, even if their nodes move.
+      const other=SIM.create({random:SIM.seededRandom(42)});SIM.skipUnpacking(other);
+      for(let n=0;n<1000&&!SIM.holgerAvailable(other);n++)SIM.update(other,.1);
+      other.memory.bonds.holger.visits=2;CAST.holgerIntroduction=packet.slice().reverse();
+      if(!SIM.startHolger(other)||!other.moment.lines.find(l=>l.id==='sign').text.includes('properly said hello'))throw Error('variation follows position');
+      CAST.holgerIntroduction=packet;
+    `);
+  });
   await test('save transfer validates before replacement and preserves pending writes on failure', () => {
     const b=boot();
     b.run(`

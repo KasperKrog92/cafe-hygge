@@ -79,8 +79,11 @@ direction into one complete near-term experience, delivered in reviewable passes
 
 The current status/next task lives here; the brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs.
-Build only the next requested pass. General conversation extraction belongs
-immediately before new multi-scene writing, with old behavior verified first.
+Build only the next requested pass. Stable conversation preparation shipped
+11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
+Keira and Tomas share saved-node resumption. Existing dialogue and choices are
+unchanged. The old conversation/UI checks passed before extraction; new writing
+can reuse this small boundary without a new dialogue engine.
 Save export/import shipped on 11 September 2026: Settings downloads a JSON copy
 and validates/migrates an uploaded save before explicit replacement. Invalid
 files and failed writes preserve the current café; sound preferences stay local.

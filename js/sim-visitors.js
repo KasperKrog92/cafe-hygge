@@ -20,25 +20,22 @@
     const a=SIM.visitorInvites(w).find(a=>a.visitorId===id);if(!a)return false;
     const lines=CAST.visitors[id].hello.map(line=>Object.assign({},line));
     if(a.project==='mantel') {
-      lines[0].text="I'm Tomas. I've brought the mantel shelf. Shall we give those candles somewhere to stand?";
-      lines[2].text="A shelf needs to look as though it's always belonged there. That's the part I like.";
+      lines.find(line=>line.id==='name').text="I'm Tomas. I've brought the mantel shelf. Shall we give those candles somewhere to stand?";
+      lines.find(line=>line.id==='precise').text="A shelf needs to look as though it's always belonged there. That's the part I like.";
     }
     if(a.social || a.shelfDelivery) {
-      if(a.social)lines[0].text=CAST.visitors[id].later;
-      else lines[0].text="The little shelves are here. I'm Keira. Is this a good place to set them down?";
+      if(a.social)lines.find(line=>line.id==='name').text=CAST.visitors[id].later;
+      else lines.find(line=>line.id==='name').text="The little shelves are here. I'm Keira. Is this a good place to set them down?";
       if(id==='keira') {
-        lines[1].text="I'm Lunafreya. It's good to have a moment to say hello.";
-        lines[2].text="I spend so much time bringing things through doors, I forget I can just walk in.";
+        lines.find(line=>line.id==='place').text="I'm Lunafreya. It's good to have a moment to say hello.";
+        lines.find(line=>line.id==='practical').text="I spend so much time bringing things through doors, I forget I can just walk in.";
       } else {
-        lines[1].text="I'm Lunafreya. It's good to see you with a moment to spare.";
-        lines[4].text="You're welcome. I can stop for a moment. No tools today.";
+        lines.find(line=>line.id==='view').text="I'm Lunafreya. It's good to see you with a moment to spare.";
+        lines.find(line=>line.id==='welcome').text="You're welcome. I can stop for a moment. No tools today.";
         lines.find(line=>line.id==='return').text="I can do that. A cupboard report, with my coffee.";
       }
     }
-    let index=0;while(index<lines.length && w.memory.flags[id+'-hello-'+lines[index].id])index++;
-    if(index===lines.length)return false;
-    if(!SIM.beginMoment(w,lines,a,function(){w.memory.flags[id+'-introduced']=true;}))return false;
-    w.moment.visitor=id;w.moment.index=index;return true;
+    return SIM.beginSavedMoment(w,lines,a,id+'-hello-',function(){w.memory.flags[id+'-introduced']=true;});
   };
   function exit(w,a,dt) {
     if(a.shelfDelivery && a.shelfLift>0) {

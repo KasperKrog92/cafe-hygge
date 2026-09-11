@@ -209,8 +209,11 @@ or replacement when the feature supports them.
 
 ### 3. Stabilize saved meaning before large story and routine edits
 
-Holger's introduction currently records positional line flags such as
-`holger-introduction-line-6`. Job progress uses numeric steps, and lifecycle
+Update 11 September: Holger's introduction now records semantic node flags;
+v14 migrates old positional flags such as `holger-introduction-line-6` through
+a fixed historical mapping. Saved Holger/Gerda/visitor conversations share the
+resume/acknowledgement boundary, and contextual variations target node IDs.
+Job progress still uses numeric steps, and lifecycle
 checkpoints include task positions and routes. Those are workable for the current
 fixed sequence; inserting/reordering earlier content can change what an old
 cursor means even when the JSON remains valid.
@@ -223,8 +226,8 @@ character's display name: the preserved artist ID is intentional compatibility.
 
 The biggest production files are `sim-characters.js` (1,654 baseline lines) and
 `sim-core.js` (1,499). Their size alone is not a failure, but their responsibilities
-matter. Extract service/task ownership before hiring help and extract general
-conversation execution before adding many stories. Follow the successful earlier
+matter. Extract service/task ownership before hiring help; the small shared
+saved-conversation boundary is now ready for later stories. Follow the successful earlier
 shop-lifecycle extraction: preserve behavior and pass the old suite before
 adding the next feature. Small JSDoc contracts and readable multi-line state
 transitions will help agents more immediately than a compulsory TypeScript or

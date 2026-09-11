@@ -409,28 +409,28 @@
     Kasper:{pitch:180,filter:690,pace:1.02},Freya:{pitch:200,filter:650,pace:1.05},
     Keira:{pitch:215,filter:760,pace:.98},Tomas:{pitch:165,filter:640,pace:1.08}};
   CAST.holgerIntroduction = [
-    {speaker:'Holger', text:"Good morning. I hoped that sign meant what I thought it meant."},
-    {speaker:'Lunafreya', text:"It does. A café. As of about a minute ago."},
-    {speaker:'Holger', text:"Then my timing has improved since retirement. I'm Holger. I live two doors along."},
-    {speaker:'Lunafreya', text:"Lunafreya. It's lovely to meet you. You're my first customer."},
-    {speaker:'Holger', text:"Well, that's a responsibility. One espresso, please. And no hurry on my account."},
-    {speaker:'Holger', text:"What brought you to this little place? If you don't mind my asking."},
-    {speaker:'Lunafreya', text:'I think…', choices:[
+    {id:'sign',speaker:'Holger', text:"Good morning. I hoped that sign meant what I thought it meant."},
+    {id:'opening',speaker:'Lunafreya', text:"It does. A café. As of about a minute ago."},
+    {id:'neighbour',speaker:'Holger', text:"Then my timing has improved since retirement. I'm Holger. I live two doors along."},
+    {id:'luna-name',speaker:'Lunafreya', text:"Lunafreya. It's lovely to meet you. You're my first customer."},
+    {id:'espresso',speaker:'Holger', text:"Well, that's a responsibility. One espresso, please. And no hurry on my account."},
+    {id:'why-cafe',speaker:'Holger', text:"What brought you to this little place? If you don't mind my asking."},
+    {id:'beginning',speaker:'Lunafreya', text:'I think…', choices:[
       {text:"I've wanted a place where people can feel at home.", flag:'luna-beginning-belonging', reply:"Then you've started well. You said hello before you asked what I wanted."},
       {text:"I needed a new beginning. Something of my own.", flag:'luna-beginning-new-start', reply:"A beginning of your own. Yes. You needn't tell me what came before it."}
     ]},
-    {speaker:'Holger', text:"I spent thirty years at sea. On my first crossing, I polished the same brass handle six times. Couldn't think what else to do with my hands."},
-    {speaker:'Lunafreya', text:"I've rearranged those cups three times already."},
-    {speaker:'Holger', text:"Then you're ahead of me. It took me a week to admit I was nervous."},
-    {speaker:'Lunafreya', text:'Looking around, I keep thinking…', choices:[
+    {id:'sea-nerves',speaker:'Holger', text:"I spent thirty years at sea. On my first crossing, I polished the same brass handle six times. Couldn't think what else to do with my hands."},
+    {id:'cups',speaker:'Lunafreya', text:"I've rearranged those cups three times already."},
+    {id:'reassurance',speaker:'Holger', text:"Then you're ahead of me. It took me a week to admit I was nervous."},
+    {id:'hope',speaker:'Lunafreya', text:'Looking around, I keep thinking…', choices:[
       {text:"I'd like to make a quiet corner for books someday.", flag:'luna-cafe-books', reply:"I've a few books that could use an outing. When you're ready, we can find them a corner."},
       {text:"I'd like to learn everyone's names first.", flag:'luna-cafe-neighbours', reply:"Start with mine. The rest will come in their own time. There are some good people on this street."}
     ]},
-    {speaker:'Holger', text:"There was a little galley table we always crowded around. Terrible coffee. Somehow nobody wanted to leave."},
-    {speaker:'Lunafreya', text:"Do you miss it?"},
-    {speaker:'Holger', text:"Some of the voices. More than the sea, these days."},
-    {speaker:'Holger', text:"But listen to me. First customer, already keeping you talking. I'm very glad you've opened, Lunafreya."},
-    {speaker:'Lunafreya', text:"I'm glad you came in, Holger."}
+    {id:'galley',speaker:'Holger', text:"There was a little galley table we always crowded around. Terrible coffee. Somehow nobody wanted to leave."},
+    {id:'miss-sea',speaker:'Lunafreya', text:"Do you miss it?"},
+    {id:'voices',speaker:'Holger', text:"Some of the voices. More than the sea, these days."},
+    {id:'welcome',speaker:'Holger', text:"But listen to me. First customer, already keeping you talking. I'm very glad you've opened, Lunafreya."},
+    {id:'farewell',speaker:'Lunafreya', text:"I'm glad you came in, Holger."}
   ];
 })();
 

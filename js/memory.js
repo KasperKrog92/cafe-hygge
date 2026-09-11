@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 13;
+  const KEY = 'cafe-hygge-save', VERSION = 14;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -244,6 +244,21 @@
     s.life.openSeconds=Math.min(11700,s.life.furniture['full-counter'] ?
       Math.max(5,s.life.daysCompleted)*780 : s.life.daysCompleted ?
       240+(s.life.daysCompleted-1)*780 : 0);
+    return s;
+  }, 13: function(s) {
+    createCodec(13, {}).validate(s);
+    s.version=14;
+    // Frozen v13 order. Never derive historical line meanings from CAST:
+    // future writing may reorder or insert nodes in the live packet.
+    ['sign','opening','neighbour','luna-name','espresso','why-cafe','beginning',
+      'sea-nerves','cups','reassurance','hope','galley','miss-sea','voices','welcome','farewell']
+      .forEach(function(id,index) {
+        const old='holger-introduction-line-'+index, key='holger-introduction-node-'+id;
+        if(own(s.flags,old)) {
+          s.flags[key]=s.flags[key]===true || s.flags[old];
+          delete s.flags[old];
+        }
+      });
     return s;
   } });
   MEMORY.freshHomeStory=freshHomeStory;

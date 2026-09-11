@@ -34,11 +34,9 @@
       lines.find(l=>l.id==='hearth-reply').text="I'm glad it's ready. A warm window and a little fire. That sounds like a good afternoon.";
     }
     if(part==='hello' && w.memory.bonds.gerda && (w.memory.bonds.gerda.visits||0)>1)
-      lines[0].text="I've been meaning to say a proper hello. I'm Gerda. That clear window caught my eye today.";
+      lines.find(line=>line.id==='name').text="I've been meaning to say a proper hello. I'm Gerda. That clear window caught my eye today.";
     const prefix='gerda-'+part+'-',f=w.memory.flags;
-    let index=0;while(index<lines.length && f[prefix+lines[index].id])index++;
-    if(index===lines.length)return false;
-    if(!SIM.beginMoment(w,lines,p,function() {
+    if(!SIM.beginSavedMoment(w,lines,p,prefix,function() {
       if(part==='hello'||part==='hearth')f['fireplace-unlocked']=true;
       if(part==='thanks')f['gerda-window-thanked']=true;
       else if(part==='hearth')return;
@@ -54,7 +52,7 @@
         }
       }
     }))return false;
-    w.moment.index=index;w.moment.memoryPrefix=prefix;return true;
+    return true;
   };
   // Accepted gift placement is ordinary work. Each pillow saves separately;
   // reload repeats only the unfinished hand action, never a completed placement.

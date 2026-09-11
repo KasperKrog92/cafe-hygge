@@ -101,7 +101,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (v13, migrated through v1–v12) contains `mode`, integer `savings`, `hour`,
+`memory.life` (schema v14, unchanged from v13) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `homeDinner: {time,done}`, `daysCompleted`, `openSeconds` (0–11700, saved active service time for popularity), `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -309,7 +309,9 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v13; the v1/v2 migrations retain story history and apartment/plant progress. Each migration
+  integer versions reach the simulation. The schema is v14; v13 → v14 maps
+  Holger's numeric acknowledgements to frozen semantic node IDs, preserving
+  choices and completion. The v1/v2 migrations retain story history and apartment/plant progress. Each migration
   must explicitly advance one version; no missing step is skipped.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
@@ -318,7 +320,7 @@ the bubble system, and the one click handler.
   errors, including rejected persistence promises. Invalid/unsupported development
   saves can be replaced with a fresh café under the owner's current direction.
   Bump `MEMORY.VERSION` **and** add a migration step when the shape changes.
-  Save transfer (11 September) keeps schema v13: `exportText()` encodes current
+  Save transfer (11 September) uses the current codec: `exportText()` encodes current
   memory; `prepareImport(raw)` strictly parses, migrates and validates JSON up
   to 1 MiB (also accepting a UTF-8 BOM). Unlike boot decoding, it never falls
   back to a fresh café. `importText(raw)` writes validated bytes before swapping
@@ -595,8 +597,9 @@ Unfinished arrivals can return after closing. Closing waits for actual exits.
 The original visitor release kept v8: existing extensible boolean flags store acknowledged node
 IDs and completion, as for Holger. No field or project phase was added, and
 legacy arrived/working/installed records preserve exact step/time and ownership.
-Holger's positional flags and choices are unchanged. The shared conversation
-advance hook records visitor nodes immediately; ordinary leave/return restores
+Visitor node flags and all choice flags remain unchanged; v14 separately migrates
+Holger's former positional flags. `SIM.beginSavedMoment` and the shared conversation
+advance hook resume and record named nodes immediately; ordinary leave/return restores
 Lunafreya's interrupted path and pose. No introduction gates a job. Expanded
 hellos append stable nodes after the original five (17 Keira lines, 19 Tomas);
 the existing completion flag keeps finished older hellos finished.

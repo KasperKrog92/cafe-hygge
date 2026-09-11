@@ -1,7 +1,6 @@
 /* Café Hygge — attended conversations, shared by neighbours and story arcs. */
 (function () {
   'use strict';
-  const prefix='holger-introduction-line-';
   SIM.holgerRequired=function(w) {
     return w.memory.life.firstOpening.step===12 && !w.memory.life.furniture['full-counter'] &&
       !w.memory.flags['holger-introduced'];
@@ -16,6 +15,24 @@
     w.moment={lines:lines,index:0,owner:owner,finish:finish,phase:'waiting',visible:0,clock:0,syllable:0};
     if(w.barista.state==='idle' && !startApproach(w)){w.moment=null;return false;}
     w.activeCaption=null; w.captionQueue=[];
+    return true;
+  };
+  function unreadIndex(w,lines,prefix,index) {
+    while(index<lines.length && w.memory.flags[prefix+lines[index].id])index++;
+    return index;
+  }
+  // Prefix is the saved scene namespace; node IDs and choice flags are
+  // authored identities, never positions. Unsaved arc beats keep beginMoment.
+  SIM.beginSavedMoment=function(w,lines,owner,prefix,finish) {
+    const ids=new Set();
+    lines.forEach(function(line) {
+      if(!prefix || typeof line.id!=='string' || !line.id || ids.has(line.id))
+        throw new Error('Saved conversation needs unique node IDs');
+      ids.add(line.id);
+    });
+    const index=unreadIndex(w,lines,prefix,0);
+    if(index===lines.length || !SIM.beginMoment(w,lines,owner,finish))return false;
+    w.moment.index=index;w.moment.memoryPrefix=prefix;
     return true;
   };
   function startApproach(w) {
@@ -48,21 +65,17 @@
     if(!owner)return false;
     const lines=CAST.holgerIntroduction.map(line => Object.assign({},line));
     if(w.memory.bonds.holger && (w.memory.bonds.holger.visits||0)>1) {
-      lines[0].text="We've shared this room a few times now. I don't think we've properly said hello.";
-      lines[1].text="We haven't, have we? I'm glad you've come back.";
-      lines[3].text="Lunafreya. It's lovely to meet you properly.";
-      lines[14].text="But listen to me, keeping you talking. I'm very glad you've opened, Lunafreya.";
+      lines.find(line=>line.id==='sign').text="We've shared this room a few times now. I don't think we've properly said hello.";
+      lines.find(line=>line.id==='opening').text="We haven't, have we? I'm glad you've come back.";
+      lines.find(line=>line.id==='luna-name').text="Lunafreya. It's lovely to meet you properly.";
+      lines.find(line=>line.id==='welcome').text="But listen to me, keeping you talking. I'm very glad you've opened, Lunafreya.";
     }
-    if(owner.state==='seated')lines[4].text="It's good to have somewhere nearby for an espresso. And a little company.";
-    let index=0;
-    while(index<lines.length && w.memory.flags[prefix+index])index++;
-    index=Math.min(index,lines.length-1);
-    if(!SIM.beginMoment(w,lines,owner,function() {
+    if(owner.state==='seated')lines.find(line=>line.id==='espresso').text="It's good to have somewhere nearby for an espresso. And a little company.";
+    if(!SIM.beginSavedMoment(w,lines,owner,'holger-introduction-node-',function() {
       w.memory.flags['holger-introduced']=true;
       const b=w.memory.bonds.holger || (w.memory.bonds.holger={known:true,warmth:0});
       b.warmth=(b.warmth||0)+1;
     }))return false;
-    w.moment.index=index; w.moment.holger=true;
     w.memory.flags['holger-invitation-opened']=true;w.context.memory.saveNow();
     return true;
   };
@@ -90,15 +103,14 @@
     } else if(m.chosenSpeaking) {
       m.chosenSpeaking=false;
     } else {
-      if(m.holger)w.memory.flags[prefix+m.index]=true;
-      if(m.visitor)w.memory.flags[m.visitor+'-hello-'+m.lines[m.index].id]=true;
       if(m.memoryPrefix)w.memory.flags[m.memoryPrefix+m.lines[m.index].id]=true;
       m.index++;
+      if(m.memoryPrefix)m.index=unreadIndex(w,m.lines,m.memoryPrefix,m.index);
       if(m.index===m.lines.length) {m.finish();SIM.leaveMoment(w);}
     }
     m.visible=0;m.clock=0;m.syllable=0;
     w.context.memory.save();
-    if(m.visitor || m.holger || m.memoryPrefix)w.context.memory.saveNow();
+    if(m.memoryPrefix)w.context.memory.saveNow();
     return true;
   };
   SIM.leaveMoment=function(w) {

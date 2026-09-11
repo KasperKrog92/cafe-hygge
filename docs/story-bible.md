@@ -172,8 +172,12 @@ child or maritime disaster without a later, deliberate writing decision.
 | H4 — The voices at the table | Planned | Lunafreya may ask about someone he mentioned or simply keep him company. Let him decide how much to tell |
 | H5 — Being welcome, too | Planned | Lunafreya notices that he also needs encouragement. A reciprocal moment, not a rescue |
 
-H1 completes with `holger-introduced`. Completed line flags are
-`holger-introduction-line-N`; the two choice pairs above are mutually exclusive
+H1 completes with `holger-introduced`. Acknowledged node flags are
+`holger-introduction-node-ID` (since 11 September); IDs are `sign`, `opening`,
+`neighbour`, `luna-name`, `espresso`, `why-cafe`, `beginning`, `sea-nerves`,
+`cups`, `reassurance`, `hope`, `galley`, `miss-sea`, `voices`, `welcome`,
+and `farewell`. The v14 migration maps the old `holger-introduction-line-N`
+flags through the frozen original order. The two choice pairs above are mutually exclusive
 through the conversation API. The current answer is committed before its reply,
 so reload cannot choose a different answer or skip the acknowledgement.
 An already established café receives a “properly said hello” variation when

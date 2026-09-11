@@ -407,9 +407,21 @@ The camera eases closer once Lunafreya arrives;
 ordinary controls and speech icons recede. Each line waits for input, including
 while hidden or in Settings. `SIM.leaveMoment` cancels a queued invitation
 immediately, or returns Lunafreya before releasing service.
-Holger's cursor uses the existing boolean `flags` map; every acknowledged line
-and chosen answer saves, with completion and bond warmth awarded once. This
-adds story data, not a schema field, so the v6 codec requires no migration.
+Saved conversations use `SIM.beginSavedMoment(world, lines, owner, prefix, finish)`.
+The prefix identifies the saved scene; each line has a unique authored `id`.
+`prefix + id` in the existing boolean `flags` map records acknowledgement.
+Holger uses `holger-introduction-node-`, visitors retain `keira-hello-` and
+`tomas-hello-`, and Gerda retains `gerda-PART-`. The shared executor resumes at
+the first unacknowledged node and skips acknowledged nodes after each advance,
+so inserting or reordering writing does not replay prior acknowledgements.
+Every chosen answer saves before its reply; the existing choice flags remain
+its stable identity. Completion and bond warmth are awarded once. Save v14
+migrates Holger's historical numeric flags using a frozen v13 node mapping.
+Completed scenes stay complete, even if their packet later acquires new nodes.
+Keep IDs and choice flags when editing wording or order; changing their meaning
+requires an explicit migration. Contextual wording variations also target IDs.
+Unsaved arc-payoff packets keep `SIM.beginMoment` and their existing replay-until-
+completion contract; this pass does not convert first-morning/home routine steps.
 Reload restores a waiting invitation and the last unacknowledged line/reply.
 
 Existing Gerda/Nora/street-house payoffs now use this same attended moment
