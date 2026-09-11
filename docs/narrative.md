@@ -162,6 +162,15 @@ calendar.
 
 Audio settings persist separately as `cafe-hygge-audio` via `SND.save()`.
 
+**Settings → Keep your café** exports a dated JSON save or imports one from
+another browser (shipped 11 September 2026). Import previews completed days and
+savings and asks before replacing the current café. Cancel preserves it; invalid
+or unsupported files and failed writes never invoke the fresh-café fallback.
+Existing supported saves migrate normally. A successful replacement returns to
+the entry screen with progress retained and no added offline time. Sound
+preferences stay on the device. Recent save-write failures are shown when
+Settings opens, with export offered to retain the current in-memory progress.
+
 The owner's explicit **Settings → start over** action is the exception to
 preserving progress. A second confirmation explains that stories, relationships,
 savings and improvements in this browser will be erased permanently. Cancel
@@ -219,8 +228,9 @@ Non-negotiables for the save:
   purged after ~7 days without a visit. That is fine for a companion app; a lost
   save means a fresh café, never an error. The durability plan (request
   `navigator.storage.persist()`, graceful fresh-café fallback on any bad/missing
-  save, an install hint, and an export/import "copy your café") lives in
-  [roadmap.md](roadmap.md) → *Save durability*. **Cross-device cloud sync is not
+  save and an install hint) lives in
+  [roadmap.md](roadmap.md) → *Save durability*. Manual export/import is now
+  available in Settings. **Cross-device cloud sync is not
   pursued** — the owner does not want it and it is the one thing that would break
   the offline / `file://` / zero-services promise; the local durability above is
   the deliberate ceiling.

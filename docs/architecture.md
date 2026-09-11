@@ -318,6 +318,15 @@ the bubble system, and the one click handler.
   errors, including rejected persistence promises. Invalid/unsupported development
   saves can be replaced with a fresh café under the owner's current direction.
   Bump `MEMORY.VERSION` **and** add a migration step when the shape changes.
+  Save transfer (11 September) keeps schema v13: `exportText()` encodes current
+  memory; `prepareImport(raw)` strictly parses, migrates and validates JSON up
+  to 1 MiB (also accepting a UTF-8 BOM). Unlike boot decoding, it never falls
+  back to a fresh café. `importText(raw)` writes validated bytes before swapping
+  state or cancelling pending writes; a blocked write leaves both intact.
+  Browser ownership is checked again at replacement. Main stops the old world
+  and disables its writes before navigating to the ordinary entry screen.
+  Export refreshes the lifecycle checkpoint and downloads a JSON Blob; audio
+  preferences and transient guests are outside the file's persistent contract.
 - **Arc definitions** are pure data in `CAST.arcs` (an `owner` or a fixed
   `anchor`, `rows` café-day threshold — one number or one per `stages` —
   `glyph`, `beat`, `flag`, plus behavior fields). Multi-stage `beat`/`flag`

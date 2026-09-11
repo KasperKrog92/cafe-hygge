@@ -182,8 +182,11 @@ input:focus-visible { outline: 2px solid #e8b04a; outline-offset: 4px; }
 #settings h3 { font: normal 17px Georgia, serif; }
 .progress-settings p { margin-top: 5px; color: #c8ad86; font: 12px/1.5 Georgia, serif; }
 #settings #start-over { flex-shrink: 0; background: transparent; }
-#reset-confirmation { padding-top: 26px; }
-#reset-confirmation p { margin-top: 16px; font: 15px/1.65 Georgia, serif; }
+#reset-confirmation, #import-confirmation { padding-top: 26px; }
+#reset-confirmation p, #import-confirmation p { margin-top: 16px; font: 15px/1.65 Georgia, serif; }
+.save-settings { border-top: 1px solid #92714e66; margin-top: 22px; padding-top: 20px; }
+.save-settings p { margin-top: 8px; color: #c8ad86; font: 12px/1.5 Georgia, serif; }
+.save-actions { display: flex; gap: 10px; margin-top: 12px; }
 .reset-actions { display: flex; gap: 10px; margin-top: 26px; flex-wrap: wrap; }
 #settings .danger { color: #ffe1d1; background: #713e32; border-color: #b47c65; }
 #settings #setting-mute[aria-pressed="true"] { background: #d4b17b; color: #30271f; }

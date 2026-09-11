@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Café Hygge — a cozy idle café</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
-<link rel="stylesheet" href="style.css?v=visitors-20260908-1">
+<link rel="stylesheet" href="style.css?v=save-transfer-20260911-1">
 </head>
 <body>
 <div id="stage">
@@ -130,8 +130,22 @@
       <div class="sound-footer"><span>Sound preferences save automatically.</span><button id="reset-sound">restore sound defaults</button></div>
       <label class="weather-setting" for="setting-weather"><span>Allow rain &amp; storms <small>weather comes and goes at its own pace</small></span><input id="setting-weather" type="checkbox"></label>
       <label class="weather-setting" for="setting-instant"><span>Instant dialogue text <small>show each complete sentence without speaking sounds</small></span><input id="setting-instant" type="checkbox"></label>
+      <section class="save-settings" aria-labelledby="save-title">
+        <h3 id="save-title">Keep your café</h3>
+        <p>Save a copy of your café to keep or bring to another browser. Sound preferences stay on this device.</p>
+        <div class="save-actions"><button id="export-save">export save</button><button id="import-save">import save…</button></div>
+        <input id="save-file" type="file" accept=".json,application/json" hidden>
+        <p id="save-status" role="status" aria-live="polite"></p>
+      </section>
       <section class="progress-settings" aria-labelledby="progress-title"><div><h3 id="progress-title">A fresh beginning</h3><p>Erase your progress and open a new café.</p></div><button id="start-over">start over…</button></section>
     </div>
+    <section id="import-confirmation" hidden aria-labelledby="import-title">
+      <h3 id="import-title">Open this saved café?</h3>
+      <p id="import-summary"></p>
+      <p>This replaces your current café in this browser. Export your current save first if you want to keep it. Your sound preferences will stay.</p>
+      <p id="import-error" role="alert" hidden></p>
+      <div class="reset-actions"><button id="cancel-import">keep my café</button><button id="confirm-import">replace café &amp; open save</button></div>
+    </section>
     <section id="reset-confirmation" hidden aria-labelledby="reset-title">
       <h3 id="reset-title">Start a new café?</h3>
       <p>This erases your stories, relationships, savings and improvements in this browser. Lunafreya’s day will begin again.</p>
@@ -162,7 +176,7 @@
 <script src="js/scene-home.js?v=home-doors-20260908-1"></script>
 <script src="js/scene-intro.js?v=home-evening-20260907-1"></script>
 <script src="js/characters-roster.js?v=ambience-20260908-1"></script>
-<script src="js/memory.js?v=20260908-arrivals1"></script>
+<script src="js/memory.js?v=save-transfer-20260911-1"></script>
 <script src="js/sim-core.js?v=20260908-arrivals1"></script>
 <script src="js/sim-waterfront.js?v=ambience-20260908-1"></script>
 <script src="js/sim-patrons.js?v=20260908-arrivals1"></script>
@@ -175,6 +189,6 @@
 <script src="js/sim-visitors.js?v=visitor-customers-20260908-1"></script>
 <script src="js/sim-home.js?v=home-dinner-20260908-1"></script>
 <script src="js/dev.js?v=20260908-arrivals1"></script>
-<script src="js/main.js?v=skip-bedtime-20260908-1"></script>
+<script src="js/main.js?v=save-transfer-20260911-1"></script>
 </body>
 </html>

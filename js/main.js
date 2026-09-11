@@ -102,6 +102,10 @@
   const settings = document.getElementById('settings');
   const settingsMain = document.getElementById('settings-main');
   const resetConfirmation = document.getElementById('reset-confirmation');
+  const importConfirmation = document.getElementById('import-confirmation');
+  const saveFile = document.getElementById('save-file');
+  const saveStatus = document.getElementById('save-status');
+  let pendingImport = null, fileRead = 0;
   const settingMute = document.getElementById('setting-mute');
   const settingWeather = document.getElementById('setting-weather');
   const soundSliders = settings.querySelectorAll('[data-sound]');
@@ -283,15 +287,79 @@
     document.getElementById('reset-error').hidden = true;
     document.getElementById(show ? 'cancel-reset' : 'start-over').focus();
   }
+  function cancelImport() {
+    fileRead++; pendingImport = null; saveFile.value = '';
+    importConfirmation.hidden = true; settingsMain.hidden = false;
+    document.getElementById('import-save').focus();
+  }
+  document.getElementById('export-save').addEventListener('click', function () {
+    if (restarting || MEMORY.readOnly) return;
+    try {
+      SIM._.saveLife(world, 0);
+      const blob = new Blob([MEMORY.exportText()], {type:'application/json'});
+      const url = URL.createObjectURL(blob), link = document.createElement('a');
+      link.href = url; link.download = 'cafe-hygge-' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+      saveStatus.textContent = 'Save copy ready. Check your browser’s downloads.';
+    } catch (e) { saveStatus.textContent = 'The save copy could not be created. Your café is still here. Please try again.'; }
+  });
+  document.getElementById('import-save').addEventListener('click', function () {
+    saveFile.value = ''; saveFile.click();
+  });
+  saveFile.addEventListener('change', async function () {
+    const file = saveFile.files[0], request = ++fileRead;
+    if (!file || restarting || MEMORY.readOnly) return;
+    pendingImport = null;
+    try {
+      if (file.size > 1048576) throw new Error('file too large');
+      const raw = await file.text();
+      if (request !== fileRead || !settings.open) return;
+      const state = MEMORY.prepareImport(raw);
+      pendingImport = MEMORY.codec.encode(state);
+      document.getElementById('import-summary').textContent = file.name + ' — ' +
+        state.life.daysCompleted + ' café days completed, ' + state.life.savings + ' coins.';
+      document.getElementById('import-error').hidden = true;
+      settingsMain.hidden = true; resetConfirmation.hidden = true; importConfirmation.hidden = false;
+      document.getElementById('cancel-import').focus();
+    } catch (e) {
+      if (request !== fileRead || !settings.open) return;
+      saveStatus.textContent = 'This file could not be opened as a supported Café Hygge save. Your current café has not changed.';
+    }
+  });
+  document.getElementById('cancel-import').addEventListener('click', cancelImport);
+  document.getElementById('confirm-import').addEventListener('click', function () {
+    if (!pendingImport || restarting || MEMORY.readOnly) return;
+    try { MEMORY.importText(pendingImport); }
+    catch (e) {
+      const error = document.getElementById('import-error');
+      error.textContent = 'Your browser could not import this save. Your current café has not been replaced. Please try again.';
+      error.hidden = false; return;
+    }
+    // The old world's reference must never overwrite the imported bytes,
+    // including through timers or visibility/pagehide handlers on navigation.
+    restarting = true; MEMORY.readOnly = true;
+    try { sessionStorage.setItem('cafe-hygge-imported', 'yes'); } catch (e) { /* optional feedback */ }
+    location.replace(location.pathname);
+  });
+  try {
+    if (sessionStorage.getItem('cafe-hygge-imported')) {
+      sessionStorage.removeItem('cafe-hygge-imported');
+      document.querySelector('.overlay-card .sub').textContent = 'your saved café is ready — welcome back';
+      saveStatus.textContent = 'Your save was imported successfully.';
+    }
+  } catch (e) { /* Saving does not depend on session storage. */ }
   btnSettings.addEventListener('click', function () {
     restoreBurstMute(); refreshButtons();
-    settingsMain.hidden = false; resetConfirmation.hidden = true;
+    settingsMain.hidden = false; resetConfirmation.hidden = true; importConfirmation.hidden = true;
+    if (MEMORY.status.writeError) saveStatus.textContent = 'Your browser could not save recent progress. Export a copy to keep your café.';
     settings.showModal();
     world.introModal=true;SND.stopDialogue();
   });
   document.getElementById('close-settings').addEventListener('click', function () { settings.close(); });
-  settings.addEventListener('close', function () { world.introModal=false;pokeControls(); btnSettings.focus(); });
+  settings.addEventListener('close', function () { fileRead++; pendingImport=null;world.introModal=false;pokeControls(); btnSettings.focus(); });
   settings.addEventListener('cancel', function (e) {
+    if (!importConfirmation.hidden) { e.preventDefault(); cancelImport(); return; }
     if (!resetConfirmation.hidden) { e.preventDefault(); showResetConfirmation(false); }
   });
   soundSliders.forEach(function (slider) {

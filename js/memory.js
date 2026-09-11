@@ -281,6 +281,25 @@
     store.save = function () {
       if (storage && timer === null) timer = schedule(store.saveNow, 400);
     };
+    // File imports are strict: the boot decoder's fresh-café fallback must
+    // never turn a bad backup into a replacement save.
+    store.exportText = function () { return codec.encode(store.state); };
+    store.prepareImport = function (raw) {
+      requireShape(typeof raw === 'string' && raw.length <= 1048576, 'invalid save file size');
+      return codec.migrate(JSON.parse(raw.replace(/^\uFEFF/, '')));
+    };
+    store.importText = function (raw) {
+      const next = store.prepareImport(raw), bytes = codec.encode(next);
+      if (o.canWrite && !o.canWrite()) throw new Error('save owned by another tab');
+      // localStorage.setItem is atomic. Keep the live state and its pending
+      // save intact if validation or persistence fails.
+      try { if (storage) storage.setItem(KEY, bytes); }
+      catch (e) { store.status.writeError = String(e.message || e); throw e; }
+      cancelPending();
+      store.state = next;
+      store.status.loadError = null; store.status.writeError = null;
+      return next;
+    };
     store.stamp = function () { if (storage) store.state.lastSeen = now(); };
     store.requestPersist = function () {
       if (!o.persist) return;
@@ -304,6 +323,7 @@
   };
 
   const browser = MEMORY.createStore({
+    canWrite: function () { return !MEMORY.readOnly; },
     now: function () { return Date.now(); },
     storage: {
       getItem: function (key) { return localStorage.getItem(key); },

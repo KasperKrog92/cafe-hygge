@@ -238,6 +238,22 @@ compact desktop scrolling and a clean audit. It exports settings/confirmation
 screenshots and closes its disposable session. Pair it with the normal-entry
 smoke test when changing audio or the main UI loop.
 
+**Save transfer (11 September):** `node tools/test-save.js` includes strict
+import validation, legacy migration, exact progress round trips, blocked writes,
+read-only ownership and pending-save cancellation. Run
+`./tools/verify-save-transfer.ps1` for the download event and exported Blob bytes,
+real file upload, preview/cancel/Escape, failed storage, successful replacement,
+reload without stale writes, retained sound settings, compact desktop controls
+and zero-problem audit. Captures are in `.art-review/save-transfer/`; the runner
+confirms disposable-session cleanup. The Windows browser CLI currently reports
+a saved download path without copying the file, so the test also reads the
+actual Blob sent to that download and uses its bytes for the upload round trip.
+Verified on 11 September: all 22 Node save/isolation groups, transfer UI and
+existing Settings suites passed; normal entry/audio completed a real-time
+cappuccino cycle, night rendering and a zero-problem audit. Browser sessions
+were closed. Verification used desktop Chromium; Safari was not run here.
+The Settings reset assertions now match the shipped 90-coin starting savings.
+
 The `life` suite covers three nights per mode (idle automatic, game waits for sleep), migration, mode
 switching, one-time purchase and restoration at every plant stage. For actual
 page reloads, planner/sleep interactions and two-tab ownership handoff, run:

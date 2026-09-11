@@ -206,7 +206,7 @@ staying zero-dependency and offline:
 - **Encourage install / Add to Home Screen.** Installed-web-app storage is
   treated far more durably and is the best mitigation for Safari's 7-day purge.
   Worth a gentle, dismissible hint at most — never a nag.
-- **Export / import a save ("copy your café").** A tiny JSON download and
+- **Export / import a save ("copy your café") — shipped 11 September 2026.** Settings provides a JSON download and
   re-import: manual insurance the reader controls, and the hand-carry path to a
   new browser or machine. Pure data, no backend, no build.
 - **Known limitation, stated honestly.** On Apple platforms a reader away for

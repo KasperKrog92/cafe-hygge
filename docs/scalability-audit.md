@@ -237,10 +237,10 @@ Web Locks ownership are good foundations. Tests confirm actual reloads and a
 two-tab handoff. Ordinary transient guests are deliberately reconstructed;
 persistent projects, history and choices are the continuity contract.
 
-There is still no export/import or recoverable previous-good save, and write
-errors are primarily visible to developers. Add a quiet save export/import flow,
-preserve recoverable valid bytes on a future migration failure, and make failure
-to save discoverable. Test malformed imports and blocked storage. This is a
+Update 11 September: Settings export/import is shipped, including malformed-file
+and blocked-storage checks, explicit replacement confirmation and a discoverable
+recent-write error in Settings. Recoverable previous-good saves and preserving
+valid bytes on a future migration failure remain deferred. This is a
 release preparation task, not a reason to block development under the owner's
 current permission to replace unsupported development saves.
 

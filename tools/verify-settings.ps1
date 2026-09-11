@@ -81,7 +81,7 @@ try {
   BrowserCommand @('wait','--fn',"!!window.__world && !location.search")
   Evaluate @'
 (() => {
-  if(MEMORY.state.life.savings!==30||MEMORY.state.life.plant.stage!=='available'||MEMORY.state.flags.settingsTest)throw Error('old progress survived');
+  if(MEMORY.state.life.savings!==90||MEMORY.state.life.plant.stage!=='available'||MEMORY.state.flags.settingsTest)throw Error('old progress survived');
   if(SND.settings.cafeVolume!==.36)throw Error('reset erased audio preferences');
   if(localStorage.getItem('unrelated-settings-test')!=='keep')throw Error('unrelated storage erased');
   if(document.querySelector('#overlay').classList.contains('gone'))throw Error('fresh entry missing');
@@ -92,7 +92,7 @@ try {
   Evaluate "if(!SND.ready())throw Error('fresh audio unavailable');true"
   BrowserCommand @('open',$Url)
   BrowserCommand @('wait','--fn','!!window.__world')
-  Evaluate "if(MEMORY.state.life.savings!==30||MEMORY.state.flags.settingsTest)throw Error('stale save returned');const problems=__dev.audit();if(problems.length)throw Error(problems.join(';'));true"
+  Evaluate "if(MEMORY.state.life.savings!==90||MEMORY.state.flags.settingsTest)throw Error('stale save returned');const problems=__dev.audit();if(problems.length)throw Error(problems.join(';'));true"
   # Check a compact desktop window still scrolls to the destructive action.
   BrowserCommand @('set','viewport','1280','720')
   BrowserCommand @('click','#cafe')

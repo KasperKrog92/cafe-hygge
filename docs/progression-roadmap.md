@@ -81,8 +81,11 @@ The current status/next task lives here; the brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs.
 Build only the next requested pass. General conversation extraction belongs
 immediately before new multi-scene writing, with old behavior verified first.
-Verification automation and save export/import remain preparation for substantial
-public play; helper scheduling and shared households stay at their later boundaries.
+Save export/import shipped on 11 September 2026: Settings downloads a JSON copy
+and validates/migrates an uploaded save before explicit replacement. Invalid
+files and failed writes preserve the current café; sound preferences stay local.
+Automatic recovery copies remain deferred. Helper scheduling and shared
+households stay at their later boundaries.
 
 ## Direction from the owner
 
@@ -456,8 +459,8 @@ direction. A large catalogue or a redesigned whole café would hide that test.
   availability must read the same installed state.
 - Extend `MEMORY` with versioned migrations for savings, owned improvements,
   partial jobs, day/home phase and the evening plan. Both modes use that state.
-  Save important transitions atomically and flush on exit. Add export/import
-  before asking players to invest substantially in a growing home and café.
+  Save important transitions atomically and flush on exit. Settings export/import
+  now provides manual backups and transfer before substantial long-term play.
 - Preserve current users' developed cafés, story marks and relationships by
   migrating them to equivalent owned furnishings. Starting small must be an
   explicit new-life choice, never an update that strips an existing save.

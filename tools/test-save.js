@@ -32,6 +32,39 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
+  await test('save transfer validates before replacement and preserves pending writes on failure', () => {
+    const b=boot();
+    b.run(`
+      const original=MEMORY.state;
+      original.life.savings=173;original.flags['holger-intro-complete']=true;
+      original.life.projects.table={stage:'working',step:2,time:4.5};
+      original.arcs.test={stage:1,progress:2,pendingBeat:'finished'};
+      original.bonds.holger={known:true,warmth:3,visits:2};
+      MEMORY.saveNow();MEMORY.save();
+      const exported=MEMORY.exportText(), bytes=localStorage.getItem('cafe-hygge-save');
+      const dest=MEMORY.createStore();dest.importText(exported);
+      if(dest.exportText()!==exported)throw Error('round trip changed progress');
+      for(const raw of ['', 'null', '{}', '{', JSON.stringify({...original,version:999}),
+        JSON.stringify({...original,life:{...original.life,savings:-1}}), ' '.repeat(1048577)]) {
+        let rejected=false;try{MEMORY.importText(raw)}catch(e){rejected=true}
+        if(!rejected||MEMORY.state!==original||localStorage.getItem('cafe-hygge-save')!==bytes)
+          throw Error('invalid import replaced current cafe');
+      }
+      const legacy=JSON.parse(exported);legacy.version=12;delete legacy.life.openSeconds;
+      if(MEMORY.prepareImport(JSON.stringify(legacy)).version!==MEMORY.VERSION)throw Error('legacy import failed');
+      if(MEMORY.prepareImport('\\uFEFF'+exported).life.savings!==173)throw Error('BOM failed');
+      const set=localStorage.setItem;localStorage.setItem=()=>{throw Error('blocked')};
+      let failed=false;try{MEMORY.importText(exported)}catch(e){failed=true}
+      localStorage.setItem=set;
+      if(!failed||MEMORY.state!==original||!MEMORY.status.writeError)throw Error('blocked import lost state');
+      MEMORY.readOnly=true;failed=false;try{MEMORY.importText(exported)}catch(e){failed=true}
+      MEMORY.readOnly=false;if(!failed)throw Error('read-only import succeeded');
+    `);
+    assert.equal(b.timers.size,1,'failure should retain pending save');
+    b.run(`MEMORY.importText(MEMORY.exportText());`);
+    assert.equal(b.timers.size,0,'successful import cancels pending save');
+    assert.equal(b.run('MEMORY.status.writeError'),null);
+  });
   await test('v13 preserves history and migrates saved service time without offline popularity', () => {
     const b=boot();b.run(`
       for(const full of [false,true])for(const days of [0,1,5,20]) {
