@@ -10,7 +10,7 @@ function Eval-Room([string]$Code) {
  return $result
 }
 try {
- & $browser --session $testSession --init-script (Join-Path $PSScriptRoot 'life-browser-init.js') open 'http://127.0.0.1:8137/?dev=life-test'
+ & $browser --session $testSession --init-script (Join-Path $PSScriptRoot 'life-browser-init.js') open 'http://localhost:8137/?dev=life-test'
  if($LASTEXITCODE -ne 0){throw 'Launch failed'}
  & $browser --session $testSession set viewport 1440 810
  if($LASTEXITCODE -ne 0){throw 'Viewport failed'}

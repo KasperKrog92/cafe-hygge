@@ -1,0 +1,9 @@
+{
+  "name": "cafe-hygge-dev-tools",
+  "private": true,
+  "description": "Development-only verification tooling. The shipped café has no dependencies.",
+  "engines": { "node": ">=24" },
+  "devDependencies": {
+    "playwright-core": "1.63.0"
+  }
+}

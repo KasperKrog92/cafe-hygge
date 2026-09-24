@@ -1,4 +1,4 @@
-param([string]$Url='http://127.0.0.1:8137/',[string]$Label='life-reloads')
+param([string]$Url='http://localhost:8137/',[string]$Label='life-reloads')
 $ErrorActionPreference='Stop'
 $OutputEncoding=[Text.UTF8Encoding]::new($false)
 $browser=(Get-Command agent-browser.cmd).Source

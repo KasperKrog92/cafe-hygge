@@ -1,4 +1,4 @@
-﻿param([string]$Url='http://127.0.0.1:8137/',[string]$Label='visitors-ui')
+﻿param([string]$Url='http://localhost:8137/',[string]$Label='visitors-ui')
 $ErrorActionPreference='Stop'
 $OutputEncoding=[Text.UTF8Encoding]::new($false)
 $browser=(Get-Command agent-browser.cmd).Source
