@@ -79,16 +79,29 @@ async function runUi(page, base, name, out) {
     // A script that runs before every page load in this flow (e.g. tools/life-browser-init.js).
     init: function (file) { return page.context().addInitScript({ path: path.join(__dirname, file) }); },
     // Open a page of this checkout and wait for the world (path may carry a query).
+    // Poll on a timer: ?life-test pages stub requestAnimationFrame, which
+    // Playwright's default frame-based polling would wait on forever.
     open: async function (p) {
       await page.goto(base + (p || '/'));
-      await page.waitForFunction('!!window.__world', null, { timeout: 30000 });
+      await page.waitForFunction('!!window.__world', null, { timeout: 30000, polling: 100 });
     },
     reload: async function () {
       await page.reload();
-      await page.waitForFunction('!!window.__world', null, { timeout: 30000 });
+      await page.waitForFunction('!!window.__world', null, { timeout: 30000, polling: 100 });
     },
     eval: function (fn, arg) { return page.evaluate(fn, arg); },
-    viewport: function (w, h) { return page.setViewportSize({ width: w, height: h }); },
+    // Resize, then wait for the page's own resize handler (main.js refits and
+    // clears the canvas there); a frame drawn before it would be wiped.
+    viewport: async function (w, h) {
+      const changing = await page.evaluate(size => {
+        if (innerWidth === size[0] && innerHeight === size[1]) return false;
+        window.__runnerResized = new Promise(resolve => addEventListener('resize', resolve, { once: true }));
+        return true;
+      }, [w, h]);
+      await page.setViewportSize({ width: w, height: h });
+      if (changing) await page.evaluate(() => Promise.race([window.__runnerResized,
+        new Promise((resolve, reject) => setTimeout(() => reject(Error('resize event never arrived')), 5000))]));
+    },
     shot: function (label) { return page.screenshot({ path: path.join(out, fileName(name) + '-' + label + '.png') }); }
   };
   try {
