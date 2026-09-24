@@ -163,35 +163,66 @@
     [-1,1].forEach(side=>w.seats.push({x:t.x+side*L.stoolDX,y:t.y+L.stoolDY+4,facing:-side,
       table:ti,side,armchair:false,taken:false,furniture:t.furniture}));
   }
+  // A finished hand action puts its work in place at once: the cat is on its
+  // cushion and the table stands while her remaining words are read.
+  function finishChore(w,step) {
+    if(step.install)w.memory.life.furniture[step.install]=true;
+    if(step.table!==undefined)installFirstTable(w,step.table);
+    if(step.install==='cat-corner') {
+      w.shop.carryingCat=false;w.barista.holding=null;
+      w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;w.cat.target=L.catSpots.find(s=>s.id==='cushion');
+      w.cat.state='sleep';w.cat.surface='floor';w.cat.path=null;
+    }
+    if(step.install==='cake-stand')w.shop.stocked=true;
+    if(step.install)R.sound.softThump();
+  }
+  // The first day passes with the work: morning as she carries the cat in,
+  // late afternoon as the sign goes out. Only hand actions move the clock, so
+  // walks, words and pauses hold the light and opening needs no jump.
+  const OPEN_HOUR=17.5;
+  function setupHour(w) {
+    const f=w.memory.life.firstOpening,i=w.memory.life.intro,fin=SIM.introFinale||[];
+    const sum=list=>list.reduce((n,s)=>n+s.duration,0),last=FIRST.length-1;
+    let done=sum(FIRST.slice(0,Math.min(f.step,last)));
+    if(f.step<last)done+=f.time;
+    else if(i.finale<fin.length)done+=sum(fin.slice(0,i.finale))+Math.min(i.time,fin[i.finale].duration);
+    else done+=sum(fin)+f.time;
+    return R.START_HOUR+(OPEN_HOUR-R.START_HOUR)*Math.min(1,done/(sum(FIRST)+sum(fin)));
+  }
+  R.followSetupClock = function(w) {
+    if(w.shop.phase!=='settling')return;
+    w.clockOffset+=(setupHour(w)-w.hour)/24*R.DAY_SECONDS;R.updateClock(w,0);
+  };
   R.updateFirstOpening = function(w,dt) {
     const f=w.memory.life.firstOpening,b=w.barista,step=FIRST[f.step];
     if(!step)return;
     if (R.updateIntro) R.updateIntro(w,dt);
     if (f.step===11 && R.updateIntroFinale && !R.updateIntroFinale(w,dt)) return;
     b.animT+=dt;w.cat.animT+=dt;
-    if(!b.path) { R.makePath(b,step.at.x,step.at.y);b.holding=step.carry||null; }
+    // She has only just come in: the door swings shut behind her.
+    if(f.step===0 && w.door.open>0 && Math.hypot(b.x-L.doorSpot.x,b.y-L.doorSpot.y)>12) {
+      w.door.open=Math.max(0,w.door.open-dt*1.5);
+      if(!w.door.open)R.sound.doorClose();
+    }
+    const carried=step.carry==='cat'?(w.shop.carryingCat?'cat':null):step.carry||null;
+    if(!b.path) { R.makePath(b,step.at.x,step.at.y);b.holding=carried; }
     if(b.path.length) { R.walker(b,dt);return; }
-    b.holding=step.carry==='cat'?'cat':null;b.pose=step.pose;b.heading=step.install==='counter-equipment'?'up':'';b.facing=1;
+    b.holding=carried==='cat'?'cat':null;b.pose=step.pose;b.heading=step.install==='counter-equipment'?'up':'';b.facing=1;
     const before=f.time;f.time=Math.min(step.duration,f.time+dt);b.stateT=f.time;
-    if(Math.floor(before/3)!==Math.floor(f.time/3))commit(w);
-    if(f.time<step.duration)return;
+    if(f.time<step.duration) {
+      if(Math.floor(before/3)!==Math.floor(f.time/3))commit(w);
+      return;
+    }
+    if(before<step.duration) {finishChore(w,step);commit(w);}
     if(R.introWaiting && R.introWaiting(w)) {
       b.pose='stand';b.heading='';return;
     }
-    if(step.install)w.memory.life.furniture[step.install]=true;
-    if(step.table!==undefined)installFirstTable(w,step.table);
-    if(step.install==='cat-corner') {
-      w.shop.carryingCat=false;w.cat.x=L.catCorner.cushion.x;w.cat.y=L.catCorner.cushion.y;w.cat.target=L.catSpots.find(s=>s.id==='cushion');
-      w.cat.state='sleep';w.cat.surface='floor';w.cat.path=null;
-    }
-    if(step.install==='cake-stand')w.shop.stocked=true;
-    if(step.install)R.sound.softThump();
     f.step++;f.time=0;b.path=null;b.pose='stand';b.holding=null;
     if(f.step===FIRST.length) {
       w.memory.life.intro.complete=true;
-      // Preparation has taken most of this first day. Ordinary days keep their
-      // usual clock; this jump is committed with the one-time assembly finale.
-      w.clockOffset += (17.5-w.hour)/24*R.DAY_SECONDS;
+      // Preparation has taken most of this first day (setupHour has carried
+      // the light there). Ordinary days keep their usual clock.
+      w.clockOffset += (OPEN_HOUR-w.hour)/24*R.DAY_SECONDS;
       R.updateClock(w,0);
       w.shop.phase='open';w.shop.accepting=true;w.shop.carryingCat=false;b.state='idle';b.idleT=2;
       w.spawnT=2;R.caption(w,'two little tables, fresh coffee. the door is open.');
@@ -227,9 +258,17 @@
     R.updateClock(w, 0);
     w.firstEntryReady=true;
     if(l.firstOpening.step<FIRST.length&&!c) {
-      w.shop.phase='settling';w.shop.accepting=false;w.shop.stocked=false;w.shop.carryingCat=l.firstOpening.step===0;
+      const first=l.firstOpening;
+      w.shop.phase='settling';w.shop.accepting=false;w.shop.stocked=false;
+      w.shop.carryingCat=first.step===0 && first.time<FIRST[0].duration;
       w.barista.x=L.doorSpot.x;w.barista.y=L.doorSpot.y;w.barista.path=null;w.barista.state='shop';
       w.barista.holding=w.shop.carryingCat?'cat':null;
+      // The cat's corner was made ready while she cleaned the day before. She
+      // arrives through the open door with the cat and carries it straight there.
+      if(first.step===0) {
+        l.furniture['cat-corner']=true;
+        if(!first.time)w.door.open=1;
+      }
     }
     if (!c) return;
     Object.assign(w.shop, JSON.parse(JSON.stringify(c.shop)));

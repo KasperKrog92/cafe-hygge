@@ -53,7 +53,7 @@
       for(let i=0;i<count;i++)box(g,L.basic.staging.x+14+(i%2)*25,L.basic.staging.y-Math.floor(i/2)*22,false);
     }});
     if(b.holding==='parcel')draws.push({y:b.y+.1,draw:g=>box(g,Math.round(b.x)+12,Math.round(b.y)-23,false)});
-    if(step.table!==undefined&&b.path&&!b.path.length) {
+    if(step.table!==undefined&&b.path&&!b.path.length&&!w.memory.life.furniture[L.tables[step.table].furniture]) {
       const a=L.tables[step.table],n=Math.min(5,Math.floor(f.time/3));
       draws.push({y:a.y+32,draw:g=>{
         const x=a.x,y=a.y;

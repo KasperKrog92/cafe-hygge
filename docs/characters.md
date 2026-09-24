@@ -690,11 +690,15 @@ stale lap link. This race was exposed by the unattended project soak.
 
 ## First-entry Lunafreya routine
 
-`SIM.firstOpeningSteps` defines twelve saved setup steps: place the cat and its
-things, fetch and place entrance equipment, fetch and install basic coffee
+`SIM.firstOpeningSteps` defines twelve saved setup steps: set the cat down in
+its corner, fetch and place entrance equipment, fetch and install basic coffee
 equipment, fetch and place the tiny cake stand, fetch and assemble each of two
-table sets, and return behind the counter. Travel uses the usual obstacle-aware
-routes. Each table assembles over eighteen seconds. Customers are admitted
+table sets, and return behind the counter. She comes in through the open door,
+which swings shut behind her; the cat's cushion and bowls are already waiting
+by the counter (she prepared them while cleaning the day before). Travel uses
+the usual obstacle-aware routes. Each table assembles over eighteen seconds.
+What a chore makes is in place the moment her hands finish, even if she is
+still talking; only the next chore waits for her words. Customers are admitted
 only when the final step completes; no input or payment is required. Installed
 seating is added once. Ordinary routines use only installed furniture, and the
 initial menu excludes matcha. Existing furnished saves skip this first opening.
@@ -712,16 +716,24 @@ owner and `"artist"` for the studio.
 
 `sim-intro.js` adds 22 short remarks to the existing assembly steps. Lunafreya
 speaks to the unnamed cat as “little one”, mixing practical rambling with
-nerves about making this place real. She pauses after imagining someone
+nerves about making this place real. Remarks about a place are said there:
+she tells the cat about its corner while laying it on the cushion, mentions
+last night's cleaning on the walk back to the boxes, and warns them both off
+the pastries while setting them out. She pauses after imagining someone
 staying all afternoon with a book. Finished hand actions settle into a standing
 pause while the remaining words are read.
 
 The final setup step contains eight saved stages: return to the cat and lift
 it, hug it, put it down, collect the handmade sign, gather herself at the door,
-unlock, step through and place the sign, then come back inside. She closes her
-eyes and takes a seven-second silent breath after her final words. The cat
-hug uses the same carried cat and preserves its scarf. Only after placing the
-sign and returning to the counter does she admit the first customer.
+unlock, step through and place the sign, then come back inside. She takes the
+sign down facing the wall and turns round with it; from behind, only the ends
+of the boards show past her. She closes her eyes and takes a seven-second
+silent breath after her final words. The bell above the door rings for the
+first time as it swings open. She walks out over the sill with her back to
+the room, sets the sign down beside the step, walks back in and turns in the
+doorway for one more look at it. The cat hug uses the same carried cat and
+preserves its scarf. Only after placing the sign and returning to the counter
+does she admit the first customer.
 
 The sign reads **NEW CAFE** in uneven paint on two scrap boards. She has not
 chosen a proper café name; naming it through later patron conversations is a

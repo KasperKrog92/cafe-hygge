@@ -140,7 +140,7 @@
     door: { x: 28, y: 130, w: 52, h: 102 },   // 1.7 CH
     doorSpot: { x: 54, y: 252 },     // where people appear
     intro: {
-      signStored: {x:98,y:245}, signPickup: {x:98,y:310},
+      signStored: {x:98,y:245}, signPickup: {x:98,y:262},
       breath: {x:54,y:278}, threshold: {x:54,y:252},
       lock: {x:72,y:187},
       porchPerson: {x:62,y:226}, porchSign: {x:65,y:230}

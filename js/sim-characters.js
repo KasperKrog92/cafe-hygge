@@ -1557,7 +1557,8 @@
     if(world.shop.phase==='settling') {
       if(!world.firstEntryReady || world.introPaused || world.introHidden || world.introModal)return false;
       world.t+=dt;world.clockOffset-=dt;
-      R.updateFirstOpening(world,dt);updateCaptions(world,dt);R.saveLife(world,dt);return;
+      R.updateFirstOpening(world,dt);R.followSetupClock(world);
+      updateCaptions(world,dt);R.saveLife(world,dt);return;
     }
     // One mandatory first hello teaches the invitation. Waiting costs no café
     // time, sales or closing deadline, including when the tab is unattended.

@@ -33,7 +33,9 @@ js/main.js              → (none)         (boot, loop, UI; orchestrates the oth
 ```
 
 The intro controller attaches dialogue gates and an eight-stage finale to the
-existing twelve-step first-opening routine. Saved `life.intro` owns its line
+existing twelve-step first-opening routine. A line is tied to a step (or finale
+stage); `arrive` lines also wait for that chore's hand timer to start, so words
+about a place are said there. Saved `life.intro` owns its line
 cursor, finale/time and sign location; transient reveal, pause and hidden state
 belong to the world. Main supplies visibility/input and the renderer draws
 through `composeFrame`. This one-time sequence holds when hidden; the normal
@@ -528,7 +530,10 @@ Version 4 adds `life.furniture` (stable availability keys) and
 `life.firstOpening: {step, time}`. Fresh saves start empty with step zero; v3
 migration marks the existing room furnished and setup complete. `settling` is
 a resumable shop checkpoint. `sim-life.js` commits setup progress and furniture
-together. `SCENE.activeGeometry` and layout keys rebuild private-world navigation
+together: a chore's furniture (and the released cat) is committed the moment
+its hand timer completes, and only the step advance waits for the remaining
+intro lines. A new café marks `cat-corner` when it starts settling; the corner
+was prepared the day before, so the first step only sets the cat down in it. `SCENE.activeGeometry` and layout keys rebuild private-world navigation
 and background caches when availability changes. Tables and seats are installed
 before ordinary simulation starts; optional routines share the same flags.
 
@@ -579,8 +584,10 @@ first opening retains its two-person cap. Activity stations and terrace
 reservations are separate. Pending seat demand is bounded at three. The normal
 open simulation tick adds popularity time; life persistence saves it and the
 v12 → v13 migration credits completed days once. See world.md for visit pacing.
-The one-time setup finale commits 17:30 with its completed step, so reload never
-replays the afternoon jump. `enterHome` increments `daysCompleted` only once.
+During setup `R.followSetupClock` derives the hour from saved setup progress
+(completed hand-action seconds out of the whole routine, 08:24 → 17:30), so the
+light moves only while she works, reload restores the same hour, and opening
+commits 17:30 without a visible jump. `enterHome` increments `daysCompleted` only once.
 
 `SIM.canPlanProject` is shared by purchase validation and planner button state.
 Window and table can be chosen together; every debit and purchase is committed

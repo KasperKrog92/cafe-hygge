@@ -14,9 +14,12 @@ The small dialogue controls sit above the ordinary control bar; complete
 sentences also reach an accessible live region.
 
 The “NEW CAFE” sign uses two uneven scrap boards, nail marks and hand-painted
-3×5 letters (a wider W). `L.intro` owns its storage, pickup and porch anchors.
-It is carried visibly and lowered outside through the clipped doorway; the
-door leaf occludes the porch correctly. The first finale adds closed-eye hug,
+3×5 letters (a wider W). `L.intro` owns its storage, pickup and porch anchors;
+the pickup stands just in front of the stored sign, so it moves only from wall
+to hands. Held from behind, the sign is clipped to the board ends that show
+past her body. It is carried visibly and lowered outside through the clipped
+doorway, where she walks out and back over the sill (the clip hides her feet);
+the door leaf occludes the porch correctly. The first finale adds closed-eye hug,
 gather, breath and unlocking poses while keeping the existing character size.
 
 ## The first apartment and plant

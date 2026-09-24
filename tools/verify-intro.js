@@ -4,9 +4,11 @@
   function check(ok,msg){if(!ok)throw Error(msg);}
   const w=SIM.create({random:SIM.seededRandom(812)}),frames={},seen=new Set(),reloads=[];
   const canvas=document.createElement('canvas'),g=canvas.getContext('2d');
-  let stopCount=0,syllables=0;
+  let stopCount=0,syllables=0,bells=0,closes=0,lastHour=w.hour;
   w.context.sound.stopDialogue=()=>stopCount++;
   w.context.sound.dialogueSyllable=()=>syllables++;
+  w.context.sound.doorBell=()=>bells++;w.context.sound.doorClose=()=>closes++;
+  check(w.door.open===1 && SCENE.hasFurniture(w,'cat-corner'),'she did not arrive through the door to a ready corner');
   function snap(key) {frames[key]=__dev.shot(null,{world:w});}
   function reload(key) {
     SIM._.saveLife(w,0);
@@ -24,6 +26,18 @@
   for(let n=0;n<16000 && w.shop.phase==='settling';n++) {
     SIM.update(w,.05);
     check(!w.shop.accepting || w.memory.life.intro.sign==='outside','opened without sign');
+    // The day passes with the work, never in a jump.
+    check(w.hour>=lastHour-1e-6 && w.hour-lastHour<.05,'first-day light jumped '+lastHour+' -> '+w.hour);lastHour=w.hour;
+    const f=w.memory.life.firstOpening,chore=SIM.firstOpeningSteps[f.step],spoken=SIM.introLines[w.memory.life.intro.line];
+    if(w.shop.phase==='settling' && f.step<11 && f.time>=chore.duration) {
+      check(!chore.install || SCENE.hasFurniture(w,chore.install),'finished work not in place while she talks');
+      check(chore.carry!=='cat' || !w.shop.carryingCat,'cat held after it was set down');
+    }
+    if(w.dialogue && spoken && spoken.arrive)check(f.time>0,'a line about a place was said on the way there');
+    if(w.memory.life.intro.sign==='carried' && !seen.has('sign-lift')) {
+      seen.add('sign-lift');const s=SCENE.L.intro.signStored;
+      check(Math.hypot(w.barista.x-s.x,w.barista.y-s.y)<24,'sign jumped into her hands');
+    }
     if(w.dialogue && w.dialogue.visible>8) {
       const key='line-'+w.memory.life.intro.line;
       const box=SCENE.dialogueLayout(g,w);
@@ -47,6 +61,8 @@
   }
   check(w.shop.phase==='open','intro never ended');check(syllables>20,'no speaking rhythm');
   check(seen.has('silent-breath'),'missed emotional pause');
+  check(closes===1 && bells===1,'door did not close behind her or ring once on opening');
+  check(Math.abs(w.hour-17.5)<.01,'first day did not end in late afternoon');
   check(w.memory.life.intro.line===SIM.introLines.length,'missed dialogue');snap('open');
   const p=SIM.create({random:SIM.seededRandom(2)});
   for(let n=0;n<12;n++)SIM.update(p,.05);
@@ -60,8 +76,9 @@
   check(p.dialogue.visible===p.dialogue.text.length && p.memory.life.intro.line===line,'reveal skipped a line');
   SIM.advanceIntro(p);check(p.memory.life.intro.line===line+1,'next did not advance');
   p.context.sound.settings.instantText=true;
-  for(let n=0;n<35;n++)SIM.update(p,.05);
-  check(p.dialogue.visible===p.dialogue.text.length,'instant text still types');
+  // The next line waits until she reaches the cat's corner.
+  for(let n=0;n<400 && !p.dialogue;n++)SIM.update(p,.05);
+  check(p.dialogue && p.dialogue.visible===p.dialogue.text.length,'instant text still types');
   SIM.skipIntro(p);check(!p.dialogue && !p.introPaused && p.tables.length===0,'skip installed furniture');
   for(let n=0;n<3000&&p.shop.phase==='settling';n++)SIM.update(p,.25);
   check(p.shop.phase==='open' && p.memory.life.intro.sign==='outside','skip did not finish real work');

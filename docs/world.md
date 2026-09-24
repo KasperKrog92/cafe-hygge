@@ -89,8 +89,10 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 
 - The clock advances one hour per real minute (a base day is **1440 seconds**),
   with the late-closing hold and overnight skip described above. The sim boots
-  at 08:24 for preparation. The completed first setup advances to 17:30,
-  leaving four active service minutes until 21:30. Waiting for and attending
+  at 08:24 for preparation. During the first setup the day passes with her
+  hand work (morning light as she carries the cat in, late afternoon as the
+  sign goes out) and reaches 17:30 as she opens, without a jump, leaving four
+  active service minutes until 21:30. Waiting for and attending
   Holger’s first dialogue does not consume that time. Later mornings keep
   their ordinary 07:30 arrival and normal hours.
 - `world.hour` (0–24 float) drives everything: the sky, the lighting, the

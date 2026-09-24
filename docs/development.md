@@ -129,7 +129,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `holger` | Conversation travel, speech, choices and persistence |
 | `home` | Apartment tutorial and bedtime journeys with save round trips |
 | `hours` | Empty/busy closing, late queued service, perches, reopening, natural nights, pending story |
-| `intro` | First-morning dialogue lines, pause/skip/reveal, finale and restoration |
+| `intro` | First-morning dialogue lines and where they are said, pause/skip/reveal, finished work in place while she talks, door and sign continuity, the first-day clock, finale and restoration |
 | `invitations` | Accepting during real work; the room keeps living; held clocks; cancellation |
 | `life` | Nights in both modes, plant stages, reloads, identity and duplicate prevention |
 | `motion` | No human pose pops at 12 fps in busy rooms (cat pops reported); see [animations.md](animations.md) |

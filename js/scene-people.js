@@ -724,7 +724,11 @@
       limb(g,x+17,y-24,at.x+4,at.y-2,4,c.skin);
     } else if(held==='sign') {
       px(g,x-13,y-36,5,10,c.top);px(g,x+8,y-36,5,10,c.top);
-      SCENE.drawNewSign(g,x,y-8,.85);
+      if(back) {
+        // Held in front of her, so from behind only the boards' ends show.
+        g.save();g.beginPath();g.rect(x-24,y-44,14,44);g.rect(x+10,y-44,14,44);g.clip();
+        SCENE.drawNewSign(g,x,y-8,.85);g.restore();
+      } else SCENE.drawNewSign(g,x,y-8,.85);
       px(g,x-17,y-30,5,4,c.skin);px(g,x+13,y-30,5,4,c.skin);
       if(p.pose==='unlock') {
         const lock=SCENE.L.intro.lock;

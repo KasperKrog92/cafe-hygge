@@ -2,16 +2,18 @@
 (function () {
   'use strict';
   const R=SIM._, L=SCENE.L;
+  // `arrive` lines wait until her hands are at that chore, so words about a
+  // place are said there rather than on the walk towards it.
   const lines=SIM.introLines=[
     {step:0,text:'Here we go, little one. Your new second home.'},
-    {step:0,text:"I'm glad you didn't see it yesterday while I was cleaning."},
-    {step:0,text:'I found a spoon behind the skirting board. Just the one.'},
-    {step:2,text:'Your things are tucked in beside me. A sheltered little spot, just for you.'},
-    {step:2,text:"Of course, you'll pick somewhere else."},
+    {step:0,arrive:1,text:"Your corner's right by the counter, next to me. A sheltered little spot, just for you."},
+    {step:0,text:"Of course, you'll pick somewhere else."},
+    {step:1,text:"I'm glad you didn't see it yesterday while I was cleaning."},
+    {step:2,text:'I found a spoon behind the skirting board. Just the one.'},
     {step:4,text:'Coffee, tea, something sweet. I can manage that.'},
     {step:4,text:'I keep thinking I ought to have a longer menu.'},
     {step:4,text:"Let's start with coffee."},
-    {step:6,text:'These are for customers.'},
+    {step:6,arrive:1,text:'These are for customers.'},
     {step:6,text:"I'm saying that to both of us."},
     {step:8,text:'I used to sit in places like this and imagine having one.'},
     {step:8,text:'Never imagined quite so many screws.'},
@@ -27,19 +29,21 @@
     {step:11,finale:4,text:"Let's open the door."}
   ];
   const finale=SIM.introFinale=[
-    {at:L.catCorner.noraSpot,duration:2,pose:'gather'},
-    {at:L.catCorner.noraSpot,duration:8,pose:'hug'},
-    {at:L.catCorner.noraSpot,duration:3,pose:'gather'},
-    {at:L.intro.signPickup,duration:3,pose:'stand'},
-    {at:L.intro.breath,duration:7,pose:'breath'},
-    {at:L.intro.threshold,duration:2,pose:'unlock'},
-    {at:L.intro.threshold,duration:5,pose:'stand'},
-    {at:L.intro.threshold,duration:2,pose:'stand'}
+    {at:L.catCorner.noraSpot,duration:2,pose:'gather',facing:1},
+    {at:L.catCorner.noraSpot,duration:8,pose:'hug',facing:1},
+    {at:L.catCorner.noraSpot,duration:3,pose:'gather',facing:1},
+    {at:L.intro.signPickup,duration:3,pose:'stand',facing:-1},
+    {at:L.intro.breath,duration:7,pose:'breath',facing:-1},
+    {at:L.intro.threshold,duration:2,pose:'unlock',facing:1},
+    {at:L.intro.threshold,duration:5,pose:'stand',facing:-1},
+    {at:L.intro.threshold,duration:2,pose:'stand',facing:-1}
   ];
+  // Facing the wall, she takes the sign down, then turns round with it.
+  const SIGN_LIFT=.8;
   function current(w) { return lines[w.memory.life.intro.line]; }
   function eligible(w,line) {
-    const i=w.memory.life.intro;
-    return line && line.step===w.memory.life.firstOpening.step &&
+    const i=w.memory.life.intro,f=w.memory.life.firstOpening;
+    return line && line.step===f.step && (!line.arrive || f.time>0) &&
       (line.finale===undefined || line.finale===i.finale && i.time>0);
   }
   function stop(w) { w.context.sound.stopDialogue(); }
@@ -69,7 +73,8 @@
     if(w.shop.phase!=='settling')return false;
     SIM.skipIntro(w);
     const sound=w.context.sound,hidden=w.introHidden,modal=w.introModal;
-    w.context.sound=Object.assign({},sound,{softThump:function(){},doorUnlock:function(){},stopDialogue:function(){}});
+    const quiet=function(){};
+    w.context.sound=Object.assign({},sound,{softThump:quiet,doorUnlock:quiet,doorBell:quiet,doorClose:quiet,stopDialogue:quiet});
     w.firstEntryReady=true;w.introHidden=false;w.introModal=false;
     try {
       for(let n=0;n<8000 && w.shop.phase==='settling';n++)SIM.update(w,.25);
@@ -126,9 +131,11 @@
     const i=w.memory.life.intro,b=w.barista,s=finale[i.finale];
     if(!s)return true;
     b.animT+=dt;w.cat.animT+=dt;
+    // The ordinary door update is not running yet; the bell settles here.
+    if(w.door.jiggle>0)w.door.jiggle=Math.max(0,w.door.jiggle-dt*.8);
     if(!b.path)R.makePath(b,s.at.x,s.at.y);
     if(b.path.length) {R.walker(b,dt);return false;}
-    b.pose=s.pose;b.heading='';b.facing=i.finale<3 || i.finale===5?1:-1;
+    b.pose=s.pose;b.heading='';b.facing=s.facing;
     const before=i.time;i.time=Math.min(8,i.time+dt);b.stateT=i.time;
     if(i.finale===0) {
       // The cat is at its cushion all through setup. Hands meet it before lifting.
@@ -136,13 +143,19 @@
       w.cat.x=L.catCorner.cushion.x+(b.x+7-L.catCorner.cushion.x)*q;
       w.cat.y=L.catCorner.cushion.y+(b.y-34-L.catCorner.cushion.y)*q;
     }
-    if(i.finale===3 && before===0) {i.sign='carried';b.holding='sign';}
+    if(i.finale===3) {
+      b.heading=i.time<SIGN_LIFT?'up':'down';
+      if(before<SIGN_LIFT && i.time>=SIGN_LIFT) {i.sign='carried';b.holding='sign';}
+    }
     if(i.finale===5) {
       w.door.open=Math.max(0,Math.min(1,i.time-1));
       if(before<1 && i.time>=1)w.context.sound.doorUnlock();
+      // The bell above the door rings for the first time as it swings open.
+      if(before<1.25 && i.time>=1.25) {w.door.jiggle=1;w.context.sound.doorBell();}
     }
     if(i.finale===6) {b.introOutside=true;w.door.open=1;}
-    if(i.finale===7) {b.introOutside=false;w.door.open=1;}
+    // Back over the threshold, she turns to look out at the sign once more.
+    if(i.finale===7) {b.introOutside=false;w.door.open=1;b.heading=i.time<.35?'down':'up';}
     if(i.finale===4) {
       const speaking=R.introWaiting(w);
       // Keep the saved breath clock at its start until her last line ends.

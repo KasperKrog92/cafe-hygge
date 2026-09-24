@@ -31,18 +31,29 @@
     px(g,d.x,d.y+88,d.w,2,'#777666');
     if(i.sign==='outside')S.drawNewSign(g,L.intro.porchSign.x,L.intro.porchSign.y,.72);
     if(w.barista.introOutside) {
-      const t=i.time, p=Object.assign({},w.barista,{x:L.intro.porchPerson.x,
-        y:L.intro.porchPerson.y,pose:t<1?'walk':'stand',heading:'',facing:1,introOutside:false,
-        holding:null,colors:w.barista.colors});
-      S.drawPerson(g,p);
+      // She walks out over the sill (the door clip hides her feet), turns to
+      // set the sign down beside the step, then walks back in towards us.
+      const t=i.time,at=L.intro.porchPerson,sill={x:L.intro.threshold.x,y:d.y+d.h+12};
+      const out=Math.min(1,t/PORCH_OUT),back=Math.max(0,(t-PORCH_BACK)/(5-PORCH_BACK));
+      const from=t<PORCH_BACK?sill:at,to=t<PORCH_BACK?at:sill,q=t<PORCH_BACK?out:back;
+      const walking=t<PORCH_OUT || t>=PORCH_BACK;
+      const p=Object.assign({},w.barista,{x:Math.round(from.x+(to.x-from.x)*q),y:Math.round(from.y+(to.y-from.y)*q),
+        pose:walking?'walk':'stand',walkDistance:t*40,heading:t<PORCH_OUT?'up':t>=PORCH_BACK?'down':'',
+        facing:1,introOutside:false,holding:null,colors:w.barista.colors});
+      let sign=null;
       if(i.sign==='carried') {
-        const q=Math.max(0,Math.min(1,(t-1)/3));
-        S.drawNewSign(g,p.x+5,p.y-15+Math.round(q*15),.72);
-        px(g,p.x-9,p.y-29,16,4,p.colors.skin);
+        const lower=Math.max(0,Math.min(1,(t-1)/3)),s=L.intro.porchSign;
+        sign={x:Math.round(p.x+5+(s.x-p.x-5)*lower),y:Math.round(p.y-15+(s.y-p.y+15)*lower),held:lower<1 && t>=PORCH_OUT};
       }
+      // Walking away it is hidden in front of her; walking back it stands behind.
+      if(sign && walking)S.drawNewSign(g,sign.x,sign.y,.72);
+      S.drawPerson(g,p);
+      if(sign && !walking)S.drawNewSign(g,sign.x,sign.y,.72);
+      if(sign && sign.held)px(g,p.x-9,sign.y-14,16,4,p.colors.skin);
     }
     g.restore();
   };
+  const PORCH_OUT=.6,PORCH_BACK=4.4;
   function dialogueData(w) {
     if(w.moment && w.moment.phase==='talk') {
       const line=SIM.momentLine(w);
