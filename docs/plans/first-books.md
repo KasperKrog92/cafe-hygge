@@ -127,8 +127,7 @@ and safely retained collection/bookplate, without deleting purchased books.
 Stable-node preparation shipped separately on 11 September. Reuse
 `SIM.beginSavedMoment` for stable scene prefixes, authored node IDs and saved
 acknowledgements; choice flags and scene-specific completion callbacks retain
-their existing roles. Holger's old positional flags migrate in v14. The old
-UI/reload checks passed before extraction. Do not design a universal dialogue
+their existing roles. Do not design a universal dialogue
 editor or move every existing arc to a new engine merely for consistency.
 
 The scene packet for any new conversation records: what triggers it; who knows
@@ -151,7 +150,5 @@ and the story bible only for what is now implemented or revealed. Keep script
 cache tags current. Do not copy the entire ensemble plan into runtime comments
 or expand unrelated character biographies in the same implementation task.
 
-The [scalability audit](../scalability-audit.md) remains the preparation guide:
-browser verification automation and save export/import precede substantial
-public play. The full ensemble does not need to exist before a human reading
+The [audit](../audit.md) lists what remains before substantial public play. The full ensemble does not need to exist before a human reading
 session can tell us whether this first story-connected improvement feels warm.

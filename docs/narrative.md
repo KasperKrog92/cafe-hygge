@@ -178,8 +178,7 @@ keeps the café; confirming resets it and returns to the entry screen. Sound
 preferences remain. If storage deletion fails, the current café is retained.
 The implemented narrative memory persists as `cafe-hygge-save` via `MEMORY`.
 The save codec validates plain records, supported integer versions and finite
-arc fields before binding them to a world. Findings 1–2 of the
-[pre-development audit](predevelopment-audit.md) are now addressed.
+arc fields before binding them to a world.
 
 **Implemented:** `js/memory.js` → `window.MEMORY`, loaded early (before `sim-core`
 so world creation can read it), inert-friendly like the rest:
@@ -210,12 +209,12 @@ Save shape (a small JSON blob — text state is kilobytes, never a size concern)
 
 Non-negotiables for the save:
 
-- **Versioned, with forward migration.** `version` gates a migration ladder in
-  `MEMORY.load()`: an old save is upgraded field-by-field to the current shape,
-  through every explicitly supplied step. Unsupported or malformed saves open
-  a fresh café. Existing development saves may reset per owner direction; no
-  recovery-copy system is required yet. Future schema changes must supply
-  migrations and tests for the versions they support.
+- **Versioned.** `version` gates a migration ladder in `MEMORY.load()`.
+  **During development (owner, 24 September 2026) nobody plays yet, so there
+  are no migration steps:** a shape change bumps `VERSION` and any other version
+  opens a fresh café, never an error. Once real players exist, schema changes
+  must supply migrations and tests again, upgrading field-by-field through every
+  explicit step; no recovery-copy system is required yet.
 - **Reconcile on boot, don't trust blindly.** The save can drift from a fresh
   world (an arc naming a regular you renamed, a stage past the last one defined).
   The pure codec validates records; `reconcileNarrative(world)` clamps stages
@@ -415,8 +414,7 @@ Holger uses `holger-introduction-node-`, visitors retain `keira-hello-` and
 the first unacknowledged node and skips acknowledged nodes after each advance,
 so inserting or reordering writing does not replay prior acknowledgements.
 Every chosen answer saves before its reply; the existing choice flags remain
-its stable identity. Completion and bond warmth are awarded once. Save v14
-migrates Holger's historical numeric flags using a frozen v13 node mapping.
+its stable identity. Completion and bond warmth are awarded once.
 Completed scenes stay complete, even if their packet later acquires new nodes.
 Keep IDs and choice flags when editing wording or order; changing their meaning
 requires an explicit migration. Contextual wording variations also target IDs.

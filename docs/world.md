@@ -501,7 +501,7 @@ hours). Round to the nearest guest; the four-seat first opening retains its
 two-person limit and slower arrival spacing. The piano and artist stool are
 activity stations, excluded from general seating and its occupied count.
 
-`life.openSeconds` (schema v13) accrues only in accepting, open café simulation
+`life.openSeconds` accrues only in accepting, open café simulation
 ticks, saturating at 11,700 seconds. Hidden play counts; setup, held conversations,
 home, closing, paused play and time with the app closed do not. It never decays
 and needs no score, purchase or attended story. Existing saves receive one-time

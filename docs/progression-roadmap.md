@@ -15,8 +15,8 @@ The fireplace now has two separate upgrades: Gerda unlocks its bare reopening;
 a later purchase adds the mantel and decorations.
 The next book task is separate book purchases and interruptible stocking (Pass 2). See the
 [contract](architecture.md#shared-improvement-contract).
-The [scalability audit](scalability-audit.md) records preparation for those stages;
-the remaining ideas are not authorization to build every item.
+The [audit](audit.md) records preparation for those stages; the remaining
+ideas are not authorization to build every item.
 The owner largely accepted the [community and character direction](plans/community-and-character-stories.md).
 It connects those stages to a larger cast, remembered choices, gifts and optional
 romance. It guides new writing; details remain revisable as slices are authored.
@@ -388,8 +388,7 @@ at the roadmap stage.
 ## Build order and evidence for moving on
 
 **Save/isolation preparation completed 6 September 2026:** the pure codec,
-injectable persistence and private simulation worlds address findings 1–2 in
-[the pre-development audit](predevelopment-audit.md). Regression coverage and
+injectable persistence and private simulation worlds. Regression coverage and
 commands are in [the development workflow](development.md).
 
 **Opening/closing preparation completed 6 September 2026:** `js/sim-shop.js`

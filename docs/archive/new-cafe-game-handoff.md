@@ -1,10 +1,14 @@
 # Project Hearthcup — greenfield café game handoff
 
+> **ARCHIVED (24 September 2026; retired 6 September 2026).** Not instructions.
+> Kept, including its last unfinished edits, only as a record of ideas considered
+> for a separate greenfield game.
+>
 > **RETIRED — historical reference only (6 September 2026).** The owner has
 > superseded this greenfield/manual-control direction. Do not follow the setup
 > instructions below for Café Hygge development. Work in this repository on
-> `main`, following [AGENTS.md](AGENTS.md) and the
-> [shared progression roadmap](docs/progression-roadmap.md). The original text
+> `main`, following [AGENTS.md](../../AGENTS.md) and the
+> [shared progression roadmap](../progression-roadmap.md). The original text
 > is retained for optional ideas, not as the active specification.
 
 > Working title only. This document is a self-contained product, technical, and
@@ -38,8 +42,10 @@ and **typed GDScript**. Target Windows desktop first, with Steam-friendly
 Windows/Linux exports later. Use Godot's Compatibility renderer unless a tested
 visual feature requires another renderer.
 
-Use hand-authored **2D pixel art in a three-quarter top-down view**, made in
-**Aseprite** (recommended) or Pixelorama (free/open-source alternative). Work at
+Use hand-authored **2D pixel art in a three-quarter top-down view** (the
+recommendation; the owner decides between this and Café Hygge's side-on view
+before the greybox — §12 cost table, §17 Q1), made in **Aseprite**
+(recommended) or Pixelorama (free/open-source alternative). Work at
 a 640×360 logical resolution, use 32 px floor tiles with a 16 px furniture
 placement grid, and begin the art spike with 48×64 character canvases so hands,
 props, posture, and task performance remain readable. Keep the initial café
@@ -112,7 +118,10 @@ Carry these ideas forward:
 Deliberately leave these constraints behind:
 
 - The browser, plain-JavaScript, no-build, and `file://` requirements.
-- The requirement that interaction be completely optional.
+- The requirement that interaction be completely optional. In the new game
+  interaction is optional for *routine care* (Auto-mode) and required for
+  *meaning*: purchases, decorating, dialogue, story choices, and ending the day
+  are always the player's.
 - The ban on money, upgrades, menu progression, or explicit accumulation.
 - The fixed protagonist Nora. The new owner is player-created.
 - Programmatic code-drawn final art. The new game needs an asset pipeline.
@@ -190,8 +199,19 @@ Manual play and Auto-mode are equally legitimate ways to inhabit the café, not
 an easy mode and a punished mode. The player may take over or step back without
 resetting an order, duplicating rewards, or confusing the character. Automation
 handles routine care; it never spends money, redecorates, chooses dialogue,
-starts romance, or consumes a waiting story beat. Returning should reveal a
-café in good order, not an emergency backlog.
+starts romance, or consumes a waiting story beat. (Restocking a station from
+stock the café already owns is routine care; *buying* ingredients is spending
+and stays manual.) Returning should reveal a café in good order, not an
+emergency backlog.
+
+Auto-mode finishes **today** and never opens tomorrow. When the last guest of
+the roster leaves, the owner moves into the **closing ritual** — wiping tables,
+stacking chairs, snuffing candles, banking the fireplace, drawing the curtains —
+and the café then rests in a quiet closed-room ambience with an *end the day*
+prompt waiting. Ending the day (ledger, chosen beat, purchase, autosave) is a
+player act, which is what bounds income: no roster, no revenue. A game left
+running overnight comes back to a tidy, dark café and one waiting prompt, not a
+fortune.
 
 ### 6.7 Work is character acting
 
@@ -221,6 +241,9 @@ Do not design these into the first release:
 - Fully modular portrait generation for every possible player appearance.
 - Mobile and console certification during the prototype.
 - Seasons before the vertical slice is fun.
+- A café cat in the prototype or vertical slice. The cat is wanted — it is
+  Café Hygge's cheapest warmth — but it is also a whole second animation subject.
+  It is a 1.0 ambition (§10) that waits until the character pipeline is proven.
 
 ## 8. Core loop
 
@@ -229,7 +252,9 @@ Use a day as a readable sequence of phases, not a real-time deadline.
 ### Morning: make a plan
 
 - Choose a small menu from known recipes.
-- Restock simple ingredient categories.
+- Buy simple ingredient categories into the café's stock. This is the only
+  place ingredient money leaves the till; moving owned stock to a station
+  during service is a routine task that Auto-mode may also perform.
 - Rearrange furniture or place one new purchase.
 - Pick an optional "mood" for the day only if it is diegetic—for example quiet
   reading, rainy comfort, or pastry morning. Do not turn this into a buff stack.
@@ -252,6 +277,19 @@ Use a day as a readable sequence of phases, not a real-time deadline.
 - Regulars can carry small ambient behaviors and one optional story invitation.
 - The player may close early without losing a unique event. Unserved anonymous
   traffic simply does not become revenue; no scolding recap.
+
+### Last guest leaves: the closing ritual
+
+- When the roster is served and the last guest has gone, an *end the day*
+  prompt appears. It waits; nothing ticks.
+- The player may **watch** the owner close up — wipe tables, stack chairs, snuff
+  candles, bank the fire, draw the curtains, dim the lamps — or **end the day
+  immediately** and skip straight to the ledger. Watching is a reward, never a
+  chore; skipping loses nothing.
+- The closing ritual is made of ordinary tasks on the same task board as
+  service. In Auto-mode it plays on its own after the last guest, and the café
+  then rests in closed-room ambience with the prompt still waiting. Auto-mode
+  never ends the day and never opens the next one.
 
 ### Close: see what changed
 
@@ -423,17 +461,30 @@ fake economy tick.
   completion APIs. They must not maintain parallel versions of service logic.
 - The autonomous controller selects reachable work, navigates the real avatar,
   and plays the same animations and sounds a manual player would see.
+- Path planning is a domain service: a deterministic grid A* over the 16 px
+  placement grid, with furniture footprints as obstacles, that runs headlessly
+  and is re-evaluated when furniture changes. Do **not** route Auto-mode through
+  `NavigationServer2D` — it is scene-tree-bound, bakes asynchronously, and would
+  make the manual/Auto equivalence tests impossible to run without a scene.
+  One room on a grid does not need a navmesh.
 - A toggle requests takeover. If the current action is safely interruptible,
   control returns immediately; otherwise it finishes the short atomic step and
   returns. Never teleport or abandon held items unless recovering from a bug.
-- Auto-mode handles basic service, clearing, washing, and routine restocking. It
-  does not purchase gear, alter prices/menu, place furniture, select dialogue,
-  accept invitations, flirt, commit romance, or make irreversible story choices.
+- Auto-mode handles basic service, clearing, washing, restocking stations from
+  owned stock, and the closing ritual. It does not buy ingredients or gear,
+  alter prices/menu, place furniture, select dialogue, accept invitations,
+  flirt, commit romance, make irreversible story choices, or end the day.
+- Auto-mode finishes the current roster, performs the closing ritual, and then
+  idles in closed-café ambience with the *end the day* prompt waiting. It never
+  opens a new day. This is the income bound: an unattended running game earns
+  at most one day's roster.
 - Anonymous customers remain calm under automation. Auto-mode must not generate
   worse relationship outcomes than routine manual service.
 - While the process is running, Auto-mode should keep working in an unfocused or
   background window as platform rules permit. Simulation belongs in a fixed-step
-  update path, not rendering callbacks.
+  update path (`_physics_process` or an explicit accumulator), not rendering
+  callbacks; keep `low_processor_usage_mode` off and be aware that the OS may
+  still throttle a minimized window.
 - Persist the mode, task ledger, held item, station reservations, and enough
   avatar state to resume safely after a save/load.
 - On return, offer a small optional summary of service, earnings, and ordinary
@@ -441,9 +492,10 @@ fake economy tick.
 
 Closed-process offline catch-up is a separate product decision. Architect the
 task ledger and deterministic day simulation so it can be added, but do not
-silently award unbounded offline income. A safe future default is bounded,
-deterministic catch-up that resolves routine work and stops at a natural café-day
-boundary while all meaningful beats remain pending.
+silently award unbounded offline income. If it is ever adopted, it follows the
+same rule as in-process Auto-mode: resolve at most the rest of the current
+roster, stop at the closing ritual, and leave the *end the day* prompt and all
+meaningful beats pending.
 
 ### 9.10 Animation and task choreography
 
@@ -493,11 +545,14 @@ interruption points.
 
 Grow the library in families so each addition composes with the task system:
 
-- locomotion: idle/breathe, start, four-direction walk, turn, stop, carry cup,
-  carry tray, carry dish tub, push/pull chair;
+- locomotion: idle/breathe, start, walk in every facing of the chosen
+  perspective (§12), turn, stop, carry cup, carry tray, carry dish tub,
+  push/pull chair;
 - owner service: greet, listen/take order, grind, dose/tamp, pull espresso, steam,
   pour, whisk, plate pastry, garnish, deliver, collect payment, clear, stack,
   wash, rinse, dry, shelve, wipe, sweep, restock;
+- closing ritual: wipe table, stack chairs, snuff candle, bank/stoke fire, draw
+  curtains, dim lamp, turn the door sign, one last look at the room;
 - patron table life: sit/stand, pull chair, receive cup, sip, eat, read/page turn,
   write, use laptop, look outside, chat, listen, laugh softly, wave, wait, leave;
 - relationship acting: hesitant start, attentive listening, different smiles,
@@ -544,7 +599,12 @@ quality and prove the pipeline can reproduce that quality.
 
 ## 10. Scope ladder
 
-### Milestone 0 — feel prototype (2–4 weeks of focused work)
+Milestones are sized in **implementation units**, not calendar time (see §15
+"Sizing work for LLM implementation"). Agent-sized units are things a coding
+agent can build, test, and show in one session; owner-gated units need the
+owner's hand or eye and are the real critical path.
+
+### Milestone 0a — systems greybox (agent-sized, placeholder art)
 
 - One 12×8-tile café room, counter, two tables, door.
 - One customizable placeholder player.
@@ -553,20 +613,37 @@ quality and prove the pipeline can reproduce that quality.
 - One currency transaction.
 - One purchasable chair or lamp and working placement mode.
 - One short optional conversation.
+- The *end the day* prompt after the last guest, with a placeholder closing
+  ritual of at least two tasks (wipe, snuff) and the immediate-end path.
 - Save/load for layout, funds, avatar, and relationship flag.
-- Developer panel and headless checks.
+- Developer panel, headless checks, and windowed capture.
 - Routine service actions represented through controller-independent tasks. The
   prototype may expose these only to manual control; it must not bury order,
   clearing, or washing effects directly in input handlers.
 - Character/station animation contracts, attachment markers, and choreography
-  phases are in place. Only one service chain needs target-quality art, but that
-  chain must prove approach, contact, prop transfer, and recovery at game scale.
+  phases are in place and exercised by **labeled placeholder clips**. Every task
+  in the loop resolves to a clip or an explicitly allowed placeholder.
 
-This is successful when a new player can complete one compact loop without an
-explanation, says that buying/placing the first object feels meaningful, and
-wants to watch the representative coffee performance again.
+M0a is done when all of Step C's checks pass and the loop is playable end to
+end with placeholder art. It should be reachable almost entirely through
+agent-sized units; the owner's involvement is answering §17 and approving the
+camera/perspective greybox.
 
-### Milestone 1 — vertical slice (roughly 3–6 months, depending on art capacity)
+### Milestone 0b — hero chain (owner-gated)
+
+- The single coffee-service chain — approach, align, prepare, cup handoff,
+  carry, deliver, recover — at the intended final animation quality, on the
+  real character canvas, driven by the M0a choreography runner unchanged.
+- The motion-preview pipeline proves it reproduces that quality at game scale.
+
+M0b is the first place art capacity (§17 Q2) decides the pace. Keep M0a's
+placeholder fallbacks so agent work on later systems never blocks on it.
+
+Milestone 0 as a whole is successful when a new player can complete one compact
+loop without an explanation, says that buying/placing the first object feels
+meaningful, and wants to watch the representative coffee performance again.
+
+### Milestone 1 — vertical slice
 
 - 3 regulars; 1 romanceable.
 - 8–10 recipes across 4 station types.
@@ -588,9 +665,11 @@ wants to watch the representative coffee performance again.
 - Settings, save profiles, content validation, automated tests, and packaged
   Windows build.
 
-The slice should be suitable for private playtests and a short public demo. Do
-not promise a release schedule from LLM coding speed; art, writing, tuning, and
-playtesting will dominate.
+The slice should be suitable for private playtests and a short public demo.
+Most of its systems are agent-sized units; its art, writing, tuning, and
+playtesting are owner-gated and will dominate. Do not derive a schedule from
+coding speed, and plan each feature so the agent-sized parts land with
+placeholders while the owner-gated parts are still open.
 
 ### Plausible 1.0 content ceiling for a small team
 
@@ -606,6 +685,9 @@ playtesting will dominate.
   social, and relationship acting rather than only shared generic emotes.
 - Approximately 8–12 hours for a first relationship-rich playthrough, with
   continued decorating afterward.
+- A café cat, inherited from Café Hygge, with its own small library of sleeps,
+  windowsill watching, lap visits, and counter mischief — added only once the
+  character pipeline has proven it can afford a second animated subject.
 
 Treat this as a ceiling to validate, not a commitment.
 
@@ -665,6 +747,22 @@ Avoid a strict isometric diamond grid. It looks attractive but increases asset
 directions, placement complexity, occlusion problems, and LLM-generated geometry
 errors without materially helping the core fantasy.
 
+**Perspective is the largest single cost lever in this document**, because the
+animation pillar multiplies by the number of authored facings. The owner must
+choose before Step B (§17 Q1); the two honest options are:
+
+| | Three-quarter top-down (recommended) | Side-on dollhouse (Café Hygge) |
+| --- | --- | --- |
+| Authored facings per clip | 3 (up, down, side) — 4 where handedness breaks mirroring, e.g. the espresso machine | 1 (side, mirrored) plus an occasional front pose for sitting/talking |
+| Decorating | 2D footprint placement, visible tabletops, walk behind/in front | Depth bands along one axis; less placement freedom, simpler validity |
+| Readability of hands/props | Good from the side, weaker facing up | Best — every station is seen in profile |
+| Favors | Decorating pillar (§6.1) | Animation pillar (§6.7) |
+
+Three-quarter top-down remains the recommendation because decorating is a
+central verb. But if art capacity (§17 Q2) is the owner alone, side-on roughly
+triples what each hour of animation buys, and the document's §12 targets below
+change accordingly.
+
 ### Technical art target
 
 - Logical viewport: 640×360 (16:9), nearest-neighbor integer scaling where
@@ -674,10 +772,11 @@ errors without materially helping the core fantasy.
 - Standing character: begin the art spike at 48×64. Compare a smaller canvas only
   if the café composition demonstrably suffers; hand/prop contact and readable
   body mechanics take priority over fitting more empty floor on screen.
-- Character movement: four directions with explicit start/turn/stop poses and a
-  6-frame production walk target. A 4-frame placeholder is acceptable only for
-  the first greybox. Mirror left/right where it survives prop handedness; author
-  up/down separately.
+- Character movement: every facing of the chosen perspective (four for
+  three-quarter top-down, two for side-on) with explicit start/turn/stop poses
+  and a 6-frame production walk target. A 4-frame placeholder is acceptable only
+  for the first greybox. Mirror left/right where it survives prop handedness;
+  author up/down separately.
 - Dialogue portrait: 96×96 or 128×128 for authored regulars.
 - Palette: one warm shared base palette plus controlled material ramps. Night
   lighting should tint a stable base rather than require duplicate assets.
@@ -786,6 +885,10 @@ Store asset source, author, URL, license, edit notes, and in-game use in
 - Choreography phases and attachment markers are data. Domain timing and visual
   timing share named markers so headless simulation, manual play, Auto-mode, and
   rendered animation cannot drift into four different truths.
+- Movement planning is domain code: grid A* on the placement grid, deterministic
+  and headless. Nodes only follow the path the domain produced. No
+  `NavigationServer2D`, navmesh baking, or physics-driven steering in the
+  service loop.
 - No system is complete without its debug controls and save migration path.
 
 ### Suggested repository layout
@@ -859,6 +962,7 @@ Write these as typed, mostly scene-independent classes:
 - `RelationshipState`
 - `NarrativeScheduler`
 - `CafeLayout` / placement validator
+- `GridPathfinder` (A* over the placement grid; obstacles from `CafeLayout`)
 - `SaveData` serializers and migrations
 
 This lets an LLM run fast headless tests without driving the whole café scene.
@@ -910,10 +1014,12 @@ Nathan Hoad's text-based Dialogue Manager because its script-like files,
 conditions, mutations, and translation export fit an LLM-assisted workflow.
 
 For Godot 4.7.2, pin an exact compatible release in `VERSIONS.md` rather than
-tracking `main`. As of this handoff, Dialogue Manager v3.10.5 explicitly targets
-Godot 4.7; Dialogue Manager v4 is newly released and should be adopted only
-after its migration/stability tradeoff is evaluated. If the spike reveals that
-the addon makes saveable event state or testing awkward, retain its text syntax
+tracking `main`. Pin **Dialogue Manager v4.0.3** (released 2026-08-19 for Godot
+4.7). A greenfield repo has no v3 content to migrate, so the only question v4
+raises is early-release stability — which is exactly what the one-day spike is
+for. Fall back to v3.10.5 (also Godot 4.7) only if the spike hits a blocking
+v4 bug, and record that in `docs/decisions/`. If the spike reveals that the
+addon makes saveable event state or testing awkward, retain its text syntax
 ideas and implement only the minimal deterministic runtime needed.
 
 All dialogue conditions and mutations must call a small, documented narrative
@@ -942,10 +1048,37 @@ Create an `AGENTS.md` in the new repo containing:
 
 Keep `README.md` for a human newcomer and `AGENTS.md` for implementation rules.
 
+### Sizing work for LLM implementation
+
+Calendar estimates are not useful for this project and this document does not
+make them. What matters is how big a piece of work is *for a coding agent to
+implement and prove*, and whether it can proceed without the owner. Size every
+feature in these units and write the plan in these terms:
+
+- **Agent-sized unit** — one session: implement, test headlessly, capture, and
+  show. A domain module with its tests; one dev-panel control; one content
+  schema plus validator; one placeholder clip wired through the choreography
+  runner; one save migration with fixture. If a unit cannot be verified by
+  `check.ps1`/`test.ps1` plus a capture at the end of the session, it is too
+  big — split it.
+- **Multi-session feature** — several agent-sized units in sequence, each
+  ending at a checkpoint the owner can see (a screenshot, a motion preview, a
+  green test run). Order the units so the earliest checkpoint is visible, not
+  the most convenient to code.
+- **Owner-gated unit** — needs the owner's hand or eye: drawing or animating
+  art, approving taste, answering a §17 decision, reviewing romance text. These
+  are the critical path. Agent work must never block on them: build against
+  labeled placeholders and leave the slot for the real asset.
+
+Every feature plan states its units, marks which are owner-gated, and names
+the visible checkpoint after each. A plan that lists features without units is
+not a plan yet.
+
 ### Pin the environment
 
-`VERSIONS.md` should record Godot, each addon, Aseprite/Pixelorama, and platform
-tool versions. Do not upgrade the engine and addons in the same feature change.
+`VERSIONS.md` should record Godot, each addon, Aseprite/Pixelorama, the motion
+preview encoder (ffmpeg, or an in-engine APNG/GIF writer), and platform tool
+versions. Do not upgrade the engine and addons in the same feature change.
 Create a dedicated upgrade branch and rerun imports, tests, save fixtures, and
 visual baselines.
 
@@ -958,6 +1091,8 @@ these workflows unsurprising:
 ./tools/run.ps1
 ./tools/check.ps1
 ./tools/test.ps1
+./tools/capture.ps1 -Scene <fixture> -Region <name>
+./tools/capture.ps1 -Clip <choreography id> -Facing <dir> -Slow
 ```
 
 `check.ps1` should import resources headlessly, parse scripts, validate all
@@ -967,6 +1102,15 @@ content IDs/references, validate dialogue, and fail with a nonzero exit code.
 Godot officially supports `--headless`, `--script`, `--check-only`, import, run,
 and export workflows. Use those capabilities so an agent does not depend on
 manual editor clicks for every verification.
+
+**Headless cannot render.** `--headless` uses a dummy rendering server, so
+screenshots and motion previews need a real windowed run. `capture.ps1` launches
+the game windowed with custom args (`-- --capture <fixture> --region <name>` /
+`--preview <clip> --facing <dir> --slow`), the app loads the named dev fixture,
+waits a deterministic number of fixed steps, writes PNG frames via
+`get_viewport().get_texture().get_image()`, encodes the preview with the pinned
+encoder, and quits with a nonzero code on any error. This is how an agent sees
+its own work; build it in Step A, not later.
 
 ### Tests
 
@@ -978,7 +1122,11 @@ from the CLI. Test at least:
 - order lifecycle and duplicate completion prevention;
 - manual/Auto-mode equivalence for task completion and rewards;
 - task claiming, interruption, takeover, held-item recovery, and save/resume;
-- Auto-mode cannot spend funds or consume narrative/romance invitations;
+- Auto-mode cannot spend funds, consume narrative/romance invitations, end the
+  day, or open a new one; an unattended roster yields exactly one day's revenue;
+- the closing ritual and the immediate-end path reach the same ledger;
+- grid path planning is deterministic, respects furniture footprints, and
+  re-plans after placement;
 - every task/facing/held-item combination resolves to a valid choreography and
   clip or an explicitly allowed development placeholder;
 - animation marker order and duration agree with the logical task phase data;
@@ -1010,6 +1158,8 @@ Hygge's `__dev` harness. It should support:
 - freeze or speed simulation;
 - toggle Auto-mode, inspect the task queue/claims, and request manual takeover;
 - simulate an unfocused/background interval deterministically;
+- jump to "last guest gone" and trigger the closing ritual or the immediate end;
+- show the planned path and blocked cells for any walker;
 - force any animation/choreography by ID, facing, character, prop, and station;
 - show interaction anchors, hand/prop sockets, baselines, task phase, logical
   markers, interruptible windows, and current animation frame;
@@ -1048,35 +1198,44 @@ to an automated pass/fail check.
 - Human-review all romance, sensitive backstory, and player identity text.
 - Store content provenance if generated material is retained.
 
-### Codex-specific note
+### Coding-agent note
 
-Official OpenAI documentation describes Codex as able to understand codebases,
-build/test features, and create browser-based game prototypes. This project
-should expose command-line checks and visual capture so those strengths apply to
-Godot too. Do not make a particular hosted model or subscription part of the
-game's runtime architecture.
+Whichever agent works on this repo — Claude Code, Codex, or another — is at its
+best when it can run a command, read the result, and look at a capture without
+a human clicking through the editor. Everything in this section exists to give
+a Godot project those affordances. Do not make a particular hosted model or
+subscription part of the game's runtime architecture.
 
 ## 16. First implementation mission
 
 The receiving LLM should begin with this sequence unless the owner redirects it.
+Step A is agent-sized and needs no owner decision. Step B needs §17 questions
+1 and 2 answered first, because they set the facing count and the character
+canvas.
 
 ### Step A — create the greenfield repo and contracts
 
 1. Create the new repository outside `cafe-hygge`.
 2. Add `README.md`, `AGENTS.md`, `VERSIONS.md`, and the initial docs listed in
    the proposed structure.
-3. Pin Godot 4.7.2 standard and GUT 9.7.1.
+3. Pin Godot 4.7.2 standard, GUT 9.7.1, Dialogue Manager v4.0.3, and the
+   motion-preview encoder.
 4. Add `.gitignore` for `.godot/`, exported builds, temp files, and local editor
    settings. Decide Git LFS rules for large audio/source-art files before they
    arrive.
-5. Add working `run.ps1`, `check.ps1`, and `test.ps1`.
+5. Add working `run.ps1`, `check.ps1`, `test.ps1`, and `capture.ps1` (windowed
+   screenshot of an empty main scene is enough to prove the capture path).
+6. Stop and show the verification output. Do not start Step B until §17 Q1 and
+   Q2 are recorded in `docs/decisions/0001-product-baseline.md`.
 
 ### Step B — executable greybox
 
 1. Make a 640×360 main scene with nearest-neighbor scaling.
 2. Greybox a one-screen 12×8-tile café, door, counter, station, and two tables.
-3. Add a player capsule/sprite with 4-direction movement, explicit animation
-   state, held-prop socket, baseline, and interaction prompt.
+3. Add a player capsule/sprite with movement in the facing set decided in
+   `0001` (four directions for three-quarter top-down, two for side-on),
+   explicit animation state, held-prop socket, baseline, grid path following,
+   and interaction prompt.
 4. Add animation contracts, station approach/alignment/hand targets, and a
    choreography runner with named logical markers before drawing a large clip set.
 5. Add a controller-independent task board, then one patron lifecycle: enter →
@@ -1085,11 +1244,14 @@ The receiving LLM should begin with this sequence unless the owner redirects it.
 6. Add one coffee recipe with a two-station preparation sequence. Placeholder
    clips may establish the system, then take this single chain through a focused
    target-quality animation pass before adding a second recipe.
-7. Add funds and an end-of-day purchase of one lamp.
-8. Add placement preview, validity, rotate, confirm, cancel, and undo.
-9. Save and restore player appearance, funds, lamp placement, and one regular
-   conversation flag.
-10. Add debug actions, screenshots, animation scrubbing, and motion-preview
+7. Add the *end the day* prompt on last-guest-gone, a two-task placeholder
+   closing ritual (wipe a table, snuff a candle) the player can watch, and the
+   immediate-end path; both reach the same ledger.
+8. Add funds and an end-of-day purchase of one lamp.
+9. Add placement preview, validity, rotate, confirm, cancel, and undo.
+10. Save and restore player appearance, funds, lamp placement, and one regular
+    conversation flag.
+11. Add debug actions, screenshots, animation scrubbing, and motion-preview
     export for every state above.
 
 ### Step C — prove the architecture
@@ -1103,6 +1265,11 @@ Before adding a second drink or character, demonstrate:
 - a forced story invitation remains pending across save/load;
 - a service task can be completed by a test controller without simulated input,
   proving that future Auto-mode will reuse the same domain path;
+- a test controller serving the whole roster ends at the closing ritual with the
+  *end the day* prompt pending and exactly one day's revenue — never a second
+  day;
+- the path from counter to each table is planned headlessly and changes when a
+  chair is placed in the way;
 - the coffee choreography reaches the same logical result headlessly and visibly,
   with one cup transferred exactly once across station, hand, and table;
 - a native-scale motion preview proves one service chain at the intended final
@@ -1114,24 +1281,46 @@ Before adding a second drink or character, demonstrate:
 ### Milestone 0 acceptance test
 
 A fresh player can create a simple owner, open the café, greet a regular, make
-and deliver coffee, close, buy a lamp, place it, save, reload, and see both the
-lamp and the regular's changed greeting. The coffee visibly travels through
-station, hand, and table with readable body mechanics and no snapping or duplicate
-props. No timer, anger, or fail state appears.
+and deliver coffee, see the *end the day* prompt when the regular leaves,
+choose to watch the owner wipe a table and snuff a candle (or skip), close, buy
+a lamp, place it, save, reload, and see both the lamp and the regular's changed
+greeting. With M0a placeholder art the loop is complete; with M0b the coffee
+visibly travels through station, hand, and table with readable body mechanics
+and no snapping or duplicate props. No timer, anger, or fail state appears.
 
-## 17. Decisions to ask the owner before the art spike
+## 17. Decisions to ask the owner
 
-These are important, but none must block the first greybox:
+### Already decided (2026-08-23)
 
-1. **Primary platform:** Windows/Steam as assumed, or web-first?
-2. **Away behavior:** should Auto-mode operate only while the game is running
-   (including an unfocused/background window), or should reopening the game also
-   resolve a bounded period of closed-app café activity?
-3. **Visual perspective:** three-quarter top-down as recommended, or the more
-   side-on dollhouse composition of Café Hygge?
-4. **Art and animation capacity:** will the owner draw/animate, hire an animator,
-   curate assets, or rely mostly on generated concepts plus substantial manual
-   pixel and motion cleanup?
+- **Auto-mode and the day boundary:** Auto-mode finishes the current roster and
+  the closing ritual, then rests; the *end the day* prompt appears when the last
+  guest leaves and the player chooses to watch the owner close up or end
+  immediately. Auto-mode never ends or opens a day (§6.6, §8, §9.9).
+- **Cat:** yes, eventually; not in the prototype or vertical slice (§7, §10).
+- **Planning language:** size work in LLM implementation units, not calendar
+  time (§10, §15).
+
+### Must be answered before Step B
+
+These set the facing count and the character canvas; the greybox cannot start
+without them.
+
+1. **Visual perspective:** three-quarter top-down as recommended, or the
+   side-on dollhouse composition of Café Hygge? See the cost table in §12 —
+   this is the biggest lever on how much animation each hour of art buys.
+2. **Art and animation capacity:** will the owner draw/animate, hire an
+   animator, curate assets, or rely mostly on generated concepts plus
+   substantial manual pixel and motion cleanup? This decides how much of the
+   project is owner-gated (§15).
+
+### Before the art spike
+
+Important, but none blocks the greybox:
+
+3. **Primary platform:** Windows/Steam as assumed, or web-first?
+4. **Closed-app catch-up:** should reopening the game also resolve the rest of
+   an in-progress roster (bounded, stopping at the closing ritual), or does the
+   café simply hold still while the process is closed?
 5. **Romance tone:** sweet/low-heat, mature but non-explicit, or another target;
    and which age rating is desired?
 6. **Cultural setting:** explicitly Danish/contemporary, fictional Nordic town,
@@ -1147,12 +1336,14 @@ Record answers in `docs/decisions/0001-product-baseline.md`.
 | Risk | Why it matters | Mitigation |
 | --- | --- | --- |
 | Content scope explodes | Every regular multiplies writing, portraits, events, schedules, and testing | Vertical slice with 3 regulars; use a content budget before adding anyone |
-| Character customization explodes art | Four directions × actions × outfits × hair quickly becomes hundreds of frames | Layered paper-doll sprites, palette swaps, shared timings, automated contact sheets, limited launch set |
-| Animation ambition overwhelms production | Detailed four-direction tasks, transitions, prop contacts, variants, and NPC acting can dominate the schedule | Make animation a budgeted feature, standardize rigs/tags/anchors, build in families, reuse mechanics with character variants, approve one hero chain before scaling |
+| Character customization explodes art | Facings × actions × outfits × hair quickly becomes hundreds of frames | Layered paper-doll sprites, palette swaps, shared timings, automated contact sheets, limited launch set |
+| Animation ambition overwhelms production | Detailed multi-facing tasks, transitions, prop contacts, variants, and NPC acting can dominate the owner-gated critical path | Make animation a budgeted feature, standardize rigs/tags/anchors, build in families, reuse mechanics with character variants, approve one hero chain before scaling |
 | Animation looks busy but not believable | More frames do not help if feet slide, hands miss props, loops pop, or everyone moves constantly | Explicit choreography phases and contacts, motion review at game scale, slow-motion debug, rests and staggered ambient timing |
 | Service becomes repetitive | Walking station sequences can feel like chores without time pressure | Short recipes, strong sound/animation, batch gear, variable patron moments, playtest after one drink before adding ten |
 | Auto-mode feels fake or breaks state | A parallel income simulator would diverge from the visible café; takeover can duplicate tasks or strand held items | One shared task ledger and domain commands, atomic effects, reservations, interruption tests, visible autonomous routing |
-| Away progress becomes pressure or an exploit | Unbounded catch-up can trivialize progression or make players feel they should never turn Auto-mode off | Routine-only automation, no auto story choices/spending, bounded closed-app catch-up if adopted, gentle summary without missed counts |
+| Away progress becomes pressure or an exploit | An Auto-mode that rolled into new days would make a running game a money printer and make players feel they should never turn it off | Auto-mode finishes today and stops at the closing ritual; ending the day is a player act; no auto story choices/spending; gentle summary without missed counts |
+| Animation cost multiplies with perspective | Each authored facing multiplies every clip in the library | Decide perspective before Step B with the §12 cost table in hand; mirror where handedness allows; keep labeled placeholders so systems never wait on facings |
+| Agent work stalls on the owner | Art, taste, and decisions are owner-gated; an agent that blocks on them wastes sessions | Size plans in implementation units (§15); build every feature against placeholders first; surface the owner-gated slot explicitly |
 | Decorating becomes stat optimization | A single coziness number undermines personal expression | Use qualitative tags and behavior changes; support multiple viable style families |
 | Romance becomes transactional | Gift/heart grinding conflicts with familiarity fantasy | Gate on shared beats and choices; hide raw numbers; keep complete friendship routes |
 | LLM output creates inconsistent architecture | Agents can rapidly add parallel patterns and undocumented state | Small domain APIs, typed code, pinned versions, one-command checks, decision records, strict save/content schemas |
@@ -1185,8 +1376,8 @@ versions before committing money or upgrading.
 - [Pixelorama](https://pixelorama.org/) — open-source alternative with animation,
   pixel tools, tilemaps, and sprite-sheet export.
 - [Dialogue Manager releases](https://github.com/nathanhoad/godot_dialogue_manager/releases)
-  and [repository](https://github.com/nathanhoad/godot_dialogue_manager) — typed
-  current compatibility and MIT license.
+  and [repository](https://github.com/nathanhoad/godot_dialogue_manager) —
+  v4.0.3 (2026-08-19) and v3.10.5 both target Godot 4.7; MIT license.
 - [GUT releases](https://github.com/bitwes/Gut/releases) — 9.7.x adds Godot 4.7
   compatibility and provides GDScript unit testing with CLI support.
 - [Unity pricing](https://unity.com/products) — free Personal tier under the
@@ -1200,10 +1391,6 @@ versions before committing money or upgrading.
   commercial use and no royalties, under the Defold License.
 - [Construct pricing](https://www.construct.net/en/make-games/buy-construct) —
   subscription pricing and no royalties.
-- [Official OpenAI/Codex use cases](https://learn.chatgpt.com/use-cases) — Codex
-  workflows for codebase understanding, building/testing features, and game/web
-  prototyping.
-
 ## 20. Copyable kickoff prompt
 
 Use this with the first LLM in the new repository:
@@ -1212,18 +1399,19 @@ Use this with the first LLM in the new repository:
 Read NEW_CAFE_GAME_HANDOFF.md in full and treat it as the working product and
 technical specification. This is a greenfield Godot game, not a port of Café
 Hygge. First, summarize any conflicts between the handoff and the repository as
-it exists. Then implement Step A of "First implementation mission": create the
-repo contracts, pin versions, scaffold the Godot 4.7.2 standard project, and
-make run/check/test PowerShell commands work. Do not begin large art production
-or expand scope. Use typed GDScript, preserve a 640×360 pixel-art target, and
-make all routine café effects controller-independent so later Auto-mode can drive
-the same task system as manual play. Full Auto-mode is not required in the first
-greybox. Treat detailed animation as a core feature: establish choreography,
-station anchors, prop sockets, attachment markers, and animation validation from
-the beginning, then bring one representative coffee-service chain to target
-motion quality before expanding breadth. Show concrete verification output. If
-Café Hygge is available, read only its overview/narrative/art guidance for tone;
-do not copy its architecture.
+it exists. Then implement Step A of "First implementation mission" and nothing
+beyond it: create the repo contracts, pin Godot 4.7.2 standard, GUT 9.7.1,
+Dialogue Manager v4.0.3 and the preview encoder in VERSIONS.md, scaffold the
+project with typed GDScript and a 640×360 pixel-art target, and make
+run/check/test/capture PowerShell commands work — capture must produce a real
+PNG from a windowed run. Write AGENTS.md so that it carries the handoff's
+pillars, forbidden pressure mechanics, the controller-independent task rule,
+the grid-A* navigation rule, and the animation contracts, so later sessions do
+not need this file. Then stop and show the verification output. Do not start
+Step B: it needs the owner's perspective and art-capacity decisions (section
+17) recorded in docs/decisions/0001-product-baseline.md first. If Café Hygge
+is available, read only its overview/narrative/art guidance for tone; do not
+copy its architecture.
 ```
 
 ---

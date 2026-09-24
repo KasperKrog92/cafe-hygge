@@ -781,9 +781,10 @@ delivery, usable purchased books, then the attended character conversations.
 | **7. Choosing someone** | One complete romance including ordinary life after the first date, then additional routes in small releases | Explicit relationship choices and complete friendship alternatives |
 | **Later: sharing the work or home** | Ezra as a real possible colleague; separately, a partner/guest with their own home routine | Claimable work, station ownership and two-person home behavior, as required by the scalability audit |
 
-Verification automation and save export/import still belong before substantial
-public play, as the [scalability audit](../scalability-audit.md) recommends. Do
-not defer those protections until players have months of authored relationships.
+Browser verification now runs in CI and gates deployment, and save
+export/import is shipped. Before substantial public play, saves must start
+migrating again instead of resetting ([audit](../audit.md)). Do not defer that
+until players have months of authored relationships.
 
 For a first substantial story collection, budget approximately **40–55 attended
 scenes** across the first five releases, with most attention on the established

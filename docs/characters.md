@@ -265,7 +265,8 @@ espresso 1.2, cardamom bun 1.2, butter croissant 1.
    A pianist may instead take the appended piano bench; its drink goes to the
    dedicated saucer spot on the lid, so sipping, steam, cup return, abandoned
    cup avoidance, and Lunafreya's normal bussing all use the shared table pipeline.
-5. **seated** — the long, cozy middle (stay 100–260 s):
+5. **seated** — the long, cozy middle (stay 100–260 s). The guest first eases
+   down (the cup travels to the table in hand); seated routines begin once settled:
    - **Sipping** (drinks only): every 9–22 s, a 1.3 s animation — the cup,
      handle-less matcha bowl, or iced glass rises from the table (the table
      item hides, the right vessel appears in hand), sip sound at the peak,
@@ -613,32 +614,15 @@ patient, waiting until the reader chooses it, never expiring.
   nothing urgent, nothing that demands watching.
 
 
-## Animation audit — 5 September 2026
+## How they move
 
-Walking phases follow actual distance (24 px per human stride, 8 px per cat
-paw cycle). The walker spends its entire speed × dt budget through route
-corners, without snapping the final 3.2 px or pausing for a simulation tick.
-One shoe lifts while the other remains at the baseline. Carrying hands stay
-steady. Eyes blink briefly on each character's own animation clock.
-
-Readers visibly turn a page for 0.8 seconds when the page-turn sound fires;
-that transient timer lives on the patron, never in the narrative save. Sips
-use smoothstep easing and bring the rim to mouth height. Knitting needles,
-sketching pencils and grooming heads now move; the sleeping cat breathes by
-one pixel. Piano hands use the keyboard's layout anchor. Lunafreya's whisk hand
-and the chasen share the same action clock. Preparation, wiping and polishing
-have working-hand poses; wiping and restocking work timers begin on arrival.
-
-Cat hops include 0.10 seconds of anticipation and 0.12 seconds of landing,
-with a tucked airborne pose in between. Fixed asymmetric poses mirror with
-facing, including their scarves. Airborne cats do not carry a false contact
-shadow underneath their bodies. Existing hop routes and surface anchors remain
-in use. Lunafreya now approaches the chalkboard at `L.noraCare.chalk` (893, 238),
-writes with a small hand stroke, then returns via `chalkHome` to the counter.
-
-The repeatable motion gallery and scenario coverage are described in
-[animations.md](animations.md). The animation timers do not change arc progress
-or the invitation-waits rule.
+Walking, sitting down and getting up, kneeling, Lunafreya's work at the
+machine, seated activities and the cat's poses are described in
+[animations.md](animations.md). In short: sitting and kneeling ease over about
+0.45 s and rising over 0.4 s before anyone walks; a guest sets their cup on the
+table partway down and a carried book opens once seated; seated routines (sips,
+page turns, chats) begin once the body has settled. Animation timers never
+change arc progress or the invitation-waits rule.
 
 
 ## Terrace visits and Lunafreya's outdoor round
@@ -793,7 +777,7 @@ door and clear aisle. Her plate travels with her, loses its food as she eats,
 and is put away at the sink. She returns to the PC and resumes reading/resting.
 The cat rests nearby during supper. This happens once per evening in both modes,
 without a cost or hunger mechanic. `life.homeDinner` saves elapsed work and
-completion (schema v12); a reload neither repeats supper nor advances it offline.
+completion; a reload neither repeats supper nor advances it offline.
 The planner and hidden tabs allow it to continue. Explicit sleep interrupts
 from her current position and exits the kitchen through its door. Later meals
 and a dining/kitchen table belong to future apartment furnishing.

@@ -176,8 +176,7 @@ H1 completes with `holger-introduced`. Acknowledged node flags are
 `holger-introduction-node-ID` (since 11 September); IDs are `sign`, `opening`,
 `neighbour`, `luna-name`, `espresso`, `why-cafe`, `beginning`, `sea-nerves`,
 `cups`, `reassurance`, `hope`, `galley`, `miss-sea`, `voices`, `welcome`,
-and `farewell`. The v14 migration maps the old `holger-introduction-line-N`
-flags through the frozen original order. The two choice pairs above are mutually exclusive
+and `farewell`. The two choice pairs above are mutually exclusive
 through the conversation API. The current answer is committed before its reply,
 so reload cannot choose a different answer or skip the acknowledgement.
 An already established café receives a “properly said hello” variation when

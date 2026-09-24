@@ -1,124 +1,137 @@
-# Animation audit — 5 September 2026
+# Animation
 
-## Cat follow-up — 8 September 2026
+Every character and prop is drawn in code, every frame, from rectangles
+(`px`) and pixel-stepped limbs (`limb`) in `js/scene-people.js`. There are no
+sprite sheets. This keeps outfits, hair and held props consistent across every
+pose and lets motion follow the simulation exactly, but it has a clear ceiling:
+code can guarantee mechanics (feet that stay planted, hands that reach their
+targets, no one-frame pops), while appeal and timing can only be judged by
+watching. So the rules an agent can state are enforced by tests, and the look
+is reviewed in motion through filmstrips.
 
-Added front/back walking and a four-paw distance cycle in all directions,
-including the opening walk. Cat heading follows the dominant travel axis on
-short and diagonal routes; old resting gaze no longer overrides travel.
-Added a bow-and-release stretch, face-washing paw, alternating forepaw knead,
-reaching mote bat, retracting lapping tongue and quiet awake blinks. Sleeping,
-lap breathing, hop anticipation/tuck/landing, window perch and draped shelf
-tails retain their established motion. Vertical and stretching scarves track
-the neck. No new routine, timing, save field or furniture anchor is needed.
+## The systems
 
-`tools/verify-project.ps1 -Suite cat-animations` runs the 18-row pose gallery,
-mirrored/scarf captures, short/diagonal movement checks at 60 Hz and 0.25 s,
-distance-cycle checks, deterministic rendering and live-world/save isolation.
-It exports an enlarged 24-frame animation preview alongside the contact sheets.
-The pass also exercised `animations`, `animation-journeys`, `cat-corner` and
-`hours`: all passed. Final art review repeats ten images across twelve occupancy
-scenarios with zero audit problems. Captures are in `.art-review/cat-motion-final/`
-and `.art-review/cat-after/`.
-Normal entry initialized audio and completed a real-time cappuccino order in
-32 seconds; the night audit and browser error check passed. All task-owned
-browser sessions were closed after export.
+### Walking
 
-Scope: all animation-bearing renderer files, the three simulation files,
-and the main clock/presentation loop. The pass keeps the deliberately small,
-quiet pixel-art motion vocabulary. It does not aim for continuous skeletal
-animation or change narrative pacing.
+- The walk phase comes from distance travelled (`walkDistance`), never from
+  time, so feet stay locked to the floor at any speed or tick size (1/60 s to
+  0.25 s). The stance foot moves backward exactly as far as the body moves.
+- Stride follows walking speed: `S = 14 + speed × 0.2` px per full cycle (a
+  40 px/s walker takes 22, a 60 px/s one 26). `p.stride` overrides it.
+- The body rides one pixel higher while the swinging foot passes the planted
+  one. Arms counter-swing with the same cycle.
+- Four views: profile (`facing` ±1), front (`heading` 'down') and back
+  (`heading` 'up'). Heading follows the dominant travel direction.
 
-| Area reviewed | Finding / outcome |
+### Posture: sitting, kneeling, getting up
+
+`SIM._.settlePosture` (sim-core.js) eases `e.low` from 0 (standing) to 1
+(seated/kneeling) over 0.45 s whenever a character's pose becomes one of
+`SIM._.LOW_POSES` (`sit`, `kneel`, `catCare`), and back to 0 over 0.4 s when it
+stops being one. It runs once per tick for everyone after all simulation
+updates. While `low` is between 0 and 1, `SCENE.drawPerson` draws a crouch: the
+character's own standing art lowered onto bent legs, so every outfit, hairstyle
+and held prop carries through. The crouch is drawn in the view of the pose
+being entered or left (`lowPose`): kneeling from behind, sitting and the
+bowl crouch in profile.
+
+- **Walking waits**: `walker` returns early while `low > 0`, and a low pose
+  with a new path becomes 'stand' so the body rises before the first step.
+- **Props travel with hands**: a guest sitting at a table keeps the cup
+  (`placeItem: 'cup'`); the near hand carries it down to where it will stand
+  (`placeAt`, from `SCENE.tableItemAnchor`), the table item appears at
+  `low 0.6` (0.9 on a window perch) and the hand comes back. A carried shelf
+  book (`placeItem: 'book'`) is kept until seated, then the first page turns
+  open (`pageTurn`) instead of the book popping in.
+- **Window perches**: sitters ease up onto the sill and back down along
+  `lowAnchor` (floor spot ↔ perch). Routes still start from the floor spot.
+- A new low pose only needs its name in `LOW_POSES` and a final pose whose
+  head sits about 8 px lower than standing.
+
+### Keyed gestures
+
+`SCENE._.keys(t, [[time, value], ...])` gives eased keyframes that hold at the
+ends. Prefer it to a bare `Math.sin` for gestures: a tamp is a quick press, a
+hold and a slower release, not a wobble. Sines remain right for genuinely
+periodic motion (whisking, breathing, tail sway), with per-character phase so
+people do not move in step.
+
+### Lunafreya at the machine
+
+The espresso machine stands on the rear worktop, behind her at head height on
+screen, so for machine steps she faces away (`heading` 'up', set when the step
+starts) and `drawStationBehind` draws her working arms *before* her torso and
+head, which hide what a real back would hide:
+
+| Step | Performance |
 | --- | --- |
-| Human locomotion, turns, carrying | Distance-driven phases, independently lifted shoes, no waypoint snapping or lost movement budget. Held props stay steady. |
-| Faces, breathing, dozing | Added brief per-character blinks; retained small head/torso offsets and gaze poses. |
-| Reading and drinking | Added a timed page leaf and following hand; eased sip lift, corrected mouth/rim contact and steam origin. |
-| Knitting and sketching | Needles, hands and pencil now move instead of holding a static working pose. |
-| Painting, typing, piano | Retained painting/typing bouts; aligned piano fingertips with the keyboard. Brush already meets the canvas/tray. |
-| Brewing and food preparation | Added Lunafreya's working forearms, tamp, scoop and pitcher cues. Whisk hand and chasen share one action clock. |
-| Wiping, polishing, restocking | Visible rubbing gestures; work timers start after travel. |
-| Chalk, stretching, watering, candles, hearth | Moved chalk approach to the wall and added writing/return motion; retained established other gestures/routes. |
-| Cat walking and resting | Distance-driven paws; subtler sleeping breath, moving grooming head; asymmetric poses and scarves mirror together. |
-| Cat hops, perches, lap | Dedicated anticipation, tuck and landing; no airborne contact shadow. Existing routes, surface rules and patient rest states retained. |
-| Cat pounce, feeding, kneading, tail/ears | Retained playful stylized motion; corrected facing for fixed asymmetric poses. |
-| Door and bell | Continuous hinged leaf with attached glazing/handle; existing bell swing retained. Small appearance-keyed leaf cache. |
-| Rain, street silhouettes and window activity | Existing time-driven motion and weather clipping retained. |
-| Fire, candles, lighting and particles | Existing quiet layered movement retained; steam emission retains fractional time. |
-| Captions, bubbles, narrative invitations | Deliberately readable and stable; no new bouncing UI or automatic payoff. |
-| Hidden tab and presentation | Main real-time accumulator retained. Movement checked at 1/60 s and 0.25 s. |
+| `grind` | Portafilter held up under the grinder beside her; the other hand taps the switch in pulses |
+| `tamp` | Elbows out, press–hold–release |
+| `pull` | Reaches to the group head, turns the handle to lock it, lowers to wait out the shot (the machine shows cup and stream) |
+| `steam` | Pitcher lifted to the wand in both hands and turned slowly |
+| `kettle` | Kettle lifted and tipped at the machine's side |
+
+Front-counter steps (`scoop`, `whisk`, `ice`, `fetch`) face the room and use
+keyed reaches; the chasen and her whisk hand share one clock.
+
+### Seated activities
+
+Reading (page turns with a lifted leaf and following hand), sipping (eased
+`armUp`, cup swapped between table and hand), knitting (needles and grips
+follow their shafts), sketching, painting (brush meets canvas and tray),
+typing (arms drawn by the table from the laptop's keyboard anchor) and piano
+(fingertips on the keyboard).
+
+### The cat
+
+- Paws are distance-driven in all four directions; hops follow an arc with
+  anticipation, tuck and landing, and no contact shadow in the air.
+- Resting changes pass through a brief loaf (lying, head up) between lying and
+  upright poses, and the head eases between pose heights (`catHeadEase`), so a
+  curled sleeper sits up in steps: curl → loaf → sit, head rising.
 
 ## Verification
 
-- `tools/verify-animations.js`: checks equal travel at different tick sizes,
-  actual motion in eight six-frame sprite rows, gallery isolation from live
-  world/save, and the live invariant audit. Returns a PNG contact sheet.
-- `tools/verify-animation-journeys.js`: runs 22 scenarios in newly created real
-  simulation worlds: six Lunafreya routines, nine cat behaviors, and seven prep
-  families from arrival through seating. Renders during the runs and checks
-  completion plus each world's invariant audit. Cat scenarios accept normal
-  alternate resting poses and the intentional interrupted high-shelf ascent.
-- Both tools are evaluated with `agent-browser --session <disposable-session>
-  eval (Get-Content -Raw tools/<script>.js)` after opening `?dev` and waiting
-  for `!!window.__world`. Journey tests must use a disposable browser with
-  audio off: real simulation creation can write that browser's narrative save.
-  Detached `__dev.study()` worlds are used only by the rendering gallery.
-  Follow the [browser cleanup recipe](art-workflow.md#browser-session-lifecycle):
-  run checks sequentially in one owned session, export results, close in
-  `finally`, and verify the session is gone before finishing or retrying.
-- Final art review: ten repeatable images, eight occupancy/time scenarios,
-  zero invariant problems. Warm composition: approximately 0.5 ms median,
-  0.8 ms p95 on this development browser (100 samples after 20 warmups).
-- Normal splash page: clicked step inside, audio initialized, a cappuccino
-  order reached seating; at 20:00 the audit was clean and browser errors empty.
-- Syntax checks and `git diff --check` pass.
+| Check | What it guarantees |
+| --- | --- |
+| `animations` | Equal travel at 1/60 s and 0.25 s; stance shoe fixed; legs attached at the hem; walking hand beside the torso; visible motion in each sprite row |
+| `cat-animations` | Cat pose gallery, walking in four directions, deterministic mirrored/scarf rendering |
+| `animation-journeys` | Real Lunafreya chores, cat behaviours and seven drink preparations complete with clean audits |
+| `motion` | Renders every person alone at 12 fps in two busy furnished worlds for four simulated minutes; fails if a silhouette jumps (head >4 px or overlap <60%) while the body is not travelling. Cat pops are reported, not failed: small sprites trip the overlap metric on any 3 px shift |
 
-Local review output is under `.art-review/animation-before/` and
-`.art-review/animation-after/`, including `motion.png` and `journeys.json`.
-Art capture canvases request a readback-oriented context; intermittent tiny
-pixel differences appeared during the initial repeated PNG captures. The
-final strict repeatability checks pass. The live render context is unchanged.
+Film anything you change and look at the frames either side of each pose change:
 
-These checks cover the exercised states and this browser; they are not a claim
-that every randomized combination, device or audio mix was tested. No
-narrative save migration is required: new animation fields are transient.
+```javascript
+const w = __dev.furnishedWorld({ random: SIM.seededRandom(7) });
+// a guest sitting down: 2 frames before, 12 from the moment it happens
+__dev.film({ world: w, target: w => w.patrons[0], pre: 2, frames: 14,
+  start: (w, p, prev) => prev && prev.pose !== 'sit' && p.pose === 'sit' }).sheet
+```
 
+`__dev.film` never ticks the live world. `follow: true` keeps the crop on a
+walker; `fps`, `w`, `h`, `scale` and `cols` shape the sheet.
 
-### Follow-up: walking direction
+## Adding or changing an animation
 
-The initial sine cycle lifted the backward-moving foot and did not mirror the
-stride for left-facing walkers. Replaced it with a linear 12 px stance and an
-eased forward swing over a 24 px cycle. The stance cancels body travel, keeping
-the shoe fixed on the floor. Front/back views apply stride along the vertical
-travel direction. Verification now checks rendered shoe positions against
-actual body movement in all four directions, rather than only checking that
-frames differ.
+1. Decide the performance in words: approach, the contact moment, the hold,
+   the release. Name what the hands touch.
+2. Put timing in the simulation (dt-driven state and timers); the renderer only
+   reads state. Use `keys()` for gestures and reach real anchors from `L`.
+3. If the pose changes the body's height or shape, make it a low pose or give it
+   its own in-between; never swap silhouettes in one frame.
+4. Props move with hands: never show an item in two places, and never let it
+   appear somewhere a hand has not been.
+5. Film it, check the `motion` suite, and show the owner the filmstrip.
 
+## Known limits
 
-### Follow-up: leg attachment
-
-Walking hips now remain fixed under the hem. Connected two-pixel strips angle
-the trousers toward the moving ankles, rather than shifting the full leg
-column sideways. Profile hips sit closer together to avoid a splayed stride.
-The planted-foot timing and forward swing remain unchanged.
-
-
-### Follow-up: side-view arms
-
-The empty-handed profile walk now places the visible shoulder over the side
-of the torso, slightly behind its centre, rather than at the forward edge.
-A connected sleeve bends through the elbow and the hand counter-swings by
-three pixels against the near leg. Carrying poses still support their props.
-
-
-### Seated props and arm contact — 6 September 2026
-
-`tools/capture-seated.js` returns a six-frame contact sheet covering mirrored
-laptops, page turns and sips, plus knitting, sketching, painting, mixing,
-piano and dozing, and an occupied room PNG. It uses detached fixtures only,
-checks visible motion in every row, and guards live-world/save isolation.
-Laptops and piano are captured through full room composition so tabletop
-occlusion is part of the review. Seated limbs share pixel-stepped connected
-shoulder/elbow/grip drawing; typing uses the laptop's keyboard anchor and
-only its working arms cross the table depth plane. No activity timing or
-narrative progression changes. Art review and animation/journey verification
-passed with zero failures; the day/night occupancy audit remains clean.
+- Everyone shares one body template (60 px, same proportions); identity comes
+  from palette, hair, accessories and stride. Signature idle fidgets per
+  regular are not built yet.
+- The crouch into the bowl-side `catCare` pose ends on a differently shaped
+  silhouette; the head height matches, so it passes the detector, but it reads
+  as a small shape change.
+- In back view, `pull` and `steam` are quieter than `grind` and `tamp` because
+  their hands are correctly hidden by her head.
+- Arm-only pose changes (reach, stretch, hug) still switch in one frame; the
+  body does not move, so they read as quick gestures rather than pops.

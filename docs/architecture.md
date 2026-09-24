@@ -66,25 +66,57 @@ fields, phase names, task timing, paths or render behavior changed in the prepar
 
 ## Shared improvement contract
 
-`js/improvements.js` owns plant, window, table, fireplace and the initial wall
-shelves (`bookshelf`). Definitions hold IDs, prices, destination/delivery, phase labels and
-stable phase IDs, timing, prerequisites (currently empty), installed capabilities
-and the window/table evening pairing. `SIM.projects` and `SIM.plantProject`
-remain aliases for existing consumers.
+`js/improvements.js` owns every purchasable improvement: the plant, window,
+table, window seats, wall shelves, fireplace and mantel. A definition holds its
+ID, price, destination/delivery, phase labels and stable phase IDs, timing,
+installed `capability`, `requires` (capabilities installed by others), the
+window/table evening `pair`, and the planner rules: `label`, `tutorial`
+(offered on the first evening), `unlockFlag` (a story flag), `furniture`
+(the room already has this piece without the project) and `showsWith`
+(furniture that must be present). `IMPROVEMENTS.planOrder` orders the planner.
+`SIM.projects` and `SIM.plantProject` remain aliases for existing consumers.
 
-The planner and purchase APIs share `IMPROVEMENTS.canBuy(world,id)`; one debit
-path commits the choice. `state(life,id)` reads the existing plant or projects
-record without moving saved data. Current save validation and fresh projects
-read the catalogue; historical validation and migration payloads stay literal.
-The v8 home migration leaves the v7 improvement steps unchanged. Numeric steps keep their exact order and meaning: adding or
-reordering phases or adding saved jobs requires an explicit migration, including
-preserving the then-historical v7 validator independently of new definitions.
+`IMPROVEMENTS.offered(world,id)` decides whether the planner shows a choice
+(bought ones stay, ticked) and `IMPROVEMENTS.canBuy(world,id)` whether it can
+be bought now; main.js builds one `#buy-<id>` button per `planOrder` entry
+and one debit path commits the choice. `state(life,id)` reads the plant or
+projects record. Save validation and fresh projects read the catalogue, so a
+new improvement needs only its definition, its work routine and its art, plus
+a `MEMORY.VERSION` bump for the new saved record. Numeric steps keep their
+order and meaning; reordering phases is also a save-shape change.
 
 `installed(life,capability)` supplies existing scene availability checks; owned
 furniture still supplies legacy furnished-room availability. Layout, work-site
 geometry, table seat installation, plant opening animation, contractor routes,
 interruptions and closing remain in their original owners. Keira's wall-shelf
 job uses the same purchase and saved-phase contract; book stocking is the next pass.
+
+## Registries for characters
+
+Shared loops never name a character. A character's own file registers:
+
+- `SIM.addInvitation({ key, actors(world), start(world, actor), pulse? })`: an
+  attended hello or offer (Holger in sim-moments, Gerda in sim-gerda, Keira and
+  Tomas in sim-visitors). `SIM.invitations(world)` lists the waiting ones;
+  the entity-drawable bridge draws their bubbles (pulsing when `pulse`),
+  `SIM.beatAt` → `SIM.invitationAt` handles the tap, and main.js keeps one
+  accessible `#meet-<key>` button over each. Story-arc beats keep their own
+  `CAST.arcs` invitations.
+- `SIM.gateRegular(id, { mayVisit, due, arrivalLine })`: whether and when a
+  regular comes in, and how their arrival is narrated (Gerda's window gate).
+
+Holger's mandatory first hello still has explicit holds in spawning and
+`SIM.update`: it is the one tutorial exception, by design.
+
+## Posture and motion
+
+`SIM._.settlePosture` runs for every person after each `SIM.update` step and
+eases `e.low` between standing (0) and seated/kneeling (1) whenever the pose
+enters or leaves `SIM._.LOW_POSES`; `walker` waits while `low > 0`. Props
+set down while sitting (`placeItem`, `placeAt` from
+`SCENE.tableItemAnchor`) and window perches (`lowAnchor`) follow the same
+easing. The renderer only reads this state. Keyframed gestures use
+`SCENE._.keys`. Details, checks and limits: [animations.md](animations.md).
 
 ## Shared life and plant contract
 
@@ -101,7 +133,7 @@ scene-fx) draws home and plant stages; `sim-life.js` (after sim-characters and
 before dev/main) defines the home/job and persistence hooks. No second world,
 renderer, simulation driver, library or framework is introduced.
 
-`memory.life` (schema v14, unchanged from v13) contains `mode`, integer `savings`, `hour`,
+`memory.life` (schema v15) contains `mode`, integer `savings`, `hour`,
 `homeTime`, `homeDinner: {time,done}`, `daysCompleted`, `openSeconds` (0–11700, saved active service time for popularity), `plant: {stage,time}`, `projects` (including `window` and `bookshelf`), `plannedTonight`, and a nullable lifecycle checkpoint containing
 shop state and Lunafreya's position/path. Initial savings are 90 coins; the plant
 price remains 30 coins; a completed ordinary pickup adds 1 coin. `SIM.plantProject` defines the original small plant. Stages are available → purchased → scheduled → carry
@@ -202,7 +234,7 @@ masonry, menu, shelves, firewood). Day/night tinting happens in the lighting
 pass, so the cache is render-once (call `SCENE.invalidateBG()` if a future
 change makes it state-dependent). Per-frame static-background cost is one
 `drawImage`; incident floor light and the dynamic wall layer follow it. Use
-`tools/art-review.ps1 -Verify` for current warm composition timings (PNG export
+`node tools/art-review.js --verify` for current warm composition timings (PNG export
 and presentation are excluded), rather than relying on historical frame costs.
 
 The sim runs on **one clock with many drivers**: `advance(now)` in main.js
@@ -216,8 +248,7 @@ throttling; an occluded window can slow rAF without ever setting
 one-shots (the `__dev.ff` pattern). Catch-up is capped at 90 s per call: a
 120 s gap advances 90 s and drops the remaining 30 s. It does not discard the
 whole gap. This is a cap on an existing page's clock, not offline progress on
-reload. See the [pre-development audit](predevelopment-audit.md) for coverage
-needed before planner pauses and apartment time join this clock.
+reload. Planner pauses and apartment time share this clock.
 
 ## Movement
 
@@ -309,10 +340,10 @@ the bubble system, and the one click handler.
 - **`MEMORY` (`js/memory.js`)** owns the save `cafe-hygge-save`:
   `{version, lastSeen, arcs, bonds, flags, life}`. `MEMORY.codec` is the pure
   decode/validate/migrate/encode boundary; only plain records and supported
-  integer versions reach the simulation. The schema is v14; v13 → v14 maps
-  Holger's numeric acknowledgements to frozen semantic node IDs, preserving
-  choices and completion. The v1/v2 migrations retain story history and apartment/plant progress. Each migration
-  must explicitly advance one version; no missing step is skipped.
+  integer versions reach the simulation. The schema is v15. During development
+  (owner, 24 September 2026) saves are not migrated: any other version opens a
+  fresh café, and a shape change bumps `VERSION`. The generic ladder remains
+  for real players later; each step must explicitly advance one version.
   `MEMORY.createStore(options)` separates state and serialization from injected
   storage, clock, debounce and persistence-request dependencies. Its default is
   private memory without browser effects; `MEMORY` delegates to the browser
@@ -410,6 +441,8 @@ or console calls:
 | `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Lunafreya's idle picker |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |
 | `__dev.shot(target?, {scale}?)` | headless render → PNG data URL via `SCENE.composeFrame` (same draw list `render()` ships), independent of the rAF loop / tab visibility / preview pane. `target`: a named region from `__dev.regions` (`fireside`, `nook`, `counter`, `window0`, `window1`, `door`, `hearth`, `bookshelf`, `piano`, `artist`, all derived from `SCENE.L`), an entity name (`nora`, `cat`, a patron by name/regularId), a `{x,y,w,h,scale}` crop, or nothing for the whole 960×600 scene. Nearest-neighbour integer upscale |
+| `__dev.film({world, target, start, pre, frames, fps, follow})` | motion filmstrip (PNG data URL) of one entity in a private world run at game speed, from a start condition with optional frames before it; never ticks `__world` ([animations.md](animations.md)) |
+| `__dev.furnishedWorld(o)` / `__dev.modestWorld(o)` / `__dev.greetHolger(w)` | private simulation fixtures: the fully furnished room, a fresh modest café past setup and the mandatory hello, or that hello played in a given world |
 | `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — umbrella, Lunafreya and cat routes included — seat↔table wiring, anchors, barista y=286 / lane 368, plus live-world checks for seats, pairs, umbrellas, sleeper, queue, props, bowls/candles, and spawn cap) |
 
 Three contracts support it: `SIM._` (the private seam shared by the sim
@@ -430,9 +463,9 @@ Studies are render fixtures, not resumable simulation saves. Their cloning uses
 the browser's `structuredClone` only on explicit dev calls, including worlds
 with circular partner/lap links. No new runtime script or package is required.
 
-The optional `tools/art-review.ps1` opens a disposable agent-browser session,
-waits for the harness, saves PNGs and audit JSON under ignored `.art-review/`,
-and closes the session. `-Verify` runs `tools/verify-art.js`: deterministic
+`node tools/art-review.js` serves the checkout, opens a fresh browser context,
+waits for the harness and saves PNGs and audit JSON under ignored `.art-review/`.
+`--verify` runs `tools/verify-art.js`: deterministic
 images, capture side effects, all seat groups at day/night, and warm frame
 composition timings. Commands and limits: [art-workflow.md](art-workflow.md).
 
@@ -597,8 +630,7 @@ Unfinished arrivals can return after closing. Closing waits for actual exits.
 The original visitor release kept v8: existing extensible boolean flags store acknowledged node
 IDs and completion, as for Holger. No field or project phase was added, and
 legacy arrived/working/installed records preserve exact step/time and ownership.
-Visitor node flags and all choice flags remain unchanged; v14 separately migrates
-Holger's former positional flags. `SIM.beginSavedMoment` and the shared conversation
+Visitor node flags and all choice flags remain unchanged. `SIM.beginSavedMoment` and the shared conversation
 advance hook resume and record named nodes immediately; ordinary leave/return restores
 Lunafreya's interrupted path and pose. No introduction gates a job. Expanded
 hellos append stable nodes after the original five (17 Keira lines, 19 Tomas);
