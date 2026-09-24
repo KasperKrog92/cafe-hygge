@@ -65,9 +65,6 @@
   SIM.skipIntro(p);check(!p.dialogue && !p.introPaused && p.tables.length===0,'skip installed furniture');
   for(let n=0;n<3000&&p.shop.phase==='settling';n++)SIM.update(p,.25);
   check(p.shop.phase==='open' && p.memory.life.intro.sign==='outside','skip did not finish real work');
-  const old=JSON.parse(JSON.stringify(w.memory));old.version=5;delete old.life.intro;
-  const migrated=MEMORY.codec.decode(JSON.stringify(old));
-  check(!migrated.error && migrated.state.life.intro.complete,'old café replays intro');
   const sheet=document.createElement('canvas');sheet.width=832;sheet.height=516*3;
   const sg=sheet.getContext('2d');
   for(const [n,key] of ['hug','silent-breath','finale-6'].entries()) {

@@ -32,43 +32,6 @@ function boot(raw) {
 let passed = 0;
 async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name); }
 (async function () {
-  await test('v14 migrates every historical Holger checkpoint independently of live dialogue order', () => {
-    const b=boot();b.run(`
-      const packet=CAST.holgerIntroduction.slice();
-      const source=SIM.create({random:SIM.seededRandom(42)});SIM.skipUnpacking(source);
-      for(let n=0;n<1000&&!SIM.holgerAvailable(source);n++)SIM.update(source,.1);
-      const base=MEMORY.codec.encode(source.memory);
-      for(let cursor=0;cursor<=packet.length;cursor++)for(let branch=0;branch<2;branch++) {
-        const old=JSON.parse(base);old.version=13;
-        for(let n=0;n<cursor;n++)old.flags['holger-introduction-line-'+n]=true;
-        for(const pos of [6,10])if(cursor>=pos)old.flags[packet[pos].choices[branch].flag]=true;
-        if(cursor===packet.length)old.flags['holger-introduced']=true;
-        old.flags['keira-hello-name']=true;old.flags['gerda-offer-later']=true;
-        old.life.projects.table={stage:'working',step:2,time:3};
-        old.life.savings=147;const bytes=JSON.stringify(old);
-        CAST.holgerIntroduction=packet.slice().reverse();
-        const migrated=MEMORY.prepareImport(bytes);
-        CAST.holgerIntroduction=packet;
-        if(JSON.stringify(old)!==bytes||migrated.version!==14)throw Error('source mutated or version missing');
-        for(let n=0;n<packet.length;n++) {
-          if(!!migrated.flags['holger-introduction-node-'+packet[n].id] !== (n<cursor))throw Error('historical meaning changed at '+n);
-          if(Object.hasOwn(migrated.flags,'holger-introduction-line-'+n))throw Error('legacy cursor retained');
-        }
-        if(!migrated.flags['keira-hello-name']||!migrated.flags['gerda-offer-later']||migrated.life.savings!==147||migrated.life.projects.table.time!==3)
-          throw Error('unrelated history lost');
-        const w=SIM.create({memory:MEMORY.createStore({state:migrated})});
-        const warmth=w.memory.bonds.holger.warmth;
-        if(cursor===packet.length) {
-          if(SIM.startHolger(w)||w.memory.bonds.holger.warmth!==warmth)throw Error('completed hello replayed');
-        } else {
-          if(!SIM.startHolger(w)||w.moment.lines[w.moment.index].id!==packet[cursor].id)throw Error('wrong resume node '+cursor);
-          if([6,10].includes(cursor)&&SIM.momentLine(w).text!==packet[cursor].choices[branch].reply)throw Error('saved choice reply lost');
-        }
-        const twice=MEMORY.prepareImport(MEMORY.codec.encode(migrated));
-        if(JSON.stringify(twice)!==JSON.stringify(migrated))throw Error('migration repeats');
-      }
-    `);
-  });
   await test('named conversation progress survives insertion/reordering without repeating acknowledgements or effects', () => {
     const b=boot();b.run(`
       const packets=[CAST.holgerIntroduction,...Object.values(CAST.visitors).map(v=>v.hello),...Object.values(CAST.gerdaWindow)];
@@ -121,8 +84,6 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         if(!rejected||MEMORY.state!==original||localStorage.getItem('cafe-hygge-save')!==bytes)
           throw Error('invalid import replaced current cafe');
       }
-      const legacy=JSON.parse(exported);legacy.version=12;delete legacy.life.openSeconds;
-      if(MEMORY.prepareImport(JSON.stringify(legacy)).version!==MEMORY.VERSION)throw Error('legacy import failed');
       if(MEMORY.prepareImport('\\uFEFF'+exported).life.savings!==173)throw Error('BOM failed');
       const set=localStorage.setItem;localStorage.setItem=()=>{throw Error('blocked')};
       let failed=false;try{MEMORY.importText(exported)}catch(e){failed=true}
@@ -136,25 +97,28 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
     assert.equal(b.timers.size,0,'successful import cancels pending save');
     assert.equal(b.run('MEMORY.status.writeError'),null);
   });
-  await test('v13 preserves history and migrates saved service time without offline popularity', () => {
+  await test('popularity time validates and partial service time survives encoding', () => {
     const b=boot();b.run(`
-      for(const full of [false,true])for(const days of [0,1,5,20]) {
-        const old=MEMORY.codec.fresh();old.version=12;delete old.life.openSeconds;
-        old.life.daysCompleted=days;old.life.furniture['full-counter']=full;
-        old.life.savings=71;old.flags.kept=true;old.lastSeen=1;
-        const r=MEMORY.codec.decode(JSON.stringify(old));
-        const expected=Math.min(11700,full?Math.max(5,days)*780:days?240+(days-1)*780:0);
-        if(r.error||r.state.life.openSeconds!==expected||r.state.life.savings!==71||!r.state.flags.kept)
-          throw Error('popularity migration lost history');
-        const w=SIM.create({memory:MEMORY.createStore({state:r.state})});
-        if(w.memory.life.openSeconds!==expected)throw Error('boot added offline time');
-      }
       for(const n of [-1,11701,NaN,Infinity,undefined]) {
         const s=MEMORY.codec.fresh();s.life.openSeconds=n;
         if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid popularity accepted');
       }
       const s=MEMORY.codec.fresh();s.life.openSeconds=417.25;
-      if(MEMORY.codec.decode(MEMORY.codec.encode(s)).state.life.openSeconds!==417.25)throw Error('partial time lost');
+      const kept=MEMORY.codec.decode(MEMORY.codec.encode(s)).state;
+      if(kept.life.openSeconds!==417.25)throw Error('partial time lost');
+      const w=SIM.create({memory:MEMORY.createStore({state:kept})});
+      if(w.memory.life.openSeconds!==417.25)throw Error('boot added offline time');
+    `);
+  });
+  await test('development saves: any other version opens a fresh café instead of migrating', () => {
+    const b=boot();b.run(`
+      for(const v of [1,7,13,MEMORY.VERSION-1,MEMORY.VERSION+1]) {
+        const s=MEMORY.codec.fresh();s.version=v;s.flags.kept=true;s.life.savings=147;
+        const r=MEMORY.codec.decode(JSON.stringify(s));
+        if(!r.error||r.state.flags.kept||r.state.life.savings!==90)throw Error('version '+v+' was not reset');
+        let rejected=false;try{MEMORY.prepareImport(JSON.stringify(s))}catch(e){rejected=true}
+        if(!rejected)throw Error('import accepted version '+v);
+      }
     `);
   });
   await test('new cafes use game mode; saved idle choices survive reload and reset returns to game', () => {
@@ -166,18 +130,11 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
     restored.run('MEMORY.reset();');
     assert.equal(restored.run('MEMORY.state.life.mode'), 'game');
   });
-  await test('v12 preserves existing evenings and validates dinner checkpoints', () => {
+  await test('dinner, mantel, window-seat and shelf checkpoints validate against the live catalogue', () => {
     const b=boot();b.run(`
-      const old=MEMORY.codec.fresh();old.version=11;delete old.life.homeDinner;
-      old.life.projects.mantel={stage:'working',step:1,time:13};old.life.savings=71;old.flags.kept=true;
-      const r=MEMORY.codec.decode(JSON.stringify(old));
-      if(r.error||r.state.life.savings!==71||!r.state.flags.kept||r.state.life.projects.mantel.time!==13||r.state.life.homeDinner.done)throw Error('dinner migration lost history');
       const w=SIM.create({random:SIM.seededRandom(42)});
       w.shop.phase='home';w.memory.life.homeStory=MEMORY.freshHomeStory(true);
       w.memory.life.homeTime=50;SIM._.saveLife(w,0);
-      const established=JSON.parse(MEMORY.codec.encode(w.memory));established.version=11;delete established.life.homeDinner;
-      const migrated=MEMORY.codec.decode(JSON.stringify(established));
-      if(migrated.error||!migrated.state.life.homeDinner.done||migrated.state.life.homeTime!==50)throw Error('established evening restarted');
       w.memory.life.homeDinner={time:180,done:false};SIM.update(w,.25);
       if(!w.memory.life.homeDinner.done)throw Error('completed timer did not settle');
       MEMORY.codec.validate(w.memory);
@@ -189,61 +146,11 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         const s=MEMORY.codec.fresh();s.life.homeDinner={time,done:false};
         if(MEMORY.codec.decode(MEMORY.codec.encode(s)).state.life.homeDinner.time!==time)throw Error('lost dinner time');
       }
-    `);
-  });
-  await test('v11 preserves bought/open fireplaces and adds a separate mantel project', () => {
-    const b=boot();b.run(`
-      for(const stage of ['available','purchased','scheduled','arrived','working','installed']) {
-        const old=MEMORY.codec.fresh();old.version=10;delete old.life.projects.mantel;
-        old.life.projects.fireplace={stage,step:stage==='installed'?4:stage==='working'?2:0,time:stage==='working'?7.5:0};
-        old.life.projects.windowSeat={stage:'working',step:1,time:7.25};old.life.savings=131;
-        old.flags['gerda-introduced']=true;old.flags['gerda-pillows-accepted']=true;
-        const next=MEMORY.codec.decode(JSON.stringify(old));
-        if(next.error||next.state.version!==MEMORY.VERSION||next.state.life.savings!==131)throw Error('v10 migration');
-        if(JSON.stringify(old.life.projects.fireplace)!==JSON.stringify(next.state.life.projects.fireplace)||next.state.life.projects.windowSeat.time!==7.25)throw Error('existing job replayed');
-        if(!!next.state.flags['fireplace-unlocked']!==(stage!=='available')||!!next.state.flags['fireplace-open-legacy']!==(stage==='working'))throw Error('historical opening state');
-        if(next.state.life.projects.mantel.stage!=='available'||!next.state.flags['gerda-introduced'])throw Error('mantel/story history');
-      }
-      const full=MEMORY.codec.fresh();full.version=10;delete full.life.projects.mantel;full.life.furniture=MEMORY.furnishings(true);
-      const n=MEMORY.codec.decode(JSON.stringify(full));
-      if(n.error||n.state.life.projects.mantel.stage!=='installed'||n.state.life.projects.mantel.step!==3||!n.state.flags['fireplace-unlocked'])throw Error('legacy mantel lost');
-      for(const id of ['windowSeat','mantel']) {
-        const bad=MEMORY.codec.fresh();
-        if(id==='windowSeat'){bad.version=10;delete bad.life.projects.mantel;bad.life.projects.windowSeat.time=12;}
-        else bad.life.projects.mantel={stage:'installed',step:2,time:0};
-        if(!MEMORY.codec.decode(JSON.stringify(bad)).error)throw Error('bad '+id+' accepted');
-      }
-    `);
-  });
-  await test('v10 window seats preserve v9 jobs, scarves and established windows', () => {
-    const b=boot();b.run(`
-      for(const furnished of [false,true]) {
-        const old=MEMORY.codec.fresh();old.version=9;delete old.life.projects.windowSeat;
-        old.life.furniture['window-seats']=furnished;old.life.savings=137;
-        old.flags['cat-wore-scarf']=true;old.bonds.gerda={known:true,visits:9,warmth:3};
-        old.life.projects.bookshelf={stage:'working',step:2,time:7.25};
-        const next=MEMORY.codec.decode(JSON.stringify(old));
-        if(next.error||next.state.version!==MEMORY.VERSION||next.state.life.savings!==137||!next.state.flags['cat-wore-scarf']||next.state.bonds.gerda.visits!==9)throw Error('v9 history lost');
-        if(JSON.stringify(next.state.life.projects.bookshelf)!==JSON.stringify(old.life.projects.bookshelf))throw Error('v9 shelf checkpoint lost');
-        if(next.state.life.projects.windowSeat.stage!==(furnished?'installed':'available')||!!next.state.flags['gerda-window-legacy']!==furnished)throw Error('legacy window ownership');
-        if(next.state.flags['gerda-window-thanked']||next.state.flags['gerda-introduced'])throw Error('migration invented conversation');
-      }
-      const bad=MEMORY.codec.fresh();bad.version=9;delete bad.life.projects.windowSeat;bad.life.projects.bookshelf.time=12;
-      if(!MEMORY.codec.decode(JSON.stringify(bad)).error)throw Error('invalid historical shelf accepted');
+      const mantel=MEMORY.codec.fresh();mantel.life.projects.mantel={stage:'installed',step:2,time:0};
+      if(!MEMORY.codec.decode(JSON.stringify(mantel)).error)throw Error('early mantel accepted');
       for(const change of [p=>p.time=12,p=>p.step=4,p=>p.stage='installed']) {
         const s=MEMORY.codec.fresh();s.life.projects.windowSeat={stage:'working',step:1,time:5.5};change(s.life.projects.windowSeat);
         if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid window job accepted');
-      }
-    `);
-  });
-  await test('v9 shelf migration preserves old contents and rejects invalid unpacking', () => {
-    const b=boot();b.run(`
-      for(const furnished of [false,true]) {
-        const old=MEMORY.codec.fresh();old.version=8;delete old.life.projects.bookshelf;
-        old.life.furniture.bookshelf=furnished;old.life.savings=137;old.flags['keira-hello-name']=true;
-        const result=MEMORY.codec.decode(JSON.stringify(old));
-        if(result.error||result.state.version!==MEMORY.VERSION||result.state.life.savings!==137||!result.state.flags['keira-hello-name'])throw Error('v8 lost history');
-        if(result.state.life.projects.bookshelf.stage!==(furnished?'installed':'available')||result.state.life.furniture.bookshelf!==furnished)throw Error('library ownership migration');
       }
       for(const step of [0,1,2,3,4]) {
         const s=MEMORY.codec.fresh();s.life.projects.bookshelf={stage:'working',step,time:11.75};
@@ -251,11 +158,9 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         s.life.projects.bookshelf.time=12;
         if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid shelf work accepted');
       }
-      const bad=MEMORY.codec.fresh();bad.version=8;delete bad.life.projects.bookshelf;bad.life.projects.window.time=99;
-      if(!MEMORY.codec.decode(JSON.stringify(bad)).error)throw Error('invalid historical window accepted');
     `);
   });
-  await test('existing improvement purchases and v7 checkpoints retain their contract', () => {
+  await test('improvement purchases and work checkpoints retain their contract', () => {
     const b=boot();
     b.run(`
       const ids=['window','table','plant','fireplace'], prices={window:30,table:60,plant:30,fireplace:30};
@@ -274,7 +179,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
         for(let step=0;step<steps;step++) {
           const s=MEMORY.codec.fresh();s.life.projects[id]={stage:'working',step,time:17.75};
           const result=MEMORY.codec.decode(JSON.stringify(s));
-          if(result.error||JSON.stringify(result.state)!==JSON.stringify(s))throw Error('v7 checkpoint '+id+'/'+step);
+          if(result.error||JSON.stringify(result.state)!==JSON.stringify(s))throw Error('checkpoint '+id+'/'+step);
         }
         const s=MEMORY.codec.fresh();s.life.projects[id]={stage:'installed',step:steps,time:0};
         if(MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('installed checkpoint '+id);
@@ -287,84 +192,39 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
       }
     `);
   });
-  await test('v7 adds café days and left-window work without replaying established lives', () => {
+  await test('café days, room size, furniture, projects and life fields reject invalid values', () => {
     const b=boot();
-    b.run(`for(const finished of [false,true]) {
-      var old=MEMORY.codec.fresh();old.version=6;delete old.life.daysCompleted;delete old.life.projects.window;
-      old.life.savings=37;old.flags.kept=true;old.bonds.holger={visits:1};
-      old.life.projects.table={stage:'working',step:2,time:1.25};
-      if(finished){old.life.firstOpening={step:12,time:0};old.life.furniture['table-window']=old.life.furniture['table-hearth']=true;}
-      var result=MEMORY.codec.decode(JSON.stringify(old));
-      if(result.error||!result.state.flags.kept||result.state.bonds.holger.visits!==1)throw Error('v6 history');
-      if(result.state.life.savings!==(finished?37:90)||result.state.life.daysCompleted!==(finished?1:0))throw Error('v6 opening funds/days');
-      if(result.state.life.projects.table.time!==1.25||result.state.life.projects.window.stage!=='available')throw Error('v6 jobs');
-      old.life.furniture=MEMORY.furnishings(true);old.life.firstOpening={step:12,time:0};
-      result=MEMORY.codec.decode(JSON.stringify(old));
-      if(result.error||result.state.life.projects.window.stage!=='installed'||result.state.life.daysCompleted!==7||result.state.life.savings!==37)throw Error('existing windows');
-    }
-    for(const mutate of [s=>s.life.daysCompleted=-1,s=>s.life.daysCompleted=.5,
-      s=>s.life.projects.window.time=18,s=>s.life.projects.window={stage:'installed',step:3,time:0}]) {
-      var state=MEMORY.codec.fresh();mutate(state);
-      if(!MEMORY.codec.decode(JSON.stringify(state)).error)throw Error('invalid v7 accepted');
-    }`);
-  });
-  await test('v5 starts small and preserves every furnished v3 job/history record', () => {
-    const b=boot();
-    b.run(`var fresh=MEMORY.codec.fresh(),small=SIM.create({memory:MEMORY.createStore({state:fresh})});
-      if(small.tables.length||small.seats.length||small.shop.phase!=='settling')throw Error('first arrival skipped');
-      for(let i=0;i<4000&&small.shop.phase==='settling';i++)SIM.update(small,.25);
-      if(small.tables.length!==2||small.seats.length!==4||small.fire.level!==0||small.shop.phase!=='open')throw Error('first setup failed');
-      if(SCENE.room(small).w!==832||SCENE.room(small).floorBottom!==496)throw Error('starting room is full size');
-      for(const fullCounter of [false,true]) {
-        var v4=MEMORY.codec.fresh();v4.version=4;delete v4.life.room;v4.life.furniture['full-counter']=fullCounter;
-        var migrated=MEMORY.codec.decode(JSON.stringify(v4));
-        if(migrated.error||migrated.state.life.room!==(fullCounter?'full':'small'))throw Error('v4 room migration');
+    b.run(`
+      for(const mutate of [s=>s.life.daysCompleted=-1,s=>s.life.daysCompleted=.5,
+        s=>s.life.projects.window.time=18,s=>s.life.projects.window={stage:'installed',step:3,time:0},
+        s=>s.life.room='huge',s=>s.life.furniture=null,s=>s.life.furniture=[],s=>s.life.furniture={},
+        s=>s.life.furniture={'table-window':true},s=>s.life.savings=-1,s=>s.life.savings=.5,s=>s.life.mode='new',
+        s=>s.life.homeTime=91,s=>s.life.hour=24,s=>s.life.plant.stage='other',s=>s.life.plant.time=NaN,
+        s=>s.life.checkpoint={}]) {
+        var state=MEMORY.codec.fresh();mutate(state);
+        if(!MEMORY.codec.decode(JSON.stringify(state)).error)throw Error('invalid life accepted: '+mutate);
       }
-      small.memory.life.room='full';
-      if(SCENE.room(small).w!==960||small.tables.length!==2)throw Error('expansion changes furniture');
-      small.memory.life.room='small';
-      for(const stage of ['available','purchased','scheduled','arrived','working','installed']) {
-        var old=MEMORY.codec.fresh();old.version=3;delete old.life.furniture;
-        old.life.savings=173;old.flags.kept=true;old.bonds.gerda={visits:9};
-        old.arcs['gerda-scarf']={stage:0,progress:2,pendingBeat:'finished'};
-        old.life.projects.table={stage,step:stage==='installed'?6:stage==='working'?3:0,time:stage==='working'?1.25:0};
-        var before=JSON.stringify(old),next=MEMORY.codec.decode(before);
-        if(next.error||JSON.stringify(old)!==before||next.state.version!==MEMORY.VERSION)throw Error('migration failed');
-        if(['table','fireplace'].some(id=>JSON.stringify(next.state.life.projects[id])!==JSON.stringify(old.life.projects[id]))||next.state.life.savings!==173||
-           JSON.stringify(next.state.arcs)!==JSON.stringify(old.arcs)||!next.state.flags.kept||next.state.bonds.gerda.visits!==9)throw Error('history lost');
-        var full=SIM.create({memory:MEMORY.createStore({state:next.state})});
-        if(full.seats.length!==(stage==='installed'?20:18)||Object.values(full.memory.life.furniture).some(v=>!v))throw Error('furniture stripped');
-      }
-      for(const value of [null,[],{}, {'table-window':true}]) {
-        var s=MEMORY.codec.fresh();s.life.furniture=value;
-        if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('invalid furniture accepted');
-      }`);
-  });
-  await test('v2 migration retains the apartment and plant; v3 jobs reject invalid progress', () => {
-    const b=boot();
-    b.run(`var old=MEMORY.codec.fresh();old.version=2;delete old.life.projects;delete old.life.plannedTonight;
-      old.life.savings=83;old.life.plant={stage:'place',time:2.5};old.flags.kept=true;
-      var next=MEMORY.codec.decode(JSON.stringify(old));
-      if(next.error||next.state.version!==MEMORY.VERSION||next.state.life.savings!==83||next.state.life.plant.time!==2.5||!next.state.flags.kept)throw Error('v2 lost life');
       for(const change of [p=>p.time=-1,p=>p.time=18,p=>p.step=1.5,p=>p.step=7,p=>p.stage='other',p=>p.stage='installed',p=>p.step=1]) {
         var s=MEMORY.codec.fresh();change(s.life.projects.table);
         if(!MEMORY.codec.decode(JSON.stringify(s)).error)throw Error('bad project accepted');
       }
       var s=MEMORY.codec.fresh();s.life.projects.table={stage:'working',step:4,time:1.25};
       var r=MEMORY.codec.decode(MEMORY.codec.encode(s));
-      if(r.error||r.state.life.projects.table.time!==1.25)throw Error('partial work lost');`);
+      if(r.error||r.state.life.projects.table.time!==1.25)throw Error('partial work lost');
+    `);
   });
-  await test('v1 migration retains history and rejects malformed life data', () => {
-    const b = boot();
-    b.run(`var s=MEMORY.codec.fresh();delete s.life;s.version=1;
-      s.flags.kept=true;s.bonds.gerda={known:true,visits:7};
-      s.arcs.kept={stage:2,progress:8,pendingBeat:'finished'};
-      var out=MEMORY.codec.decode(JSON.stringify(s));
-      if(out.error||!out.state.flags.kept||out.state.bonds.gerda.visits!==7||out.state.arcs.kept.stage!==2||out.state.life.savings!==30)throw Error('v1 migration');
-      for(const change of [l=>l.savings=-1,l=>l.savings=.5,l=>l.mode='new',l=>l.homeTime=91,l=>l.hour=24,l=>l.plant.stage='other',l=>l.plant.time=NaN,l=>l.checkpoint={}]) {
-        var x=MEMORY.codec.fresh();change(x.life);
-        if(!MEMORY.codec.decode(JSON.stringify(x)).error)throw Error('invalid life accepted');
-      }`);
+  await test('a new café starts small, sets up two tables and keeps furniture on expansion', () => {
+    const b=boot();
+    b.run(`var fresh=MEMORY.codec.fresh(),small=SIM.create({memory:MEMORY.createStore({state:fresh})});
+      if(small.tables.length||small.seats.length||small.shop.phase!=='settling')throw Error('first arrival skipped');
+      for(let i=0;i<4000&&small.shop.phase==='settling';i++)SIM.update(small,.25);
+      if(small.tables.length!==2||small.seats.length!==4||small.fire.level!==0||small.shop.phase!=='open')throw Error('first setup failed');
+      if(SCENE.room(small).w!==832||SCENE.room(small).floorBottom!==496)throw Error('starting room is full size');
+      small.memory.life.room='full';
+      if(SCENE.room(small).w!==960||small.tables.length!==2)throw Error('expansion changes furniture');
+      var state=MEMORY.codec.fresh();state.life.furniture=MEMORY.furnishings(true);state.life.room='full';state.life.firstOpening={step:12,time:0};
+      var full=SIM.create({memory:MEMORY.createStore({state})});
+      if(full.seats.length!==18||Object.values(full.memory.life.furniture).some(v=>!v))throw Error('furnished café seats');`);
   });
   await test('every shop boundary restores, and work/purchase never repeats', () => {
     const b=boot();
@@ -407,7 +267,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
       if (readers[1].bookColor !== colors[1] || readers[2].bookColor !== colors[2])
         throw Error('Remaining books changed color');`);
   });
-  await test('v1 round trip preserves story, bond, flag and extra data', () => {
+  await test('round trip preserves story, bond, flag and extra data', () => {
     const b = boot();
     b.run(`var s = MEMORY.codec.fresh(); s.lastSeen = 123;
       s.arcs.story = {stage: 1, progress: 2.5, pendingBeat: 'finished'};

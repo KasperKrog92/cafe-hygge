@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 14;
+  const KEY = 'cafe-hygge-save', VERSION = 15;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -24,8 +24,11 @@
   function integer(n) { return finite(n) && Math.floor(n) === n; }
   function requireShape(ok, message) { if (!ok) throw new Error(message); }
 
-  // A step consumes version n and must explicitly return version n+1. Add a
-  // step and bump VERSION together when the shipped schema actually changes.
+  // Development phase (owner, 24 September 2026): nobody plays yet, so saves
+  // are not migrated. Bump VERSION whenever the saved shape changes; any
+  // older, newer or malformed save then opens a fresh café. The ladder below
+  // stays for the first real players: a step consumes version n and must
+  // return version n+1, and codec tests exercise it with synthetic steps.
   function createCodec(version, migrations) {
     function fresh() { return { version: version, lastSeen: 0, arcs: {}, bonds: {}, flags: {}, life: freshLife() }; }
     function validate(s) {
@@ -52,42 +55,7 @@
       Object.keys(s.flags).forEach(function (id) {
         requireShape(typeof s.flags[id] === 'boolean', 'invalid flag: ' + id);
       });
-      if (version >= 2) validateLife(s.life, version);
-      if (version >= 3) validateProjects(s.life, version);
-      if (version >= 8) {
-        const h=s.life.homeStory;
-        requireShape(record(h) && integer(h.step) && h.step>=0 && h.step<=12 &&
-          finite(h.time) && h.time>=0 && h.time<=120 && typeof h.planned==='boolean' &&
-          typeof h.firstNight==='boolean' && integer(h.sleepStep) && h.sleepStep>=-1 && h.sleepStep<=4 &&
-          finite(h.sleepTime) && h.sleepTime>=0 && h.sleepTime<=120 &&
-          (h.sleepFrom===null || record(h.sleepFrom) && finite(h.sleepFrom.x) && finite(h.sleepFrom.y) &&
-          h.sleepFrom.x>=128 && h.sleepFrom.x<=832 && h.sleepFrom.y>=266 && h.sleepFrom.y<=550), 'invalid home story');
-      }
-      if (version >= 12) {
-        const d=s.life.homeDinner;
-        requireShape(record(d) && finite(d.time) && d.time>=0 && d.time<=180 &&
-          typeof d.done==='boolean', 'invalid home dinner');
-      }
-      if (version >= 7) requireShape(integer(s.life.daysCompleted) && s.life.daysCompleted >= 0, 'invalid café days');
-      if (version >= 13) requireShape(finite(s.life.openSeconds) && s.life.openSeconds >= 0 &&
-        s.life.openSeconds <= 11700, 'invalid café popularity time');
-      if (version >= 4) {
-        requireShape(record(s.life.furniture), 'invalid furniture');
-        FURNITURE.forEach(id => requireShape(typeof s.life.furniture[id] === 'boolean', 'invalid furniture: ' + id));
-        const first=s.life.firstOpening;
-        requireShape(record(first) && integer(first.step) && first.step>=0 && first.step<=12 &&
-          finite(first.time) && first.time>=0 && first.time<=18, 'invalid first opening');
-        if(first.step===12) requireShape(first.time===0 && s.life.furniture['table-window'] &&
-          s.life.furniture['table-hearth'], 'unfinished starting tables');
-      }
-      if (version >= 5) requireShape(s.life.room === 'small' || s.life.room === 'full', 'invalid room size');
-      if (version >= 6) {
-        const i=s.life.intro;
-        requireShape(record(i) && integer(i.line) && i.line>=0 && i.line<=30 &&
-          integer(i.finale) && i.finale>=0 && i.finale<=8 && finite(i.time) && i.time>=0 && i.time<=8 &&
-          typeof i.skipped==='boolean' && typeof i.complete==='boolean' &&
-          ['stored','carried','outside'].indexOf(i.sign)>=0, 'invalid intro');
-      }
+      validateLife(s.life);
       return s;
     }
     function migrate(input) {
@@ -125,35 +93,53 @@
   function freshIntro(complete) {
     return {line:0,finale:complete?8:0,time:0,skipped:false,complete:complete,sign:complete?'outside':'stored'};
   }
-  // Historical v2 → v3 migration payload; do not derive it from new content.
-  function freshProjects() {
-    return { table: { stage: 'available', step: 0, time: 0 }, fireplace: { stage: 'available', step: 0, time: 0 },
-      window: { stage: 'available', step: 0, time: 0 } };
-  }
-  function validateProjects(l, version) {
+  function validateProjects(l) {
     requireShape(record(l.projects) && typeof l.plannedTonight === 'boolean', 'invalid projects');
-    (version === VERSION ? Object.keys(IMPROVEMENTS.projects) : version>=11 ? ['table','fireplace','window','bookshelf','windowSeat','mantel'] : version>=10 ? ['table','fireplace','window','bookshelf','windowSeat'] : version>=9 ? ['table','fireplace','window','bookshelf'] : version>=7 ? ['table','fireplace','window'] : ['table','fireplace']).forEach(function (id) {
-      // Historical codecs retain their original limits, independent of today's catalogue.
-      const d = version === VERSION ? IMPROVEMENTS.projects[id] : null;
-      const p = l.projects[id], steps = d ? d.phaseIds.length : id === 'mantel' ? 3 : id === 'table' ? 6 : id==='bookshelf' ? 5 : 4;
-      const stages = d ? d.stages : ['available','purchased','scheduled','arrived','working','installed'];
-      requireShape(record(p) && stages.indexOf(p.stage) >= 0 &&
-        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < (d ? d.duration : id==='bookshelf'||id==='windowSeat' ? 12 : 18),
+    Object.keys(IMPROVEMENTS.projects).forEach(function (id) {
+      const d = IMPROVEMENTS.projects[id], p = l.projects[id], steps = d.phaseIds.length;
+      requireShape(record(p) && d.stages.indexOf(p.stage) >= 0 &&
+        integer(p.step) && p.step >= 0 && p.step <= steps && finite(p.time) && p.time >= 0 && p.time < d.duration,
         'invalid project: ' + id);
       requireShape(p.stage === 'installed' ? p.step === steps && p.time === 0 : p.step < steps, 'invalid project completion');
       if (['available','purchased','scheduled','arrived'].indexOf(p.stage) >= 0)
         requireShape(p.step === 0 && p.time === 0, 'invalid project arrival');
     });
   }
-  function validateLife(l, version) {
-    const plant = version === VERSION ? IMPROVEMENTS.plant : null;
+  function validateLife(l) {
+    const plant = IMPROVEMENTS.plant;
     requireShape(record(l), 'invalid life');
     requireShape(['idle', 'game'].indexOf(l.mode) >= 0, 'invalid mode');
     requireShape(integer(l.savings) && l.savings >= 0, 'invalid savings');
     requireShape(finite(l.hour) && l.hour >= 0 && l.hour < 24, 'invalid life hour');
     requireShape(finite(l.homeTime) && l.homeTime >= 0 && l.homeTime <= 90, 'invalid home time');
-    requireShape(record(l.plant) && (plant ? plant.stages : ['available','purchased','scheduled','carry','unpack','place','installed']).indexOf(l.plant.stage) >= 0 &&
-      finite(l.plant.time) && l.plant.time >= 0 && l.plant.time <= (plant ? plant.maxTime : 8), 'invalid plant');
+    requireShape(record(l.plant) && plant.stages.indexOf(l.plant.stage) >= 0 &&
+      finite(l.plant.time) && l.plant.time >= 0 && l.plant.time <= plant.maxTime, 'invalid plant');
+    validateProjects(l);
+    requireShape(integer(l.daysCompleted) && l.daysCompleted >= 0, 'invalid café days');
+    requireShape(finite(l.openSeconds) && l.openSeconds >= 0 && l.openSeconds <= 11700, 'invalid café popularity time');
+    requireShape(record(l.furniture), 'invalid furniture');
+    FURNITURE.forEach(id => requireShape(typeof l.furniture[id] === 'boolean', 'invalid furniture: ' + id));
+    const first = l.firstOpening;
+    requireShape(record(first) && integer(first.step) && first.step>=0 && first.step<=12 &&
+      finite(first.time) && first.time>=0 && first.time<=18, 'invalid first opening');
+    if (first.step===12) requireShape(first.time===0 && l.furniture['table-window'] &&
+      l.furniture['table-hearth'], 'unfinished starting tables');
+    requireShape(l.room === 'small' || l.room === 'full', 'invalid room size');
+    const i = l.intro;
+    requireShape(record(i) && integer(i.line) && i.line>=0 && i.line<=30 &&
+      integer(i.finale) && i.finale>=0 && i.finale<=8 && finite(i.time) && i.time>=0 && i.time<=8 &&
+      typeof i.skipped==='boolean' && typeof i.complete==='boolean' &&
+      ['stored','carried','outside'].indexOf(i.sign)>=0, 'invalid intro');
+    const h = l.homeStory;
+    requireShape(record(h) && integer(h.step) && h.step>=0 && h.step<=12 &&
+      finite(h.time) && h.time>=0 && h.time<=120 && typeof h.planned==='boolean' &&
+      typeof h.firstNight==='boolean' && integer(h.sleepStep) && h.sleepStep>=-1 && h.sleepStep<=4 &&
+      finite(h.sleepTime) && h.sleepTime>=0 && h.sleepTime<=120 &&
+      (h.sleepFrom===null || record(h.sleepFrom) && finite(h.sleepFrom.x) && finite(h.sleepFrom.y) &&
+      h.sleepFrom.x>=128 && h.sleepFrom.x<=832 && h.sleepFrom.y>=266 && h.sleepFrom.y<=550), 'invalid home story');
+    const d = l.homeDinner;
+    requireShape(record(d) && finite(d.time) && d.time>=0 && d.time<=180 &&
+      typeof d.done==='boolean', 'invalid home dinner');
     if (l.checkpoint !== null) {
       const c = l.checkpoint;
       requireShape(record(c) && record(c.shop) && record(c.nora), 'invalid lifecycle checkpoint');
@@ -171,96 +157,7 @@
         finite(s.task.time) && s.task.time >= 0 && Array.isArray(s.task.route) && route(s.task.route), 'invalid ritual task');
     }
   }
-  const codec = createCodec(VERSION, { 1: function (s) {
-    createCodec(1, {}).validate(s);
-    s.version = 2; s.life = freshLife(); s.life.savings = 30; return s;
-  }, 2: function (s) {
-    createCodec(2, {}).validate(s);
-    s.version = 3; s.life.projects = freshProjects();
-    s.life.plannedTonight = s.life.plant.stage === 'purchased'; return s;
-  }, 3: function (s) {
-    createCodec(3, {}).validate(s);
-    s.version = 4; s.life.furniture = furnishings(true); s.life.firstOpening={step:12,time:0}; return s;
-  }, 4: function (s) {
-    createCodec(4, {}).validate(s);
-    s.version = 5; s.life.room = s.life.furniture['full-counter'] ? 'full' : 'small'; return s;
-  }, 5: function (s) {
-    createCodec(5, {}).validate(s);
-    s.version=6; s.life.intro=freshIntro(s.life.firstOpening.step===12);
-    // Earlier assembly is never replayed; remaining remarks join the next chore.
-    return s;
-  }, 6: function (s) {
-    createCodec(6, {}).validate(s);
-    s.version = 7;
-    s.life.daysCompleted = s.life.furniture['full-counter'] ? 7 : s.life.firstOpening.step === 12 ? 1 : 0;
-    s.life.projects.window = {stage:s.life.furniture['open-windows'] ? 'installed' : 'available',
-      step:s.life.furniture['open-windows'] ? 4 : 0,time:0};
-    // An unfinished first morning receives the same reserved improvement funds.
-    if (s.life.firstOpening.step < 12) s.life.savings = Math.max(90,s.life.savings);
-    return s;
-  }, 7: function(s) {
-    createCodec(7, {}).validate(s);
-    s.version=8;
-    // Established evenings keep their choices and funds; the first visit is
-    // reserved for saves that have never come home.
-    s.life.homeStory=freshHomeStory(s.life.daysCompleted>0);
-    return s;
-  }, 8: function(s) {
-    createCodec(8, {}).validate(s);
-    s.version=9;
-    s.life.projects.bookshelf={stage:s.life.furniture.bookshelf?'installed':'available',
-      step:s.life.furniture.bookshelf?5:0,time:0};
-    return s;
-  }, 9: function(s) {
-    createCodec(9, {}).validate(s);
-    s.version=10;
-    const established=s.life.furniture['window-seats'];
-    s.life.projects.windowSeat={stage:established?'installed':'available',step:established?4:0,time:0};
-    // Preserve already furnished windows without inventing acknowledged dialogue.
-    if(established)s.flags['gerda-window-legacy']=true;
-    return s;
-  }, 10: function(s) {
-    createCodec(10, {}).validate(s);
-    s.version=11;
-    const l=s.life,p=l.projects.fireplace,decorated=l.furniture['mantel-decor'];
-    l.projects.mantel={stage:decorated?'installed':'available',step:decorated?3:0,time:0};
-    // Already bought/working fires retain their exact balance and hand progress.
-    // Earlier fireboxes were open; never put boards over work already underway.
-    if(p.stage!=='available'||l.furniture.hearth)s.flags['fireplace-unlocked']=true;
-    if(p.stage==='working')s.flags['fireplace-open-legacy']=true;
-    return s;
-  }, 11: function(s) {
-    createCodec(11, {}).validate(s);
-    s.version=12;
-    // An established evening continues in place; dinner joins the next arrival.
-    s.life.homeDinner={time:0,done:!!(s.life.checkpoint && s.life.checkpoint.shop.phase==='home' &&
-      s.life.homeStory.step===12 && s.life.homeStory.planned)};
-    return s;
-  }, 12: function(s) {
-    createCodec(12, {}).validate(s);
-    s.version=13;
-    // Credit saved service history once, never wall-clock absence. The short
-    // first opening contributes four minutes; later days approximate 13 hours.
-    s.life.openSeconds=Math.min(11700,s.life.furniture['full-counter'] ?
-      Math.max(5,s.life.daysCompleted)*780 : s.life.daysCompleted ?
-      240+(s.life.daysCompleted-1)*780 : 0);
-    return s;
-  }, 13: function(s) {
-    createCodec(13, {}).validate(s);
-    s.version=14;
-    // Frozen v13 order. Never derive historical line meanings from CAST:
-    // future writing may reorder or insert nodes in the live packet.
-    ['sign','opening','neighbour','luna-name','espresso','why-cafe','beginning',
-      'sea-nerves','cups','reassurance','hope','galley','miss-sea','voices','welcome','farewell']
-      .forEach(function(id,index) {
-        const old='holger-introduction-line-'+index, key='holger-introduction-node-'+id;
-        if(own(s.flags,old)) {
-          s.flags[key]=s.flags[key]===true || s.flags[old];
-          delete s.flags[old];
-        }
-      });
-    return s;
-  } });
+  const codec = createCodec(VERSION, {});
   MEMORY.freshHomeStory=freshHomeStory;
   MEMORY.VERSION = VERSION;
   MEMORY.furnishings = furnishings;

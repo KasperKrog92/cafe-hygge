@@ -90,14 +90,6 @@
     if(b.y>H.bedSeat.y+.1 && b.y<H.lane)check(b.x<H.bed.x,'bedtime cut the mattress');
   }
   check(SIM.skipBedtime(reader) && reader.shop.phase==='dawn','later game bedtime skip failed');
-  // v7 saves with a previous evening retain purchases, funds, and history.
-  for(const visited of [false,true]) {
-    const old=MEMORY.codec.fresh();old.version=7;delete old.life.homeStory;
-    old.life.daysCompleted=visited?3:0;old.life.savings=visited?2:90;old.flags.kept=true;
-    const r=MEMORY.codec.decode(JSON.stringify(old));
-    check(!r.error && r.state.flags.kept && r.state.life.savings===old.life.savings,'migration lost history');
-    check(r.state.life.homeStory.step===(visited?12:0),'migration replayed an established evening');
-  }
   const sheet=document.createElement('canvas');sheet.width=1440;sheet.height=1200;
   const g=sheet.getContext('2d');g.fillStyle='#29242b';g.fillRect(0,0,sheet.width,sheet.height);
   const picks=['tour-1','tour-6','tour-9','tour-11','bedtime-0','bedtime-1','bedtime-3','unpacked-evening','arrival'];

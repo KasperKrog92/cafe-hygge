@@ -50,16 +50,13 @@
     check(!SIM.visitorActors(w).length,'visitor blocks closing');w=restore(w);
     SIM.setMode(w,'game');SIM.goToSleep(w);until(w,()=>w.memory.life.projects.bookshelf.stage==='installed');snap(w,'resume-'+phase);
   }
-  const old=__dev.furnishedWorld();old.memory.version=8;delete old.memory.life.projects.bookshelf;
-  const migrated=MEMORY.codec.migrate(old.memory);
-  check(migrated.life.projects.bookshelf.stage==='installed' && migrated.life.furniture.bookshelf,'old library lost');
-  const legacy=SIM.create({memory:MEMORY.createStore({state:migrated})});
-  check(SCENE.hasFurniture(legacy,'bookshelf')&&!SCENE.hasFurniture(legacy,'shelf-worksite'),'old library duplicated');
+  const furnished=__dev.furnishedWorld();
+  check(SCENE.hasFurniture(furnished,'bookshelf')&&!SCENE.hasFurniture(furnished,'shelf-worksite'),'installed library duplicated');
   let w=__dev.modestWorld();w.memory.life.projects.bookshelf.stage='scheduled';w.memory.flags['keira-hello-name']=true;SIM.setMode(w,'game');
   until(w,()=>SIM.visitorInvites(w).some(a=>a.visitorId==='keira'));
   check(SIM.startVisitor(w,'keira')&&w.moment.index===1,'pending greeting not resumed');
   SIM.leaveMoment(w);until(w,()=>!w.moment);until(w,()=>w.memory.life.projects.bookshelf.stage==='installed');
-  checks.push('closing before/during unpacking, v8 library migration, pending greeting');
+  checks.push('closing before/during unpacking, installed library, pending greeting');
   // The actual future-use envelope, not only a route audit: frames, drapes,
   // sill, mantel/corbel and future 20-pixel book spines stay clear.
   const s=SCENE.L.projects.bookshelf,win=SCENE.L.win,fire=SCENE.L.fire;

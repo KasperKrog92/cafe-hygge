@@ -95,10 +95,6 @@
   SIM.setMode(w,'idle');
   check(!SIM.goToSleep(w),'idle sleep accepted');
   until(w,()=>w.shop.phase==='open');
-  const old=MEMORY.codec.fresh(); delete old.life; old.version=1; old.flags.kept=true;
-  old.arcs.kept={stage:2,progress:4,pendingBeat:'finished'};
-  const migrated=MEMORY.codec.decode(JSON.stringify(old));
-  check(!migrated.error&&migrated.state.flags.kept&&migrated.state.arcs.kept.stage===2&&migrated.state.life.savings===30,'v1 migration');
   window.lifeFrames=frames; window.lifeSaves=saves;
-  return {results,stages,repeatPurchase:false,repeatPlacement:false,migration:true,frames:Object.keys(frames)};
+  return {results,stages,repeatPurchase:false,repeatPlacement:false,frames:Object.keys(frames)};
 })();

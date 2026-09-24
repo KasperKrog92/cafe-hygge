@@ -1160,7 +1160,7 @@
         problems.push('MEMORY.state is missing');
       } else {
         try { MEMORY.codec.validate(mem); } catch (e) { problems.push('invalid world memory: ' + e.message); }
-        if (mem.version !== MEMORY.VERSION) problems.push('MEMORY save version ' + mem.version + ' != current ' + MEMORY.VERSION + ' (the migration ladder should have upgraded it)');
+        if (mem.version !== MEMORY.VERSION) problems.push('MEMORY save version ' + mem.version + ' != current ' + MEMORY.VERSION + ' (older development saves should have reset to a fresh café)');
         ['arcs', 'bonds', 'flags'].forEach(function (k) {
           if (!mem[k] || typeof mem[k] !== 'object') problems.push('MEMORY.state.' + k + ' is not an object');
         });
