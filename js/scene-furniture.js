@@ -14,6 +14,17 @@
       return other.kind === 'laptop' && other.side === it.side;
     }) ? 9 : 0;
   };
+  // Where a table item's cup stands (centre of its body), matching every
+  // drawTableItem call below. Hands that set a cup down aim here.
+  SCENE.tableItemAnchor = function (tb, it) {
+    let cx = tb.x, cy = tb.y, reach = 24;
+    if (tb.artist) { cx = L.artist.table.saucer.x; cy = L.artist.table.saucer.y - 2; reach = 0; }
+    else if (tb.piano) { cx = L.piano.saucer.x; cy = L.piano.saucer.y - 2; reach = 0; }
+    else if (tb.small) cy = tb.y - 2;
+    else if (tb.tall) { cy = tb.y - 2; reach = 12; }
+    else cy = tb.y + SCENE.tableItemOffsetY(tb, it);
+    return { x: cx + it.side * reach, y: cy - 8 };
+  };
   SCENE.laptopGeometry = function (cx, cy, side) {
     return { x: cx + side * 28, y: cy - 5, facing: -side,
       screenX: cx + side * 13, screenY: cy - 15 };

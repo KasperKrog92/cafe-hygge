@@ -4,7 +4,7 @@
 
   const SCENE = window.SCENE;
   const R = SCENE._;
-  const px = R.px, ell = R.ell, shade = R.shade;
+  const px = R.px, ell = R.ell, shade = R.shade, keys = R.keys;
 
   /* ================= PEOPLE ================= */
 
@@ -228,12 +228,145 @@
     });
   };
 
+  /* Lunafreya at the espresso machine, seen from behind. The machine stands
+     on the rear worktop, so her hands work forward into it: only raised
+     elbows and whatever passes beside her head can show. This is drawn before
+     her torso and head, which cover the rest, as a real back would. Each
+     step is keyed (press / hold / release), not a constant wobble. */
+  function drawStationBehind(g, p, x, y, c, step) {
+    const t = p.stateT, sleeve = shade(c.top, -0.08);
+    const left = { x: x - 9, y: y - 37 }, right = { x: x + 8, y: y - 37 };
+    function arm(sh, hx, hy, out) {
+      hx = Math.round(hx); hy = Math.round(hy);
+      const ex = Math.round((sh.x + hx) / 2 + out), ey = Math.round((sh.y + hy) / 2 + 3);
+      limb(g, sh.x, sh.y, ex, ey, 5, sleeve);
+      limb(g, ex, ey, hx, hy, 4, sleeve);
+      px(g, hx - 2, hy - 2, 4, 4, c.skin);
+    }
+    switch (step.act) {
+      case 'grind': {
+        // The portafilter is held up under the grinder spout, beside her;
+        // the other hand taps the grinder switch in short pulses.
+        const hx = x - 16, hy = y - 47 + keys(t % 0.5, [[0, 0], [0.08, 1], [0.16, 0]]);
+        px(g, hx - 8, Math.round(hy) - 1, 6, 2, '#4a3020'); px(g, hx - 3, Math.round(hy) - 2, 5, 4, '#3c414d');
+        arm(left, hx, hy, -4);
+        arm(right, x - 4, y - 52 + keys(t % 0.75, [[0, 0], [0.1, 2], [0.25, 0]]), 5);
+        break;
+      }
+      case 'tamp': {
+        const press = keys(t, [[0, 0], [0.12, 3], [0.36, 3], [0.5, 0]]);
+        arm(left, x - 3, y - 33 + press, -6);
+        arm(right, x + 3, y - 33 + press, 6);
+        break;
+      }
+      case 'pull': {
+        // Up to the group head, a turn of the handle to lock it, then the
+        // arm comes down to wait out the shot.
+        const up = keys(t, [[0, 0], [0.3, 1], [0.75, 1], [1.05, 0.3], [2.1, 0.3], [2.4, 0]]);
+        const turn = keys(t, [[0.3, 0], [0.5, 3]]);
+        arm(right, x + 12 + (turn - 17) * up, y - 26 - 26 * up, 5);
+        arm(left, x - 12, y - 27, -2);
+        break;
+      }
+      case 'steam': {
+        // The pitcher is lifted to the wand and turned slowly in both hands.
+        const lift = keys(t, [[0, 0], [0.25, 1], [step.dur - 0.25, 1], [step.dur, 0]]);
+        const hx = x + 6 + Math.round(Math.sin(t * 5) * 1.2);
+        const hy = Math.round(y - 28 - 18 * lift + Math.cos(t * 5) * 1.2);
+        px(g, hx - 3, hy - 4, 7, 8, '#b8bfc7'); px(g, hx - 3, hy - 4, 7, 1, '#d3d9de');
+        arm(right, hx + 4, hy + 1, 5);
+        arm(left, hx - 4, hy + 2, -5);
+        break;
+      }
+      case 'kettle': {
+        // The kettle is lifted and tipped over the cup at the machine's side.
+        const tip = keys(t, [[0, 0], [0.3, 1], [step.dur - 0.3, 1], [step.dur, 0]]);
+        const hx = x + 14, hy = Math.round(y - 30 - 14 * tip), spout = Math.round(tip * 2);
+        px(g, hx - 1, hy - 7, 9, 8, '#b8bfc7');
+        px(g, hx - 4 - spout, hy - 6 + spout, 4, 2, '#8a919c');
+        arm(right, hx + 2, hy, 4);
+        arm(left, x - 12, y - 27, -2);
+        break;
+      }
+    }
+  }
+
+  /* Sitting down, kneeling and getting up (SIM settlePosture eases p.low).
+     The character's own standing art is lowered onto bent legs, so every
+     outfit, hairstyle and held prop carries through the transition. */
+  function drawCrouch(g, p) {
+    const q = p.low, s = q * q * (3 - 2 * q);
+    const f = p.facing >= 0 ? 1 : -1, x = Math.round(p.x), y = Math.round(p.y), c = p.colors;
+    // Seen as the pose being entered or left: kneeling at a hearth or crate
+    // is from behind; sitting and crouching at the bowls are in profile.
+    const view = (p.lowPose || p.pose) === 'kneel' ? 'up' : '';
+    const drop = Math.round(8 * s);
+    let lean = 0;
+    ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
+    if (view) {
+      // From behind or in front the knees bend toward us: shorter, splayed legs.
+      const top = y - 16 + drop, flare = Math.round(Math.sin(s * Math.PI) * 2);
+      [-1, 1].forEach(function (side) {
+        const lx = (side < 0 ? x - 10 : x + 2) + side * flare;
+        px(g, lx, top, 8, Math.max(1, y - 3 - top), side < 0 ? shade(c.pants, -0.12) : c.pants);
+        px(g, lx, y - 3, 8, 3, '#3a2a1c');
+      });
+    } else {
+      // In profile the hips sink and draw back while the knees come forward
+      // to the seated shape; the torso leans over them mid-way.
+      lean = Math.round(Math.sin(s * Math.PI) * 3);
+      const hip = { x: x - f * Math.round(2 * s), y: y - 15 + Math.round(5 * s) };
+      const knee = { x: x + f * Math.round(8 * s), y: y - 8 - Math.round(2 * s) };
+      const foot = { x: x + f * Math.round(5 * s), y: y - 2 };
+      [true, false].forEach(function (far) {
+        const col = far ? shade(c.pants, -0.12) : c.pants, o = far ? -f * 3 : 0;
+        limb(g, hip.x + o, hip.y, knee.x + o, knee.y, 7, col);
+        limb(g, knee.x + o, knee.y, foot.x + o, foot.y, 6, col);
+        px(g, foot.x + o - 4 + f * 2, y - 3, 8, 3, '#3a2a1c');
+      });
+    }
+    const reach = !view && p.placeAt;
+    SCENE.drawPerson(g, Object.assign({}, p, { x: p.x + f * lean, y: p.y + drop, pose: 'stand',
+      heading: view, low: 0, noLegs: true, reading: false, pageTurn: 0,
+      noArm: !!reach, holding: reach ? null : p.holding }));
+    if (reach) {
+      // The near hand carries the cup down to where it will stand, lets go
+      // (SIM places it at low 0.6) and comes back to the lap.
+      const bx = x + f * lean, by = y + drop, e = function (t) { return t * t * (3 - 2 * t); };
+      const at = p.placeQ || 0.6, r = q < at ? e(q / at) : 1 - e((q - at) / (1 - at));
+      const sx = bx + f * 13, sy = by - 27, shoulder = { x: bx + f * 4, y: by - 35 };
+      let hx = sx + (p.placeAt.x - sx) * r, hy = sy + (p.placeAt.y - sy) * r;
+      // An arm is only so long: never stretch past a natural reach.
+      const len = Math.hypot(hx - shoulder.x, hy - shoulder.y);
+      if (len > 24) { hx = shoulder.x + (hx - shoulder.x) * 24 / len; hy = shoulder.y + (hy - shoulder.y) * 24 / len; }
+      hx = Math.round(hx); hy = Math.round(hy);
+      const cup = p.placeItem === 'cup';
+      limb(g, shoulder.x, shoulder.y, hx - f * (cup ? 7 : 3), hy + 1, 4, shade(c.top, -0.06));
+      if (cup) {
+        const kind = p.drink && p.drink.kind;
+        if (kind === 'glass') {
+          px(g, hx - 4, hy - 7, 8, 13, 'rgba(200,220,230,0.7)'); px(g, hx - 3, hy - 1, 6, 6, '#8a9a4a');
+        } else if (kind === 'plate') {
+          px(g, hx - 7, hy + 2, 15, 4, '#e8e0d0'); px(g, hx - 4, hy - 3, 10, 5, '#c98f4a');
+        } else {
+          px(g, hx - 5, hy - 6, 10, 11, kind === 'matcha' ? '#e8e0d0' : '#e8e0d0');
+          px(g, hx - 3, hy - 6, 6, 2, kind === 'matcha' ? '#8a9a4a' : '#6b4429');
+        }
+      }
+      px(g, hx - f * (cup ? 8 : 4) - 2, hy - 1, 4, 4, c.skin);
+    }
+  }
+
   SCENE.drawPerson = function (g, p) {
+    if (p.low > 0 && p.low < 1) { drawCrouch(g, p); return; }
     const facing = p.facing >= 0 ? 1 : -1;
     const walk = p.pose === 'walk';
     const front = p.heading === 'down' && (walk || p.pose === 'stand');
     const back = p.heading === 'up' && (walk || p.pose === 'stand');
-    const cycle = walk ? (Math.floor((p.walkDistance || 0) / 6) % 4) : 0;
+    // Gait: brisk walkers take longer strides, slower ones shorter (speed
+    // 40 → 22 px per full cycle, 60 → 26). Feet still lock to the floor.
+    const S = p.stride || Math.round(14 + (p.speed || 50) * 0.2);
+    const cycle = walk ? (Math.floor((p.walkDistance || 0) / (S / 4)) % 4) : 0;
     const pass = cycle === 1 || cycle === 3;               // passing frames bob up
     const y = Math.round(p.y);
     const blink = p.animT % 4.7 > 4.57 || p.pose==='hug' || p.pose==='breath';
@@ -245,7 +378,7 @@
       : p.pose==='hug'?2:!walk && Math.sin(p.animT * 1.6) > 0.3 ? 1 : 0;
     const topD = shade(c.top, -0.18);
 
-    ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
+    if (!p.noLegs) ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
 
     if (p.pose === 'catCare') {
       // Side-on crouch: the pour meets the actual bowl, below the window sill.
@@ -261,7 +394,7 @@
       drawHead(g,x+4,y-47,1,c,false);
       px(g,hx-4,hy-6,8,7,kind==='water'?'#e8dfc9':'#b18a5c');
       px(g,hx+3,hy-2,3,3,c.skin);
-      if(p.stateT>.3 && p.stateT<1.6)
+      if(p.stateT>.55 && p.stateT<1.6)
         px(g,at.x,at.y-7,1,3,kind==='water'?'#8fb2bf':'#9b6a35');
       return;
     }
@@ -459,15 +592,19 @@
 
     // A planted foot stays on the baseline while the other passes it.
     // Phase comes from travelled pixels, so slow walkers do not skate.
-    if (walk) {
+    let bob = 0;
+    if (p.noLegs) {
+      // drawCrouch has already drawn bent legs beneath this lowered body.
+    } else if (walk) {
       for (let leg = 0; leg < 2; leg++) {
-        const phase = ((p.walkDistance || 0) / 24 + leg * 0.5) % 1;
+        const phase = ((p.walkDistance || 0) / S + leg * 0.5) % 1;
         const swingPhase = Math.max(0, (phase - 0.5) * 2);
-        // Twelve travelled pixels of stance: the foot moves exactly twelve
-        // pixels backward relative to the body, remaining fixed on the floor.
-        const stride = phase < 0.5 ? 6 - phase * 24
-          : -6 + 12 * swingPhase * swingPhase * (3 - 2 * swingPhase);
+        // Half a cycle of stance: the foot moves exactly S/2 travelled pixels
+        // backward relative to the body, remaining fixed on the floor.
+        const stride = phase < 0.5 ? S / 4 - phase * S
+          : -S / 4 + S / 2 * swingPhase * swingPhase * (3 - 2 * swingPhase);
         const lift = Math.round(Math.sin(swingPhase * Math.PI) * 4);
+        if (lift >= 2) bob = 1;
         const vertical = front || back;
         const hip = vertical ? (leg ? 1 : -8) : (leg ? -2 : -5);
         const hipX = x + (vertical || facing > 0 ? hip : -hip - 7);
@@ -492,6 +629,10 @@
       px(g, x + 4, y - 12, 2, 8, shade(c.pants, -0.2));
       px(g, x - 10, y - 3, 18, 3, '#3a2a1c');
     }
+    const station = p.kind === 'barista' && p.state === 'prepping' && p.steps ? p.steps[p.stepIdx] : null;
+    if (station && back && !p.noArm) drawStationBehind(g, p, x, y, c, station);
+    // The body rides a pixel higher as the swinging foot passes the planted one.
+    if (bob) { g.save(); g.translate(0, -bob); }
     // torso with shoulder light, centre fold and hem
     const shoulderLift=p.pose==='breath'?breathe:0;
     px(g, x - 10, y - 40+shoulderLift, 20, 24-shoulderLift, c.top);
@@ -547,7 +688,9 @@
     else drawHead(g, x, y - 56 + breathe, facing, c, blink);
     // arm + held item, with actual hands
     const held = p.holding;
-    if(p.catHand) {
+    if (p.noArm) {
+      // drawCrouch draws this near arm itself while it reaches to the table.
+    } else if(p.catHand) {
       const at=p.catHand;
       limb(g,x-10,y-35,x-3,y-23,5,c.top);
       limb(g,x-3,y-23,at.x-11,at.y-2,4,c.skin);
@@ -589,13 +732,16 @@
       px(g, x + 17 + hand, y - 54, 4, 5, c.skin);
       px(g, x - 13, y - 38, 4, 15, c.top);
       px(g, x - 13, y - 25, 4, 4, c.skin);
+    } else if (p.kind === 'barista' && p.state === 'prepping' && back) {
+      // drawStationBehind has drawn her working arms behind her back.
     } else if (p.kind === 'barista' && p.state === 'prepping') {
-      const step = p.steps[p.stepIdx];
-      const q = Math.min(1, p.stateT / step.dur);
+      const step = p.steps[p.stepIdx], t = p.stateT;
       const act = step.act;
-      const work = act === 'whisk' ? Math.round(Math.sin(p.stateT * 24) * 2)
-        : act === 'tamp' ? Math.round(Math.sin(q * Math.PI) * 4)
-        : act === 'scoop' || act === 'ice' || act === 'fetch' ? Math.round(Math.sin(q * Math.PI) * 3) : 0;
+      // Whisking is a genuine quick zigzag; the rest are keyed reaches.
+      const work = act === 'whisk' ? Math.round(Math.sin(t * 24) * 2)
+        : act === 'scoop' ? Math.round(keys(t, [[0, 0], [0.2, 3], [0.45, -1], [0.7, 0]]))
+        : act === 'tamp' ? Math.round(keys(t, [[0, 0], [0.12, 3], [0.36, 3], [0.5, 0]]))
+        : act === 'ice' || act === 'fetch' ? Math.round(keys(t / step.dur, [[0, 0], [0.35, 3], [0.65, 3], [1, 0]])) : 0;
       px(g, x - 13, y - 36, 5, 12, c.top);
       px(g, x + 8, y - 36, 5, 12, c.top);
       px(g, x - 10, y - 28, 9, 4, c.skin);
@@ -778,7 +924,7 @@
       // not at its forward edge. Keep it fixed and counter-swing the hand
       // against the near leg, with a small bend through the elbow.
       const shoulder = x - facing * 2 - 2;
-      const swing = Math.round(Math.cos((p.walkDistance || 0) / 24 * Math.PI * 2) * 3) * facing;
+      const swing = Math.round(Math.cos((p.walkDistance || 0) / S * Math.PI * 2) * 3) * facing;
       const sleeve = shade(c.top, -0.1);
       px(g, shoulder, y - 36, 5, 8, sleeve);
       px(g, shoulder + Math.round(swing / 2), y - 29, 5, 6, sleeve);
@@ -789,13 +935,39 @@
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 4, c.skin);
     }
     drawOffhand(g, p, x, y, facing, c);
+    if (bob) g.restore();
   };
 
   /* ---------- the cat ---------- */
+  // Lying down or getting up passes through a short loaf (lying, head up),
+  // so a curled sleeper never becomes a sitting cat in one frame.
+  const CAT_LYING = { sleep: 1, knead: 1, lap: 1 };
+  const CAT_VIA_LOAF = { sit: 1, groom: 1, stretch: 1, walk: 1, hop: 1, shopWalk: 1 };
+  function catViaLoaf(from, to) {
+    return from !== to && ((CAT_LYING[to] && (CAT_VIA_LOAF[from] || CAT_LYING[from])) ||
+      (CAT_LYING[from] && CAT_VIA_LOAF[to] && to !== 'walk' && to !== 'hop' && to !== 'shopWalk'));
+  }
+  // Head heights of the resting poses: across a pose change the head (what
+  // the eye follows) eases from the old height to the new one.
+  const CAT_HEAD = { sleep: -14, lap: -14, loaf: -19, pounce: -19, knead: -19, stretch: -19,
+    groom: -19, sit: -26, eat: -9, drink: -9 };
+  const CAT_SHIFT = 0.28;
+  function catHeadEase(cat) {
+    const s = cat.shift; if (!s) return 0;
+    let from = s.from, to = cat.state, q = s.t / CAT_SHIFT;
+    if (catViaLoaf(s.from, cat.state)) {
+      if (q < 1) to = 'loaf'; else { from = 'loaf'; q -= 1; }
+    }
+    if (q >= 1 || CAT_HEAD[from] == null || CAT_HEAD[to] == null) return 0;
+    return Math.round((CAT_HEAD[from] - CAT_HEAD[to]) * (1 - q * q * (3 - 2 * q)));
+  }
   SCENE.drawCat = function (g, cat) {
     const x = Math.round(cat.x), y = Math.round(cat.y);
     const t = cat.animT;
-    const pose = cat.state === 'shopWalk' ? 'walk' : cat.state;
+    let pose = cat.state === 'shopWalk' ? 'walk' : cat.state;
+    const shift = cat.shift;
+    if (shift && shift.t < CAT_SHIFT && catViaLoaf(shift.from, cat.state)) pose = 'loaf';
+    const hd = catHeadEase(cat);
     const vertical = pose === 'walk' && (cat.heading === 'up' || cat.heading === 'down');
     // on the back-bar shelf the tail drapes off the board edge instead of the
     // pose's own tail (sleep keeps its tucked curl and skips the drape)
@@ -889,9 +1061,9 @@
       px(g, x - 6, y - 10 - breathe, 11, 2, shade(body, 0.18));
       px(g, x - 12, y - 4, 24, 4, dark);
       px(g, x - 7, y - 9 - breathe, 2, 5, dark); px(g, x, y - 9 - breathe, 2, 5, dark);
-      px(g, x + 3, y - 14, 10, 7, body);
-      ears(x + 3, 10, y - 14);
-      px(g, x + 5, y - 11, 5, 2, '#8a6142');            // closed eye
+      px(g, x + 3, y - 14 + hd, 10, 7, body);
+      ears(x + 3, 10, y - 14 + hd);
+      px(g, x + 5, y - 11 + hd, 5, 2, '#8a6142');       // closed eye
       // tail curled right around the front, pale tip
       px(g, x - 15, y - 8, 4, 8, dark);
       px(g, x - 12, y - 3, 9, 3, dark);
@@ -912,8 +1084,8 @@
       px(g, x - 12, y - 11, 22, 9, body);
       px(g, x - 8, y - 4, 4, 4, dark); px(g, x + 5, y - 4, 4, 4, body);
       const dip = Math.round(Math.sin(t * (pose === 'drink' ? 12 : 7)) > 0 ? 1 : 0);
-      px(g, x - 16, y - 9 + dip, 11, 8, body);
-      ears(x - 16, 11, y - 9 + dip);
+      px(g, x - 16, y - 9 + dip + hd, 11, 8, body);
+      ears(x - 16, 11, y - 9 + dip + hd);
       if (pose === 'drink' && dip) px(g, x - 17, y - 1, 4, 1, pink);
       px(g, x + 10, y - 15, 4, 8, dark); px(g, x + 12, y - 19, 3, 5, dark);
       px(g, x + 12, y - 21, 3, 2, cream);
@@ -923,7 +1095,7 @@
       px(g, x + 1, y - 16, 4, 8, shade(body, 0.14));
       px(g, x - 5, y - 5, 10, 5, cream);
       px(g, x - 7, y - 14, 2, 3, dark); px(g, x + 4, y - 15, 2, 3, dark);   // stripes
-      const hy = pose === 'groom' ? y - 19 + Math.round(Math.sin(t * 5)) : y - 26;
+      const hy = (pose === 'groom' ? y - 19 + Math.round(Math.sin(t * 5)) : y - 26) + hd;
       const hx = pose === 'groom' ? x + f * 2 : x;
       px(g, hx - 5, hy, 14, 9, body);
       ears(hx - 5, 14, hy);
@@ -947,7 +1119,7 @@
     } else if (pose === 'knead') {
       const paw = Math.floor(t * 6) % 2;
       px(g, x - 12, y - 12, 24, 10, body);
-      px(g, x + 5, y - 19, 10, 9, body); ears(x + 5, 10, y - 19);
+      px(g, x + 5, y - 19 + hd, 10, 9, body); ears(x + 5, 10, y - 19 + hd);
       px(g, x + 5, y - 4 - paw * 2, 5, 4 + paw * 2, cream);
       px(g, x + 11, y - 6 + paw * 2, 5, 6 - paw * 2, cream);
       px(g, x - 15, y - 8, 5, 6, dark); px(g, x - 16, y - 10, 4, 3, cream);
@@ -958,9 +1130,9 @@
       px(g, x - 2, y - 13 + bow, 15, 9 - bow, body);
       px(g, x - 11, y - 4, 4, 4, dark);
       px(g, x + 3, y - 3, 12 + bow, 3, cream); // reaching forepaws
-      px(g, x + 8 + bow, y - 19 + bow, 10, 9, body);
-      ears(x + 8 + bow, 10, y - 19 + bow);
-      px(g, x + 13 + bow, y - 15 + bow, 3, 1, '#8a6142');
+      px(g, x + 8 + bow, y - 19 + bow + hd, 10, 9, body);
+      ears(x + 8 + bow, 10, y - 19 + bow + hd);
+      px(g, x + 13 + bow, y - 15 + bow + hd, 3, 1, '#8a6142');
       if (cat.scarf) px(g, x + 7 + bow, y - 11 + bow, 8, 3, cat.scarf);
       // tail curved up in two segments
       px(g, x - 15, y - 14, 4, 6, dark);
@@ -985,10 +1157,10 @@
           px(g, px0, y - 1 - p.lift, 3, 2, cream);
         }
       }
-      const hx = x + f * 10 - (f > 0 ? 0 : 8);
-      px(g, hx, y - 19, 10, 9, body);
-      ears(hx, 10, y - 19);
-      px(g, hx + (f > 0 ? 6 : 1), y - 16, 2, blink ? 1 : 2, '#3a5a2a');
+      const hx = x + f * 10 - (f > 0 ? 0 : 8), lh = moving ? 0 : hd;
+      px(g, hx, y - 19 + lh, 10, 9, body);
+      ears(hx, 10, y - 19 + lh);
+      px(g, hx + (f > 0 ? 6 : 1), y - 16 + lh, 2, blink ? 1 : 2, '#3a5a2a');
       if (pose === 'pounce') {
         const bat = Math.round((1 + Math.sin(t * 9)) * 2);
         px(g, x + f * 10 - (f > 0 ? 0 : 6), y - 6 - bat, 7, 3, body);

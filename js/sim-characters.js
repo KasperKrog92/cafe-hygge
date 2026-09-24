@@ -65,6 +65,8 @@
   function startStep(world, b) {
     const s = b.steps[b.stepIdx];
     b.stateT = 0;
+    // Face the station from the first frame (the machine is behind the counter).
+    b.heading = MACHINE_STAGES.indexOf(s.act) >= 0 ? 'up' : 'down';
     switch (s.act) {
       case 'grind': SND.grinder(s.dur); break;
       case 'tamp': SND.tamp(); break;
@@ -475,7 +477,7 @@
         break;
       }
       case 'refill': {
-        if (!b.refillPlayed && b.stateT > 0.3) {
+        if (!b.refillPlayed && b.stateT > 0.55) {     // once crouched at the bowls
           b.refillPlayed = true;
           if (b.refillKinds.indexOf('food') >= 0) SND.kibblePour(0.9);
           if (b.refillKinds.indexOf('water') >= 0) SND.kettlePour(0.75);
@@ -1532,7 +1534,7 @@
     refillRoute: refillRoute, leavePerch: leavePerch
   });
 
-  SIM.update = function (world, dt) {
+  function step(world, dt) {
     if (world.moment) {
       // Service and the day clock wait; the rest of the room keeps living.
       // Reserve the invited speaker until Lunafreya has finished and returned.
@@ -1553,7 +1555,7 @@
       return;
     }
     if(world.shop.phase==='settling') {
-      if(!world.firstEntryReady || world.introPaused || world.introHidden || world.introModal)return;
+      if(!world.firstEntryReady || world.introPaused || world.introHidden || world.introModal)return false;
       world.t+=dt;world.clockOffset-=dt;
       R.updateFirstOpening(world,dt);updateCaptions(world,dt);R.saveLife(world,dt);return;
     }
@@ -1597,6 +1599,10 @@
     updateParticles(world, dt);
     updateCaptions(world, dt);
     R.saveLife(world, dt);
+  }
+  SIM.update = function (world, dt) {
+    // Postures settle after every mover's update, including paused-service holds.
+    if (step(world, dt) !== false) R.settlePostures(world, dt);
   };
 
   /* ---------- what to draw ---------- */

@@ -632,10 +632,25 @@
     px(g, x + 6, y - 14, 5, 3, '#5a8a52');
   }
 
+  /* Keyed motion: `k` is [[time, value], ...] in ascending time; spans ease
+     in and out (smoothstep) and the ends hold. Prefer this to a bare sine for
+     gestures: a press is quick down, a hold and a slower release, not a wobble.
+       keys(t, [[0,0],[0.12,3],[0.36,3],[0.5,0]])   // tamp: press, hold, release */
+  function keys(t, k) {
+    if (t <= k[0][0]) return k[0][1];
+    for (let i = 1; i < k.length; i++) {
+      if (t <= k[i][0]) {
+        const a = k[i - 1], b = k[i], q = (t - a[0]) / Math.max(1e-6, b[0] - a[0]);
+        return a[1] + (b[1] - a[1]) * q * q * (3 - 2 * q);
+      }
+    }
+    return k[k.length - 1][1];
+  }
+
   /* Private renderer contract shared by the scene siblings. */
   SCENE._ = {
     W: W, H: H, L: L,
-    px: px, ell: ell, lerp: lerp, shade: shade, h2: h2,
+    px: px, ell: ell, lerp: lerp, shade: shade, h2: h2, keys: keys,
     drawTinyPlant: drawTinyPlant, leaf: leaf
   };
 })();

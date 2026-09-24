@@ -46,6 +46,12 @@
                        'cat', a patron), or a {x,y,w,h,scale} crop; no arg = the
                        whole 960×600 scene. o: {scale}
      __dev.regions     the named crop boxes shot(name) understands
+     __dev.film(o)     motion filmstrip of one entity in a private world (see D.film)
+     __dev.furnishedWorld(o) / __dev.modestWorld(o)
+                       private simulation fixtures: fully furnished room, or a
+                       fresh modest café past its first setup and greeting
+     __dev.greetHolger(w)  play the mandatory first hello in a private world
+     __dev.ship() / boat() / birds() / plane()   force waterfront traffic
      __dev.audit()     invariant sweep; returns (and warns) violations */
 (function () {
   'use strict';
@@ -720,6 +726,65 @@
     console.log('[dev] shot ' + name + ' ' + box.w + '×' + box.h + ' ×' + scale +
       ' → ' + out.width + '×' + out.height + ' png (' + url.length + ' chars)');
     return url;
+  };
+
+  /* Motion review: a still cannot show a snap, a pop or a teleporting prop.
+     Runs a PRIVATE world forward at game speed and returns a labelled
+     filmstrip (PNG data URL) of one entity through a moment of interest.
+       __dev.film({ world, target, start, pre, frames, fps, w, h, scale, cols, follow })
+     world   a private world (__dev.furnishedWorld({random:SIM.seededRandom(7)}));
+             never the live __world
+     target  (world) => entity to watch, e.g. w => w.patrons[0]
+     start   (world, entity, previous) => true where recording begins, e.g.
+             (w, p, prev) => prev && prev.pose !== 'sit' && p.pose === 'sit'
+     pre     frames kept from before the start (default 4)
+     follow  keep the crop on the entity (default: fixed where recording began)
+     Returns { sheet, frames, seconds } or null when start never happened. */
+  D.film = function (o) {
+    o = o || {};
+    const w = o.world;
+    if (!w || w === world()) throw new Error('[dev] film needs a private world, never __world');
+    const fps = o.fps || 12, want = o.frames || 12, pre = o.pre == null ? 4 : o.pre;
+    const bw = o.w || 96, bh = o.h || 88, scale = o.scale || 2, cols = o.cols || 6;
+    const start = o.start || function () { return true; };
+    const master = document.createElement('canvas');
+    master.width = SCENE.W; master.height = SCENE.H;
+    const mg = master.getContext('2d');
+    const ring = [], shots = [];
+    let anchor = null, prev = null, t = 0;
+    function grab(e) {
+      SCENE.composeFrame(mg, w);
+      const at = o.follow || !anchor ? e : anchor;
+      const c = document.createElement('canvas'); c.width = bw; c.height = bh;
+      const cg = c.getContext('2d'); cg.imageSmoothingEnabled = false;
+      cg.drawImage(master, Math.round(at.x - bw / 2), Math.round(at.y - bh + 16), bw, bh, 0, 0, bw, bh);
+      return { canvas: c, label: t.toFixed(2) + ' ' + (e.state || '') + '/' + (e.pose || '') };
+    }
+    for (let i = 0; i < (o.maxSeconds || 240) * fps && shots.length < want; i++) {
+      SIM.update(w, 1 / fps); t += 1 / fps;
+      const e = o.target(w);
+      if (!e) { prev = null; continue; }
+      const snap = { pose: e.pose, state: e.state, x: e.x, y: e.y, low: e.low, holding: e.holding };
+      if (!shots.length && !start(w, e, prev)) {
+        if (pre) { ring.push(grab(e)); if (ring.length > pre) ring.shift(); }
+        prev = snap; continue;
+      }
+      if (!shots.length) { anchor = { x: e.x, y: e.y }; ring.forEach(function (r) { shots.push(r); }); }
+      shots.push(grab(e)); prev = snap;
+    }
+    if (!shots.length) return null;
+    const rows = Math.ceil(shots.length / cols);
+    const out = document.createElement('canvas');
+    out.width = cols * (bw * scale + 4); out.height = rows * (bh * scale + 16);
+    const g = out.getContext('2d'); g.imageSmoothingEnabled = false;
+    g.fillStyle = '#211c1a'; g.fillRect(0, 0, out.width, out.height);
+    g.font = '11px monospace'; g.fillStyle = '#f2e8d8';
+    shots.forEach(function (s, i) {
+      const x = (i % cols) * (bw * scale + 4), y = Math.floor(i / cols) * (bh * scale + 16);
+      g.drawImage(s.canvas, x, y + 14, bw * scale, bh * scale);
+      g.fillText(s.label.slice(0, Math.floor(bw * scale / 7)), x + 2, y + 11);
+    });
+    return { sheet: out.toDataURL('image/png'), frames: shots.length, seconds: t };
   };
 
   /* ---------- invariant audit ---------- */

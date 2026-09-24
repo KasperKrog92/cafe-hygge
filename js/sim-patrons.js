@@ -204,13 +204,18 @@
     makePath(p, seat.x, seat.y);
   }
 
+  // Window sitters rise onto / step down from the sill with the sit-down
+  // easing (R.settlePosture moves them along lowAnchor). Routes always start
+  // from the floor spot, so stepDown still sets the logical floor position.
   function perchUp(p) {
-    if (p.seat.window) { p.x = p.seat.perchX; p.y = p.seat.perchY; }
+    if (p.seat.window) p.lowAnchor = { fx: p.x, fy: p.y, tx: p.seat.perchX, ty: p.seat.perchY };
   }
 
   function stepDown(p, seat) {
     if (seat && seat.window) {
+      const from = { x: p.x, y: p.y };
       p.x = seat.x; p.y = seat.y;
+      if (p.low > 0) p.lowAnchor = { fx: seat.x, fy: seat.y, tx: from.x, ty: from.y };
       p.gazeDur = 0; p.gazeFacing = 0;
     }
   }
@@ -446,7 +451,7 @@
           chairScrape(p, false);
           perchUp(p);
           p.facing = p.seat.facing;
-          p.holding = null;
+          p.placeItem = 'book';     // tucked under the arm until settled, then opened
           p.reading = true;
           p.state = 'seated'; p.stateT = 0;
         }
@@ -562,10 +567,13 @@
             p.stay=Math.max(p.stay,linger*rnd(.9,1.1));
           }
           if (p.seat.table >= 0) {
-            world.tables[p.seat.table].items.push({ side: p.seat.side, kind: p.drink.kind, owner: p.id,
-              hot: p.drink.kind === 'glass' ? 0 : 45, hidden: false });
-            p.holding = null;
-            SND.cupDown();
+            // The cup stays in hand until it meets the table partway down
+            // (R.settlePosture), so it never jumps ahead of the body.
+            const cup = { side: p.seat.side, kind: p.drink.kind, owner: p.id,
+              hot: p.drink.kind === 'glass' ? 0 : 45, hidden: true };
+            world.tables[p.seat.table].items.push(cup);
+            p.placeItem = 'cup'; p.placeAt = SCENE.tableItemAnchor(world.tables[p.seat.table], cup);
+            p.placeQ = p.seat.window ? 0.9 : 0.6;   // window sitters set it down once up on the sill
             p.laptopActive = p.laptop && !p.seat.armchair && !p.seat.nook && !p.seat.window && !p.seat.piano && !p.seat.artist;
             if (p.laptopActive) {
               world.tables[p.seat.table].items.push({ side: p.seat.side, kind: 'laptop', owner: p.id, open: true, hot: 0, hidden: false });
@@ -618,6 +626,7 @@
         break;
       }
       case 'seated': {
+        if (p.low < 1) break;     // still sitting down
         updateSeated(world, p, dt);
         break;
       }

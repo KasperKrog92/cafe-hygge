@@ -745,7 +745,63 @@
     }
   }
 
+  /* ---------- posture: sitting down, kneeling and getting up ----------
+     `e.low` eases 0 (standing) → 1 (seated/kneeling) whenever the pose
+     changes, so bodies lower and rise over a few frames instead of snapping.
+     The renderer draws the in-between crouch (SCENE.drawPerson). Walking
+     waits until the body has risen. A window sitter's hop onto the sill
+     follows `lowAnchor` (floor → perch) with the same easing. A cup being
+     set down (`placeItem`) reaches the table partway down. */
+  const LOW_POSES = { sit: 1, kneel: 1, catCare: 1 };
+  const SIT_DOWN = 0.45, STAND_UP = 0.4;
+  function settlePosture(world, e, dt) {
+    const target = LOW_POSES[e.pose] ? 1 : 0;
+    if (target) e.lowPose = e.pose;                  // the crouch is drawn in its view
+    if (e.low == null) { e.low = target; return; }   // first sight: no transition
+    const before = e.low;
+    if (e.low < target) e.low = Math.min(1, e.low + dt / SIT_DOWN);
+    else if (e.low > target) e.low = Math.max(0, e.low - dt / STAND_UP);
+    if (e.lowAnchor) {
+      const a = e.lowAnchor, s = e.low * e.low * (3 - 2 * e.low);
+      e.x = a.fx + (a.tx - a.fx) * s; e.y = a.fy + (a.ty - a.fy) * s;
+      if (e.low === target) e.lowAnchor = null;
+    }
+    // A cup meets the table partway down; a carried book is opened once seated.
+    if (e.placeItem && (e.low >= (e.placeItem === 'book' ? 1 : e.placeQ || 0.6) || target === 0)) {
+      if (e.placeItem === 'cup') {
+        const tb = e.seat && e.seat.table >= 0 ? world.tables[e.seat.table] : null;
+        const item = tb && tb.items.find(function (it) { return it.owner === e.id && it.kind !== 'laptop'; });
+        if (item) item.hidden = false;
+        SND.cupDown();
+      }
+      e.placeItem = false; e.holding = null;
+    }
+    if (e.low === target) e.placeAt = e.placeQ = null;
+    // Settled with a book: the first page opens instead of the book popping in.
+    if (before < 1 && e.low === 1 && e.reading && target === 1) e.pageTurn = 0.8;
+  }
+  function settlePostures(world, dt) {
+    // A visiting neighbour who stays for a drink is also a patron: ease once.
+    const people = new Set([world.barista].concat(world.patrons,
+      SIM.visitorActors ? SIM.visitorActors(world) : []));
+    people.forEach(function (e) { settlePosture(world, e, dt); });
+    // The cat's resting poses change through a brief in-between (SCENE.drawCat
+    // reads cat.shift: what it was, and for how long it has been what it is).
+    const cat = world.cat;
+    if (cat) {
+      if (cat.shiftState !== cat.state) {
+        cat.shift = cat.shiftState == null ? null : { from: cat.shiftState, t: 0 };
+        cat.shiftState = cat.state;
+      } else if (cat.shift && (cat.shift.t += dt) > 1) cat.shift = null;
+    }
+  }
+
   function walker(e, dt) {
+    // A seated or kneeling body gets up before the first step.
+    if (e.low > 0 && e.path && e.path.length) {
+      if (LOW_POSES[e.pose]) e.pose = 'stand';
+      return false;
+    }
     if (e.path && e._walkPath !== e.path) {
       if ((e.kind === 'barista' || e.kind === 'visitor') && e.path.length) {
         const target = e.path[e.path.length - 1];
@@ -1573,7 +1629,8 @@
     advanceArcs: advanceArcs, updateNarrative: updateNarrative,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
     spawnCouple: spawnCouple, updateRegulars: updateRegulars,
-    makePath: makePath, walker: walker,
+    makePath: makePath, walker: walker, settlePosture: settlePosture, settlePostures: settlePostures,
+    LOW_POSES: LOW_POSES,
     ringDoor: ringDoor, updateDoor: updateDoor,
     updateWeather: updateWeather, updateClock: updateClock,
     updatePassersby: updatePassersby, spawnPasser: spawnPasser,
