@@ -357,8 +357,8 @@
     }
   }
 
-  SCENE.drawPerson = function (g, p) {
-    if (p.low > 0 && p.low < 1) { drawCrouch(g, p); return; }
+  // Measurements every pose shares for one person in one frame.
+  function personFrame(p) {
     const facing = p.facing >= 0 ? 1 : -1;
     const walk = p.pose === 'walk';
     const front = p.heading === 'down' && (walk || p.pose === 'stand');
@@ -377,219 +377,238 @@
     const breathe = p.pose==='breath' ? -Math.round(Math.sin(Math.min(1,p.stateT/7)*Math.PI)*3)
       : p.pose==='hug'?2:!walk && Math.sin(p.animT * 1.6) > 0.3 ? 1 : 0;
     const topD = shade(c.top, -0.18);
+    return { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass };
+  }
 
-    if (!p.noLegs) ell(g, x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
+  // Lunafreya crouched at the cat bowls, side-on.
+  function drawCatCare(g, p, k) {
+    const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
+    // Side-on crouch: the pour meets the actual bowl, below the window sill.
+    const kinds=p.refillKinds||['food','water'];
+    const kind=kinds.length>1 && p.stateT>.8 ? 'water' : kinds[0];
+    const at=SCENE.L.catCorner[kind],hx=at.x-3,hy=at.y-10;
+    px(g,x-11,y-10,20,8,c.pants);px(g,x-14,y-4,12,4,'#3a2a1c');
+    px(g,x+6,y-15,7,13,c.pants);px(g,x+6,y-3,11,3,'#3a2a1c');
+    px(g,x-8,y-32,19,22,c.top);px(g,x-5,y-26,15,15,'#e8dfc9');
+    limb(g,x-5,y-28,x+6,y-16,4,topD);
+    limb(g,x+7,y-28,hx-8,hy+2,5,c.top);
+    limb(g,hx-8,hy+2,hx,hy,4,c.skin);
+    drawHead(g,x+4,y-47,1,c,false);
+    px(g,hx-4,hy-6,8,7,kind==='water'?'#e8dfc9':'#b18a5c');
+    px(g,hx+3,hy-2,3,3,c.skin);
+    if(p.stateT>.55 && p.stateT<1.6)
+      px(g,at.x,at.y-7,1,3,kind==='water'?'#8fb2bf':'#9b6a35');
+    return;
+  }
 
-    if (p.pose === 'catCare') {
-      // Side-on crouch: the pour meets the actual bowl, below the window sill.
-      const kinds=p.refillKinds||['food','water'];
-      const kind=kinds.length>1 && p.stateT>.8 ? 'water' : kinds[0];
-      const at=SCENE.L.catCorner[kind],hx=at.x-3,hy=at.y-10;
-      px(g,x-11,y-10,20,8,c.pants);px(g,x-14,y-4,12,4,'#3a2a1c');
-      px(g,x+6,y-15,7,13,c.pants);px(g,x+6,y-3,11,3,'#3a2a1c');
-      px(g,x-8,y-32,19,22,c.top);px(g,x-5,y-26,15,15,'#e8dfc9');
-      limb(g,x-5,y-28,x+6,y-16,4,topD);
-      limb(g,x+7,y-28,hx-8,hy+2,5,c.top);
-      limb(g,hx-8,hy+2,hx,hy,4,c.skin);
-      drawHead(g,x+4,y-47,1,c,false);
-      px(g,hx-4,hy-6,8,7,kind==='water'?'#e8dfc9':'#b18a5c');
-      px(g,hx+3,hy-2,3,3,c.skin);
-      if(p.stateT>.55 && p.stateT<1.6)
-        px(g,at.x,at.y-7,1,3,kind==='water'?'#8fb2bf':'#9b6a35');
-      return;
-    }
-    if (p.pose === 'kneel') {
-      // One knee on the mat, the other foot planted; brush strokes meet the
-      // hearth lip without stretching a standing sprite into the masonry.
-      const rub = Math.round(Math.sin(p.stateT*5)*5);
-      px(g,x-11,y-10,21,8,c.pants); px(g,x-15,y-5,10,5,'#3a2a1c');
-      px(g,x+7,y-14,7,13,c.pants); px(g,x+7,y-3,10,3,'#3a2a1c');
-      // Work happens beyond her back: only the outer hands/tool edges can
-      // peek around her silhouette, never paint across her torso or sleeves.
-      px(g,x-13,y-26,5,8,c.skin); px(g,x+8,y-26,5,8,c.skin);
-      px(g,x-9+rub,y-27,17,3,'#96704c'); px(g,x-7+rub,y-24,13,4,'#c9b28a');
-      px(g,x-3+rub,y-30,5,5,c.skin);
-      px(g,x-10,y-33,20,23,c.top); px(g,x-9,y-22,18,12,'#e8dfc9');
-      px(g,x-11,y-32,5,12,c.top); px(g,x+7,y-32,5,12,c.top);
-      drawHeadBack(g,x,y-48+breathe,facing,c); return;
-    }
-    if (p.pose === 'pc' || p.pose === 'supperEat') {
-      const y = Math.round(p.y) - Math.round((1-p.pcSit)*8);
-      // Rear-facing desk sitter: thighs on the cushion, bent knees below
-      // the desk, shoulders above the chair back and hands on the keyboard.
-      px(g,x-10,y-25,20,8,c.pants);
-      px(g,x-10,y-20,6,13,c.pants); px(g,x+4,y-20,6,13,c.pants);
-      px(g,x-11,y-9,7,4,'#3a2a1c'); px(g,x+4,y-9,7,4,'#3a2a1c');
-      px(g,x-10,y-46+breathe,20,23-breathe,c.top);
-      px(g,x-10,y-43+breathe,3,18,topD); px(g,x+7,y-43+breathe,3,18,topD);
-      [-1,1].forEach((side)=>{
-        if(p.pose==='supperEat') {
-          const lift=side<0?Math.max(0,Math.sin(p.animT*1.5))*9:0;
-          limb(g,x+side*12,y-40,x+side*19,y-38,5,c.top);
-          limb(g,x+side*19,y-38,x+side*18,y-44-lift,4,c.skin);
-          if(side<0 && lift>3)px(g,x-20,y-48-lift,5,3,'#d5b581');
-          return;
-        }
-        const tap=Math.sin(p.animT*5+side*1.7)>.45 ? 1 : 0;
-        px(g,x+side*12-3,y-44+breathe,6,11,c.top);
-        px(g,x+side*12-2,y-44,4,9,c.skin);
-        px(g,x+side*9-3,y-45-tap,6,3,c.skin);
-      });
-      drawHeadBack(g,x,y-60+breathe,facing,c);
-      return;
-    }
-    if (p.pose === 'sit') {
-      // bent legs with a knee crease
-      px(g, x - 8, y - 10, 16, 10, c.pants);
-      px(g, x + facing * 5 - (facing > 0 ? 0 : 5), y - 10, 7, 10, c.pants);
-      px(g, x + facing * 3 - (facing > 0 ? 0 : 4), y - 10, 2, 6, shade(c.pants, -0.2));
-      px(g, x - 8, y - 3, 18, 3, '#3a2a1c');
-      // torso, slightly hunched
-      px(g, x - 10, y - 32, 20, 22, c.top);
-      px(g, x - 10, y - 30, 3, 17, topD);                     // rounded far side
-      px(g, x - 6, y - 32, 11, 2, shade(c.top, 0.16));        // shoulder light
-      px(g, x + 6, y - 27, 3, 9, shade(c.top, 0.08));
-      px(g, x - 1, y - 28, 2, 12, topD);                        // fold
-      px(g, x - 10, y - 12, 20, 2, topD);                       // hem
-      if (c.smock) {
-        // an apron, not a panel: narrow bib up top so the shoulders stay in
-        // her own colour — a full-width pale block reads as a held-open book
-        px(g, x - 3, y - 31, 6, 4, c.smock);
-        px(g, x - 7, y - 27, 14, 15, c.smock);
-        px(g, x - 6, y - 18, 12, 5, shade(c.smock, -0.08));
-        px(g, x - 4, y - 17, 8, 2, shade(c.smock, 0.1));
-        px(g, x - 5, y - 25, 2, 2, '#5a7a8a');
-        px(g, x + 4, y - 22, 2, 2, '#a94f3f');
+  // Kneeling at hearth or crate work, seen from behind.
+  function drawKneel(g, p, k) {
+    const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
+    // One knee on the mat, the other foot planted; brush strokes meet the
+    // hearth lip without stretching a standing sprite into the masonry.
+    const rub = Math.round(Math.sin(p.stateT*5)*5);
+    px(g,x-11,y-10,21,8,c.pants); px(g,x-15,y-5,10,5,'#3a2a1c');
+    px(g,x+7,y-14,7,13,c.pants); px(g,x+7,y-3,10,3,'#3a2a1c');
+    // Work happens beyond her back: only the outer hands/tool edges can
+    // peek around her silhouette, never paint across her torso or sleeves.
+    px(g,x-13,y-26,5,8,c.skin); px(g,x+8,y-26,5,8,c.skin);
+    px(g,x-9+rub,y-27,17,3,'#96704c'); px(g,x-7+rub,y-24,13,4,'#c9b28a');
+    px(g,x-3+rub,y-30,5,5,c.skin);
+    px(g,x-10,y-33,20,23,c.top); px(g,x-9,y-22,18,12,'#e8dfc9');
+    px(g,x-11,y-32,5,12,c.top); px(g,x+7,y-32,5,12,c.top);
+    drawHeadBack(g,x,y-48+breathe,facing,c); return;
+  }
+
+  // Rear-facing at the apartment desk: the PC and supper (pcSit eases the seat).
+  function drawDeskSitter(g, p, k) {
+    const { x, facing, c, topD, breathe } = k;
+    const y = Math.round(p.y) - Math.round((1-p.pcSit)*8);
+    // Rear-facing desk sitter: thighs on the cushion, bent knees below
+    // the desk, shoulders above the chair back and hands on the keyboard.
+    px(g,x-10,y-25,20,8,c.pants);
+    px(g,x-10,y-20,6,13,c.pants); px(g,x+4,y-20,6,13,c.pants);
+    px(g,x-11,y-9,7,4,'#3a2a1c'); px(g,x+4,y-9,7,4,'#3a2a1c');
+    px(g,x-10,y-46+breathe,20,23-breathe,c.top);
+    px(g,x-10,y-43+breathe,3,18,topD); px(g,x+7,y-43+breathe,3,18,topD);
+    [-1,1].forEach((side)=>{
+      if(p.pose==='supperEat') {
+        const lift=side<0?Math.max(0,Math.sin(p.animT*1.5))*9:0;
+        limb(g,x+side*12,y-40,x+side*19,y-38,5,c.top);
+        limb(g,x+side*19,y-38,x+side*18,y-44-lift,4,c.skin);
+        if(side<0 && lift>3)px(g,x-20,y-48-lift,5,3,'#d5b581');
+        return;
       }
-      if (c.scarf) {
-        px(g, x - 10, y - 32, 20, 5, c.scarf);
-        const kx = facing > 0 ? x + 5 : x - 9;
-        px(g, kx, y - 29, 4, 4, shade(c.scarf, -0.15));         // knot
-        px(g, kx, y - 25, 4, 7, c.scarf);                       // tail
-        px(g, kx, y - 19, 2, 2, shade(c.scarf, -0.15));         // fringe
+      const tap=Math.sin(p.animT*5+side*1.7)>.45 ? 1 : 0;
+      px(g,x+side*12-3,y-44+breathe,6,11,c.top);
+      px(g,x+side*12-2,y-44,4,9,c.skin);
+      px(g,x+side*9-3,y-45-tap,6,3,c.skin);
+    });
+    drawHeadBack(g,x,y-60+breathe,facing,c);
+    return;
+  }
+
+  // Seated in profile: legs, torso and head; the hands depend on the activity.
+  function drawSeated(g, p, k) {
+    const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
+    // bent legs with a knee crease
+    px(g, x - 8, y - 10, 16, 10, c.pants);
+    px(g, x + facing * 5 - (facing > 0 ? 0 : 5), y - 10, 7, 10, c.pants);
+    px(g, x + facing * 3 - (facing > 0 ? 0 : 4), y - 10, 2, 6, shade(c.pants, -0.2));
+    px(g, x - 8, y - 3, 18, 3, '#3a2a1c');
+    // torso, slightly hunched
+    px(g, x - 10, y - 32, 20, 22, c.top);
+    px(g, x - 10, y - 30, 3, 17, topD);                     // rounded far side
+    px(g, x - 6, y - 32, 11, 2, shade(c.top, 0.16));        // shoulder light
+    px(g, x + 6, y - 27, 3, 9, shade(c.top, 0.08));
+    px(g, x - 1, y - 28, 2, 12, topD);                        // fold
+    px(g, x - 10, y - 12, 20, 2, topD);                       // hem
+    if (c.smock) {
+      // an apron, not a panel: narrow bib up top so the shoulders stay in
+      // her own colour — a full-width pale block reads as a held-open book
+      px(g, x - 3, y - 31, 6, 4, c.smock);
+      px(g, x - 7, y - 27, 14, 15, c.smock);
+      px(g, x - 6, y - 18, 12, 5, shade(c.smock, -0.08));
+      px(g, x - 4, y - 17, 8, 2, shade(c.smock, 0.1));
+      px(g, x - 5, y - 25, 2, 2, '#5a7a8a');
+      px(g, x + 4, y - 22, 2, 2, '#a94f3f');
+    }
+    if (c.scarf) {
+      px(g, x - 10, y - 32, 20, 5, c.scarf);
+      const kx = facing > 0 ? x + 5 : x - 9;
+      px(g, kx, y - 29, 4, 4, shade(c.scarf, -0.15));         // knot
+      px(g, kx, y - 25, 4, 7, c.scarf);                       // tail
+      px(g, kx, y - 19, 2, 2, shade(c.scarf, -0.15));         // fringe
+    }
+    // gazeFacing (window sitters looking out) turns the head — the body keeps
+    // leaning on its cushion. The window is on the wall behind the seat, so a
+    // real glance out shows the back of the head; a doze keeps its slumped
+    // profile (eyes closed, chin down).
+    const dozeDrop = p.dozing ? 2 + (Math.sin(p.animT * 1.15) > 0 ? 1 : 0) : 0;
+    const hy = y - 48 + breathe + dozeDrop;
+    if (p.gazeFacing && !p.dozing) drawHeadBack(g, x, hy, facing, c);
+    else drawHead(g, x, hy, p.gazeFacing || facing, c, p.dozing || blink);
+    drawSeatedHands(g, p, k);
+  }
+
+  // What a seated person is doing with their hands: reading, painting,
+  // sketching, playing, typing (drawn by the table), a cup, knitting or resting.
+  function drawSeatedHands(g, p, k) {
+    const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
+    if (p.reading || p.dozing) {
+      const bx = x + facing * 10 - 9;
+      const by = y - 29 + (p.dozing ? 6 : 0);
+      seatedArm(g, p, x + facing * 4, y - 28, x + facing * 11, y - 19,
+        bx + 18, by + 5, true);
+      if (!(p.pageTurn > 0) || p.dozing)
+        seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
+          bx - 1, by + 5, false);
+      // The reader sees the pages; we see the outside of both covers.
+      // Draw the turning leaf and reaching hand first, behind the cover.
+      if (p.pageTurn > 0 && !p.dozing) {
+        const q = 1 - p.pageTurn / 0.8;
+        const edge = Math.round(8 + Math.cos(q * Math.PI) * 8);
+        const lift = Math.round(Math.sin(q * Math.PI) * 5);
+        px(g, bx + Math.min(8, edge), by - lift, Math.max(2, Math.abs(edge - 8)), 9, '#fdf8ec');
+        px(g, bx + edge, by - lift, 2, 9, '#c9b28a');
+        seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
+          bx + edge, by - lift, false);
       }
-      // gazeFacing (window sitters looking out) turns the head — the body keeps
-      // leaning on its cushion. The window is on the wall behind the seat, so a
-      // real glance out shows the back of the head; a doze keeps its slumped
-      // profile (eyes closed, chin down).
-      const dozeDrop = p.dozing ? 2 + (Math.sin(p.animT * 1.15) > 0 ? 1 : 0) : 0;
-      const hy = y - 48 + breathe + dozeDrop;
-      if (p.gazeFacing && !p.dozing) drawHeadBack(g, x, hy, facing, c);
-      else drawHead(g, x, hy, p.gazeFacing || facing, c, p.dozing || blink);
-      // arms + what they hold
-      if (p.reading || p.dozing) {
-        const bx = x + facing * 10 - 9;
-        const by = y - 29 + (p.dozing ? 6 : 0);
-        seatedArm(g, p, x + facing * 4, y - 28, x + facing * 11, y - 19,
-          bx + 18, by + 5, true);
-        if (!(p.pageTurn > 0) || p.dozing)
-          seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
-            bx - 1, by + 5, false);
-        // The reader sees the pages; we see the outside of both covers.
-        // Draw the turning leaf and reaching hand first, behind the cover.
-        if (p.pageTurn > 0 && !p.dozing) {
-          const q = 1 - p.pageTurn / 0.8;
-          const edge = Math.round(8 + Math.cos(q * Math.PI) * 8);
-          const lift = Math.round(Math.sin(q * Math.PI) * 5);
-          px(g, bx + Math.min(8, edge), by - lift, Math.max(2, Math.abs(edge - 8)), 9, '#fdf8ec');
-          px(g, bx + edge, by - lift, 2, 9, '#c9b28a');
-          seatedArm(g, p, x - facing * 3, y - 28, x - facing * 4, y - 18,
-            bx + edge, by - lift, false);
-        }
-        const bookColor = p.bookColor || '#a94f3f';
-        px(g, bx, by - 1, 18, 1, '#e6dcc5'); // only the top page edges show
-        px(g, bx - 1, by + 1, 20, 10, shade(bookColor, -0.25));
-        px(g, bx, by, 8, 10, bookColor);
-        px(g, bx + 10, by, 8, 10, shade(bookColor, -0.08));
-        px(g, bx + 8, by + 1, 2, 10, shade(bookColor, -0.3)); // spine fold
-        px(g, bx, by, 8, 1, shade(bookColor, 0.16));
-        px(g, bx + 10, by, 8, 1, shade(bookColor, 0.12));
-        if (!(p.pageTurn > 0) || p.dozing) px(g, bx - 2, by + 3, 3, 4, c.skin);
-        px(g, bx + 17, by + 3, 3, 4, c.skin);
-      } else if (p.painting) {
-        const stroke = Math.floor(p.animT * 5) % 2;
-        if (p.paintMixing) {
-          // mixing happens down at the tray
-          seatedArm(g, p, x - 4, y - 29, x - 8, y - 19, x - 13, y - 22 + stroke, false);
-          px(g, x - 14, y - 24 + stroke, 8, 3, c.skin);
-          px(g, x - 21, y - 25 + stroke, 9, 1, '#8b7158');
-        } else {
-          // the working arm lifts so the brush meets the canvas itself
-          // (canvas panel bottoms out at y 424; the tray line is not a stroke)
-          seatedArm(g, p, x - 4, y - 29, x - 9, y - 22, x - 16, y - 34 + stroke, false);
-          px(g, x - 17, y - 36 + stroke, 9, 4, c.skin);
-          px(g, x - 29, y - 39 + stroke, 13, 2, '#8b7158');
-          px(g, x - 31, y - 42 + stroke, 3, 3, '#5a7a8a');
-          px(g, x + 2, y - 27, 6, 9, c.top);
-          px(g, x + 2, y - 20, 5, 3, c.skin);
-        }
-      } else if (p.sketching) {
-        seatedArm(g, p, x - 4, y - 28, x - 11, y - 19, x - 8, y - 15, true);
-        // kraft cover round the pages so the sketchbook reads against the smock
-        px(g, x - 10, y - 21, 20, 11, '#8b7158');
-        px(g, x - 8, y - 20, 16, 9, '#f5efdf');
-        px(g, x - 1, y - 20, 2, 9, '#b5a888');
-        px(g, x - 5, y - 18, 8, 1, '#8b8070');
-        const pencil = Math.round(Math.sin(p.animT * 5) * 2);
-        seatedArm(g, p, x + 3, y - 28, x + 9, y - 18, x + 2 + pencil, y - 19, false);
-        px(g, x + 2 + pencil, y - 25, 1, 10, '#8b7158');
-        px(g, x + pencil, y - 20, 4, 3, c.skin);
-      } else if (p.playing) {
-        const phase = Math.floor(p.animT * 6) % 6;
-        const keys = SCENE.L.piano;
-        [true, false].forEach(function (far) {
-          const tap = phase === (far ? 1 : 4) ? 1 : 0;
-          seatedArm(g, p, x + (far ? -5 : 1), y - 28,
-            x - 7, y - (far ? 19 : 15), keys.keyboardX + (far ? 5 : 10),
-            keys.keyboardY + (far ? 0 : 2) - tap, far);
-        });
-      } else if (p.typing) {
-        // Table composition draws these arms after the deck, using its anchors.
-        // Their body remains behind the table's near edge.
-      } else if (p.holding === 'cup' || p.holding === 'glass') {
-        const up = p.armUp || 0;
-        const hy = Math.round(y - 26 - up * 10 + breathe);
-        const hx = Math.round(x + facing * (13 - up * 5));
-        const vessel = heldDrinkKind(p);
-        seatedArm(g, p, x - facing * 3, y - 28, x + facing * 2, y - 18,
-          hx + (facing > 0 ? -4 : 5), hy + 6, false);
-        if (vessel === 'glass') {
-          px(g, hx - 1, hy - 4, 2, 7, '#d9738a');
-          px(g, hx - 3, hy, 8, 13, 'rgba(200,220,230,0.7)');
-          px(g, hx - 2, hy + 5, 6, 7, '#8a9a4a');
-          px(g, hx - 2, hy + 2, 6, 3, '#e8dfc9');
-          px(g, hx - 1, hy + 7, 2, 2, 'rgba(255,255,255,0.5)');
-          px(g, hx + 2, hy + 9, 2, 2, 'rgba(255,255,255,0.5)');
-          px(g, hx + (facing > 0 ? -5 : 4), hy + 6, 3, 4, c.skin);
-        } else if (vessel === 'matcha') {
-          px(g, hx - 4, hy + 2, 12, 9, '#e8e0d0');
-          px(g, hx - 2, hy + 2, 8, 2, '#8a9a4a');
-          px(g, hx + (facing > 0 ? -6 : 7), hy + 5, 3, 4, c.skin);
-        } else {
-          px(g, hx - 3, hy, 10, 10, '#e8e0d0');
-          px(g, hx + (facing > 0 ? 7 : -6), hy + 3, 3, 4, '#e8e0d0');
-          px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
-        }
-      } else if (p.knitting) {
-        const knit = Math.round(Math.sin(p.animT * 4.5));
-        const scol = p.knitColor || '#a94f3f';
-        const sw = 3 + Math.round(Math.max(0, Math.min(1, p.knitProgress || 0)) * 11);
-        px(g, x - sw, y - 19, sw * 2, 7, scol);
-        px(g, x - sw, y - 19, sw * 2, 1, shade(scol, 0.16));
-        for (let stitch = -sw + 2; stitch < sw; stitch += 3)
-          px(g, x + stitch, y - 16, 1, 3, shade(scol, -0.16));
-        // The needle tips cross above the live stitches; grips follow their shafts.
-        limb(g, x - 8, y - 24 + knit, x + 5, y - 19 - knit, 1, '#d9c9a0');
-        limb(g, x + 8, y - 25 - knit, x - 5, y - 19 + knit, 1, '#c9b28a');
-        seatedArm(g, p, x - 5, y - 28, x - 9, y - 19, x - 5, y - 23 + knit, true);
-        seatedArm(g, p, x + 4, y - 28, x + 9, y - 19, x + 5, y - 23 - knit, false);
+      const bookColor = p.bookColor || '#a94f3f';
+      px(g, bx, by - 1, 18, 1, '#e6dcc5'); // only the top page edges show
+      px(g, bx - 1, by + 1, 20, 10, shade(bookColor, -0.25));
+      px(g, bx, by, 8, 10, bookColor);
+      px(g, bx + 10, by, 8, 10, shade(bookColor, -0.08));
+      px(g, bx + 8, by + 1, 2, 10, shade(bookColor, -0.3)); // spine fold
+      px(g, bx, by, 8, 1, shade(bookColor, 0.16));
+      px(g, bx + 10, by, 8, 1, shade(bookColor, 0.12));
+      if (!(p.pageTurn > 0) || p.dozing) px(g, bx - 2, by + 3, 3, 4, c.skin);
+      px(g, bx + 17, by + 3, 3, 4, c.skin);
+    } else if (p.painting) {
+      const stroke = Math.floor(p.animT * 5) % 2;
+      if (p.paintMixing) {
+        // mixing happens down at the tray
+        seatedArm(g, p, x - 4, y - 29, x - 8, y - 19, x - 13, y - 22 + stroke, false);
+        px(g, x - 14, y - 24 + stroke, 8, 3, c.skin);
+        px(g, x - 21, y - 25 + stroke, 9, 1, '#8b7158');
       } else {
-        px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
-        px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
+        // the working arm lifts so the brush meets the canvas itself
+        // (canvas panel bottoms out at y 424; the tray line is not a stroke)
+        seatedArm(g, p, x - 4, y - 29, x - 9, y - 22, x - 16, y - 34 + stroke, false);
+        px(g, x - 17, y - 36 + stroke, 9, 4, c.skin);
+        px(g, x - 29, y - 39 + stroke, 13, 2, '#8b7158');
+        px(g, x - 31, y - 42 + stroke, 3, 3, '#5a7a8a');
+        px(g, x + 2, y - 27, 6, 9, c.top);
+        px(g, x + 2, y - 20, 5, 3, c.skin);
       }
-      return;
+    } else if (p.sketching) {
+      seatedArm(g, p, x - 4, y - 28, x - 11, y - 19, x - 8, y - 15, true);
+      // kraft cover round the pages so the sketchbook reads against the smock
+      px(g, x - 10, y - 21, 20, 11, '#8b7158');
+      px(g, x - 8, y - 20, 16, 9, '#f5efdf');
+      px(g, x - 1, y - 20, 2, 9, '#b5a888');
+      px(g, x - 5, y - 18, 8, 1, '#8b8070');
+      const pencil = Math.round(Math.sin(p.animT * 5) * 2);
+      seatedArm(g, p, x + 3, y - 28, x + 9, y - 18, x + 2 + pencil, y - 19, false);
+      px(g, x + 2 + pencil, y - 25, 1, 10, '#8b7158');
+      px(g, x + pencil, y - 20, 4, 3, c.skin);
+    } else if (p.playing) {
+      const phase = Math.floor(p.animT * 6) % 6;
+      const keys = SCENE.L.piano;
+      [true, false].forEach(function (far) {
+        const tap = phase === (far ? 1 : 4) ? 1 : 0;
+        seatedArm(g, p, x + (far ? -5 : 1), y - 28,
+          x - 7, y - (far ? 19 : 15), keys.keyboardX + (far ? 5 : 10),
+          keys.keyboardY + (far ? 0 : 2) - tap, far);
+      });
+    } else if (p.typing) {
+      // Table composition draws these arms after the deck, using its anchors.
+      // Their body remains behind the table's near edge.
+    } else if (p.holding === 'cup' || p.holding === 'glass') {
+      const up = p.armUp || 0;
+      const hy = Math.round(y - 26 - up * 10 + breathe);
+      const hx = Math.round(x + facing * (13 - up * 5));
+      const vessel = heldDrinkKind(p);
+      seatedArm(g, p, x - facing * 3, y - 28, x + facing * 2, y - 18,
+        hx + (facing > 0 ? -4 : 5), hy + 6, false);
+      if (vessel === 'glass') {
+        px(g, hx - 1, hy - 4, 2, 7, '#d9738a');
+        px(g, hx - 3, hy, 8, 13, 'rgba(200,220,230,0.7)');
+        px(g, hx - 2, hy + 5, 6, 7, '#8a9a4a');
+        px(g, hx - 2, hy + 2, 6, 3, '#e8dfc9');
+        px(g, hx - 1, hy + 7, 2, 2, 'rgba(255,255,255,0.5)');
+        px(g, hx + 2, hy + 9, 2, 2, 'rgba(255,255,255,0.5)');
+        px(g, hx + (facing > 0 ? -5 : 4), hy + 6, 3, 4, c.skin);
+      } else if (vessel === 'matcha') {
+        px(g, hx - 4, hy + 2, 12, 9, '#e8e0d0');
+        px(g, hx - 2, hy + 2, 8, 2, '#8a9a4a');
+        px(g, hx + (facing > 0 ? -6 : 7), hy + 5, 3, 4, c.skin);
+      } else {
+        px(g, hx - 3, hy, 10, 10, '#e8e0d0');
+        px(g, hx + (facing > 0 ? 7 : -6), hy + 3, 3, 4, '#e8e0d0');
+        px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
+      }
+    } else if (p.knitting) {
+      const knit = Math.round(Math.sin(p.animT * 4.5));
+      const scol = p.knitColor || '#a94f3f';
+      const sw = 3 + Math.round(Math.max(0, Math.min(1, p.knitProgress || 0)) * 11);
+      px(g, x - sw, y - 19, sw * 2, 7, scol);
+      px(g, x - sw, y - 19, sw * 2, 1, shade(scol, 0.16));
+      for (let stitch = -sw + 2; stitch < sw; stitch += 3)
+        px(g, x + stitch, y - 16, 1, 3, shade(scol, -0.16));
+      // The needle tips cross above the live stitches; grips follow their shafts.
+      limb(g, x - 8, y - 24 + knit, x + 5, y - 19 - knit, 1, '#d9c9a0');
+      limb(g, x + 8, y - 25 - knit, x - 5, y - 19 + knit, 1, '#c9b28a');
+      seatedArm(g, p, x - 5, y - 28, x - 9, y - 19, x - 5, y - 23 + knit, true);
+      seatedArm(g, p, x + 4, y - 28, x + 9, y - 19, x + 5, y - 23 - knit, false);
+    } else {
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
     }
+  }
 
+  // Standing and walking, in profile, front or back view.
+  function drawStanding(g, p, k) {
+    const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
     // A planted foot stays on the baseline while the other passes it.
     // Phase comes from travelled pixels, so slow walkers do not skate.
     let bob = 0;
@@ -686,7 +705,14 @@
     if (front) drawHeadFront(g, x, y - 56 + breathe, facing, c, blink);
     else if (back) drawHeadBack(g, x, y - 56 + breathe, facing, c);
     else drawHead(g, x, y - 56 + breathe, facing, c, blink);
-    // arm + held item, with actual hands
+    drawStandingArms(g, p, k);
+    drawOffhand(g, p, x, y, facing, c);
+    if (bob) g.restore();
+  }
+
+  // Standing arms and whatever they hold or do.
+  function drawStandingArms(g, p, k) {
+    const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
     const held = p.holding;
     if (p.noArm) {
       // drawCrouch draws this near arm itself while it reaches to the table.
@@ -934,8 +960,16 @@
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 16, c.top);
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 4, c.skin);
     }
-    drawOffhand(g, p, x, y, facing, c);
-    if (bob) g.restore();
+  }
+
+  const POSES = { catCare: drawCatCare, kneel: drawKneel, pc: drawDeskSitter,
+    supperEat: drawDeskSitter, sit: drawSeated };
+
+  SCENE.drawPerson = function (g, p) {
+    if (p.low > 0 && p.low < 1) { drawCrouch(g, p); return; }
+    const k = personFrame(p);
+    if (!p.noLegs) ell(g, k.x, p.y + 2, 14, 5, 'rgba(20,12,8,0.25)');
+    (POSES[p.pose] || drawStanding)(g, p, k);
   };
 
   /* ---------- the cat ---------- */
