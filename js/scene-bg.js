@@ -51,7 +51,7 @@
       px(g,cc.x0+2,cc.y0+2,cc.x1-cc.x0-4,cc.y1-cc.y0-4,'#9b8965');
       px(g,cc.x0+3,cc.y1-3,cc.x1-cc.x0-6,1,'#b19b73');
     }
-    L.pendants.filter((p,i)=>i===0||SCENE.hasFurniture(world,'full-counter')).forEach(function (lp) { drawHangingLamp(g, lp, world); });
+    L.pendants.filter((p,i)=>i===0||SCENE.pendantsLit(world)).forEach(function (lp) { drawHangingLamp(g, lp, world); });
     drawFireDynamic(g, world);
     drawFireplaceBoards(g,world);
     drawWallShelves(g,world);
@@ -208,7 +208,7 @@
     if(world.memory.life.furniture['mantel-decor']) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
     drawFireplaceStatic(g,world);
     if(SCENE.hasFurniture(world,'wall-menu')) drawMenuBoard(g);
-    if(SCENE.hasFurniture(world,'full-counter')) drawShelves(g);
+    if(SCENE.fullCounter(world)) drawShelves(g);
     if (SCENE.hasFurniture(world,'hearth')) drawFirewood(g);
   }
 

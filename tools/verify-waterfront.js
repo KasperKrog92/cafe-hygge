@@ -1,5 +1,5 @@
 /* Real order → terrace → departure → Lunafreya cleanup; rain and overnight checks.
-   Run in one disposable ?dev session, export waterfrontFrames before closing. */
+   Run by tools/run-suites.js, which exports waterfrontFrames. */
 (function () {
   'use strict';
   const original = window.__world, L = SCENE.L, R = SIM._;

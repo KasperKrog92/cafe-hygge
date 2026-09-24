@@ -249,7 +249,7 @@
       px(g, LP.x - 9, LP.y - 18, 20, 6, '#6b4429'); ell(g, LP.x - 9, LP.y - 15, 3, 3, '#8a6142');
     } });
 
-    out.push({ y: L.backBar.baseY, draw: function (g) { if(SCENE.hasFurniture(world,'full-counter')) SCENE.drawCoffeeStation(g, world); else drawBasicStation(g,world); } });
+    out.push({ y: L.backBar.baseY, draw: function (g) { if(SCENE.fullCounter(world)) SCENE.drawCoffeeStation(g, world); else drawBasicStation(g,world); } });
     // the counter itself
     out.push({ y: C.baseY, draw: function (g) { drawCounter(g, world); } });
 
@@ -803,7 +803,7 @@
     }
   }
   function drawCounter(g, world) {
-    if(!SCENE.hasFurniture(world,'full-counter')) {drawBasicCounter(g,world);drawCounterCups(g,world);return;}
+    if(!SCENE.fullCounter(world)) {drawBasicCounter(g,world);drawCounterCups(g,world);return;}
     const C = L.counter;
     // ground shadow
     px(g, C.x - 4, C.baseY, C.w + 8, 3, 'rgba(20,12,8,0.22)');

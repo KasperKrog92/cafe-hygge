@@ -1,4 +1,4 @@
-/* Run with agent-browser eval in a disposable ?dev session. Real simulations,
+/* Run by tools/run-suites.js on a fresh ?dev page. Real simulations,
    never art studies. Covers busy closing, perches, repeated days and saves. */
 (function () {
   'use strict';

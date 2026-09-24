@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   SIM.holgerRequired=function(w) {
-    return w.memory.life.firstOpening.step===12 && !w.memory.life.furniture['full-counter'] &&
+    return w.memory.life.firstOpening.step===12 && SCENE.startedModest(w.memory.life) &&
       !w.memory.flags['holger-introduced'];
   };
   SIM.holgerAvailable=function(w) {

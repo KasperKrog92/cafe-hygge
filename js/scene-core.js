@@ -44,7 +44,7 @@
   };
   SCENE.activeGeometry = function (world, list) {
     return list.filter(function (item) { return SCENE.hasFurniture(world, item.furniture); }).map(function (item) {
-      if (SCENE.hasFurniture(world,'full-counter')) return item;
+      if (SCENE.fullCounter(world)) return item;
       if(item.name==='counter') return Object.assign({},item,{x1:L.basic.counter.x+L.basic.counter.w});
       if(item.name==='back bar') return Object.assign({},item,{x1:L.basic.backBar.x+L.basic.backBar.w});
       return item;
@@ -488,7 +488,7 @@
     else if (n === 'umbrella stand') box.furniture = 'entrance';
   });
   SCENE.catSpotAvailable = function (world, id) {
-    if (/^(window|topShelf|counter)/.test(id) && !SCENE.hasFurniture(world,'full-counter')) return false;
+    if (/^(window|topShelf|counter)/.test(id) && !SCENE.fullCounter(world)) return false;
     if (/^bookshelf/.test(id)) return SCENE.hasFurniture(world,'bookshelf') && SCENE.hasFurniture(world,'nook');
     if (/^piano/.test(id)) return SCENE.hasFurniture(world,'piano');
     if (id === 'armchair') return SCENE.hasFurniture(world,'fireside');
@@ -646,6 +646,18 @@
     }
     return k[k.length - 1][1];
   }
+
+  /* The saved 'full-counter' piece currently carries three meanings. Ask for
+     the meaning, not the furniture, so a staged counter upgrade can later
+     split them without hunting through every file:
+       fullCounter(world)  the equipped coffee station: full menu, pastry
+                           case, back-bar shelves, cat perches on the counter
+       startedModest(life) this café began small (the new-café story: first
+                           days, Holger's mandatory hello), not a furnished room
+       pendantsLit(world)  every hanging lamp, not only the first */
+  SCENE.fullCounter = function (world) { return SCENE.hasFurniture(world, 'full-counter'); };
+  SCENE.startedModest = function (life) { return !life.furniture['full-counter']; };
+  SCENE.pendantsLit = function (world) { return SCENE.hasFurniture(world, 'full-counter'); };
 
   /* Private renderer contract shared by the scene siblings. */
   SCENE._ = {

@@ -273,7 +273,7 @@
 
     // a few patrons are already settled in
     // (seat 10 = the first nook chair, 12 = the first window perch)
-    if(world.memory.life.firstOpening.step===12 && world.memory.life.furniture['full-counter']) {
+    if(world.memory.life.firstOpening.step===12 && !SCENE.startedModest(world.memory.life)) {
       seedPatron(world, 1); seedPatron(world, 10); seedPatron(world, 12);
     }
 
@@ -288,14 +288,14 @@
     // updateRegulars never brings a second Holger the same café day.
     const holger = CAST.regulars.find(function (r) { return r.id === 'holger'; });
     if(holger && world.memory.life.firstOpening.step===12 && world.memory.bonds.holger &&
-        !world.memory.life.furniture['full-counter'] && !world.memory.flags['holger-introduced']) {
+        SCENE.startedModest(world.memory.life) && !world.memory.flags['holger-introduced']) {
       // Restore the unfinished first hello at the counter, without another
       // visit, sale or random seated crowd. The dialogue cursor lives in flags.
       const p=makeRegular(world,holger);p.umbrella=null;
       enqueueArrival(world,p,0,false);p.x=L.orderSpot.x;p.y=L.orderSpot.y;
       p.path=null;p.state='ordering';p.stateT=0;p.facing=1;p.heading='up';
       world.regulars.holger.lastDay=dayIndex(world);
-    } else if (holger && world.memory.life.firstOpening.step===12 && world.memory.life.furniture['full-counter'])
+    } else if (holger && world.memory.life.firstOpening.step===12 && !SCENE.startedModest(world.memory.life))
       seedRegular(world, holger, !world.memory.flags['holger-introduced'] && !world.memory.life.furniture.fireside ? world.seats.find(s => !s.taken) : null);
 
     if (SIM._.restoreLife) SIM._.restoreLife(world);
@@ -389,9 +389,12 @@
     return pick(free.length ? free : PATRON_NAMES[style]);
   }
 
+  // What the counter can make: the basic station serves four things.
+  const BASIC_MENU = ['espresso','cappuccino','chamomile tea','cardamom bun'];
+  function onMenu(world, drink) { return SCENE.fullCounter(world) || BASIC_MENU.indexOf(drink.name) >= 0; }
+
   function makePatron(world, requestedName) {
-    const available = SCENE.hasFurniture(world,'full-counter') ? DRINKS : DRINKS.filter(d => ['espresso','cappuccino','chamomile tea','cardamom bun'].indexOf(d.name)>=0);
-    const drink = SCENE.hasFurniture(world,'full-counter') ? pickDrink() : pick(available);
+    const drink = SCENE.fullCounter(world) ? pickDrink() : pick(DRINKS.filter(d => onMenu(world, d)));
     const wantsBook = random() < 0.35;
     const pianist = !wantsBook && random() < 0.1;
     const nameStyle = requestedName ? nameStyleFor(requestedName) : (random() < 0.5 ? 'feminine' : 'masculine');
@@ -1206,7 +1209,7 @@
   /* ---------- spawning ---------- */
 
   function arrivalFirstDay(world) {
-    return !SCENE.hasFurniture(world,'full-counter') && world.memory.life.daysCompleted===0;
+    return !SCENE.fullCounter(world) && world.memory.life.daysCompleted===0;
   }
   function arrivalTarget(world) {
     // The piano and easel are activity stations, not general customer seats.
@@ -1317,7 +1320,7 @@
     p.nameStyle = spec.nameStyle;
     p.colors = Object.assign({}, spec.colors);
     const drink = DRINKS.find(function (d) { return d.name === spec.drink; });
-    if (drink && (SCENE.hasFurniture(world,'full-counter') || ['espresso','cappuccino','chamomile tea','cardamom bun'].indexOf(drink.name)>=0)) p.drink = drink;
+    if (drink && onMenu(world, drink)) p.drink = drink;
     p.wantsBook = !!spec.traits.wantsBook;
     p.ownBook = !!spec.traits.ownBook;
     p.chatty = !!spec.traits.chatty;
@@ -1400,7 +1403,7 @@
       // one visit at a time per regular; never two of the same face
       if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return;
       const due = r.force || (gate.due && gate.due(world)) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
-      const firstDay=!SCENE.hasFurniture(world,'full-counter') && world.memory.life.daysCompleted===0;
+      const firstDay=arrivalFirstDay(world);
       if (!due || arrivalRoom(world)<1 || (firstDay && spec.id!=='holger' && !r.force)) return;
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
@@ -1420,7 +1423,7 @@
     // On a new café's first opening, the neighbour enters through the real door
     // before random arrivals or other regulars. Existing histories stay intact.
     const resumeHello=SIM.holgerRequired(world) && !world.patrons.some(p=>p.regularId==='holger');
-    if ((!world.memory.bonds.holger || resumeHello) && !world.memory.life.furniture['full-counter'] && world.regulars.holger) {
+    if ((!world.memory.bonds.holger || resumeHello) && SCENE.startedModest(world.memory.life) && world.regulars.holger) {
       if(arrivalRoom(world)<1)return;
       world.regulars.holger.force = true;
       const spec = CAST.regulars.find(r => r.id === 'holger');

@@ -1,4 +1,4 @@
-/* Run through agent-browser eval on a disposable ?dev tab (art-review.ps1 -Verify).
+/* Run by tools/run-suites.js and art-review.js --verify on a fresh ?dev page.
    Checks the review contract, not a golden image of the current art. */
 (function () {
   'use strict';

@@ -125,7 +125,7 @@
         if (b.orders.length) {
           const order = b.orders[0];
           b.steps = PREP_STEPS[order.drink.prep].slice();
-          if(!SCENE.hasFurniture(world,'full-counter')) b.steps=b.steps.map(function(s) {
+          if(!SCENE.fullCounter(world)) b.steps=b.steps.map(function(s) {
             const x=s.act==='fetch'?L.basic.pastry.x:s.act==='kettle'?L.basic.kettle.x:
               s.act==='grind'||s.act==='tamp'?L.basic.grinder.x+8:s.act==='steam'?L.basic.machine.x+30:L.basic.machine.x+14;
             return Object.assign({},s,{x:x});
@@ -591,7 +591,7 @@
 
   const WATER_STOPS = L.noraCare.water.concat([Object.assign({facing:1},L.firstPlant.work)]);
   function waterStops(world) {
-    return (SCENE.hasFurniture(world,'full-counter')?[0]:[])
+    return (SCENE.fullCounter(world)?[0]:[])
       .concat(SCENE.hasFurniture(world,'plants')?[1]:[])
       .concat(SCENE.hasFurniture(world,'first-plant')?[2]:[]);
   }
@@ -813,8 +813,8 @@
       if (R.random() < 0.25) caption(world, 'Lunafreya polishes a cup until it gleams.');
     } else if (r < 0.75) {
       b.state = 'restock'; b.stateT = 0;
-      b.path = [SCENE.hasFurniture(world,'full-counter')?L.shop.pastry:L.basic.pastry];
-      if (R.random() < 0.25) caption(world, SCENE.hasFurniture(world,'full-counter') ? 'Lunafreya tidies the pastry case.' : 'Lunafreya tidies the little cake stand.');
+      b.path = [SCENE.fullCounter(world)?L.shop.pastry:L.basic.pastry];
+      if (R.random() < 0.25) caption(world, SCENE.fullCounter(world) ? 'Lunafreya tidies the pastry case.' : 'Lunafreya tidies the little cake stand.');
     }
     // otherwise just stand a while, watching the room
   }

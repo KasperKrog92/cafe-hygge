@@ -1,4 +1,4 @@
-/* Run with agent-browser eval in one disposable ?dev session.
+/* Run by tools/run-suites.js on a fresh ?dev page.
    Exercises actual walker output, including interrupted chores and service. */
 (function () {
   'use strict';

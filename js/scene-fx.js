@@ -27,7 +27,7 @@
     // warm pools of light
     g.globalCompositeOperation = 'lighter';
     const lampA = SCENE.lampLevel(world), power = world.shop ? world.shop.lights : 1;
-    L.pendants.filter((p,i)=>i===0||SCENE.hasFurniture(world,'full-counter')).forEach(function (lp) {
+    L.pendants.filter((p,i)=>i===0||SCENE.pendantsLit(world)).forEach(function (lp) {
       // Shade contains the source: modest bloom below its rim, with the
       // useful light directly beneath it on the counter, not across the wall.
       g.save();

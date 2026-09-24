@@ -562,7 +562,7 @@
           // A familiar reading place supports longer visits. Give service and
           // cleanup room to breathe as seating grows, rather than filling the
           // queue faster than Lunafreya can make drinks. Keep opening day short.
-          if(world.memory.life.daysCompleted>0 || SCENE.hasFurniture(world,'full-counter')) {
+          if(world.memory.life.daysCompleted>0 || !SCENE.startedModest(world.memory.life)) {
             const linger=180+R.arrivalTarget(world)*25+360*world.memory.life.openSeconds/11700;
             p.stay=Math.max(p.stay,linger*rnd(.9,1.1));
           }

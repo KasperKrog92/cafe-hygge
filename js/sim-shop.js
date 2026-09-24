@@ -33,7 +33,7 @@
       }
       if (kind === 'hearth') return fireTendRoute();
       if (kind === 'bowls' || kind === 'cat' || kind === 'putCat') return refillRoute();
-      if (kind === 'stock') return [SCENE.hasFurniture(world,'full-counter')?L.shop.pastry:L.basic.pastry];
+      if (kind === 'stock') return [SCENE.fullCounter(world)?L.shop.pastry:L.basic.pastry];
       if (kind === 'lights') return [
         { x: L.baristaExitX, y: L.baristaHome.y }, { x: L.baristaExitX, y: L.lane },
         { x: L.entryApproach.x, y: L.lane }, L.entryApproach, L.shop.switchSpot
