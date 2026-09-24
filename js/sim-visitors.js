@@ -138,4 +138,6 @@
       return true;
     });
   };
+  SIM.addInvitation({ key:a=>a.visitorId, actors:w=>SIM.visitorInvites(w),
+    start:(w,a)=>SIM.startVisitor(w,a.visitorId) });
 })();

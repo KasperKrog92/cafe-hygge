@@ -1,13 +1,16 @@
-/* Browser verification runner: evaluates tools/verify-<suite>.js on a fresh
-   ?dev page per suite and exports reports and captures to .art-review/<label>/.
-   One implementation for local runs (tools/verify-project.ps1) and CI.
+/* Browser verification runner, used locally (tools/verify-project.ps1) and in CI.
+   Two kinds of check, each in a fresh browser context so saves and settings
+   never leak between them:
+     <name>      tools/verify-<name>.js, evaluated on a ?dev page (sim/render)
+     ui:<name>   tools/ui/<name>.js, a page-level flow with real clicks,
+                 reloads and viewports: module.exports = async t => report
+   Reports and captures go to .art-review/<label>/.
 
    npm ci --prefix tools          once: pinned playwright-core, no browser download
-   node tools/run-suites.js [--suite a,b] [--label name] [--jobs n] [--url base]
+   node tools/run-suites.js [--suite a,ui:b] [--label name] [--jobs n] [--url base]
 
-   Uses the installed Google Chrome (GitHub's Ubuntu runners include it). Each
-   suite gets its own browser context, so saves and settings never leak between
-   suites. Without --url it serves this checkout itself on a free port. */
+   Uses the installed Google Chrome (GitHub's Ubuntu runners include it).
+   Without --url it serves this checkout itself on a free port. */
 'use strict';
 const fs = require('fs'), path = require('path');
 const serve = require('./serve.js');
@@ -27,14 +30,73 @@ function args() {
   return o;
 }
 
-// The suite list is derived from the files, so a new verify-*.js is always run.
+// Both lists are derived from the files, so a new check is always run.
 function allSuites() {
-  return fs.readdirSync(__dirname).filter(f => /^verify-.+\.js$/.test(f))
-    .map(f => f.slice(7, -3)).sort();
+  const inPage = fs.readdirSync(__dirname).filter(f => /^verify-.+\.js$/.test(f)).map(f => f.slice(7, -3));
+  const ui = fs.existsSync(path.join(__dirname, 'ui')) ?
+    fs.readdirSync(path.join(__dirname, 'ui')).filter(f => /\.js$/.test(f)).map(f => 'ui:' + f.slice(0, -3)) : [];
+  return inPage.sort().concat(ui.sort());
 }
 
 function writePng(file, dataUrl) {
   fs.writeFileSync(file, Buffer.from(String(dataUrl).split(',')[1], 'base64'));
+}
+function fileName(name) { return name.replace(':', '-'); }
+
+async function exportFrames(page, name, out) {
+  // Suites leave captures on window.<something>Frames; export them all.
+  const frames = await page.evaluate(() => {
+    const all = {};
+    Object.keys(window).filter(k => /Frames$/.test(k) && window[k] && typeof window[k] === 'object')
+      .forEach(k => Object.entries(window[k]).forEach(([n, v]) => {
+        if (typeof v === 'string' && v.startsWith('data:image/png')) all[n] = v;
+      }));
+    return all;
+  });
+  for (const [frame, url] of Object.entries(frames)) {
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(frame)) throw new Error('Unexpected frame name: ' + frame);
+    writePng(path.join(out, fileName(name) + '-' + frame + '.png'), url);
+  }
+}
+
+async function runInPage(page, base, name, out) {
+  await page.goto(base + '/?dev');
+  await page.waitForFunction('!!(window.__dev && window.__world)', null, { timeout: 30000 });
+  const code = fs.readFileSync(path.join(__dirname, 'verify-' + name + '.js'), 'utf8')
+    .replace(/^﻿/, '').trim().replace(/;$/, '');
+  const report = await page.evaluate('(async () => { try { return { ok: true, result: await ' + code +
+    ' }; } catch (e) { return { ok: false, error: String(e.stack || e) }; } })()');
+  await exportFrames(page, name, out);
+  if (report.ok && report.result && typeof report.result.sheet === 'string')
+    writePng(path.join(out, name + '-sheet.png'), report.result.sheet);
+  return report;
+}
+
+async function runUi(page, base, name, out) {
+  const flow = require(path.join(__dirname, 'ui', name.slice(3) + '.js'));
+  const t = {
+    page: page,
+    // A script that runs before every page load in this flow (e.g. tools/life-browser-init.js).
+    init: function (file) { return page.context().addInitScript({ path: path.join(__dirname, file) }); },
+    // Open a page of this checkout and wait for the world (path may carry a query).
+    open: async function (p) {
+      await page.goto(base + (p || '/'));
+      await page.waitForFunction('!!window.__world', null, { timeout: 30000 });
+    },
+    reload: async function () {
+      await page.reload();
+      await page.waitForFunction('!!window.__world', null, { timeout: 30000 });
+    },
+    eval: function (fn, arg) { return page.evaluate(fn, arg); },
+    viewport: function (w, h) { return page.setViewportSize({ width: w, height: h }); },
+    shot: function (label) { return page.screenshot({ path: path.join(out, fileName(name) + '-' + label + '.png') }); }
+  };
+  try {
+    return { ok: true, result: await flow(t) };
+  } catch (e) {
+    try { await t.shot('failure'); } catch (ignored) { /* page may be gone */ }
+    return { ok: false, error: String(e.stack || e) };
+  }
 }
 
 async function runSuite(browser, base, name, out) {
@@ -44,28 +106,8 @@ async function runSuite(browser, base, name, out) {
   const errors = [];
   page.on('pageerror', e => errors.push(String(e.stack || e)));
   try {
-    await page.goto(base + '/?dev');
-    await page.waitForFunction('!!(window.__dev && window.__world)', null, { timeout: 30000 });
-    const code = fs.readFileSync(path.join(__dirname, 'verify-' + name + '.js'), 'utf8')
-      .replace(/^﻿/, '').trim().replace(/;$/, '');
-    const report = await page.evaluate('(async () => { try { return { ok: true, result: await ' + code +
-      ' }; } catch (e) { return { ok: false, error: String(e.stack || e) }; } })()');
-    // Suites leave captures on window.<something>Frames; export them all.
-    const frames = await page.evaluate(() => {
-      const all = {};
-      Object.keys(window).filter(k => /Frames$/.test(k) && window[k] && typeof window[k] === 'object')
-        .forEach(k => Object.entries(window[k]).forEach(([n, v]) => {
-          if (typeof v === 'string' && v.startsWith('data:image/png')) all[n] = v;
-        }));
-      return all;
-    });
-    for (const [frame, url] of Object.entries(frames)) {
-      if (!/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(frame)) throw new Error('Unexpected frame name: ' + frame);
-      writePng(path.join(out, name + '-' + frame + '.png'), url);
-    }
-    if (report.ok && report.result && typeof report.result.sheet === 'string')
-      writePng(path.join(out, name + '-sheet.png'), report.result.sheet);
-    fs.writeFileSync(path.join(out, name + '.json'), JSON.stringify(report, (k, v) =>
+    const report = name.startsWith('ui:') ? await runUi(page, base, name, out) : await runInPage(page, base, name, out);
+    fs.writeFileSync(path.join(out, fileName(name) + '.json'), JSON.stringify(report, (k, v) =>
       typeof v === 'string' && v.startsWith('data:image/') ? '<png ' + v.length + ' chars>' : v, 2));
     return { suite: name, passed: report.ok && !errors.length, seconds: (Date.now() - started) / 1000,
       error: report.error || null, browserErrors: errors };
@@ -82,9 +124,9 @@ async function main() {
   let chromium;
   try { ({ chromium } = require('playwright-core')); }
   catch (e) { throw new Error('playwright-core is not installed. Run: npm ci --prefix tools'); }
-  const suites = o.suite || allSuites();
-  const unknown = suites.filter(s => allSuites().indexOf(s) < 0);
-  if (unknown.length) throw new Error('Unknown suite(s): ' + unknown.join(', ') + '\nKnown: ' + allSuites().join(', '));
+  const known = allSuites(), suites = o.suite || known;
+  const unknown = suites.filter(s => known.indexOf(s) < 0);
+  if (unknown.length) throw new Error('Unknown suite(s): ' + unknown.join(', ') + '\nKnown: ' + known.join(', '));
   const out = path.join(serve.ROOT, '.art-review', o.label);
   fs.mkdirSync(out, { recursive: true });
 
@@ -113,8 +155,8 @@ async function main() {
   reports.sort((a, b) => suites.indexOf(a.suite) - suites.indexOf(b.suite));
   fs.writeFileSync(path.join(out, 'summary.json'), JSON.stringify(reports, null, 2));
   const failed = reports.filter(r => !r.passed);
-  console.log((failed.length ? failed.length + ' of ' + reports.length + ' suites failed' :
-    'All ' + reports.length + ' suites passed') + '. Results: ' + out);
+  console.log((failed.length ? failed.length + ' of ' + reports.length + ' checks failed' :
+    'All ' + reports.length + ' checks passed') + '. Results: ' + out);
   process.exitCode = failed.length ? 1 : 0;
 }
 

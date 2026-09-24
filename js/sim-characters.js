@@ -1479,9 +1479,9 @@
   SIM.beatAt = function (world, x, y) {
     if (world.shop && (world.shop.away || world.shop.fade > 0)) return null;
     if (!world.memory) return null;
-    const gerda=SIM.gerdaAvailable(world);
-    if(gerda && x>gerda.x-26 && x<gerda.x+26 && y>gerda.y-108 && y<gerda.y+8)
-      return SIM.startGerda(world) ? {id:'gerda-window'} : null;
+    const invitation = SIM.invitationAt(world, x, y);
+    if (invitation) return invitation.start() ? { id: invitation.key } : null;
+    if (world.memory.life.mode !== 'game') return null;   // story beats wait in game mode only
     const arcs = (CAST && CAST.arcs) || [];
     for (let i = 0; i < arcs.length; i++) {
       const arc = arcs[i];
@@ -1665,12 +1665,12 @@
     // (docs/narrative.md §2) — it waits across sessions and never expires. It
     // takes the owner's bubble slot so it never fights their ambient chatter.
     const invited = world.memory.life.mode === 'game' ? pendingInvites(world) : {};
-    SIM.visitorInvites(world).forEach(function(a) {
-      if(a.social)invited[a.id]='dots';
-      else bubbles.push({x:a.x,y:a.y,icon:'dots'});
+    const pulsing = {};
+    SIM.invitations(world).forEach(function (inv) {
+      const a = inv.actor;
+      if (world.patrons.indexOf(a) >= 0) { invited[a.id] = 'dots'; if (inv.pulse) pulsing[a.id] = true; }
+      else bubbles.push({ x: a.x, y: a.y, icon: 'dots' });
     });
-    const holger=SIM.holgerAvailable(world);if(holger)invited[holger.id]='dots';
-    const gerda=SIM.gerdaAvailable(world);if(gerda)invited[gerda.id]='dots';
     world.patrons.forEach(function (p) {
       if (p.outside) return;
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment && world.moment.owner===p ?
@@ -1680,8 +1680,7 @@
         for(let n=0;n<p.carryingPillows;n++)SCENE.drawKnittedPillow(g,Math.round(p.x)+4,Math.round(p.y)-34+n*11,true);
       }});
       if (invited[p.id]) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: invited[p.id],
-        alpha:p===holger && SIM.holgerRequired(world) && !world.memory.flags['holger-invitation-opened'] && !world.reducedMotion
-          ? .45+.55*(.5+.5*Math.cos(p.animT*Math.PI)) : 1 });
+        alpha: pulsing[p.id] && !world.reducedMotion ? .45+.55*(.5+.5*Math.cos(p.animT*Math.PI)) : 1 });
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
     const b = world.barista;

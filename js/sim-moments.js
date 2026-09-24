@@ -140,4 +140,8 @@
     const line=SIM.momentLine(w);
     SIM.revealDialogue(w,m,line.text,dt,CAST.voices[line.speaker]||false);
   };
+  // The first hello pulses softly until it has been opened once.
+  SIM.addInvitation({ key:()=>'holger', actors:w=>{const h=SIM.holgerAvailable(w);return h?[h]:[];},
+    start:w=>SIM.startHolger(w),
+    pulse:w=>SIM.holgerRequired(w) && !w.memory.flags['holger-invitation-opened'] });
 })();

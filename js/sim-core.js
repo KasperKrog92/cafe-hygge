@@ -381,6 +381,14 @@
     p.hasShelfBook = true;
   }
 
+  // A name nobody in the café is using right now: two Idas at once reads as
+  // the same person twice. Falls back to any name when the list runs out.
+  function freshName(world, style) {
+    const inUse = new Set(world.patrons.map(function (p) { return p.name; }));
+    const free = PATRON_NAMES[style].filter(function (n) { return !inUse.has(n); });
+    return pick(free.length ? free : PATRON_NAMES[style]);
+  }
+
   function makePatron(world, requestedName) {
     const available = SCENE.hasFurniture(world,'full-counter') ? DRINKS : DRINKS.filter(d => ['espresso','cappuccino','chamomile tea','cardamom bun'].indexOf(d.name)>=0);
     const drink = SCENE.hasFurniture(world,'full-counter') ? pickDrink() : pick(available);
@@ -390,7 +398,7 @@
     return {
       id: (activeContext || productionContext).nextId++,
       kind: 'patron',
-      name: requestedName || pick(PATRON_NAMES[nameStyle]),
+      name: requestedName || freshName(world, nameStyle),
       nameStyle: nameStyle,
       colors: {
         skin: pick(SKINS), hair: pick(HAIRS), top: pick(TOPS), pants: pick(PANTS),
@@ -1374,6 +1382,11 @@
     return arrivalLine(world,spec,actor);
   }
 
+  /* A regular's story can gate their visits from their own file:
+       SIM.gateRegular(id, { mayVisit(world), due(world), arrivalLine(world) }) */
+  const REGULAR_GATES = {};
+  SIM.gateRegular = function (id, gate) { REGULAR_GATES[id] = gate; };
+
   function updateRegulars(world) {
     const day = dayIndex(world);
     let arrived=false;
@@ -1381,20 +1394,19 @@
       if(arrived)return;
       const r = world.regulars[spec.id];
       if (!r) return;
-      if (spec.id==='gerda' && !SIM.gerdaMayVisit(world)) return;
+      const gate = REGULAR_GATES[spec.id] || {};
+      if (gate.mayVisit && !gate.mayVisit(world)) return;
       if (day !== r.day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
       // one visit at a time per regular; never two of the same face
       if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return;
-      const due = r.force || (spec.id==='gerda' && SIM.gerdaDeliveryDue(world)) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
+      const due = r.force || (gate.due && gate.due(world)) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
       const firstDay=!SCENE.hasFurniture(world,'full-counter') && world.memory.life.daysCompleted===0;
       if (!due || arrivalRoom(world)<1 || (firstDay && spec.id!=='holger' && !r.force)) return;
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
       const info = noteRegularVisit(world, spec);
-      caption(world, spec.id==='gerda' && !world.memory.flags['gerda-introduced'] && !world.memory.flags['gerda-window-legacy']
-        ? 'a woman pauses to look through the clear window, then steps inside.'
-        : spec.id==='gerda' && !SCENE.hasFurniture(world,'left-window-table') ? 'Gerda comes in for a warm cup and a little company.' : regularArrivalLine(world, spec, info, p),{actor:p});
+      caption(world, (gate.arrivalLine && gate.arrivalLine(world)) || regularArrivalLine(world, spec, info, p),{actor:p});
       arrived=true;
     });
     return arrived;
@@ -1612,6 +1624,32 @@
     world.context.memory.requestPersist();
     return mem;
   }
+
+  /* Attended conversation invitations. Each character file registers its own
+     source once; drawing (the waiting bubble), the canvas tap and the
+     accessible button (main.js) all read this one list, so a new character's
+     hello never edits the shared loops.
+       SIM.addInvitation({ key, actors(world) → [actor], start(world, actor),
+                           pulse(world, actor) → optional first-time emphasis }) */
+  const INVITATIONS = [];
+  SIM.addInvitation = function (source) { INVITATIONS.push(source); };
+  SIM.invitations = function (world) {
+    const out = [];
+    INVITATIONS.forEach(function (src) {
+      src.actors(world).forEach(function (actor) {
+        out.push({ key: src.key(actor), actor: actor, pulse: !!(src.pulse && src.pulse(world, actor)),
+          start: function () { return src.start(world, actor); } });
+      });
+    });
+    return out;
+  };
+  // A forgiving box over the waiting bubble and the person beneath it.
+  SIM.invitationAt = function (world, x, y) {
+    return SIM.invitations(world).find(function (inv) {
+      const a = inv.actor;
+      return x > a.x - 26 && x < a.x + 26 && y > a.y - 108 && y < a.y + 8;
+    }) || null;
+  };
 
   /* Private simulation contract shared by the sim siblings. The dev harness
      consumes a documented subset after every sibling has loaded. */

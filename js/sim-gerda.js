@@ -95,4 +95,12 @@
     }
     return true;
   };
+  SIM.addInvitation({ key:()=>'gerda', actors:w=>{const g=SIM.gerdaAvailable(w);return g?[g]:[];},
+    start:w=>SIM.startGerda(w) });
+  // Gerda first comes once the left window is clear, and her own arrivals
+  // are described through that window until her table exists.
+  SIM.gateRegular('gerda', { mayVisit:w=>SIM.gerdaMayVisit(w), due:w=>SIM.gerdaDeliveryDue(w),
+    arrivalLine:w=>!w.memory.flags['gerda-introduced'] && !w.memory.flags['gerda-window-legacy']
+      ? 'a woman pauses to look through the clear window, then steps inside.'
+      : !SCENE.hasFurniture(w,'left-window-table') ? 'Gerda comes in for a warm cup and a little company.' : null });
 })();

@@ -115,13 +115,24 @@
   const settingIdle = document.getElementById('setting-idle'), btnPlan = document.getElementById('btn-plan');
   const btnSleep = document.getElementById('btn-sleep');
   const btnHome = document.getElementById('btn-home');
-  const planner = document.getElementById('planner'), buyPlant = document.getElementById('buy-plant');
+  const planner = document.getElementById('planner');
   const introControls=document.getElementById('intro-controls'),introPause=document.getElementById('intro-pause');
   const introTranscript=document.getElementById('intro-transcript'),instantText=document.getElementById('setting-instant');
   let spokenLine='';
-  const momentPanel=document.getElementById('conversation'),meetHolger=document.getElementById('meet-holger');
+  const momentPanel=document.getElementById('conversation');
   let momentKey=null,returnFocus=null;
-  meetHolger.addEventListener('click',function(){SIM.startHolger(world);refreshMoment();});
+  // An accessible button over each waiting invitation (SIM.invitations),
+  // created on first need and kept as #meet-<key>.
+  const meetButtons={};
+  function meetButton(key,name) {
+    if(!meetButtons[key]) {
+      const b=document.createElement('button');
+      b.id='meet-'+key;b.className='meet-visitor';b.type='button';b.hidden=true;
+      b.setAttribute('aria-label','Talk with '+name);b.title='Talk with '+name;
+      stage.insertBefore(b,momentPanel);meetButtons[key]=b;
+    }
+    return meetButtons[key];
+  }
   document.getElementById('conversation-later').addEventListener('click',function(){SIM.leaveMoment(world);refreshMoment();});
   function screenPoint(x,y) {
     const r=canvas.getBoundingClientRect(),stageRect=stage.getBoundingClientRect();
@@ -133,21 +144,15 @@
     Object.assign(button.style,{left:at.x+'px',top:at.y+'px',width:width*at.scale+'px',height:height*at.scale+'px'});
   }
   function refreshMoment() {
-    const gerda=SIM.gerdaAvailable(world),gerdaButton=document.getElementById('meet-gerda');
-    gerdaButton.hidden=!gerda;
-    gerdaButton.onclick=function(){SIM.startGerda(world);refreshMoment();};
-    if(gerda)placeHit(gerdaButton,gerda.x-24,gerda.y+(gerda.pose==='sit'?6:0)-102,48,42);
-    const visitors=SIM.visitorInvites(world);
-    ['keira','tomas'].forEach(function(id){
-      const button=document.getElementById('meet-'+id),a=visitors.find(a=>a.visitorId===id);
-      button.hidden=!a;
-      button.onclick=function(){SIM.startVisitor(world,id);refreshMoment();};
-      if(a)placeHit(button,a.x-24,a.y-102,48,42);
+    const waiting=SIM.invitations(world),shown={};
+    waiting.forEach(function(inv){
+      const a=inv.actor,button=meetButton(inv.key,a.name);
+      shown[inv.key]=true;button.hidden=false;
+      button.onclick=function(){inv.start();refreshMoment();};
+      placeHit(button,a.x-24,a.y+(a.pose==='sit'?6:0)-102,48,42);
     });
+    Object.keys(meetButtons).forEach(function(key){if(!shown[key])meetButtons[key].hidden=true;});
     world.reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const invited=SIM.holgerAvailable(world);
-    meetHolger.hidden=!invited;
-    if(invited)placeHit(meetHolger,invited.x-24,invited.y+(invited.pose==='sit'?6:0)-102,48,42);
     const m=world.moment,line=m&&m.phase==='talk'?SIM.momentLine(world):null;
     momentPanel.hidden=!line;
     stage.classList.toggle('in-conversation',!!m);
@@ -218,10 +223,7 @@
     if (!world.plannerOpen) return;
     function refreshChoice(button, stage, price, id) {
       const available = stage === 'available';
-      button.hidden=l.homeStory.firstNight && id!=='window' && id!=='table';
-      if(id==='windowSeat')button.hidden=button.hidden || !world.memory.flags['gerda-pillows-accepted'] || l.furniture['window-seats'];
-      if(id==='fireplace')button.hidden=button.hidden || !world.memory.flags['fireplace-unlocked'];
-      if(id==='mantel')button.hidden=button.hidden || !SCENE.hasFurniture(world,'hearth') || l.furniture['mantel-decor'];
+      button.hidden = !IMPROVEMENTS.offered(world,id);
       button.disabled = !IMPROVEMENTS.canBuy(world,id);
       button.querySelector('.thought-price > span').textContent = price;
       button.querySelector('.thought-price').hidden = !available;
@@ -231,9 +233,8 @@
       button.setAttribute('aria-label', button.firstElementChild.textContent + ', ' +
         (available ? price + ' coins' : stage === 'installed' ? 'complete' : 'chosen'));
     }
-    refreshChoice(buyPlant, l.plant.stage, SIM.plantProject.price, 'plant');
-    Object.keys(SIM.projects).forEach(function (id) {
-      refreshChoice(document.getElementById('buy-' + id), l.projects[id].stage, SIM.projects[id].price,id);
+    IMPROVEMENTS.planOrder.forEach(function (id) {
+      refreshChoice(document.getElementById('buy-' + id), IMPROVEMENTS.state(l,id).stage, IMPROVEMENTS.all[id].price, id);
     });
     if(!planner.open && !settings.open && overlay.classList.contains('gone')) {
       planner.showModal();
@@ -246,9 +247,22 @@
   btnPlan.addEventListener('click', function () {
     if (SIM.plan(world, true)) { planner.showModal(); refreshLife(); }
   });
-  buyPlant.addEventListener('click', function () { SIM.buyPlant(world); refreshLife(); });
-  Object.keys(SIM.projects).forEach(function (id) {
-    document.getElementById('buy-' + id).addEventListener('click', function () { SIM.buyProject(world,id); refreshLife(); });
+  // One planner button per improvement definition, in planner order.
+  const choiceList = planner.querySelector('.thought-choices');
+  const coin = document.querySelector('#add-money .gold-coin');
+  IMPROVEMENTS.planOrder.forEach(function (id) {
+    const button = document.createElement('button');
+    button.id = 'buy-' + id; button.className = 'thought-choice';
+    const label = document.createElement('span'); label.textContent = IMPROVEMENTS.all[id].label;
+    const price = document.createElement('span'); price.className = 'thought-price';
+    price.appendChild(coin.cloneNode(true)); price.appendChild(document.createElement('span'));
+    const state = document.createElement('span'); state.className = 'thought-state'; state.hidden = true;
+    button.append(label, price, state);
+    button.addEventListener('click', function () {
+      if (id === 'plant') SIM.buyPlant(world); else SIM.buyProject(world,id);
+      refreshLife();
+    });
+    choiceList.appendChild(button);
   });
   btnSleep.addEventListener('click', function () {
     if (SIM.goToSleep(world)) { refreshLife(); refreshIntro(); btnSettings.focus(); }
@@ -460,11 +474,8 @@
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * view.w + view.x;
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
-    const invited=SIM.holgerAvailable(world);
-    if(invited && Math.abs(x-invited.x)<26 && y>invited.y-104 && y<invited.y-58){SIM.startHolger(world);return;}
-    const visitor=SIM.visitorInvites(world).find(a=>Math.abs(x-a.x)<26 && y>a.y-104 && y<a.y-58);
-    if(visitor){SIM.startVisitor(world,visitor.visitorId);return;}
-    if (world.memory.life.mode === 'game' && world.shop.phase !== 'home' && SIM.beatAt(world, x, y)) return;
+    // Attended hellos (SIM.invitations) and waiting story beats both live in beatAt.
+    if (world.shop.phase !== 'home' && SIM.beatAt(world, x, y)) return;
     const cat = world.cat;
     if (Math.hypot(x - cat.x, y - (cat.y - 10)) < 36) SIM.petCat(world);
   });
