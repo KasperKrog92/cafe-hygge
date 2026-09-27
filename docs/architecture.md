@@ -761,6 +761,16 @@ decides it at the door, `SIM.visitorStoryInvites` offers it seated, and
 `<id>-<story>-done` completes it. `returningAfter` supplies the remembered
 arrival caption.
 
+`CAST.regularStories[id]` lists a regular's later scenes in order (Holger's
+fire and Aksel, Kasper's endings, Nora's portrait, Antonia's bench, Ida's
+reading afternoon, Elody's Maud). The first scene not yet `done` whose `after`
+flags are all set and none of whose `unless` flags is set is decided at the
+door, so one scene per visit. Any `alt` key written `flag:<name>` holds when
+that saved flag exists (`SIM.flagContext`), so a line can recall an earlier
+answer without a new named condition; evening moments use it too. An evening
+moment (`CAST.homeStories`) may name `after` flags instead of a READY function
+in sim-evenings.js; precedence is the mug, then Antonia's bench, then the post.
+
 Arrivals: `arrivalRoom(world, extra)` lets a familiar face (a due regular,
 `dueRegular`, or an off-duty neighbour, `SIM._.socialVisitorDue`) take a clean
 seat one guest past the popularity target, never on opening day; walk-ins

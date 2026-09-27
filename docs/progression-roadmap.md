@@ -148,10 +148,19 @@ in a wide shot with each reader's own voice; afterwards they read a little
 longer and go home, and later visits remember it. A small room simply has a
 smaller gathering; an afternoon never begun comes back another day.
 
-**Next, in order:** second beats for existing characters (Keira's printed
-photograph, Tomas's coat hook and bread, Holger's fire story and his shipmate,
-Kasper's question about endings, Nora's portrait permission, Antonia's place by
-the water, Gerda's own colour); then the reading chair by the fire (C2); then
+## Second visits — shipped 27 September 2026 (in part)
+
+The established regulars have a second scene after their introductions, each
+on a later visit and each remembered afterwards. Holger tells of keeping a
+galley stove lit all night for the cook, then, another day, of Aksel, his
+shipmate twenty minutes away whom he has never asked for a coffee. Kasper asks
+which way endings should lean. Nora finds she has drawn Lunafreya forty times as
+a pair of hands and asks to paint her properly. Antonia shows her a bench that
+faces the wrong way, remembered at home that night.
+
+**Next, in order:** the rest of the second beats (Keira's printed photograph,
+Tomas's bread and a coat hook, Gerda's own colour); then the reading chair by
+the fire (C2); then
 Saira without a piano (the piano's place needs an owner decision); then Birgit
 and the naming arc, which arrives at **Café Flourish** (owner decision).
 The current status/next task lives here; a brief owns scope and acceptance

@@ -17,7 +17,7 @@
   function packet(w, p) { return packetOf(w, p, CAST.introductions[p.regularId].lines); }
   function packetOf(w, p, lines) {
     const bond = w.memory.bonds[p.regularId];
-    return SIM.contextLines(lines, {
+    return SIM.contextLines(lines, SIM.flagContext(w, lines, {
       familiar: (bond.visits || 0) > 4,
       hearth: SCENE.hasFurniture(w, 'hearth') && !SCENE.hearthWork(w),
       menu: !!p.spec && !!p.drink && p.drink.name === p.spec.drink,
@@ -25,8 +25,16 @@
       facadeDone: !!w.memory.flags['street-house-painted'],
       noShelf: !SCENE.hasFurniture(w, 'wall-shelves') && !SCENE.hasFurniture(w, 'bookshelf'),
       noPlant: !SCENE.hasFurniture(w, 'first-plant') && !SCENE.hasFurniture(w, 'plants')
-    });
+    }));
   }
+  // An `alt` key `flag:<name>` holds when that saved flag is set, so a line
+  // can recall any earlier answer without a new named condition.
+  SIM.flagContext = function (w, lines, when) {
+    lines.forEach(function (l) {
+      Object.keys(l.alt || {}).forEach(function (k) { if (k.indexOf('flag:') === 0) when[k] = !!w.memory.flags[k.slice(5)]; });
+    });
+    return when;
+  };
   SIM.startIntroduction = function (w, id) {
     const p = SIM.introductionAvailable(w, id);
     if (!p) return false;
@@ -41,8 +49,10 @@
   // each decided at the door. A story that brings a parcel waits until it is
   // set down on the counter; one that gives a keepsake schedules it.
   function nextStory(w, id) {
+    const f = w.memory.flags;
     return ((CAST.regularStories || {})[id] || []).find(function (s) {
-      return !w.memory.flags[id + '-' + s.id + '-done'] && s.after.every(function (f) { return w.memory.flags[f]; });
+      return !f[id + '-' + s.id + '-done'] && s.after.every(function (x) { return f[x]; }) &&
+        !(s.unless || []).some(function (x) { return f[x]; });
     }) || null;
   }
   SIM.regularStoryAvailable = function (w, id) {

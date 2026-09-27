@@ -188,8 +188,8 @@ child or maritime disaster without a later, deliberate writing decision.
 | --- | --- | --- |
 | H1 — The new sign | Shipped | Mutual names, first espresso, her two choices, polishing a brass handle from nerves, galley table, missing familiar voices |
 | H2 — Books with a history | Shipped | Offer recalls her hope (books or names); the crew's six books (seven counting the 1998 tide table holding the box shut). She chooses lending them to anyone or letting them stay his, kept here. Handover on a later visit, once a shelf exists |
-| H3 — Keeping a fire | Planned | When a hearth is available, a small stove-at-sea story; provide another ordinary setting if it is never bought |
-| H4 — The voices at the table | Planned | Lunafreya may ask about someone he mentioned or simply keep him company. Let him decide how much to tell |
+| H3 — Keeping a fire | Shipped | On a later visit after the books: the galley stove on his second ship went out in a storm and the cook, who had kept it for eleven years, sat on the floor and cried; the crew kept it lit all night, two at a time, and nobody said it was for him ("Not very. That wasn't what it was for"). Opens by a working fire or a cold hearth. Choice: `holger-fire-his` (when he is here the fire is his to keep) or `holger-fire-told` (she is glad he told it; he never has on land). The cook still sends a Christmas card with a stove on it |
+| H4 — The voices at the table | Shipped (the meeting itself planned) | On a later visit: a letter from **Aksel**, nineteen years his shipmate, now twenty minutes away on the bus; four years and neither has suggested anything. His was the loudest of the voices; he tells a story like the shipping forecast. Choice: `holger-aksel-cafe` (ask him here; a table for two) or `holger-aksel-walk` (a walk along the water). Holger writes back himself that night. Aksel's visit, and Lunafreya joining them for a cup, remain planned |
 | H5 — Being welcome, too | Planned | Lunafreya notices that he also needs encouragement. A reciprocal moment, not a rescue |
 
 **H2, shipped 27 September.** Trigger: his third visit after the introduction
@@ -298,8 +298,16 @@ painting of this place should remember: `lunafreya-remember-start` (how it was
 at the start; "nobody paints first versions") or `lunafreya-remember-people`
 (an ordinary afternoon with somebody in it). Flags use her legacy regular ID.
 Each answer adds a flagged sketching musing; the later painting is planned.
-**Planned:** a portrait that asks Lunafreya's permission and respects
-private/public display, shaped by the remembered answer.
+**Shipped 27 September — the hands behind the counter** (a later visit): going
+through her sketchbook, Nora finds Lunafreya forty times, always a pair of hands
+behind the counter, never a face: the way those owners wanted their rooms. She
+asks, "forty sketches late", to paint her properly (recalling "somebody in it"
+if that was the answer); "No is a complete answer." Choice (flags use her legacy
+ID): `lunafreya-portrait-cafe` (in the café, with the room around her),
+`lunafreya-portrait-home` (a small one, just for upstairs) or
+`lunafreya-portrait-no` (stay the hands for now; the question keeps). Either way
+she stops leaving out the cups. **Planned:** the portrait itself, where it hangs
+and who has seen it.
 
 ## Kasper — the unfinished chapter
 
@@ -316,7 +324,15 @@ doesn't ask what the novel is about. Choice: `kasper-table` (stay as long as
 you like; the table doesn't mind slow chapters) or `kasper-good-lines` (tell me
 when you write three good lines; he will report, and later holds up three
 fingers across the room). He has not shown any writing.
-**Planned:** a later invitation to share a paragraph. Finishing a manuscript must never become a timed task.
+**Shipped 27 September — endings** (a later visit): purely hypothetically, for a
+friend who is him, does she like endings that arrive quietly or leave a door
+open? He won't do what she says; he wants to know which way the room leans.
+Choice: `kasper-ending-quiet` ("like the last customer going home") or
+`kasper-ending-open` ("I like wondering who comes in next"; "of course a café
+would say that"). He recalls the reading afternoon and his three good lines when
+they happened; chapter seven now knows which way it wants to end. She still
+hasn't asked what it's about. **Planned:** a later invitation to share a
+paragraph shaped by that answer. Finishing a manuscript must never become a timed task.
 The working arc builds on an earlier successful short story, his fear of not
 repeating that success, and an offered small piece shaped by a remembered
 preference about endings. Sharing Lunafreya's private history requires permission.
@@ -334,7 +350,17 @@ of the nicest things a place can do. Choice: `freya-quiet` (Lunafreya leaves
 her to it) or `freya-route` (her favourite stretch: along the water after
 eleven, nobody on board, every light on, "like driving a lantern"). Each answer
 adds a flagged musing.
-**Planned:** a book conversation that permits keeping the ending private.
+**Shipped 27 September — a bench that faces the wrong way** (a later visit): at
+the end of her route, by the water, one bench faces the city instead of the
+view, so nobody sits on it; she eats her sandwich there and watches the windows
+come on. She offers to show Lunafreya that night after closing. Choice:
+`freya-bench-yes` ("Bring a coat. The bench doesn't believe in shelter.") or
+`freya-bench-later`; "later" is asked once more on a later visit (`again`: yes,
+or `freya-bench-someday`, after which she never asks again). With yes, an evening
+moment at home remembers it (`bench`): the trumpet player's window, her 9A on its
+last run "like driving a lantern" if she named her route, hardly a word said;
+Lunafreya has half a bench now. At the reading afternoon she kept her book's last
+line to herself. **Planned:** a book exchanged without a report.
 
 ## The wider ensemble — planned direction
 

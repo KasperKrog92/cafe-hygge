@@ -144,6 +144,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `nora-routing` | Lunafreya's route pairs, blocked routes and complete care chores |
 | `pathing` | Sampled obstacle clearance and real walker arrival across patron routes |
 | `projects` | Orders interrupt hand work; overnight/reload/mode resumption; queued jobs |
+| `second-visits` | Holger's fire story by a working or cold hearth and then, on a later visit, Aksel; Kasper's endings (recalling the reading afternoon and his three good lines) with a mid-scene reload resuming; Nora's three portrait answers; Antonia's bench remembered at home that night, and a second asking that ends kindly; one scene per visit, idle hides them, musings remember |
 | `ship` | Sailing ship movement, window visits, seat reservations, closing |
 | `visitors` | Keira and Tomas: jobs, separate greetings, customer visits, both modes |
 | `waterfront` | Terrace orders, weather returns, cleanup and closing |

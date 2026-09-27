@@ -1076,3 +1076,147 @@
     (CAST.gathering.overheard[r.id] || []).forEach(function (m) { r.lines.overheard.push(m); });
   });
 })();
+
+/* Second visits (after the introductions): later saved scenes for Holger
+   (keeping a fire; the shipmate twenty minutes away), Kasper (which way an
+   ending should lean), Nora (the hands behind the counter) and Antonia (a
+   bench that faces the wrong way). Same contract as every regular story:
+   decided at the door, one per visit, in order, game mode, seated, waits.
+   `unless` keeps a story back once any of its flags is set; an `alt` key
+   `flag:<name>` picks a variant when that saved flag exists. Nora's flags use
+   her legacy regular ID `lunafreya`; Antonia's use `freya`. */
+(function () {
+  'use strict';
+  CAST.regularStories.holger = [
+    {id:'fire', after:['holger-books-given'], lines:[
+      {id:'look',speaker:'Holger',text:"I keep looking at that fireplace. Old habit. On board you always knew where the warm was.",
+        alt:{hearth:"Your fire's drawing well. I check on it before I sit down. Old habit."}},
+      {id:'ship',speaker:'Lunafreya',text:"Was there a fire on your ships?"},
+      {id:'galley',speaker:'Holger',text:"A stove in the galley. Small, black, bad-tempered. On my second ship it went out in a storm, the worst night of the crossing."},
+      {id:'cook',speaker:'Holger',text:"The cook sat down on the floor and cried. Not about the cold. He'd kept that stove going for eleven years."},
+      {id:'turns',speaker:'Holger',text:"So we took turns. All night, two at a time, feeding it and holding the door shut. Nobody said it was for him."},
+      {id:'warm',speaker:'Lunafreya',text:"Was it warm, at least?"},
+      {id:'point',speaker:'Holger',text:"Not very. That wasn't what it was for."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Holger',text:"Then…",choices:[
+        {text:"When you're here, the fire's yours to keep.",flag:'holger-fire-his',
+          reply:"Then I'll keep it the way we kept that one. Properly, and without mentioning it."},
+        {text:"I'm glad you told me that one.",flag:'holger-fire-told',
+          reply:"So am I. I've never told it on land before."}
+      ]},
+      {id:'card',speaker:'Holger',text:"The cook's still going, if you're wondering. He sends me a card every Christmas with a drawing of a stove on it."}
+    ]},
+    {id:'aksel', after:['holger-fire-done'], lines:[
+      {id:'letter',speaker:'Holger',text:"I had a letter from Aksel this week. We sailed together for nineteen years."},
+      {id:'where',speaker:'Lunafreya',text:"Where is he now?"},
+      {id:'bus',speaker:'Holger',text:"Twenty minutes away, on the bus. He's been there four years. So have I."},
+      {id:'neither',speaker:'Holger',text:"Neither of us has suggested anything. You'd think two men who crossed the Kattegat in January could manage a cup of coffee."},
+      {id:'voices',speaker:'Lunafreya',text:"You told me once you missed some of the voices."},
+      {id:'loud',speaker:'Holger',text:"His was the loudest. He tells a story like he's reading out the shipping forecast. You'd like him. Everyone does, eventually."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Holger',text:"Then…",choices:[
+        {text:"Ask him here. I'll keep a table for the two of you.",flag:'holger-aksel-cafe',
+          reply:"Here. Yes. He'll complain about the chairs and stay three hours."},
+        {text:"Ask him for a walk along the water. Just that.",flag:'holger-aksel-walk',
+          reply:"A walk. We never did anything on land without an argument about the route. That might be exactly right."}
+      ]},
+      {id:'tonight',speaker:'Holger',text:"I'll write back tonight. Before I think better of it."},
+      {id:'hear',speaker:'Lunafreya',text:"I'd like to hear how it goes."},
+      {id:'will',speaker:'Holger',text:"You will. He'll make sure of that."}
+    ]}
+  ];
+  CAST.regularStories.kasper = [
+    {id:'endings', after:['kasper-introduced'], lines:[
+      {id:'ask',speaker:'Kasper',text:"Can I ask you something about endings? Purely hypothetically. For a friend who is me.",
+        alt:{'flag:reading-afternoon-kasper':"Ever since the reading afternoon I've been thinking about endings. Can I ask you something? For a friend who is me."}},
+      {id:'go',speaker:'Lunafreya',text:"Go on."},
+      {id:'two',speaker:'Kasper',text:"Some books end quietly. Everything settles and you close them. Others leave a door open and you lie awake."},
+      {id:'lean',speaker:'Kasper',text:"Which do you like? I'm not going to do what you say. I just want to know which way the room leans."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Kasper',text:"I like…",choices:[
+        {text:"Endings that arrive quietly. Like the last customer going home.",flag:'kasper-ending-quiet',
+          reply:"The last customer going home. That's annoyingly good. Now I'm thinking about chairs being put up."},
+        {text:"Endings that leave a door open. I like wondering who comes in next.",flag:'kasper-ending-open',
+          reply:"Who comes in next. Of course a café would say that. It's a good answer. I resent it slightly."}
+      ]},
+      {id:'still',speaker:'Kasper',text:"Chapter seven is still chapter seven. But I know which way it wants to end now, which is new.",
+        alt:{'flag:kasper-good-lines':"That's worth at least three good lines. I'll report."}},
+      {id:'about',speaker:'Lunafreya',text:"I still haven't asked what it's about."},
+      {id:'noticed',speaker:'Kasper',text:"I noticed. It's the nicest thing about this place."}
+    ]}
+  ];
+  CAST.regularStories.lunafreya = [
+    {id:'portrait', after:['lunafreya-introduced'], lines:[
+      {id:'confess',speaker:'Nora',text:"I have to confess something. I went through my sketchbook last night."},
+      {id:'and',speaker:'Lunafreya',text:"And?"},
+      {id:'hands',speaker:'Nora',text:"You're in it forty times. Every time you're a pair of hands behind the counter. Pouring. Wiping. Never a face."},
+      {id:'owners',speaker:'Nora',text:"I've been painting you the way those owners wanted their rooms. Useful, and out of the way. I didn't like noticing that."},
+      {id:'ask',speaker:'Nora',text:"So I'm asking, forty sketches late. May I paint you properly? No is a complete answer.",
+        alt:{'flag:lunafreya-remember-people':"You said a painting of this place should have somebody in it. I never thought to ask which somebody. May I paint you properly? No is a complete answer."}},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Nora',text:"I…",choices:[
+        {text:"Yes. Here, in the café, with the room around me.",flag:'lunafreya-portrait-cafe',
+          reply:"With the room around you. Good. Then it can hang where people will see you in it."},
+        {text:"Yes, but a small one. Just for upstairs.",flag:'lunafreya-portrait-home',
+          reply:"Small, and not for everybody. Those are my favourite kind."},
+        {text:"I'd rather stay the hands for now. They're doing their best.",flag:'lunafreya-portrait-no',
+          reply:"Then the hands it is, and I'll stop apologising to them. The question keeps, if you ever change your mind."}
+      ]},
+      {id:'cups',speaker:'Nora',text:"Either way, I'm going to stop leaving out the cups."}
+    ]}
+  ];
+  CAST.regularStories.freya = [
+    {id:'bench', after:['freya-introduced'], lines:[
+      {id:'stop',speaker:'Antonia',text:"There's a stop at the end of my route, right by the water. I've never told anybody about it.",
+        alt:{'flag:freya-route':"You asked about my favourite stretch once. There's a stop at the very end of it, by the water."}},
+      {id:'bench',speaker:'Antonia',text:"One bench. It faces the wrong way for the view, so nobody sits on it. I eat my sandwich there on the long shift."},
+      {id:'wrong',speaker:'Lunafreya',text:"The wrong way?"},
+      {id:'city',speaker:'Antonia',text:"Towards the city. You watch the windows come on, one by one. Much better than water. Water just sits there."},
+      {id:'offer',speaker:'Antonia',text:"I could show you tonight, after you close. It's on my way home. It's not a big thing. It's a bench."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Antonia',text:"I'd…",choices:[
+        {text:"I'd like that. I'll even close on time.",flag:'freya-bench-yes',
+          reply:"Bring a coat. The bench doesn't believe in shelter."},
+        {text:"I'd like that another night, when I'm less tired.",flag:'freya-bench-later',
+          reply:"The bench will wait. It's very good at it. So am I."}
+      ]},
+      {id:'ending',speaker:'Antonia',text:"Right. Back to my ending."}
+    ]},
+    // If it was another night: asked once more, on a later visit, and then
+    // left alone (a second "not yet" is answered kindly and never repeated).
+    {id:'again', after:['freya-bench-done','freya-bench-later'], unless:['freya-bench-yes'], lines:[
+      {id:'still',speaker:'Antonia',text:"The bench is still facing the wrong way, in case you were wondering. Tonight, after you close?"},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Antonia',text:"Tonight…",choices:[
+        {text:"Tonight. I've been looking forward to it.",flag:'freya-bench-yes',
+          reply:"Good. Coat. I mean it about the coat."},
+        {text:"Not tonight. But I like knowing it's there.",flag:'freya-bench-someday',
+          reply:"It'll be there. That's the whole point of a bench."}
+      ]}
+    ]}
+  ];
+  // The outing itself, remembered at home that night (an evening moment).
+  CAST.homeStories.bench = {icon:'bench', label:"Remember Antonia's bench", after:['freya-bench-yes'], lines:[
+    {id:'wrong',speaker:'Lunafreya',text:"Antonia's bench. It really does face the wrong way."},
+    {id:'windows',speaker:'Lunafreya',text:"We watched the windows come on, one by one. She knows which one belongs to a man who plays the trumpet badly."},
+    {id:'bus',speaker:'Lunafreya',text:"A bus went past on its last run, every light on and nobody on board.",
+      alt:{'flag:freya-route':"Her 9A went past on its last run, every light on, nobody on board. Like driving a lantern, she said. It was."}},
+    {id:'quiet',speaker:'Lunafreya',text:"We hardly said anything. She said that was the point of the bench."},
+    {id:'half',speaker:'Lunafreya',text:"I think I have half a bench now. That's more than I had last week."}
+  ]};
+  const more = {
+    holger: [
+      {text:'Holger checks the fire before he opens his book, as if it were his watch.', requires:['fire'], flags:['holger-fire-his']},
+      {text:'Holger watches the fire for a while, somewhere a long way off.', requires:['fire'], flags:['holger-fire-told']},
+      {text:'Holger glances at the door now and then, as if expecting a friend.', flags:['holger-aksel-cafe']},
+      {text:'Holger mentions a walk along the harbour, and an argument about a buoy.', flags:['holger-aksel-walk']}
+    ],
+    kasper: [
+      {text:'Kasper types a sentence, reads it, and lets it end there.', requires:['laptop'], flags:['kasper-ending-quiet']},
+      {text:'Kasper writes a line and leaves the door of it open.', requires:['laptop'], flags:['kasper-ending-open']}
+    ],
+    lunafreya: [
+      {text:'Nora looks up at Lunafreya, then down at the sketchbook, like somebody memorising a face.', flags:['lunafreya-portrait-cafe']},
+      {text:'Nora looks up at Lunafreya, then down at the sketchbook, like somebody memorising a face.', flags:['lunafreya-portrait-home']},
+      {text:'Nora sketches the hands at the till, and seems perfectly happy about it.', flags:['lunafreya-portrait-no']}
+    ],
+    freya: [
+      {text:'Antonia glances at the window as if checking which lights have come on.', requires:['view'], flags:['home-bench-done']}
+    ]
+  };
+  CAST.regulars.forEach(function (r) { (more[r.id] || []).forEach(function (m) { r.lines.musing.push(m); }); });
+})();

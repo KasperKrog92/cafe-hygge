@@ -1456,6 +1456,13 @@
         px(g, x + 3, y + 3, 9, 2, '#6b4429');
         px(g, x + 4, y - 1, 2, 3, '#b5aa92'); px(g, x + 8, y - 2, 2, 3, '#b5aa92');
         break;
+      case 'bench':
+        // a slatted bench seen side-on, with one small light behind it
+        px(g, x + 1, y + 5, 14, 2, '#8b7158'); px(g, x + 1, y + 8, 14, 2, '#8b7158');
+        px(g, x + 1, y + 11, 14, 2, '#a5763f');
+        px(g, x + 2, y + 13, 2, 3, '#4a3222'); px(g, x + 12, y + 13, 2, 3, '#4a3222');
+        px(g, x + 12, y, 3, 3, '#e0b06a');
+        break;
       case 'book':
         // an open book, two pages and a ribbon: a reading afternoon
         px(g, x, y + 4, 16, 10, '#8a6a9a');
