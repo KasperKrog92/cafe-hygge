@@ -70,6 +70,13 @@
       capability:'tomas-frame', homeFlag:'keira-print-home',
       doneLine:'The photographs sit in Tomas’s frame now: a board that once kept the weather out.',
       homeLine:'Tomas’s frame goes around Keira’s photographs, above the desk.' },
+    // Saira's handwritten score: pinned up behind the counter, right of the
+    // photographs' place, or on the wall above the bed upstairs.
+    score: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Saira's score",
+      label:"Saira's score", phases:['pin the score up'], phaseIds:['pin'], duration:3,
+      capability:'saira-score', homeFlag:'saira-score-home',
+      doneLine:'Saira’s score is pinned up behind the counter, pencil ghosts and all.',
+      homeLine:'Saira’s score goes up on the wall above the bed.' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],

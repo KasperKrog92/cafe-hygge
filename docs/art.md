@@ -395,6 +395,16 @@ label, three green leaves and a pink flower (`SCENE.drawMaud`): on the counter a
 (766,264) between the cash tin and cake stand, or on the bedroom sill clear of
 the curtain. Ida's notes are 2×4 paper tabs above every third shelved book.
 
+**Saira** has long black hair with a side-part fringe (style 1), a dusty blue
+top `#7a89a5`, navy trousers and a rose scarf `#d9738a`; her tapping hand lifts
+2 px for each tap. **Her score** (`SCENE.drawScore`) is one 11×14 sheet of
+off-white manuscript paper with three pencil staves, a few graphite notes, the
+paler ghosts of a rubbed-out line and a pink pin: in the café on the wainscot at
+(784,196), right of the photographs' place and clear of the back-bar shelves
+and the menu board (placed from (774,274) behind the counter); upstairs on the
+wall above the bed at (786,192), clear of the headboard lights. On the counter
+it waits as a folded sheet with two stave lines.
+
 **Keepsakes.** Gerda's blanket is drawn by one helper (`SCENE.drawBlanket`):
 winter blue `#3d4a5c` with a gold dot grid (stars) or sage `#6b7a55` with
 light vertical reeds, a lit top edge and shaded bottom. Folded (18×7) it waits

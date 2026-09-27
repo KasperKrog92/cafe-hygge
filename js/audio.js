@@ -267,6 +267,46 @@
     o.start(t);o.stop(t+dur+.01);dialogueVoice=o;dialogueUntil=t+dur+.012;
     o.onended=function(){o.disconnect();f.disconnect();g.disconnect();if(dialogueVoice===o)dialogueVoice=null;};
   });
+  /* A hummed tune: one soft voice gliding through [frequency, beats] notes
+     (0 is a breath). Saira's eight bars, in the key the cat chose; Lunafreya
+     hums them a little lower. In a conversation it is the line itself: it
+     rides the dialogue bus, holds the text blips and stops with the line. */
+  const SAIRA_TUNE=[[220,1],[196,.6],[174.6,1],[196,.6],[220,1.4],[0,.6],[261.6,1],[220,.6],[196,1.8]];
+  function hum(voice,dest,peak) {
+    const shift=(voice.pitch||205)/218,beat=.42*(voice.pace||1);
+    const t0=ctx.currentTime,o=ctx.createOscillator(),vib=ctx.createOscillator();
+    const vg=gainNode(2),f=filt('lowpass',(voice.filter||720)*.85),g=gainNode(0);
+    o.type='triangle';vib.frequency.value=5;vib.connect(vg);vg.connect(o.frequency);
+    o.connect(f);f.connect(g);g.connect(dest);
+    o.frequency.setValueAtTime(SAIRA_TUNE[0][0]*shift,t0);
+    g.gain.setValueAtTime(0,t0);
+    let t=t0+.05;
+    SAIRA_TUNE.forEach(function(n){
+      const d=n[1]*beat;
+      if(n[0]) {
+        o.frequency.setTargetAtTime(n[0]*shift,t,.03);        // a small legato glide
+        g.gain.setTargetAtTime(peak,t,.04);
+        g.gain.setTargetAtTime(peak*.6,t+d*.6,.08);
+      } else g.gain.setTargetAtTime(0,t,.05);
+      t+=d;
+    });
+    g.gain.setTargetAtTime(0,t,.08);
+    o.start(t0);vib.start(t0);o.stop(t+.6);vib.stop(t+.6);
+    o.onended=function(){o.disconnect();vib.disconnect();vg.disconnect();f.disconnect();g.disconnect();};
+    return {osc:o,end:t+.4};
+  }
+  function humLine(voice) {
+    if(!S.dialogueVolume)return;
+    SND.stopDialogue();
+    const h=hum(voice,dialogueBus,.03);
+    dialogueVoice=h.osc;dialogueUntil=h.end;
+  }
+  SND.sairaHum=guard(function(){humLine(CAST.voices.Saira);});
+  SND.lunaHum=guard(function(){humLine(CAST.voices.Lunafreya);});
+  // Lunafreya humming to herself behind the counter: softer, into the room.
+  SND.lunaHumRoom=guard(function(){hum(CAST.voices.Lunafreya,sfx,.016);});
+  // Saira's fingertips on a tabletop: a tiny woody tick, barely there.
+  SND.fingerTap=guard(function(){hiss({dur:.035,gain:.014,bp:1500+Math.random()*300,q:2.2,attack:.002,release:.03});});
   SND.doorUnlock=guard(function(){hiss({dur:.09,gain:.022,lp:1400,attack:.005,release:.08});});
 
   SND.doorBell = guard(function () {

@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Thirty-one IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Thirty-two IIFE scripts expose the production globals
 (`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -34,6 +34,7 @@ js/sim-home.js          → extends SIM    (saved first apartment tour, first pl
 js/sim-evenings.js      → extends SIM    (evening moments at home; home keepsake placement)
 js/sim-gathering.js     → extends SIM    (Ida's reading afternoon: booking, arrivals, the wide scene)
 js/sim-counter.js       → extends SIM    (Lunafreya's slow spells: stool and book, crossword, own coffee, chin in hand)
+js/sim-saira.js         → extends SIM    (Saira's score behind the counter: Lunafreya's once-a-day hum)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -137,6 +138,10 @@ counter fidgets; `updateBarista` hands any state a habit owns to its `update`;
 `__dev.noraDo(id)` calls `start`. A habit must hand her back to `'idle'` as soon
 as someone needs her (queue, order, waiting cup, table to clear, pending work
 via `SIM._.projectPending`, a conversation or closing). Nothing it does is saved.
+sim-counter.js exports its test as `SIM._.counterQuiet` (with
+`counterChores` and `counterBackToIdle`) so later habits share it; sim-saira.js
+adds `hum` (states `hum`, `humBack`), offered only while Saira's score is
+pinned up downstairs and at most once a café day (`b.humDay`, unsaved).
 
 ## Posture and motion
 
@@ -802,6 +807,21 @@ that saved flag exists (`SIM.flagContext`), so a line can recall an earlier
 answer without a new named condition; evening moments use it too. An evening
 moment (`CAST.homeStories`) may name `after` flags instead of a READY function
 in sim-evenings.js; precedence is the mug, then Antonia's bench, then the post.
+
+A line in any saved scene may carry `sound`: the name of an `SND` function,
+played once as that line begins (`SIM.updateMoment`; `m.soundAt` remembers
+the index). Saira's eight bars use `sairaHum` (a hummed tune on the dialogue
+bus, which holds the text blips and stops with the line), her cat line
+`meow`, and Lunafreya's evening `lunaHum`. Private worlds stub every `SND`
+function, so tests pass a recording sound object to `SIM.create`.
+
+Saira (v22) is a roster row with trait `taps` (copied to the patron in
+`makeRegular`; the tapping bout lives in `updateSeated`, sim-patrons.js), an
+introduction and two `CAST.regularStories` (`listen`, `score`). The score is
+a keepsake (`gift: 'score'`, capability `saira-score`, `homeFlag
+'saira-score-home'`): placed at `L.projects.score.spot` from its `work` spot,
+or installed upstairs at `L.home.score` when she first settles that evening.
+Her `listen` scene makes the evening moment `rest` ready (`after`).
 
 Arrivals: `arrivalRoom(world, extra)` lets a familiar face (a due regular,
 `dueRegular`, or an off-duty neighbour, `SIM._.socialVisitorDue`) take a clean

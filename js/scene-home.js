@@ -61,6 +61,18 @@
     px(g,l+16,t+6,2,2,'#5a3d28');px(g,l+19,t+6,3,1,'#6b4429');
     if(!framed){px(g,l+5,t-1,1,1,'#a94f3f');px(g,l+18,t-1,1,1,'#a94f3f');}
   };
+  // Saira's score, centred on (x,y): one sheet of the choir's manuscript
+  // paper in pencil, three staves and a few notes, the rubbed-out ghosts of
+  // the second line, no title; pinned at the top in her scarf's pink.
+  SCENE.drawScore = function(g,x,y) {
+    const l=x-5,t=y-7;
+    px(g,l+1,t+1,11,14,'rgba(20,12,8,.2)');
+    px(g,l,t,11,14,'#ece4d2');px(g,l,t,11,1,'#f5efdf');
+    [2,6,10].forEach(r=>{px(g,l+1,t+r,9,1,'#b8b0a0');px(g,l+1,t+r+2,9,1,'#b8b0a0');});
+    [[2,2],[4,1],[7,3],[3,10],[5,9],[8,11]].forEach(d=>px(g,l+d[0],t+d[1],1,2,'#4a4f5a'));
+    px(g,l+3,t+7,5,1,'#d9d0bd');px(g,l+6,t+5,1,2,'#cdc4b1');
+    px(g,l+5,t-1,1,2,'#d9738a');
+  };
   // Whatever a regular brings in (a parcel set on the counter, a gift not
   // yet placed): Holger's box of books, Maud, Gerda's folded blanket,
   // Keira's photographs in their envelope, Tomas's empty frame.
@@ -69,6 +81,7 @@
     else if(kind==='blanket')foldedBlanket(g,w,x,y);
     else if(kind==='photo') {px(g,x-7,y-5,14,9,'#e8dfc9');px(g,x-7,y-5,14,1,'#f5efdf');px(g,x-6,y-4,12,3,'#d9d2c0');px(g,x-1,y-2,2,1,'#c9b28a');}
     else if(kind==='frame') {px(g,x-8,y-6,16,11,'#a5763f');px(g,x-6,y-4,12,7,'#e8dfc9');px(g,x-8,y-6,16,1,'#c9a477');}
+    else if(kind==='score') {px(g,x-6,y-3,12,6,'#ece4d2');px(g,x-6,y-3,12,1,'#f5efdf');px(g,x-5,y-1,10,1,'#b8b0a0');px(g,x-5,y+1,10,1,'#b8b0a0');px(g,x-2,y-2,1,2,'#4a4f5a');px(g,x+2,y,1,2,'#4a4f5a');}
     else SCENE.drawBookBox(g,x,y,kind==='books'?'holger':kind);
   };
   SCENE.drawFirstPlant = function(g,x,y) {
@@ -171,6 +184,8 @@
         // On the wall behind the till: drawn first, like the wall itself.
         if(id==='photo' && p.stage==='installed' && !w.memory.flags['keira-print-home'])
           draws.push({y:SCENE.L.wallY-1,draw:g=>SCENE.drawPhotos(g,a.spot.x,a.spot.y,jobs.frame.stage==='installed')});
+        if(id==='score' && p.stage==='installed' && !w.memory.flags['saira-score-home'])
+          draws.push({y:SCENE.L.wallY-1,draw:g=>SCENE.drawScore(g,a.spot.x,a.spot.y)});
       } else if (IMPROVEMENTS.projects[id].bookSource) {
         const d=IMPROVEMENTS.projects[id];
         if(p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
@@ -368,6 +383,7 @@
     const jobs=w.memory.life.projects;
     if(w.memory.flags['keira-print-home'] && jobs.photo.stage==='installed')
       SCENE.drawPhotos(g,H.photo.x,H.photo.y,jobs.frame.stage==='installed');
+    if(w.memory.flags['saira-score-home'] && jobs.score.stage==='installed')SCENE.drawScore(g,H.score.x,H.score.y);
     if(unpacked(w,'picture')) {
       // A small print of the old city's harbour, framed, above the desk.
       px(g,427,184,26,22,'#6e4a33');px(g,429,186,22,18,'#8fb5bf');

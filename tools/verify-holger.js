@@ -8,6 +8,10 @@
     const w=SIM.create({random:SIM.seededRandom(42)});SIM.skipUnpacking(w);SIM.update(w,.25);
     check(w.patrons.length===1&&w.patrons[0].regularId==='holger','first customer');
     for(let n=0;n<1000&&!SIM.holgerAvailable(w);n++)SIM.update(w,.1);
+    // In place: Lunafreya stands at the till across from him (she may have
+    // finished restocking the pastry case at the far end of the counter).
+    for(let n=0;n<600&&w.barista.state!=='idle';n++)SIM.update(w,.1);
+    Object.assign(w.barista,{x:SCENE.L.baristaHome.x,y:SCENE.L.baristaHome.y,path:null});
     let voices=[];w.context.sound.dialogueSyllable=(n,v)=>voices.push(v);
     check(SIM.startHolger(w),'introduction available');check(w.moment.phase==='talk','counter should begin in place');
     SIM.update(w,.1);check(w.moment.visible>0&&w.moment.visible<SIM.momentLine(w).text.length,'gradual text');

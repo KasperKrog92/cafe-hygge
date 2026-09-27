@@ -113,6 +113,9 @@
       window: { x: 535, y: 124, w: 128, h: 112 },
       // Keira's photographs, if they come upstairs: beside the harbour print.
       photo: { x: 474, y: 196 },
+      // Saira's score, if it comes upstairs: pinned above the bed, clear of
+      // the string of lights along the headboard.
+      score: { x: 786, y: 192 },
       boxes: [{ x: 280, y: 270 }, { x: 308, y: 270 }, { x: 294, y: 248 },
         { x: 474, y: 280 }, { x: 503, y: 280 }, { x: 493, y: 258 }, { x: 776, y: 422 }],
       story: {
@@ -165,6 +168,9 @@
       // and sets the lamp from the same spot, clear of the seat's footprint.
       readingChair: {drop:{x:298,y:334},work:{x:298,y:334}},
       frame: {pickup:{x:664,y:286},parcel:{x:652,y:270},work:{x:752,y:274},spot:{x:752,y:198}},
+      // Saira's score is pinned right of the photographs' place, clear of the
+      // back-bar shelves and the menu board; it waits on the counter first.
+      score: {pickup:{x:664,y:286},parcel:{x:656,y:270},work:{x:774,y:274},spot:{x:784,y:196}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},

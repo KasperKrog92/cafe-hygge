@@ -173,9 +173,19 @@ its side table. Holger reads there from then on, the cat has its spot beside
 it, and the lamp glows in the evenings. The right fireside chair remains part
 of the fuller room.
 
+**Saira, before any piano — shipped 27 September 2026.** The ensemble plan's
+fifth release begins without an instrument. Saira, a choir accompanist and
+piano teacher, comes in every third day from the café's first week; she taps
+rhythms on the table edge and stops when somebody nearby is reading. Her hello
+asks what the room should sound like (the quiet loudest, or something small you
+only notice when it stops). Later she hums eight bars of her own while
+Lunafreya, asked only to listen, sits down badly or keeps the cloth; that
+evening the receipts wait until morning. Then she brings the handwritten score,
+untitled because the room has not told her its name yet: pinned behind the
+counter, where Lunafreya sometimes hums it on a quiet spell, or above the bed.
+
 **Next, in order:**
-Saira without a piano (her friendship and a handwritten score); then Birgit
-and the naming arc, which arrives at **Café Flourish** (owner decision). **The
+Birgit and the naming arc, which arrives at **Café Flourish** (owner decision). **The
 piano waits for the room expansion (owner, 27 September 2026):** its place
 (`L.piano`) lies in the front strip that only the full room opens, so the
 expansion upgrade comes first and the piano after it, never squeezed into the

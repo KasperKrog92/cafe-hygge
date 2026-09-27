@@ -704,6 +704,49 @@
     if (p.bubble && world.t > p.bubble.until) p.bubble = null;
   }
 
+  /* A tapper (Saira) drums a rhythm on the table edge now and then, very
+     softly, with her resting hand. If somebody nearby is reading she stops
+     after a bar or so; the renderer lifts the hand for each tap (tapLift). */
+  const TAP_RHYTHM = [1, 0, 1, 1, 0, 1, 0, 0], TAP_BEAT = 0.18;
+  function nearbyReader(world, p) {
+    return world.patrons.find(function (q) {
+      return q !== p && !q.outside && q.state === 'seated' && q.reading && !q.dozing &&
+        Math.hypot(q.x - p.x, q.y - p.y) < 170;
+    }) || null;
+  }
+  function updateTapping(world, p, dt) {
+    const free = p.sipPhase <= 0 && !p.reading && !p.knitting && !p.typing && !p.playing &&
+      p.seat.table >= 0 && !p.seat.armchair && !p.dozing;
+    if (!p.tapping) {
+      p.tapLift = 0;
+      if (!free) return;
+      p.tapT = (p.tapT == null ? rnd(8, 20) : p.tapT) - dt;
+      if (p.tapT > 0) return;
+      p.tapReader = nearbyReader(world, p);
+      p.tapping = true; p.tapStep = 0; p.tapPhase = 0;
+      p.tapRemain = p.tapReader ? rnd(1.2, 1.8) : rnd(3, 6);
+      return;
+    }
+    p.tapRemain -= dt;
+    if (!free || p.tapRemain <= 0) {
+      const reader = p.tapReader, lines = p.spec && p.spec.lines;
+      p.tapping = false; p.tapLift = 0; p.tapT = rnd(30, 70); p.tapReader = null;
+      if (!free || !lines) return;
+      if (reader) {
+        if (R.random() < 0.35) caption(world, p, R.pickCaption(world, lines.tapStop, {actor:p}),
+          {when: function () { return reader.state === 'seated' && reader.reading && world.patrons.indexOf(reader) >= 0; }});
+      } else if (!regularLine(world, p, 'musing') && R.random() < 0.1) {
+        caption(world, p, R.pickCaption(world, lines.tap, {actor:p}));
+      }
+      return;
+    }
+    p.tapPhase += dt / TAP_BEAT;
+    while (p.tapPhase >= 1) { p.tapPhase -= 1; p.tapStep = (p.tapStep + 1) % TAP_RHYTHM.length; p.tapped = false; }
+    const beat = TAP_RHYTHM[p.tapStep];
+    p.tapLift = beat && p.tapPhase < 0.5 ? 2 : 0;
+    if (beat && p.tapPhase >= 0.5 && !p.tapped) { p.tapped = true; SND.fingerTap(); }
+  }
+
   function updateSeated(world, p, dt) {
     p.stay -= dt;
 
@@ -900,6 +943,8 @@
       p.knitting = false;
     }
 
+    if (p.taps) updateTapping(world, p, dt);
+
     // Laptop work comes in short, soft bouts. The timer continues through a
     // sip, while the actual typing pose and sounds wait for the cup to settle.
     if (p.laptopActive) {
@@ -1000,8 +1045,9 @@
       return;
     }
 
-    // now and then the bookshelf calls (drink stays on the table, seat stays theirs)
-    if (SCENE.canBrowse(world) && !p.seat.piano && !p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
+    // now and then the bookshelf calls (drink stays on the table, seat stays
+    // theirs); a tapper (Saira) keeps her music folder and her hands instead
+    if (SCENE.canBrowse(world) && !p.seat.piano && !p.taps && !p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
         R.random() < dt * (SCENE.hasFurniture(world,'bookshelf') ? 0.01 : 0.006)) {
       const spot = SCENE.browseSpot(world);
       p.pose = 'stand';

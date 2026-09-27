@@ -385,6 +385,7 @@ painting/sketching habit described below.
 | **Marcel** | ~17:00, even days from day 4, never while painting | cappuccino | window perch | window-gazing, chat | the painter across the lake |
 | **Ida** | ~15:00, every third day from day 5 | cinnamon latte, own book | dining table | reading, chat | the librarian on the corner |
 | **Elody** | ~12:00, odd days from day 6 | cardamom bun | dining table | chat, sky-watching | the gardener; brings Maud |
+| **Saira** | ~11:00, every third day from day 7 | hot chocolate (off the small menu: whatever is on it) | dining table | chat, tapping | choir accompanist and piano teacher; writes eight bars of her own |
 
 Deliberate contrasts keep them from blurring together: morning versus dusk
 (only Antonia sits late enough that the after-dark doze can take her), silent
@@ -781,6 +782,18 @@ Marcel, Ida and Elody are data rows in `CAST.regulars` with `firstDay` and a
 days instead of crowding every afternoon. When several regulars are due, the
 one who has gone longest without a visit comes in first (roster order breaks
 ties). Marcel's gate (sim-marcel.js) adds the window and painting conditions.
+
+**Saira** (trait `taps`, sim-patrons.js) drums a rhythm on the table edge with
+her resting hand now and then: a bout of three to six seconds, one soft
+fingertip tick per beat of an eight-step pattern, while she is not sipping. If
+somebody within 170 px is seated and reading when a bout begins, she stops
+after a bar or so, and a caption may notice ("notices somebody reading, and
+stops"). Alone, a bout may end with one of her musings. She never drifts to the
+bookshelf mid-visit; she has her music folder. Her saved scenes (hello, eight
+bars, the score) ride the shared regular-story path; once her score is pinned
+behind the counter, Lunafreya's `hum` slow spell (sim-saira.js) takes her to it
+at most once a café day to hum the eight bars, facing the wall, and any
+customer or chore ends it.
 
 ## Introductions and neighbour stories — shipped 27 September 2026
 

@@ -651,8 +651,10 @@
       seatedArm(g, p, x - 5, y - 28, x - 9, y - 19, x - 5, y - 23 + knit, true);
       seatedArm(g, p, x + 4, y - 28, x + 9, y - 19, x + 5, y - 23 - knit, false);
     } else {
-      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12, c.top);
-      px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20, 4, 3, c.skin); // resting hand
+      // A resting hand; a tapper's (Saira's) lifts for each tap of a rhythm.
+      const lift = p.tapping ? (p.tapLift || 0) : 0;
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 30, 5, 12 - lift, c.top);
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 20 - lift, 4, 3, c.skin);
     }
   }
 

@@ -174,7 +174,8 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | Calandra's first letter | Shipped, evening moment | From the third evening: "Luna. It's your sister. You know that. I'm saying it for the record." Mum and she want photos; Dad asks about the chairs; is she eating; it's quiet without her arguing with the crossword. Lunafreya writes back about the people (`calandra-told-people`) or the room (`calandra-told-place`), and leaves out the bread and cheese. The letter stays on her desk |
 | Why this side of the lake, told to Marcel | Shipped, Marcel's hello | `luna-lake-tuesday` (an ordinary Tuesday imagined by the water on the viewing day) or `luna-lake-later` |
 | Slow spells at the counter | Shipped (no dialogue) | On quiet afternoons she reads her own slate-blue paperback on a stool at the till (one of the books from the windowsill once unpacked). After Calandra's letter she sometimes does the crossword, finishing a clue by herself for once. With the mug downstairs she drinks a coffee from it standing up and counts the chairs without meaning to. Nothing is said aloud |
-| Naming the café | Planned | Find its name through lived experience. **Owner decision (27 September): it becomes Flourish, "Café Flourish"**, for flour and baking and for a place where people flourish rather than just get by. It replaces the provisional Fleur de Lune |
+| Sitting down when nobody needs anything, told to Saira | Shipped, Saira's eight bars | Asked only to listen, she reaches to wipe a clean table. `saira-listen-sit` (she isn't very good at sitting down when nobody needs anything; "Then sit badly. Everybody starts badly.") or `saira-listen-cloth` (it's easier to listen with something in her hands). That evening upstairs the week's receipts wait until morning (home moment `rest`) |
+| Naming the café | Planned | Find its name through lived experience. Saira left her score untitled because "this room hasn't told me its name yet". **Owner decision (27 September): it becomes Flourish, "Café Flourish"**, for flour and baking and for a place where people flourish rather than just get by. It replaces the provisional Fleur de Lune |
 
 The reading-corner answer makes no purchase, price commitment or upgrade gate.
 The neighbours answer never prevents buying books later.
@@ -393,6 +394,44 @@ last run "like driving a lantern" if she named her route, hardly a word said;
 Lunafreya has half a bench now. At the reading afternoon she kept her book's last
 line to herself. **Planned:** a book exchanged without a report.
 
+## Saira — a tune that can have company
+
+**Shipped 27 September — before any piano.** Saira (she/her; long black hair
+with a side-part fringe, dusty blue top, navy trousers, rose scarf; hot
+chocolate when the menu has it) plays piano for a community choir in the church
+hall and teaches eleven children and a retired dentist, her ten o'clock, who
+practises most. She comes in late morning every third day from the café's first
+week, and taps rhythms on the table edge, stopping when somebody nearby is
+reading: "You can't tap your way through somebody else's chapter." She enjoys
+the choir and the teaching; she is good at following other people's timing and
+less practised at going first.
+
+Her **hello** (second visit, seated): the room already has a tune (cups, pages,
+the door, somebody's spoon; the rain or the fire when they are there). Most music
+wants the whole room to itself; she likes the kind that leaves room for the
+room. What should it sound like in here? `saira-room-quiet` (the quiet the
+loudest thing in the room) or `saira-room-tune` (something small now and then,
+the kind you only notice when it stops: "a terrible concert hall and a very good
+room"). **Eight bars** (`listen`, a later visit): the first thing she has
+written just for herself since she was nineteen. She asks Lunafreya only to
+listen (above), hums it, and it stops where it always stops, waiting for a
+choir to come in; this one has to learn to go on by itself. "The cat has chosen
+a key, by the way. Several, actually." Lunafreya asks her to hum it again next
+time, even if it still stops. **The score** (`score`, a later visit): finished,
+"it goes on by itself now". Pencil on the choir's paper, the ghosts of a second
+line rubbed out three times; mostly rests (quiet) or small, stopping before you
+notice (tune). **No title: she names a piece after the room it is for, and this
+room hasn't told her its name yet.** No piano needed: hum it, as she does on the
+bus. Choice: `saira-score-cafe` (pinned up behind the counter; Lunafreya hums it
+there on quiet spells) or `saira-score-home` (the wall above her bed). She
+recalls the chair or the cloth; "It's only eight bars. But it goes on by itself
+now. So do I, a little." Musings remember each answer; after the score she comes
+in humming and does not stop at the door. **Planned:** the piano scenes after the
+room expansion (exploratory notes; a bright or gentle preference shaping the
+composition; the invited first sharing; Lunafreya joining for a few notes or
+listening; a small music evening), her rehearsal meeting Antonia's quiet, and a
+possible romance centred on shared attention.
+
 ## The wider ensemble — planned direction
 
 The longer arcs and relationship connections live in the
@@ -403,7 +442,7 @@ Use this table to distinguish identities from what the runtime currently contain
 | --- | --- | --- |
 | Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries, expanded hello, her second cup, the second asking and her two prints (then and now) are shipped; deeper scenes remain later |
 | Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair, expanded hello, the cupboard report, the loaf (supper that night) and the frame from the window board are shipped; deeper family scenes remain planned |
-| Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
+| Saira | Choir accompanist/teacher; her own quiet composition; possible romance | Shipped before any piano: hello, eight bars, the receipts left until morning, the handwritten score (see above); her piano scenes wait for the room expansion; the generic piano behavior is not her story |
 | Marcel | Painter across the lake; recognizes changing places and people | Shipped as a regular (see below); the `street-house` arc is intact and he is its distant figure. Later painting and his gift remain planned |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |
 | Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | Shipped: introduction and Maud, her geranium cutting (see below); sharing her plot and later scenes remain planned |
@@ -516,7 +555,8 @@ Voice differences are deliberately small synthesized variations, not recorded
 speech or caricatures: Lunafreya retains the intro voice; Holger is lower,
 warmer and slightly slower. Gerda is gently lower and slower; Nora slightly
 brighter and quicker; Kasper lower and nearly the same pace; Freya softly muted.
-Keira is lightly brighter and quicker; Tomas lower and measured. Calandra's
+Keira is lightly brighter and quicker; Tomas lower and measured. Saira is a
+little bright and quick; her hummed eight bars are a soft gliding voice. Calandra's
 letter reads brisk and bright (pace 0.92), as her sister hears it. Every named
 character has dialogue sounds through the same volume and mute controls.
 These profiles are ready for their authored conversations. Existing third-person

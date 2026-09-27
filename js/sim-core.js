@@ -1366,6 +1366,7 @@
     p.laptop = !!spec.traits.laptop;
     p.pianist = !!spec.traits.pianist;
     p.artist = !!spec.traits.artist;
+    p.taps = !!spec.traits.taps;
     p.murmurPitch = spec.murmurPitch;
     p.speed = spec.speed;
     p.isRegular = true;

@@ -34,6 +34,8 @@
     b.state = 'idle'; b.stateT = 0; b.pose = 'stand'; b.heading = ''; b.idleT = rnd(5, 10);
   }
   const home = () => ({ x: L.baristaHome.x, y: L.baristaHome.y });
+  // Later habits (sim-saira.js) share the same idea of a quiet spell.
+  R.counterQuiet = quiet; R.counterChores = choresWaiting; R.counterBackToIdle = backToIdle;
 
   /* ---------- the stool: a book, or the crossword ---------- */
 

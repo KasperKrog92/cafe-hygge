@@ -1340,3 +1340,136 @@
   gerda.lines.musing.push({text:'Gerda adjusts her yellow scarf and looks, briefly, very pleased with herself.', flags:['gerda-colour-worn']});
   gerda.lines.arrivalReturn.push({text:'Gerda comes in wearing the yellow scarf, like a lamp coming on.', flags:['gerda-colour-worn']});
 })();
+
+/* Saira, before there is any piano (ensemble release 5, part one). She
+   plays for a choir and teaches; she taps rhythms on the table edge and
+   stops when somebody nearby is reading (trait `taps`, sim-patrons). Her
+   hello asks what the room should sound like; her second scene asks
+   Lunafreya to listen to eight bars of her own (hummed: a line's `sound`
+   plays as it begins), and that evening Lunafreya leaves a harmless task
+   until morning (home story `rest`). Then Saira brings the handwritten
+   score (keepsake `score`): pinned up behind the counter, where Lunafreya
+   sometimes hums it (sim-saira.js), or above the bed upstairs. */
+(function () {
+  'use strict';
+  CAST.regulars.push({
+    id: 'saira',
+    name: 'Saira',
+    nameStyle: 'feminine',
+    colors: {
+      skin: '#b57a4a', hair: '#2a1a12', top: '#7a89a5', pants: '#3d4a5c',
+      scarf: '#d9738a', longHair: true, hairStyle: 1, beard: false
+    },
+    drink: 'hot chocolate',
+    traits: { wantsBook: false, ownBook: false, chatty: true, laptop: false, pianist: false, taps: true },
+    murmurPitch: 215, speed: 52,
+    umbrella: '#c9a04a',
+    arrival: { from: 10.8, to: 11.5 },
+    stay: [220, 320],
+    seat: 'diningTable',
+    firstDay: 7,
+    rhythm: { every: 3, offset: 2 },
+    lines: {
+      arrival: ['Saira comes in humming something, and stops at the door.'],
+      arrivalRain: ['Saira comes in from the rain with a music folder held under her coat.'],
+      arrivalReturn: ['Saira is back, a music folder under her arm and a pencil behind her ear.',
+        {text:'Saira comes in humming, and this time she does not stop at the door.', flags:['saira-score-done']}],
+      settle: ['Saira sits down and listens to the room for a moment before she drinks.'],
+      usualTaken: ['Her table is taken; Saira takes another and seems to like its acoustics.'],
+      overheard: [
+        'Saira explains to the next table why the alto line is the best line.',
+        'Saira tells a story about a hymn, a choir and a very long pause.',
+        'Something at the table makes Saira laugh, then hush herself.'
+      ],
+      musing: [
+        {text:'Saira listens to the rain on the window as if she were counting it.', requires:['rain']},
+        'Saira pencils a note onto a folded sheet of music, then rubs it out.',
+        {text:'Saira hums one note under her breath, then leaves the quiet alone.', flags:['saira-room-quiet']},
+        {text:'Saira hums a few bars, so quietly they are gone before anyone notices.', flags:['saira-room-tune']},
+        {text:'Saira pencils another bar onto a folded sheet, and this time does not rub it out.', flags:['saira-listen-done']},
+        {text:'Saira glances at her score behind the counter and pretends she did not.', requires:['saira-score'], flags:['saira-score-cafe']}
+      ],
+      backstory: [
+        'Saira has played for the same choir for six years; she knows every singer by how they breathe in.',
+        'Saira says a choir is twenty-six people agreeing to breathe at the same time. She finds that very moving.'
+      ],
+      // A bout of tapping ends: on its own, or because somebody is reading.
+      tap: ['Saira taps out a rhythm on the table edge, very softly.'],
+      tapStop: ['Saira taps a rhythm on the table, notices somebody reading, and stops.',
+        'Saira catches herself tapping, glances at a reader, and folds her hands.']
+    }
+  });
+  CAST.voices.Saira = {pitch:218,filter:800,pace:.97};
+  CAST.introductions.saira = {visits:2, lines:[
+    {id:'tapping',speaker:'Saira',text:"Sorry. Was I tapping? I was tapping. It's the alto line from Thursday. It gets into my hands."},
+    {id:'stopped',speaker:'Lunafreya',text:"I didn't mind. You stopped halfway, though."},
+    {id:'reader',speaker:'Saira',text:"Somebody was reading. You can't tap your way through somebody else's chapter. I'm Saira."},
+    {id:'luna',speaker:'Lunafreya',text:"Lunafreya. Are you a drummer?"},
+    {id:'piano',speaker:'Saira',text:"Piano. I play for a choir in the church hall, and I teach. Eleven children and a retired dentist."},
+    {id:'dentist',speaker:'Lunafreya',text:"A dentist?"},
+    {id:'ten',speaker:'Saira',text:"My ten o'clock. He practises more than all the children put together. Don't tell him about the sugar.",
+      alt:{menu:"My ten o'clock. He practises more than all the children put together. Don't tell him I ordered hot chocolate."}},
+    {id:'tune',speaker:'Saira',text:"I like it in here. It's got a tune already. Cups, and pages, and the door, and somebody's spoon.",
+      alt:{rain:"I like it in here. It's got a tune already. The rain, and cups, and pages, and somebody's spoon.",
+        hearth:"I like it in here. It's got a tune already. The fire, and cups, and pages, and somebody's spoon."}},
+    {id:'room',speaker:'Saira',text:"Most music wants the whole room to itself. I like the kind that leaves room for the room."},
+    {id:'ask',speaker:'Saira',text:"What would you want it to sound like in here? Honestly. You're the one who listens to it all day."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Saira',text:"Honestly…",choices:[
+      {text:"Like this. Cups and pages. I'd like the quiet to be the loudest thing in the room.",flag:'saira-room-quiet',
+        reply:"The quiet as the loudest thing. That's a lovely instruction. Nobody's ever given me that one."},
+      {text:"Something small, now and then. The kind you only notice when it stops.",flag:'saira-room-tune',
+        reply:"The kind you only notice when it stops. You'd make a terrible concert hall and a very good room."}
+    ]},
+    {id:'hands',speaker:'Saira',text:"I'll try to keep my hands to myself. No promises the day after choir."}
+  ]};
+  CAST.regularStories.saira = [
+    {id:'listen', after:['saira-introduced'], lines:[
+      {id:'favour',speaker:'Saira',text:"Can I ask you a favour? You can say no. I've written something. Eight bars."},
+      {id:'what',speaker:'Lunafreya',text:"Eight bars of what?"},
+      {id:'mine',speaker:'Saira',text:"Of mine. I haven't written anything just for me since I was nineteen. Everything I play keeps somebody else's time."},
+      {id:'follow',speaker:'Saira',text:"I'm good at that. Twenty-six singers breathe in and I'm already there. I'm less good at going first."},
+      {id:'ask',speaker:'Saira',text:"Would you listen? I'll only hum it. There isn't a piano, which is honestly a relief.",
+        alt:{'flag:saira-room-quiet':"Would you listen? I'll hum it very quietly. You did say the quiet should be the loudest thing."}},
+      {id:'wipe',speaker:'Lunafreya',text:"Of course. Let me just wipe this table first."},
+      {id:'clean',speaker:'Saira',text:"That table's clean. You wiped it when I sat down. You don't have to do anything. That's the whole favour."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Saira',text:"I…",choices:[
+        {text:"You're right. I'm not very good at sitting down when nobody needs anything.",flag:'saira-listen-sit',
+          reply:"Then sit badly. Everybody starts badly. Here, have the chair that wobbles."},
+        {text:"Can I keep the cloth? It's easier to listen with something in my hands.",flag:'saira-listen-cloth',
+          reply:"Keep it. I can't think without a pencil behind my ear. Everybody needs something to hold."}
+      ]},
+      {id:'eight',speaker:'Saira',text:"Mm, mm-mm, mm… mm-mm. Mm.",sound:'sairaHum'},
+      {id:'stops',speaker:'Lunafreya',text:"It stopped."},
+      {id:'there',speaker:'Saira',text:"It always stops there. Everything I write waits for a choir to come in. This one has to learn to go on by itself."},
+      {id:'cat',speaker:'Saira',text:"The cat has chosen a key, by the way. Several, actually.",sound:'meow'},
+      {id:'again',speaker:'Lunafreya',text:"Hum it again next time. Even if it still stops."},
+      {id:'thanks',speaker:'Saira',text:"I will. Thank you for listening. It's rarer than you'd think."}
+    ]},
+    {id:'score', after:['saira-listen-done'], gift:'score', lines:[
+      {id:'finished',speaker:'Saira',text:"I finished it. Well. It goes on by itself now, which is the same thing."},
+      {id:'paper',speaker:'Saira',text:"I wrote it out for you. Pencil, on the choir's paper. I rubbed the second line out three times. You can still see the ghosts."},
+      {id:'rests',speaker:'Saira',text:"It's mostly rests. You said the quiet should be the loudest thing, so I gave the quiet the most bars.",
+        alt:{'flag:saira-room-tune':"It's small. It stops before you've noticed it, and then you notice. That's what you asked for. It was hard."}},
+      {id:'title',speaker:'Lunafreya',text:"There's no title."},
+      {id:'blank',speaker:'Saira',text:"I left it blank. I always name a piece after the room it's for, and this room hasn't told me its name yet."},
+      {id:'bus',speaker:'Saira',text:"You don't need a piano to have it. Hum it. That's what I do on the bus. The bus has never complained."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Saira',text:"It should go…",choices:[
+        {text:"…here, pinned up behind the counter. I'll hum it while I work.",flag:'saira-score-cafe',
+          reply:"Behind the counter. Then it lives in the room it was written for. It'll like that."},
+        {text:"…upstairs, on the wall above my bed.",flag:'saira-score-home',
+          reply:"Above your bed. Good. Somebody should hum it while the café's asleep."}
+      ]},
+      {id:'thanks',speaker:'Lunafreya',text:"Thank you, Saira. Nobody's ever written me music before."},
+      {id:'next',speaker:'Saira',text:"Next time I hum it for you, you're sitting down. Badly is fine.",
+        alt:{'flag:saira-listen-cloth':"Next time I hum it for you, bring the cloth. Everybody needs something to hold."}},
+      {id:'goes-on',speaker:'Saira',text:"It's only eight bars. But it goes on by itself now. So do I, a little."}
+    ]}
+  ];
+  // That evening, upstairs: a harmless task left until morning.
+  CAST.homeStories.rest = {icon:'note', label:'Leave the receipts until morning', after:['saira-listen-done'], lines:[
+    {id:'receipts',speaker:'Lunafreya',text:"The week's receipts, in a pile by the computer. I was going to go through them tonight."},
+    {id:'badly',speaker:'Lunafreya',text:"Saira says everybody starts badly. So I'm going to sit here, badly, and leave them until morning.",
+      alt:{'flag:saira-listen-cloth':"Saira says everybody needs something to hold. Tonight it can be a cup of tea. The receipts can wait until morning."}},
+    {id:'tune',speaker:'Lunafreya',text:"Mm, mm-mm… I can't remember how it goes after that. That's all right. Neither can she, yet.",sound:'lunaHum'}
+  ]};
+})();

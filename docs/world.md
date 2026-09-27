@@ -58,7 +58,7 @@ Only established furnished saves keep the seeded-room behavior. New cafés reloa
 without a crowd; an unfinished mandatory first hello restores Holger at the counter.
 
 Newer regulars keep a rhythm (Marcel even days from day 4, Ida every third day
-from day 5, Elody odd days from day 6) and, whenever several regulars are due at
+from day 5, Elody odd days from day 6, Saira every third day from day 7) and, whenever several regulars are due at
 once, whoever has gone longest without a visit comes in first.
 
 New cafés begin with 90 coins, enough for the first two planner choices: a
@@ -390,8 +390,12 @@ contrast against the floor, with no backing rectangle.
   8%; the crossword, 40%, with a rare pencil-to-chin clue after Calandra's
   letter, 15%; her own coffee or the old shop mug, 40%; chin in hand for the
   rain, the fire or the room, 35%; marking her page when called, 30%), her
-  rare empty-night piano tune, gifts put in their place (Keira's photographs by
-  the till or beside the harbour print, Tomas's frame around them), a pianist
+  rare empty-night piano tune, humming Saira's score behind the counter (50%,
+  at most once a café day, worded for the room's chosen sound), gifts put in
+  their place (Keira's photographs by the till or beside the harbour print,
+  Tomas's frame around them, Saira's score behind the counter or above the
+  bed), Saira stopping her tapping for a nearby reader (35%, only while that
+  reader still reads) or, alone, a rare tapping line or musing (10%), a pianist
   settling at the bench / beginning a sparse burst, and the dusk/dawn
   candle ritual, weather changes, noon church bells, the evening kettle, lamp
   threshold moments, and occasional tip-jar coins. Cat-life

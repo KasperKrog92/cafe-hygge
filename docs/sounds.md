@@ -43,6 +43,13 @@ silences the speaking sound. Sound defaults preserve that text preference.
 `doorUnlock()` is a quiet 90 ms filtered click at 0.022 gain at the end of the
 first unlocking action. Existing room sounds remain on their original buses.
 
+A conversation line may be hummed: `sairaHum()` and `lunaHum()` glide one
+triangle voice (5 Hz vibrato, lowpass at 85% of the speaker's filter) through
+Saira's eight bars (A3 G3 F3 G3 A3, a breath, C4 A3 G3; about 3.5 s at the
+speaker's pace, Lunafreya a little lower) at 0.03 peak on the dialogue channel.
+Like a syllable it respects dialogue volume and mute, holds the text blips
+until it ends and stops with `stopDialogue()`.
+
 Settings provides master volume and mute, plus independent 0–100% sliders for
 rain & storms, fireplace, music, and café activity. Zero silences a channel;
 100% retains its original quiet mix. The default master remains 70%. Fire,
@@ -135,7 +142,9 @@ slider controls all three layers without changing their visual behavior.
 | `sip()` | sip animation peak (guests; Lunafreya's own coffee) | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |
 | `murmur(pitch)` | chatting patrons | triangle osc walking around the patron's 125–235 Hz voice pitch, 5.5 Hz vibrato, lowpass 480 — speech-shaped, wordless |
-| `meow()` | cat, rarely | sine sweep 620→890→520 Hz through bandpass 900 |
+| `meow()` | cat, rarely; the cat choosing a key in Saira's scene | sine sweep 620→890→520 Hz through bandpass 900 |
+| `fingerTap()` | Saira tapping a rhythm on the table edge (one per tap of the pattern) | 35 ms bandpassed noise tick around 1.5–1.8 kHz (Q 2.2), peak 0.014 |
+| `lunaHumRoom()` | Lunafreya humming Saira's score behind the counter (at most once a café day) | the same hummed eight bars as `lunaHum`, into the room on sfx at 0.016 peak |
 | `purr(dur)` | sleeping/petted cat | 24 Hz sawtooth → lowpass 95, slow swell, ~2–3 s |
 | `crunch()` | cat eating kibble | 3–5 jittered 30 ms noise grains around bandpass 1.05–1.4 kHz, peak 0.02 |
 | `lapWater()` | cat drinking (~4/s) | tiny 330–410→250 Hz sine blip plus filtered noise, combined peak below 0.015 |

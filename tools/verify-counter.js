@@ -18,6 +18,8 @@
     Object.assign(w.memory.flags,flags||{});
     setHour(w,hour);w.shop.accepting=false;
     for(let n=0;n<4*900;n++){
+      // Seated guests finish up now, so the afternoon is still the afternoon.
+      w.patrons.forEach(p=>{if(p.state==='seated')p.stay=Math.min(p.stay,0);});
       SIM.update(w,.25);const b=w.barista;
       if(n>40&&!w.patrons.length&&!w.queue.length&&b.state==='idle'&&!b.candlePending&&!b.wateringPending&&!R.needsTableClear(w))return w;
     }

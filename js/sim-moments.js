@@ -167,6 +167,12 @@
       return;
     }
     const line=SIM.momentLine(w);
+    // A line may carry a sound (a hummed tune, the cat): an SND name, played
+    // once as the line begins.
+    if(line.sound && line===m.lines[m.index] && m.soundAt!==m.index) {
+      m.soundAt=m.index;
+      if(typeof w.context.sound[line.sound]==='function')w.context.sound[line.sound]();
+    }
     SIM.revealDialogue(w,m,line.text,dt,CAST.voices[line.speaker]||false);
   };
   // The first hello pulses softly until it has been opened once.
