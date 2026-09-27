@@ -558,7 +558,10 @@ All walk-ins, regulars and off-duty neighbours share one timer. Familiar faces
 keep their habits in a small room: a regular whose hour has come, or Keira or
 Tomas dropping in off duty, may take a clean seat one guest past the target
 (never on opening day, never an unclean or reserved seat), so Holger's morning
-espresso stays in the morning. Walk-ins still wait for the target. Below target,
+espresso stays in the morning. Readers asked to a reading afternoon
+(`world.expectedGuests`) are due whatever their usual hour, come in before
+anyone else, and may each take one more clean seat; while one who can still
+come has not, nobody else takes a seat they would need. Walk-ins still wait for the target. Below target,
 an opportunity takes 20–34 seconds; a deficit of two or more guests advances it
 twice as fast. At target or without a clean unreserved seat, the opportunity
 waits. Incoming orders count toward occupancy and reserve admission capacity;

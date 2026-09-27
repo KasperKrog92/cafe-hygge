@@ -573,6 +573,8 @@
             const linger=180+R.arrivalTarget(world)*25+360*world.memory.life.openSeconds/11700;
             p.stay=Math.max(p.stay,linger*rnd(.9,1.1));
           }
+          // A guest who came for something (a reading afternoon) stays for it.
+          if (p.minStay) p.stay = Math.max(p.stay, p.minStay);
           if (p.seat.table >= 0) {
             // The cup stays in hand until it meets the table partway down
             // (R.settlePosture), so it never jumps ahead of the body.

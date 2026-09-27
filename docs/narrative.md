@@ -441,6 +441,23 @@ same saved-node, choice and reload contract as café conversations; the
 evening's routine, clock, bed and planner hold until it is finished or put
 aside. Something the day brought back to mind comes before the post.
 
+## Gatherings: ready when you want to begin — 27 September 2026
+
+A gathering is a set piece with several people, and it follows the same rule.
+It is *booked* by an ordinary moment (Ida's proposal) and then *brought* by a
+real visit: the host arrives on a later day and the people they ask come in
+along ordinary arrivals, ahead of other guests, and settle into their own
+activity. Only then does one invitation wait over the host. It never plays by
+itself, idle mode never shows it, and the room carries on around it; if it is
+never begun, everyone goes home at closing and the host brings it another day.
+Begun, it is an attended saved moment in a wide shot (`moment.wide`): every line
+is spoken by whoever it belongs to, and lines for somebody who is not there are
+left out, so a small room simply has a smaller gathering. Its node flags survive
+a reload; the next time it is brought, it resumes at the next unread line.
+Afterwards the lasting effects are memories (`reading-afternoon-<id>` for each
+person who was there, musings that recall it), and the guests leave in their own
+time. The first is Ida's reading afternoon (`js/sim-gathering.js`).
+
 ## Character bubbles and voices — 7 September 2026
 
 Conversations are invited through an icon bubble above the other character.

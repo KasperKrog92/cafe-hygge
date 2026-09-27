@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Thirty IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Thirty-one IIFE scripts expose the production globals
 (`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -32,6 +32,7 @@ js/sim-gerda.js         → extends SIM    (window-gated visits, pillow placemen
 js/sim-visitors.js      → extends SIM    (Keira/Tomas jobs and saved greetings)
 js/sim-home.js          → extends SIM    (saved first apartment tour, first planner, bedtime)
 js/sim-evenings.js      → extends SIM    (evening moments at home; home keepsake placement)
+js/sim-gathering.js     → extends SIM    (Ida's reading afternoon: booking, arrivals, the wide scene)
 js/sim-counter.js       → extends SIM    (Lunafreya's slow spells: stool and book, crossword, own coffee, chin in hand)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
@@ -699,6 +700,27 @@ re-poses a reload; `enterHome` and `startMorning` clear tonight's partial time.
 `w.homeUnpacking` is the transient view for the renderer (current box, phase,
 progress, carrying). `SCENE.homeUnpacked(world, item)` gates each belonging.
 `drawBoxCrouch` reads `p.boxAt` so the crouch serves any box.
+
+## A reading afternoon (no save change)
+
+`CAST.regularStories.ida` (`reading`) is Ida's proposal; `CAST.gathering` holds
+the readers she asks (in order), their book colours, the scene packet and the
+musings it adds. `js/sim-gathering.js` books the afternoon from Ida's `arrive`
+gate on a later visit (game mode, open, before 18:30): `world.gathering {day,
+host, guests, since}` and `world.expectedGuests {day, ids}` (transient, never
+saved). Each asked reader's gate reports `due` until they arrive; sim-core's
+`expectedGuests(world)` counts those who can come (their own `mayVisit`) and are
+not here, and spawning lets them in first, one extra clean seat each, while no
+one else takes a seat they need. Readers get `wantsBook`/`ownBook`, a book
+colour, no laptop or chatter, and `minStay` (420 s, honoured at `toSeat`;
+closing still sends everyone home). `SIM.gatheringReady(world)` returns Ida once
+she and her readers are seated (or two readers after 150 s); the `gathering`
+invitation (icon `book`) waits over her. `SIM.startGathering` filters the packet
+by `who` (a reader who is seated) and `variant` (the chosen rule), then runs a
+saved moment with prefix `gathering-reading-` and `moment.wide` (main.js keeps
+the whole room in view). Dialogue bubbles attach to the patron whose name is the
+line's speaker, else the moment's owner (scene-intro.js). Completion sets the
+memory flags, shortens the readers' stays and clears the booking.
 
 ## Evening moments and keepsakes (v17)
 

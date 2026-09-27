@@ -131,6 +131,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `dinner` | Apartment supper checkpoints, routes, once-per-evening completion |
 | `first-days` | First-day pacing, mandatory greeting, paired first purchases, window repair checkpoints |
 | `first-opening` | First-entry assembly, exact saves and the first ordinary sale |
+| `gathering` | Ida's reading afternoon: her proposal on a later visit (idle hides it) with either rule; nothing booked that day; her next visit bringing the readers she knows ahead of other guests, each with their own book (Kasper's laptop closed); the invitation waiting and never playing itself; the wide scene voiced only by who came; memories afterwards; a reload mid-scene resuming at the next line on her next visit; an unbegun afternoon going home at closing and returning; a small room fitting only a few |
 | `gerda` | Window gate, attended choices, table and pillow work, thank-you reloads |
 | `hearth` | Fireplace unlock, bare reopening, later mantel, ladder descent at closing |
 | `holger` | Conversation travel, speech, choices and persistence |
@@ -155,7 +156,9 @@ cannot: the splash and audio entry, the planner, invitations and conversation
 buttons, Settings, save export/import and exact progress across real reloads.
 A flow is `module.exports = async t => report` using `t.open`, `t.eval`,
 `t.page` (Playwright), `t.reload`, `t.viewport`, `t.shot` and `t.init`; see
-`tools/run-suites.js` and `tools/ui/first-hello.js`.
+`tools/run-suites.js` and `tools/ui/first-hello.js`. `ui:gathering` walks the
+reading afternoon through its real button, checks each bubble sits over its
+speaker, reloads mid-scene and resumes it on Ida's next visit.
 
 ### Node checks
 

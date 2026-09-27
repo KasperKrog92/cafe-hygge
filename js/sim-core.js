@@ -1247,6 +1247,15 @@
     return world.patrons.filter(p => !p.gone && p.terraceTable==null &&
       !(p.seat && (p.seat.artist || p.seat.piano))).length;
   }
+  // Familiar faces asked to come today (world.expectedGuests {day, ids}, set
+  // by a reading afternoon) who can come and have not arrived yet.
+  function expectedGuests(world) {
+    const e = world.expectedGuests;
+    if (!e || e.day !== world.memory.life.daysCompleted) return 0;
+    return e.ids.filter(function (id) {
+      return regularGate(id).mayVisit(world) && !world.patrons.some(function (p) { return p.regularId === id; });
+    }).length;
+  }
   // extra: an expected regular may use one clean seat past the target.
   function arrivalRoom(world, extra) {
     const clean=world.seats.filter(s => !s.piano && !s.artist && !s.taken && (s.table<0 ||
@@ -1256,7 +1265,9 @@
     // The allowance never takes the room past its customer seats: someone
     // still leaving counts until they are out of the door.
     const capacity=world.seats.filter(s => !s.piano && !s.artist).length;
-    const allowance=arrivalFirstDay(world) ? 0 : (extra || 0);
+    // Familiar faces asked to come today (a reading afternoon) may each use
+    // one more clean seat, still within the room's customer seats.
+    const allowance=arrivalFirstDay(world) ? 0 : (extra || 0) + (extra ? expectedGuests(world) : 0);
     return Math.max(0,Math.min(Math.min(capacity,arrivalTarget(world)+allowance)-arrivalPopulation(world),clean-waiting,3-waiting));
   }
   function arrivalGap(world) {
@@ -1461,8 +1472,13 @@
       return due && !(firstDay && spec.id!=='holger' && !r.force);
     }).sort(function (a, b) {
       const ra = world.regulars[a.id], rb = world.regulars[b.id];
-      return (rb.force ? 1 : 0) - (ra.force ? 1 : 0) || ra.lastDay - rb.lastDay;
+      return (rb.force ? 1 : 0) - (ra.force ? 1 : 0) || asked(world, b.id) - asked(world, a.id) || ra.lastDay - rb.lastDay;
     })[0] || null;
+  }
+  // Asked to come today (a reading afternoon): ahead of other due regulars.
+  function asked(world, id) {
+    const e = world.expectedGuests;
+    return e && e.day === world.memory.life.daysCompleted && e.ids.indexOf(id) >= 0 ? 1 : 0;
   }
   // Familiar faces keep their habits in a small room: a regular whose hour
   // has come may take a clean seat one guest past the popularity target.
@@ -1517,6 +1533,10 @@
     world.spawnT -= dt*(!arrivalFirstDay(world) && arrivalTarget(world)-arrivalPopulation(world)>=2 ? 2 : 1);
     if (world.spawnT > 0) return;
     world.spawnT = arrivalGap(world);
+    // Readers asked to a gathering come first, and nobody else takes the
+    // seats they will need.
+    const expected=expectedGuests(world);
+    if (expected && (updateRegulars(world) || arrivalRoom(world)-expected<1)) return;
     if (arrivalRoom(world)<1) { if(!SIM._.arriveSocialVisitor(world))updateRegulars(world); return; }
     if(SIM._.arriveSocialVisitor(world))return;
     if(updateRegulars(world))return;
@@ -1758,7 +1778,7 @@
     dayIndex: dayIndex, candleTables: candleTables,
     snapCandles: snapCandles, updateCandles: updateCandles,
     updateFire: updateFire, addLog: addLog,
-    arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom, arrivalPopulation: arrivalPopulation, dueRegular: dueRegular,
+    arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom, arrivalPopulation: arrivalPopulation, dueRegular: dueRegular, expectedGuests: expectedGuests,
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };

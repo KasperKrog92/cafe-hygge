@@ -57,8 +57,12 @@
   function dialogueData(w) {
     if(w.moment && w.moment.phase==='talk') {
       const line=SIM.momentLine(w);
+      // A line belongs to whoever says it: Lunafreya, the person she went to,
+      // or someone else in the room by name (a gathering has several voices).
+      const other=line.speaker!=='Lunafreya' && (!w.moment.owner || w.moment.owner.name!==line.speaker) &&
+        w.patrons.find(p=>!p.outside && p.name===line.speaker);
       return {text:line.text,visible:w.moment.visible,name:line.speaker,choices:line.choices,
-        speaker:line.speaker==='Lunafreya'?w.barista:w.moment.owner||w.barista,moment:true};
+        speaker:line.speaker==='Lunafreya'?w.barista:other||w.moment.owner||w.barista,moment:true};
     }
     if(w.shop.phase==='home' && w.dialogue) return {text:w.dialogue.text,visible:w.dialogue.visible,speaker:w.barista,name:'Lunafreya'};
     if(!w.dialogue || w.memory.life.intro.skipped || w.shop.phase!=='settling')return null;
@@ -77,10 +81,13 @@
   S.dialogueLayout=function(g,w) {
     const d=dialogueData(w);if(!d)return null;
     const room=S.presentation(w),b=d.speaker;
+    // A very short line ("…") still leaves room for the speaker's name.
+    g.font='10px Georgia, serif';
+    const nameWidth=d.name?g.measureText(d.name).width:0;
     g.font='13px Georgia, serif';
     const rows=wrap(g,d.text),choices=(d.choices||[]).map(c=>({rows:wrap(g,c.text)}));
     const all=rows.concat.apply(rows,choices.map(c=>c.rows));
-    const width=Math.ceil(Math.max.apply(null,all.map(r=>g.measureText(r.text).width)))+24;
+    const width=Math.ceil(Math.max(nameWidth,Math.max.apply(null,all.map(r=>g.measureText(r.text).width))))+24;
     let height=rows.length*17+18+(d.name?15:0);
     choices.forEach(c=>{c.top=height;c.height=c.rows.length*17+12;height+=c.height;});
     const x=Math.round(Math.max(16,Math.min(room.w-16-width,b.x-width/2)));

@@ -502,7 +502,8 @@
       focusPoint={x:(owner.x+b.x)/2,y:Math.min(owner.y,b.y)-28};
     }
     const bubble=world.moment && world.moment.phase==='talk'?SCENE.dialogueLayout(g,world):null;
-    let targetZoom=1.3;
+    // A gathering keeps the whole room in the picture.
+    let targetZoom=world.moment && world.moment.wide ? 1 : 1.3;
     if(bubble) {
       const bottom=Math.max(world.barista.y,world.moment.owner?world.moment.owner.y:world.barista.y)+20;
       targetZoom=Math.max(1,Math.min(targetZoom,view.h/(bottom-bubble.y+20),view.w/(bubble.w+40)));

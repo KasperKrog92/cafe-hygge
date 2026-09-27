@@ -1001,3 +1001,78 @@
     ]
   };
 })();
+
+/* A reading afternoon (ensemble release 4's shared gathering). Ida proposes
+   it in her second scene and Lunafreya chooses its one rule: nobody says a
+   word about their book (`reading-quiet`), or one sentence each at the end,
+   no explaining (`reading-sentence`). On a later visit Ida brings it with
+   her: a few readers she knows come in, each with their own book, and the
+   afternoon waits as an invitation ("ready when you want to begin") until
+   the player begins it (sim-gathering.js). In `CAST.gathering.reading`,
+   `who` keeps a line for a reader who is actually there (regular ID) and
+   `variant` for the chosen rule; `alt` holds context variants. Saved prefix
+   `gathering-reading-`, completion `gathering-reading-done`, and
+   `reading-afternoon-<id>` for everyone who was there. */
+(function () {
+  'use strict';
+  CAST.regularStories.ida = [
+    {id:'reading', after:['ida-introduced'], lines:[
+      {id:'idea',speaker:'Ida',text:"Can I run something past you? It isn't a book club. I promise it isn't a book club."},
+      {id:'club',speaker:'Lunafreya',text:"That's exactly what somebody starting a book club would say."},
+      {id:'afternoon',speaker:'Ida',text:"An afternoon. A few people, each with their own book, reading in the same room. That's all."},
+      {id:'reports',speaker:'Ida',text:"Nobody has to have read anything. Nobody has to say anything about it afterwards. No reports."},
+      {id:'library',speaker:'Ida',text:"At the library they'd want a sign-up sheet and a theme. I'd like one afternoon without a theme."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Ida',text:"Then…",choices:[
+        {text:"Yes. And nobody says a word about their book. Not one.",flag:'reading-quiet',
+          reply:"Not one. I'll have to sit on my hands. I'll manage."},
+        {text:"Yes. And at the end, one sentence each, read aloud. No explaining.",flag:'reading-sentence',
+          reply:"One sentence, no explaining. That's actually perfect. I'm stealing it for the library."}
+      ]},
+      {id:'ask',speaker:'Ida',text:"I'll bring a few people next time I come. The ones who already read here without being asked."},
+      {id:'kettle',speaker:'Lunafreya',text:"I'll have the kettle on. Whenever you're all ready."}
+    ]}
+  ];
+  CAST.gathering = {
+    // Who Ida brings, in this order, if Lunafreya knows them: people who read.
+    readers: ['holger', 'gerda', 'kasper', 'freya'],
+    books: { ida: '#8a6a9a', holger: '#4a7a5a', gerda: '#d9738a', kasper: '#c9a04a', freya: '#3d4a5c' },
+    reading: [
+      {id:'welcome',speaker:'Ida',text:"Right. One rule, and then I'll be quiet: nobody has to say anything about their book.",
+        alt:{sentence:"Right. One rule, and then I'll be quiet: at the end, one sentence each. No explaining it."}},
+      {id:'kettle',speaker:'Lunafreya',text:"The kettle's on, and nobody has to get up for anything. Read."},
+      {id:'holger',who:'holger',speaker:'Holger',text:"The last reading I went to was on my first ship. The captain read out the weather. We all agreed it was a thriller."},
+      {id:'gerda',who:'gerda',speaker:'Gerda',text:"Ida lent me this one. A lighthouse on the cover and a great deal of kissing inside. I'm not going to pretend it's for somebody else."},
+      {id:'kasper',who:'kasper',speaker:'Kasper',text:"I've brought somebody else's novel. It's very restful. None of it is my fault."},
+      {id:'antonia',who:'freya',speaker:'Antonia',text:"A reading afternoon. The only thing that gets me in here before dark."},
+      {id:'hush',speaker:'Lunafreya',text:"…"},
+      {id:'quiet',speaker:'Lunafreya',text:"Nobody has said a word for twenty minutes. I think this is my favourite afternoon here so far."},
+      {id:'mast',who:'holger',speaker:'Holger',text:"Sorry. Somebody in this book just fell off a mast. It's funnier than it sounds.",
+        alt:{bosun:"Sorry. The bosun's book. Somebody just fell off a mast. It's funnier than it sounds."}},
+      {id:'shh',speaker:'Ida',text:"Shh. Lovingly."},
+      {id:'sentences',variant:'sentence',speaker:'Ida',text:"Sentences, then. I'll go first. “The light went round and round, and never once looked away.” That's all."},
+      {id:'s-holger',variant:'sentence',who:'holger',speaker:'Holger',text:"“The sea was calm, which the bosun found suspicious.” I still don't know how it ends. I'd like to keep it that way."},
+      {id:'s-gerda',variant:'sentence',who:'gerda',speaker:'Gerda',text:"“She had never been kissed by a lighthouse keeper before.” Don't look at me like that. It's a very good lighthouse."},
+      {id:'s-kasper',variant:'sentence',who:'kasper',speaker:'Kasper',text:"“He wrote the letter three times and sent the first one.” It isn't mine. That's why I can read it out loud."},
+      {id:'s-antonia',variant:'sentence',who:'freya',speaker:'Antonia',text:"I'll give you the first line, not the last. The last one's mine. “The bus was late, which was the first kind thing that happened to her all day.”"},
+      {id:'s-luna',variant:'sentence',speaker:'Lunafreya',text:"“Every good room keeps a chair for whoever comes in last.” It's from the book I keep under the counter."},
+      {id:'proud',variant:'quiet',speaker:'Ida',text:"Well. Nobody said a single thing about their book. I'm so proud of us."},
+      {id:'again',speaker:'Ida',text:"We should do this again. Not every week. Whenever an afternoon looks right for it."},
+      {id:'close',speaker:'Lunafreya',text:"Whenever. The kettle will be on."}
+    ],
+    // Afterwards, the afternoon shows in ordinary visits.
+    musings: {
+      holger: [{text:'Holger reads, and now and then looks up to see who else is reading.', requires:['reading'], flags:['reading-afternoon-holger']}],
+      kasper: [{text:'Kasper closes the laptop for a chapter of somebody else\'s novel, then opens it again, lighter.', requires:['laptop'], flags:['reading-afternoon-kasper']}],
+      freya: [{text:'Antonia reaches the last page and keeps the last line to herself.', requires:['reading'], flags:['reading-afternoon-freya']}],
+      ida: [{text:'Ida reads, and very carefully says nothing about it.', requires:['reading'], flags:['gathering-reading-done', 'reading-quiet']},
+        {text:'Ida reads a sentence under her breath, then smiles at nobody in particular.', requires:['reading'], flags:['gathering-reading-done', 'reading-sentence']}]
+    },
+    overheard: {
+      gerda: [{text:'Gerda tells the next table about the lighthouse novel, spoilers and all.', flags:['reading-afternoon-gerda']}]
+    }
+  };
+  CAST.regulars.forEach(function (r) {
+    (CAST.gathering.musings[r.id] || []).forEach(function (m) { r.lines.musing.push(m); });
+    (CAST.gathering.overheard[r.id] || []).forEach(function (m) { r.lines.overheard.push(m); });
+  });
+})();

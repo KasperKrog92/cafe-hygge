@@ -130,7 +130,7 @@ the back bar), and her sister Calandra's first letter arrives on the third
 evening. Each waits over Lunafreya, one per evening, and holds the evening
 while it plays.
 
-## The neighbourhood meets itself — shipped 27 September 2026 (in part)
+## The neighbourhood meets itself — shipped 27 September 2026
 
 Marcel, the painter across the lake, visits when he could not be painting (his
 ladder stands empty while he is inside) and asks Lunafreya why this side of the
@@ -139,10 +139,22 @@ that then appear), and Elody the gardener brings Maud, a geranium cutting, for
 the counter or the bedroom sill. Newer faces keep a visit rhythm and due
 regulars rotate fairly, so a small room still sees everyone.
 
-**Next:** the release's remaining piece, **one shared reading gathering** (a
-quiet afternoon, booked "ready when you want to begin", with a few regulars each
-reading their own book), then the fifth release, **a tune for the room** (Saira
-and an optional piano). The current status/next task lives here; a brief owns scope and acceptance
+The release closes with **a reading afternoon**. Ida proposes it on a later
+visit and Lunafreya sets its one rule (nobody says a word about their book, or
+one sentence each at the end). On Ida's next visit she brings it: a few readers
+Lunafreya knows come in ahead of other guests, each with their own book, and the
+afternoon waits over Ida, ready when the player wants to begin. The scene plays
+in a wide shot with each reader's own voice; afterwards they read a little
+longer and go home, and later visits remember it. A small room simply has a
+smaller gathering; an afternoon never begun comes back another day.
+
+**Next, in order:** second beats for existing characters (Keira's printed
+photograph, Tomas's coat hook and bread, Holger's fire story and his shipmate,
+Kasper's question about endings, Nora's portrait permission, Antonia's place by
+the water, Gerda's own colour); then the reading chair by the fire (C2); then
+Saira without a piano (the piano's place needs an owner decision); then Birgit
+and the naming arc, which arrives at **Café Flourish** (owner decision).
+The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
 Keira and Tomas share saved-node resumption. Existing dialogue and choices are

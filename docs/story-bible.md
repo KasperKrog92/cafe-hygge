@@ -350,7 +350,7 @@ Use this table to distinguish identities from what the runtime currently contain
 | Marcel | Painter across the lake; recognizes changing places and people | Shipped as a regular (see below); the `street-house` arc is intact and he is its distant figure. Later painting and his gift remain planned |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |
 | Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | Shipped: introduction and Maud, her geranium cutting (see below); sharing her plot and later scenes remain planned |
-| Ida | Librarian; welcoming book exchange and learning when to organize less | Shipped: introduction and the exchange preference (see below); the fuller exchange, Gerda's sign and her bookplates remain planned |
+| Ida | Librarian; welcoming book exchange and learning when to organize less | Shipped: introduction, the exchange preference and the reading afternoon she hosts (see below); the fuller exchange, Gerda's sign and her bookplates remain planned |
 | Ezra | Young adult student with imaginary bus maps; possible later colleague | New character; friendship precedes any future shared-work implementation |
 | Calandra | Lunafreya's sister; brings old and new lives together through an invited visit | First letter shipped (evening moment); later letters, the visit and shared home scenes remain to implement |
 
@@ -386,6 +386,39 @@ actual shelf (or its absence) and offers to help people swap books. Choice:
 `ida-exchange-loose` (no labels; she tries not to alphabetise when nobody is
 looking) or `ida-exchange-notes` (a few handwritten notes, which then peek out of
 every third book). She means to lend Lunafreya the lighthouse book.
+
+**A reading afternoon — shipped 27 September.** On a later visit Ida runs
+something past Lunafreya ("It isn't a book club. I promise it isn't a book
+club."): an afternoon of a few people each reading their own book, nobody
+having to say anything about it; at the library they would want a sign-up sheet
+and a theme. Lunafreya chooses its one rule: `reading-quiet` (nobody says a
+word about their book) or `reading-sentence` (one sentence each at the end,
+read aloud, no explaining; Ida is stealing it for the library). Completion
+`ida-reading-done`. On Ida's next visit before evening she brings the afternoon
+with her: up to three readers Lunafreya knows come in (Holger, Gerda, Kasper,
+Antonia, in that order), each with a book of their own. It waits over Ida until
+the player begins it. In the scene (prefix `gathering-reading-`), Holger's last
+reading was on his first ship, the captain reading out the weather ("We all
+agreed it was a thriller"); Gerda has a lighthouse novel from Ida with a great
+deal of kissing and refuses to pretend it is for somebody else; Kasper has
+brought somebody else's novel ("None of it is my fault"); Antonia says it is the
+only thing that gets her in before dark. After a long quiet Lunafreya thinks it
+is her favourite afternoon here so far; Holger laughs at a man falling off a
+mast (the bosun's book, once Holger's books are on the shelf); Ida: "Shh.
+Lovingly." With the sentence rule each reads one line: Ida's lighthouse "never
+once looked away"; Holger's bosun who found a calm sea suspicious (he still
+doesn't know how it ends and would like to keep it that way); Gerda's lighthouse
+keeper; Kasper's letter written three times and the first one sent ("It isn't
+mine. That's why I can read it out loud"); **Antonia reads the first line, not
+the last: "The last one's mine."** Lunafreya's is from the book under her
+counter: "Every good room keeps a chair for whoever comes in last." Otherwise
+Ida is proud that nobody said a single thing. Everyone agrees to do it again
+whenever an afternoon looks right; no recurring event exists yet. Completion
+`gathering-reading-done`, and `reading-afternoon-<id>` for everyone who was
+there; later musings remember it (Holger looking up to see who else is
+reading, Gerda recounting the lighthouse novel, Kasper reading a chapter of
+somebody else's novel, Antonia keeping the last line to herself, Ida carefully
+saying nothing or reading a sentence under her breath).
 
 **Elody** (she/her; dark curly hair, green work jacket, rust scarf; a cardamom
 bun; keeps rainfall in a notebook) tends an allotment she now shares with the

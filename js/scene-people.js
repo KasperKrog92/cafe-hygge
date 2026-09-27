@@ -1456,6 +1456,15 @@
         px(g, x + 3, y + 3, 9, 2, '#6b4429');
         px(g, x + 4, y - 1, 2, 3, '#b5aa92'); px(g, x + 8, y - 2, 2, 3, '#b5aa92');
         break;
+      case 'book':
+        // an open book, two pages and a ribbon: a reading afternoon
+        px(g, x, y + 4, 16, 10, '#8a6a9a');
+        px(g, x + 1, y + 3, 6, 9, '#f5efdf'); px(g, x + 9, y + 3, 6, 9, '#f5efdf');
+        px(g, x + 7, y + 3, 2, 10, '#c9b28a');
+        px(g, x + 2, y + 5, 4, 1, '#8b8070'); px(g, x + 2, y + 7, 4, 1, '#8b8070');
+        px(g, x + 10, y + 5, 4, 1, '#8b8070'); px(g, x + 10, y + 7, 4, 1, '#8b8070');
+        px(g, x + 11, y + 12, 2, 3, '#a94f3f');
+        break;
       case 'palette':
         px(g, x + 2, y + 4, 12, 10, '#b78355');
         px(g, x + 4, y + 2, 7, 3, '#b78355');
