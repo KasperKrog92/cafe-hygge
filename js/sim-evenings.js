@@ -62,3 +62,20 @@
     });
   };
 })();
+
+/* Tomas's loaf becomes supper the night he brings it: noticed once, when she
+   sits down to eat (the supper's second stage). Part of the chosen moment's
+   consequence, like Keira's promised photograph, so it uses the story
+   caption track and is never crowded out. */
+(function () {
+  'use strict';
+  const R = SIM._, before = R.updateHome;
+  R.updateHome = function (w, dt) {
+    before(w, dt);
+    const f = w.memory.flags, m = w.homeMeal;
+    if (!m || m.stage !== 1 || !(m.progress > 0) || !f['tomas-bread-done'] || f['home-bread-eaten']) return;
+    f['home-bread-eaten'] = true;
+    R.captionRun(w, [CAST.breadSupper[f['tomas-bread-good'] ? 'tomas-bread-good' : 'tomas-bread-crust']]);
+    w.context.memory.save();
+  };
+})();

@@ -388,7 +388,8 @@ contrast against the floor, with no backing rectangle.
   8%; the crossword, 40%, with a rare pencil-to-chin clue after Calandra's
   letter, 15%; her own coffee or the old shop mug, 40%; chin in hand for the
   rain, the fire or the room, 35%; marking her page when called, 30%), her
-  rare empty-night piano tune, a pianist
+  rare empty-night piano tune, gifts put in their place (Keira's photographs by
+  the till or beside the harbour print, Tomas's frame around them), a pianist
   settling at the bench / beginning a sparse burst, and the dusk/dawn
   candle ritual, weather changes, noon church bells, the evening kettle, lamp
   threshold moments, and occasional tip-jar coins. Cat-life

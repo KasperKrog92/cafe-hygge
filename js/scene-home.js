@@ -48,11 +48,27 @@
     [[-5,-12,5,3],[1,-15,5,3],[-4,-17,4,3]].forEach((a,i)=>px(g,x+a[0],y+a[1],a[2],a[3],i%2?'#6b9a5f':'#4a7a5a'));
     px(g,x+1,y-18,3,2,'#d9738a');px(g,x+2,y-19,1,1,'#e8a0b0');
   };
+  // Keira's two photographs, centred on (x,y): an early delivery morning
+  // (grey light, the door, the crooked hand-painted sign) and the café now
+  // (warm window, lamps, somebody at a table). Pinned, or in Tomas's frame.
+  SCENE.drawPhotos = function(g,x,y,framed) {
+    const l=x-12,t=y-5;
+    if(framed) {px(g,l-3,t-3,30,15,'#a5763f');px(g,l-3,t-3,30,1,'#c9a477');px(g,l-3,t+11,30,1,'#6e4c30');px(g,l+11,t-2,2,13,'#8a6142');}
+    else px(g,l+1,t+1,24,9,'rgba(20,12,8,.2)');
+    px(g,l,t,11,9,'#e8e0d0');px(g,l+1,t+1,9,7,'#8a9aa6');px(g,l+2,t+3,3,5,'#5a3d28');
+    px(g,l+5,t+4,4,2,'#e8dfc9');px(g,l+6,t+4,1,1,'#a94f3f');
+    px(g,l+13,t,11,9,'#e8e0d0');px(g,l+14,t+1,9,7,'#c98f4a');px(g,l+15,t+2,3,3,'#f5d49a');px(g,l+19,t+2,3,3,'#f5d49a');
+    px(g,l+16,t+6,2,2,'#5a3d28');px(g,l+19,t+6,3,1,'#6b4429');
+    if(!framed){px(g,l+5,t-1,1,1,'#a94f3f');px(g,l+18,t-1,1,1,'#a94f3f');}
+  };
   // Whatever a regular brings in (a parcel set on the counter, a gift not
-  // yet placed): Holger's box of books, Maud, Gerda's folded blanket.
+  // yet placed): Holger's box of books, Maud, Gerda's folded blanket,
+  // Keira's photographs in their envelope, Tomas's empty frame.
   SCENE.drawParcel = function(g,w,kind,x,y) {
     if(kind==='cutting')SCENE.drawMaud(g,x,y);
     else if(kind==='blanket')foldedBlanket(g,w,x,y);
+    else if(kind==='photo') {px(g,x-7,y-5,14,9,'#e8dfc9');px(g,x-7,y-5,14,1,'#f5efdf');px(g,x-6,y-4,12,3,'#d9d2c0');px(g,x-1,y-2,2,1,'#c9b28a');}
+    else if(kind==='frame') {px(g,x-8,y-6,16,11,'#a5763f');px(g,x-6,y-4,12,7,'#e8dfc9');px(g,x-8,y-6,16,1,'#c9a477');}
     else SCENE.drawBookBox(g,x,y,kind==='books'?'holger':kind);
   };
   SCENE.drawFirstPlant = function(g,x,y) {
@@ -152,6 +168,9 @@
         }
         if(id==='cutting' && p.stage==='installed' && !w.memory.flags['elody-cutting-home'])
           draws.push({y:SCENE.L.basic.counter.baseY+.7,draw:g=>SCENE.drawMaud(g,a.spot.x,a.spot.y)});
+        // On the wall behind the till: drawn first, like the wall itself.
+        if(id==='photo' && p.stage==='installed' && !w.memory.flags['keira-print-home'])
+          draws.push({y:SCENE.L.wallY-1,draw:g=>SCENE.drawPhotos(g,a.spot.x,a.spot.y,jobs.frame.stage==='installed')});
       } else if (IMPROVEMENTS.projects[id].bookSource) {
         const d=IMPROVEMENTS.projects[id];
         if(p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
@@ -328,6 +347,9 @@
   }
   SCENE.homeUnpacked=unpacked;
   function homeBelongings(g,draws,w) {
+    const jobs=w.memory.life.projects;
+    if(w.memory.flags['keira-print-home'] && jobs.photo.stage==='installed')
+      SCENE.drawPhotos(g,H.photo.x,H.photo.y,jobs.frame.stage==='installed');
     if(unpacked(w,'picture')) {
       // A small print of the old city's harbour, framed, above the desk.
       px(g,427,184,26,22,'#6e4a33');px(g,429,186,22,18,'#8fb5bf');

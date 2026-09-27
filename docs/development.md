@@ -133,6 +133,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `first-opening` | First-entry assembly, exact saves and the first ordinary sale |
 | `gathering` | Ida's reading afternoon: her proposal on a later visit (idle hides it) with either rule; nothing booked that day; her next visit bringing the readers she knows ahead of other guests, each with their own book (Kasper's laptop closed); the invitation waiting and never playing itself; the wide scene voiced only by who came; memories afterwards; a reload mid-scene resuming at the next line on her next visit; an unbegun afternoon going home at closing and returning; a small room fitting only a few |
 | `gerda` | Window gate, attended choices, table and pillow work, thank-you reloads |
+| `gifts` | Keira asking once more and taking the photograph, her two prints on a later visit pinned by the till or taken upstairs beside the harbour print, a second "not yet" ending it; Tomas's loaf remembered once at supper after a reload, and his frame fitted wherever the prints are; Gerda asked, knitting yellow with a rust stripe, showing the scarf and wearing it after a reload |
 | `hearth` | Fireplace unlock, bare reopening, later mantel, ladder descent at closing |
 | `holger` | Conversation travel, speech, choices and persistence |
 | `home` | Apartment tutorial and bedtime journeys with save round trips |

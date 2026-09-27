@@ -1220,3 +1220,123 @@
   };
   CAST.regulars.forEach(function (r) { (more[r.id] || []).forEach(function (m) { r.lines.musing.push(m); }); });
 })();
+
+/* Gifts from the neighbours (second beats, part two). Keira's and Tomas's
+   stories become ordered lists (sim-visitors.js): each is decided at the door
+   of an off-duty visit, one per visit, `after`/`unless` like the regulars',
+   `photo` marks a scene after which Keira takes a photograph, and `gift`
+   hands over a keepsake (an improvement id) that waits on the counter.
+   Keira asks once more if the café was "not yet"; later she brings two
+   prints, an early delivery morning and now (keepsake `photo`: by the till,
+   or upstairs above the desk). Tomas brings the loaf that didn't hold a door
+   open (it becomes that night's supper), and, once the photographs are up, a
+   frame made from a board he took off the left window (keepsake `frame`).
+   Gerda's own colour: a yellow scarf for herself, knitted as an arc
+   (`gerda-own`) and shown in her own scene; she wears it from then on. */
+(function () {
+  'use strict';
+  const keiraCup = CAST.visitorStories.keira, tomasCupboard = CAST.visitorStories.tomas;
+  keiraCup.photo = true;
+  CAST.visitorStories.keira = [keiraCup,
+    {id:'ask', after:['keira-cup-done','keira-photo-later'], unless:['keira-photo-yes'], photo:true, lines:[
+      {id:'again',speaker:'Keira',text:"I said I'd ask again when the place had had time. It's had time. It's more itself than it was."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Keira',text:"A photograph…",choices:[
+        {text:"Go on, then. As it is.",flag:'keira-photo-yes',reply:"As it is. Hold still, café."},
+        {text:"Not yet. I like that you keep asking, though.",flag:'keira-photo-someday',
+          reply:"Then I'll keep looking in the window instead. That's allowed."}
+      ]}
+    ]},
+    {id:'print', after:['keira-cup-done','keira-photo-yes'], gift:'photo', lines:[
+      {id:'envelope',speaker:'Keira',text:"I brought you something. Don't open it at the till. Well, you can. It's your till."},
+      {id:'two',speaker:'Keira',text:"Two photographs. The one I took with permission. And one I took without asking, the morning I brought your first table."},
+      {id:'sign',speaker:'Keira',text:"It's just your door and the sign you painted. I photograph handwritten signs. I forgot I had this one."},
+      {id:'crooked',speaker:'Lunafreya',text:"Look at it. The sign's crooked. I straightened it three times that morning."},
+      {id:'building',speaker:'Keira',text:"I thought I was bringing you furniture. Put them side by side. You were building something the whole time."},
+      {id:'half',speaker:'Lunafreya',text:"So were you. You carried half of it in."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Keira',text:"They should go…",choices:[
+        {text:"…here, by the till, where I'll see them every day.",flag:'keira-print-cafe',
+          reply:"By the till. Then I can check on them when I come in for a coffee."},
+        {text:"…upstairs, above my desk.",flag:'keira-print-home',
+          reply:"Upstairs. Good. Somewhere you're not working."}
+      ]},
+      {id:'coat',speaker:'Keira',text:"Coat's off again, by the way. It's becoming a habit."}
+    ]}
+  ];
+  CAST.visitorStories.tomas = [tomasCupboard,
+    {id:'bread', after:['tomas-cupboard-done'], lines:[
+      {id:'loaf',speaker:'Tomas',text:"The next loaf. As promised. It hasn't held a single door open."},
+      {id:'looks',speaker:'Lunafreya',text:"It looks like bread."},
+      {id:'praise',speaker:'Tomas',text:"That's the best thing anyone's said about it. Try the end. The end is the honest part."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Tomas',text:"It's…",choices:[
+        {text:"Good. Properly good.",flag:'tomas-bread-good',
+          reply:"Then I'll make another. It'll be worse. That's how it goes with me."},
+        {text:"The crust is wonderful. The middle is still thinking.",flag:'tomas-bread-crust',
+          reply:"The middle's always thinking. I'll take the crust."}
+      ]},
+      {id:'supper',speaker:'Tomas',text:"Keep the rest. Have it for your supper."},
+      {id:'thanks',speaker:'Lunafreya',text:"I will. Thank you, Tomas."}
+    ]},
+    {id:'frame', after:['tomas-bread-done','keira-print-done'], gift:'frame', lines:[
+      {id:'photos',speaker:'Tomas',text:"I saw your photographs by the till. They deserve better than drawing pins.",
+        alt:{'flag:keira-print-home':"Keira told me about the photographs above your desk. They deserve better than drawing pins."}},
+      {id:'made',speaker:'Tomas',text:"So I made a frame. Out of one of the boards I took off your left window, the second day."},
+      {id:'window',speaker:'Lunafreya',text:"From the window?"},
+      {id:'pine',speaker:'Tomas',text:"Good old pine. It kept the weather out for years. Now it can keep something in."},
+      {id:'tomas',speaker:'Lunafreya',text:"Tomas, that's…"},
+      {id:'level',speaker:'Tomas',text:"It's level. Your wall will have a different opinion."}
+    ]}
+  ];
+  // The loaf, remembered at supper that night (once).
+  CAST.breadSupper = {
+    'tomas-bread-good': 'supper is Tomas’s bread tonight, with a little cheese. It is, honestly, good.',
+    'tomas-bread-crust': 'supper is Tomas’s bread tonight. The crust really is wonderful; the middle is still thinking.'
+  };
+  CAST.visitors.tomas.returningAfter = [CAST.visitors.tomas.returningAfter,
+    {flags:['tomas-bread-done'], text:'Tomas comes in without a toolbox, and with the look of a man who has been baking.'}];
+
+  CAST.arcs.push({
+    id: 'gerda-own',
+    owner: 'gerda',
+    knits: true,
+    rows: 4,
+    after: ['gerda-colour-asked'],   // a scarf for herself, once she has said so
+    payoff: 'scene',                 // she shows it in her own scene, then wears it
+    scarfColor: '#d9a33c',
+    colors: { 'gerda-colour-own': '#d9a33c', 'gerda-colour-both': '#d9a33c' },
+    patterns: { 'gerda-colour-both': 'stripe' },
+    glyph: 'yarn',
+    flag: 'gerda-colour-worn',
+    knitLines: [
+      'Gerda\'s yellow scarf grows a row at a time; she looks pleased with it every time.',
+      'Gerda holds the yellow wool up to the window and nods to herself.',
+      'Gerda knits, humming, in a colour Erik would have argued with.'
+    ],
+    beat: ['Gerda casts off the yellow scarf.']
+  });
+  CAST.gerdaWindow.colour = [
+    {id:'wool',speaker:'Gerda',text:"Look at this. I bought it on Tuesday and I've been hiding it from myself ever since."},
+    {id:'brave',speaker:'Lunafreya',text:"That's a very brave yellow."},
+    {id:'erik',speaker:'Gerda',text:"Erik hated yellow. He said it made everybody look like a custard. So for forty years I knitted in his colours."},
+    {id:'still',speaker:'Gerda',text:"I noticed I still do. I stand in the wool shop and think, would he like this. He can't have an opinion any more. I keep giving him one."},
+    {id:'mine',speaker:'Gerda',text:"This one is for me. A scarf, in a colour I've liked since I was nine."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Gerda',text:"Then…",choices:[
+      {text:"All of it yours, then. Every row.",flag:'gerda-colour-own',
+        reply:"Every row. Goodness. I feel as if I've run away from home."},
+      {text:"Put one stripe of his rust in it. Both can belong.",flag:'gerda-colour-both',
+        reply:"A stripe of his rust in my yellow. Yes. He'd hate it. He'd wear it anyway."}
+    ]},
+    {id:'days',speaker:'Gerda',text:"It will take a few days. I'm going to enjoy every one of them."}
+  ];
+  CAST.gerdaWindow.colourShow = [
+    {id:'well',speaker:'Gerda',text:"Well? Don't be polite. I'll know."},
+    {id:'lamp',speaker:'Lunafreya',text:"It suits you. It looks like a lamp coming on.",
+      alt:{'flag:gerda-colour-both':"It suits you. The stripe looks as if it was always going to be there."}},
+    {id:'warm',speaker:'Gerda',text:"It's the warmest thing I've ever made, and I've made a great many warm things."},
+    {id:'argue',speaker:'Gerda',text:"All mine. It turns out I still know what I like.",
+      alt:{'flag:gerda-colour-both':"His rust and my yellow. It turns out they don't argue."}},
+    {id:'wear',speaker:'Lunafreya',text:"Wear it in here. The room could use it."}
+  ];
+  const gerda = CAST.regulars.find(r => r.id === 'gerda');
+  gerda.lines.musing.push({text:'Gerda adjusts her yellow scarf and looks, briefly, very pleased with herself.', flags:['gerda-colour-worn']});
+  gerda.lines.arrivalReturn.push({text:'Gerda comes in wearing the yellow scarf, like a lamp coming on.', flags:['gerda-colour-worn']});
+})();

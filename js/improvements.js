@@ -48,6 +48,20 @@
       capability:'elody-cutting', homeFlag:'elody-cutting-home',
       doneLine:'Maud sits on the counter now, in her hand-labelled pot.',
       homeLine:'Maud goes on the windowsill, where she can see the night.' },
+    // Keira's two photographs (an early delivery morning, and now): pinned up
+    // by the till, or upstairs beside the old harbour print.
+    photo: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Keira's photographs",
+      label:"Keira's photographs", phases:['pin the photographs up'], phaseIds:['pin'], duration:3,
+      capability:'keira-photo', homeFlag:'keira-print-home',
+      doneLine:'Keira’s two photographs are pinned up by the till: the first morning, and now.',
+      homeLine:'Keira’s photographs go up beside the old harbour.' },
+    // Tomas's frame, made from a board he took off the left window: fitted
+    // around the photographs wherever they are.
+    frame: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Tomas's frame",
+      label:"Tomas's frame", phases:['fit the frame around the photographs'], phaseIds:['fit'], duration:3,
+      capability:'tomas-frame', homeFlag:'keira-print-home',
+      doneLine:'The photographs sit in Tomas’s frame now: a board that once kept the weather out.',
+      homeLine:'Tomas’s frame goes around Keira’s photographs, above the desk.' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],

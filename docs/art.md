@@ -339,6 +339,11 @@ Known constraints, without inventing a complete future layout:
   for counter/kitchen growth, piano, art and terrace access; inspect their relevant
   plans before using space they may need. Unspecified dimensions remain decisions,
   not invented reservations with guessed coordinates.
+- Keira's photographs (`L.projects.photo.spot`, 752, 198) are two small prints
+  pinned to the wall panel behind the till, right of the machine, below the
+  full room's back-bar shelves and left of its menu board; Tomas's pine frame
+  (30×15) goes around both there. They are personal keepsakes, not the later
+  art display. Upstairs they hang beside the harbour print (`L.home.photo`).
 - Lunafreya's stool (`L.counterStool`) is not floor furniture: it lives under
   the counter at the till and appears only as her seated body behind the slab.
   It follows the till, so a later counter extension moves it with the service

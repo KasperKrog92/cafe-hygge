@@ -759,7 +759,27 @@ stories alike. `CAST.visitorStories` gives Keira and Tomas one later story each
 (`after` lists the saved flags/nodes it builds on); `arriveSocialVisitor`
 decides it at the door, `SIM.visitorStoryInvites` offers it seated, and
 `<id>-<story>-done` completes it. `returningAfter` supplies the remembered
-arrival caption.
+arrival caption (a list: the last whose flags are all set wins).
+
+`CAST.visitorStories[id]` is an ordered list (Keira: `cup`, `ask`, `print`;
+Tomas: `cupboard`, `bread`, `frame`) chosen like the regulars' stories: the
+first not done whose `after` flags are set and none of whose `unless` flags
+is, decided at the door. `photo: true` makes Keira take her photograph after
+the scene if the answer was yes; `gift` schedules a keepsake improvement that
+waits on the counter (`photo`, `frame`; both follow `keira-print-home` upstairs
+and are installed when she settles). Keepsakes need a save record, so the save
+is v20. The frame is drawn around the photographs wherever they are
+(`SCENE.drawPhotos`). Tomas's loaf is remembered once at supper (the meal's
+eating stage) on the story caption track, like Keira's photograph, and saves
+`home-bread-eaten`. A saved node ID must never equal a story's own flag name
+(`tomas-bread-` + `supper` would be one).
+
+Gerda's colour extends her chapters in sim-gerda.js: `colour` (decided at the
+door after the blanket), the arc `gerda-own` (knits, `after:
+['gerda-colour-asked']`, `payoff: 'scene'`, pattern `stripe` for the rust
+stripe), then `colourShow`, which consumes the beat and sets
+`gerda-colour-worn`; her visit gate dresses her in `colors.scarf` and
+`colors.scarfStripe` from then on.
 
 `CAST.regularStories[id]` lists a regular's later scenes in order (Holger's
 fire and Aksel, Kasper's endings, Nora's portrait, Antonia's bench, Ida's

@@ -1139,9 +1139,11 @@
         Object.values(CAST.visitors).flatMap(r=>r.hello.map(line=>line.speaker)),
         Object.values(CAST.holgerBooks).flat().map(line=>line.speaker),
         Object.values(CAST.introductions).flatMap(i=>i.lines.map(line=>line.speaker)),
-        Object.values(CAST.visitorStories).flatMap(s=>s.lines.map(line=>line.speaker)),
+        Object.values(CAST.visitorStories).flat().flatMap(s=>s.lines.map(line=>line.speaker)),
         Object.values(CAST.homeStories).flatMap(s=>s.lines.map(line=>line.speaker)),
-        Object.values(CAST.regularStories).flat().flatMap(s=>s.lines.map(line=>line.speaker)));
+        Object.values(CAST.regularStories).flat().flatMap(s=>s.lines.map(line=>line.speaker)),
+        Object.values(CAST.gerdaWindow).flat().map(line=>line.speaker),
+        (CAST.gathering ? CAST.gathering.reading : []).map(line=>line.speaker));
       speakers.forEach(function(name) {
         const voice=CAST.voices[name];
         if(!voice || ![voice.pitch,voice.filter,voice.pace].every(n=>Number.isFinite(n)&&n>0))

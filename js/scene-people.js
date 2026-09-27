@@ -495,6 +495,7 @@
       px(g, kx, y - 29, 4, 4, shade(c.scarf, -0.15));         // knot
       px(g, kx, y - 25, 4, 7, c.scarf);                       // tail
       px(g, kx, y - 19, 2, 2, shade(c.scarf, -0.15));         // fringe
+      if (c.scarfStripe) { px(g, x - 10, y - 30, 20, 1, c.scarfStripe); px(g, kx, y - 22, 4, 1, c.scarfStripe); }
     }
     // gazeFacing (window sitters looking out) turns the head — the body keeps
     // leaning on its cushion. The window is on the wall behind the seat, so a
@@ -642,6 +643,7 @@
         px(g, x + stitch, y - 16, 1, 3, shade(scol, -0.16));
       // Gerda's blanket shows its chosen pattern as it grows.
       if (p.knitPattern === 'stars') for (let s = -sw + 3; s < sw - 1; s += 5) px(g, x + s, y - 17 + ((s / 5) & 1) * 2, 1, 1, '#e0c070');
+      else if (p.knitPattern === 'stripe') px(g, x - sw, y - 16, sw * 2, 2, '#a94f3f');
       else if (p.knitPattern === 'reeds') for (let s = -sw + 2; s < sw - 1; s += 4) px(g, x + s, y - 19, 1, 5, shade(scol, 0.28));
       // The needle tips cross above the live stitches; grips follow their shafts.
       limb(g, x - 8, y - 24 + knit, x + 5, y - 19 - knit, 1, '#d9c9a0');
@@ -728,12 +730,14 @@
       const bkx = facing > 0 ? x + 3 : x - 7;
       px(g, bkx, y - 35, 4, 9, c.scarf);
       px(g, bkx, y - 27, 2, 2, shade(c.scarf, -0.15));     // fringe
+      if (c.scarfStripe) { px(g, x - 10, y - 38, 20, 1, c.scarfStripe); px(g, bkx, y - 30, 4, 1, c.scarfStripe); }
     } else if (c.scarf) {
       px(g, x - 10, y - 40, 20, 5, c.scarf);
       const kx = front ? x - 1 : facing > 0 ? x + 5 : x - 9;   // knot centres up front
       px(g, kx, y - 37, 4, 4, shade(c.scarf, -0.15));      // knot
       px(g, kx, y - 33, 4, 8, c.scarf);                    // hanging tail
       px(g, kx, y - 26, 2, 2, shade(c.scarf, -0.15));      // fringe
+      if (c.scarfStripe) { px(g, x - 10, y - 38, 20, 1, c.scarfStripe); px(g, kx, y - 29, 4, 1, c.scarfStripe); }
     }
     if (c.apron && back) {
       // from behind: straps over the shoulders, waistband, and the tie bow

@@ -150,34 +150,48 @@
       guest.drink=R.DRINKS.find(d=>d.name==='espresso');
       // A later story is decided at the door, so it never follows the hello
       // on the same visit.
-      guest.storyChapter=storyDue(w,id)?CAST.visitorStories[id].id:null;
+      const due=storyDue(w,id);
+      guest.storyChapter=due?due.id:null;
       R.enqueueArrival(w,guest,0,true);
-      const v=CAST.visitors[id],after=v.returningAfter;
-      R.caption(w,!w.memory.flags[id+'-introduced']?v.arrival:
-        after && after.flags.every(f=>w.memory.flags[f])?after.text:v.returning);
+      // The latest remembered story colours their arrival.
+      const v=CAST.visitors[id],after=[].concat(v.returningAfter||[]).filter(x=>x.flags.every(f=>w.memory.flags[f])).pop();
+      R.caption(w,!w.memory.flags[id+'-introduced']?v.arrival:after?after.text:v.returning);
       return true;
     }
   };
   SIM.addInvitation({ key:a=>a.visitorId, actors:w=>SIM.visitorInvites(w),
     start:(w,a)=>SIM.startVisitor(w,a.visitorId) });
-  // Their next story (CAST.visitorStories): Keira's second cup, Tomas's
-  // cupboard report. One at a time, off duty and seated, game mode.
+  // Their next story (CAST.visitorStories, in order): Keira's second cup,
+  // asking again, her photographs; Tomas's cupboard report, his bread, a
+  // frame. One at a time, decided at the door, off duty and seated, game mode.
   function storyDue(w,id) {
-    const s=CAST.visitorStories[id];
-    return !!s && s.after.every(f=>w.memory.flags[f]) && !w.memory.flags[id+'-'+s.id+'-done'];
+    const f=w.memory.flags;
+    return [].concat(CAST.visitorStories[id]||[]).find(s=>!f[id+'-'+s.id+'-done'] &&
+      s.after.every(x=>f[x]) && !(s.unless||[]).some(x=>f[x])) || null;
   }
   SIM.visitorStoryInvites=function(w) {
     if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
-    return w.patrons.filter(a=>a.social && a.storyChapter && a.state==='seated' && !a.outside && storyDue(w,a.visitorId));
+    return w.patrons.filter(a=>{
+      const s=a.social && a.storyChapter && storyDue(w,a.visitorId);
+      return s && s.id===a.storyChapter && a.state==='seated' && !a.outside;
+    });
   };
   SIM.startVisitorStory=function(w,id) {
     const a=SIM.visitorStoryInvites(w).find(a=>a.visitorId===id);if(!a)return false;
-    const s=CAST.visitorStories[id],books=SCENE.shelfBooks(w).length>0;
-    const lines=SIM.contextLines(s.lines,{books:books,shelves:!books && SCENE.hasFurniture(w,'wall-shelves'),
-      boarded:!SCENE.windowOpen(w,L.win)});
+    const s=storyDue(w,id),books=SCENE.shelfBooks(w).length>0;
+    const lines=SIM.contextLines(s.lines,SIM.flagContext(w,s.lines,{books:books,shelves:!books && SCENE.hasFurniture(w,'wall-shelves'),
+      boarded:!SCENE.windowOpen(w,L.win)}));
     return SIM.beginSavedMoment(w,lines,a,id+'-'+s.id+'-',function(){
-      w.memory.flags[id+'-'+s.id+'-done']=true;a.storyChapter=null;
-      if(w.memory.flags['keira-photo-yes'] && id==='keira')a.photoPending=true;
+      const f=w.memory.flags;
+      f[id+'-'+s.id+'-done']=true;a.storyChapter=null;
+      if(s.photo && f['keira-photo-yes'])a.photoPending=true;
+      // A handed-over keepsake waits on the counter to be placed (or goes
+      // upstairs with her that evening).
+      if(s.gift) {
+        const job=w.memory.life.projects[s.gift];
+        if(job.stage==='available')job.stage='scheduled';
+        R.commitLife(w);
+      }
     });
   };
   SIM.addInvitation({ key:a=>a.visitorId, actors:w=>SIM.visitorStoryInvites(w),

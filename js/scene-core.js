@@ -106,6 +106,8 @@
       lamps: { desk: {x:400,y:229,base:256}, bedside: {x:684,y:224,base:299} },
       bed: { x: 704, y: 266, w: 124, h: 84 }, bedSeat: { x: 713, y: 310 }, bedApproach: { x: 683, y: 310 },
       window: { x: 535, y: 124, w: 128, h: 112 },
+      // Keira's photographs, if they come upstairs: beside the harbour print.
+      photo: { x: 474, y: 196 },
       boxes: [{ x: 280, y: 270 }, { x: 308, y: 270 }, { x: 294, y: 248 },
         { x: 474, y: 280 }, { x: 503, y: 280 }, { x: 493, y: 258 }, { x: 776, y: 422 }],
       story: {
@@ -149,6 +151,11 @@
       // Maud waits where Elody set her down, then lives between the cash tin
       // and the cake stand (placed from behind the counter).
       cutting: {pickup:{x:664,y:286},parcel:{x:650,y:271},work:{x:760,y:286},spot:{x:766,y:264}},
+      // Keira's photographs are pinned to the wall behind the till, right of
+      // the machine and clear of the back-bar shelves; Tomas's frame goes
+      // around them there. Both wait on the counter's free left end first.
+      photo: {pickup:{x:664,y:286},parcel:{x:652,y:270},work:{x:752,y:274},spot:{x:752,y:198}},
+      frame: {pickup:{x:664,y:286},parcel:{x:652,y:270},work:{x:752,y:274},spot:{x:752,y:198}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},

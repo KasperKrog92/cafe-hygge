@@ -88,8 +88,29 @@ is, while it's new; she takes one quiet photograph from her chair) or
 made the plain version, two shelves and one door, with her hinges; he decided to
 believe her. The towels are in it, folded. He has moved on to bread, which is
 going worse ("could have held a door open"). Completion: `tomas-cupboard-done`;
-later arrivals come without a toolbox, flour on one sleeve. The printed photo,
-the re-ask and bread gifts remain planned.
+later arrivals come without a toolbox, flour on one sleeve.
+
+**Gifts, shipped 27 September** (their stories are now ordered lists, one per
+off-duty visit). If the café was "not yet", Keira asks once more (`ask`): yes
+("Hold still, café"; she takes the photograph) or `keira-photo-someday` (she will
+keep looking in the window instead, and never asks again). After a photograph,
+on a later visit she brings **two prints** (`print`): the one she took with
+permission, and one she took without asking the morning she brought the first
+table, of the door and the hand-painted sign (Lunafreya straightened it three
+times that morning). "I thought I was bringing you furniture... You were
+building something the whole time." "So were you. You carried half of it in."
+Choice: `keira-print-cafe` (pinned up by the till) or `keira-print-home` (above
+the desk upstairs, beside the old harbour print); placing them is ordinary work
+(keepsake `photo`). Tomas brings **the next loaf** (`bread`), which has not held a
+single door open; the end is the honest part. Choice: `tomas-bread-good` or
+`tomas-bread-crust` ("the middle is still thinking"); he tells her to have the
+rest for supper, and that night it is (`home-bread-eaten`). Once the photographs
+are up, he brings **a frame** made from one of the boards he took off the left
+window on the second day (`frame`): "It kept the weather out for years. Now it
+can keep something in... It's level. Your wall will have a different opinion."
+It is fitted around the photographs wherever they are. Later arrivals: Tomas
+comes in with the look of a man who has been baking. Birgit's advice on his
+bread remains planned.
 
 ## Writing and choices
 
@@ -277,7 +298,17 @@ or did the water twice. Lunafreya chooses where it lives: `gerda-blanket-cafe`
 nice to use. He was wrong about that sort of thing." Completion sets
 `gerda-blanket-given`; placing it is ordinary work (the `blanket` keepsake).
 Erik is spoken of in the past tense; he is not yet explicitly identified.
-**Planned:** Gerda making something in a colour *she* loves, and a garden story.
+**Shipped 27 September — her own colour** (a later visit after the blanket): she
+bought yellow wool and has been hiding it from herself. Erik hated yellow ("it
+made everybody look like a custard"), so for forty years she knitted in his
+colours, and she notices she still gives him an opinion. This one is for her, a
+scarf in a colour she has liked since she was nine. Choice: `gerda-colour-own`
+(every row hers) or `gerda-colour-both` (one stripe of his rust: "He'd hate it.
+He'd wear it anyway"). She knits it over four café days (arc `gerda-own`), shows
+it in her own scene ("Well? Don't be polite. I'll know."; the colours "don't
+argue") and wears it from then on (`gerda-colour-worn`). The rust she has always
+worn, and her pillows, were his colour. With the forty years, this scene
+establishes Erik as her late husband. **Planned:** a garden story.
 
 ## Nora — attention through painting
 
@@ -370,8 +401,8 @@ Use this table to distinguish identities from what the runtime currently contain
 
 | Name | Working direction | Current implementation boundary |
 | --- | --- | --- |
-| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries, expanded hello and her second cup (coat off; photograph permission) are shipped; the printed photograph, gifts and deeper scenes remain later |
-| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair, expanded hello and the cupboard report (plain version, towels, bread going worse) are shipped; bread gifts and deeper family scenes remain planned |
+| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries, expanded hello, her second cup, the second asking and her two prints (then and now) are shipped; deeper scenes remain later |
+| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair, expanded hello, the cupboard report, the loaf (supper that night) and the frame from the window board are shipped; deeper family scenes remain planned |
 | Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
 | Marcel | Painter across the lake; recognizes changing places and people | Shipped as a regular (see below); the `street-house` arc is intact and he is its distant figure. Later painting and his gift remain planned |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |

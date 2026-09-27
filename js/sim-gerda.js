@@ -17,6 +17,11 @@
     const scarf=w.memory.arcs['gerda-scarf'];
     return !w.memory.flags['gerda-blanket-asked'] && !!scarf && scarf.stage>=1;
   }
+  // Her own colour comes after the blanket, the same way: asked on a later
+  // visit, knitted as an arc (gerda-own), shown in her scene, then worn.
+  function colourAskReady(w) {
+    return !!w.memory.flags['gerda-blanket-given'] && !w.memory.flags['gerda-colour-asked'];
+  }
   function chapter(w) {
     const f=w.memory.flags,legacy=f['gerda-window-legacy'],blanket=w.memory.arcs['gerda-blanket'];
     if(!legacy && !f['gerda-introduced'])return 'hello';
@@ -24,6 +29,9 @@
     if(!legacy && f['gerda-pillow-right'] && !f['gerda-window-thanked'])return 'thanks';
     if(blanket && blanket.pendingBeat)return 'blanketGift';
     if(blanketAskReady(w))return 'blanket';
+    const own=w.memory.arcs['gerda-own'];
+    if(own && own.pendingBeat)return 'colourShow';
+    if(colourAskReady(w))return 'colour';
     if(!legacy && !f['gerda-pillows-accepted'])return 'offer';
     return null;
   }
@@ -33,12 +41,14 @@
     return w.patrons.find(p=>p.regularId==='gerda' && !p.outside && !p.gerdaDeferred &&
       (part==='thanks' ? p.state==='seated' && p.seat.window && R.SEAT_PREFS.leftWindowPerch(p.seat) :
         part==='blanket' ? p.state==='seated' && p.storyChapter==='blanket' :
-        part==='blanketGift' ? p.state==='seated' :
+        part==='blanketGift' || part==='colourShow' ? p.state==='seated' :
+        part==='colour' ? p.state==='seated' && p.storyChapter==='colour' :
         p.state==='ordering' || p.state==='seated')) || null;
   };
   SIM.startGerda=function(w) {
     const p=SIM.gerdaAvailable(w),part=chapter(w);if(!p)return false;
-    const lines=SIM.contextLines(CAST.gerdaWindow[part],{stars:!!w.memory.flags['gerda-blanket-stars']});
+    const packet=CAST.gerdaWindow[part];
+    const lines=SIM.contextLines(packet,SIM.flagContext(w,packet,{stars:!!w.memory.flags['gerda-blanket-stars']}));
     if(part==='hello' && SCENE.hasFurniture(w,'hearth')) {
       lines.find(l=>l.id==='hearth').text="And you have a working fireplace. A little fire on a cold afternoon is something to look forward to.";
       lines.find(l=>l.id==='hearth-reply').text="I'm glad it's ready. A warm window and a little fire. That sounds like a good afternoon.";
@@ -49,6 +59,8 @@
     if(!SIM.beginSavedMoment(w,lines,p,prefix,function() {
       if(part==='blanket'){f['gerda-blanket-asked']=true;p.storyChapter=null;return;}
       if(part==='blanketGift'){giveBlanket(w);return;}
+      if(part==='colour'){f['gerda-colour-asked']=true;p.storyChapter=null;return;}
+      if(part==='colourShow'){wearColour(w,p);return;}
       if(part==='hello'||part==='hearth')f['fireplace-unlocked']=true;
       if(part==='thanks')f['gerda-window-thanked']=true;
       else if(part==='hearth')return;
@@ -78,6 +90,22 @@
     const job=w.memory.life.projects.blanket;
     if(job.stage==='available')job.stage='scheduled';
     R.commitLife(w);
+  }
+  // The finished scarf consumes gerda-own's waiting beat once; she puts it
+  // on there and then, and wears it on every later visit.
+  function wearColour(w,p) {
+    const rec=w.memory.arcs['gerda-own'];
+    if(!rec || !rec.pendingBeat)return;
+    rec.pendingBeat=null;rec.stage=1;
+    w.memory.flags['gerda-colour-worn']=true;
+    const bond=w.memory.bonds.gerda || (w.memory.bonds.gerda={known:true,warmth:0});
+    bond.warmth=(bond.warmth||0)+1;
+    dress(w,p);w.context.memory.saveNow();
+  }
+  function dress(w,p) {
+    if(!w.memory.flags['gerda-colour-worn'])return;
+    p.colors.scarf='#d9a33c';
+    if(w.memory.flags['gerda-colour-both'])p.colors.scarfStripe='#a94f3f';
   }
   // Accepted gift placement is ordinary work. Each pillow saves separately;
   // reload repeats only the unfinished hand action, never a completed placement.
@@ -125,7 +153,7 @@
   // Gerda first comes once the left window is clear, and her own arrivals
   // are described through that window until her table exists.
   SIM.gateRegular('gerda', { mayVisit:w=>SIM.gerdaMayVisit(w), due:w=>SIM.gerdaDeliveryDue(w),
-    arrive:(w,p)=>{p.storyChapter=blanketAskReady(w)?'blanket':null;},
+    arrive:(w,p)=>{p.storyChapter=blanketAskReady(w)?'blanket':colourAskReady(w)?'colour':null;dress(w,p);},
     arrivalLine:w=>!w.memory.flags['gerda-introduced'] && !w.memory.flags['gerda-window-legacy']
       ? 'a woman pauses to look through the clear window, then steps inside.'
       : !SCENE.hasFurniture(w,'left-window-table') ? 'Gerda comes in for a warm cup and a little company.' : null });
