@@ -174,8 +174,12 @@ it, and the lamp glows in the evenings. The right fireside chair remains part
 of the fuller room.
 
 **Next, in order:**
-Saira without a piano (the piano's place needs an owner decision); then Birgit
-and the naming arc, which arrives at **Café Flourish** (owner decision).
+Saira without a piano (her friendship and a handwritten score); then Birgit
+and the naming arc, which arrives at **Café Flourish** (owner decision). **The
+piano waits for the room expansion (owner, 27 September 2026):** its place
+(`L.piano`) lies in the front strip that only the full room opens, so the
+expansion upgrade comes first and the piano after it, never squeezed into the
+small room.
 The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
