@@ -1396,7 +1396,8 @@
     if (!world.memory) return out;
     ((CAST && CAST.arcs) || []).forEach(function (arc) {
       const rec = world.memory.arcs[arc.id];
-      if (!rec || !rec.pendingBeat) return;
+      // payoff 'scene': the owner's own saved conversation presents it.
+      if (!rec || !rec.pendingBeat || arc.payoff === 'scene') return;
       const owner = world.patrons.find(function (p) {
         return p.regularId === arc.owner && p.state === 'seated';
       });
@@ -1486,7 +1487,7 @@
     for (let i = 0; i < arcs.length; i++) {
       const arc = arcs[i];
       const rec = world.memory.arcs[arc.id];
-      if (!rec || !rec.pendingBeat) continue;
+      if (!rec || !rec.pendingBeat || arc.payoff === 'scene') continue;
       if (arc.anchor) {
         // a fixed invitation: a forgiving box around the drawn bubble
         const a = arc.anchor;
@@ -1535,6 +1536,13 @@
   });
 
   function step(world, dt) {
+    if (world.moment && world.moment.home) {
+      // An evening moment at home holds the evening's routine and clock.
+      world.t+=dt;world.clockOffset-=dt;
+      SIM.updateMoment(world,dt);
+      world.barista.animT+=dt;world.cat.animT+=dt;
+      return;
+    }
     if (world.moment) {
       // Service and the day clock wait; the rest of the room keeps living.
       // Reserve the invited speaker until Lunafreya has finished and returned.
@@ -1692,8 +1700,8 @@
     const pulsing = {};
     SIM.invitations(world).forEach(function (inv) {
       const a = inv.actor;
-      if (world.patrons.indexOf(a) >= 0) { invited[a.id] = 'dots'; if (inv.pulse) pulsing[a.id] = true; }
-      else bubbles.push({ x: a.x, y: a.y, icon: 'dots' });
+      if (world.patrons.indexOf(a) >= 0) { invited[a.id] = inv.icon; if (inv.pulse) pulsing[a.id] = true; }
+      else bubbles.push({ x: a.x, y: a.y, icon: inv.icon });
     });
     world.patrons.forEach(function (p) {
       if (p.outside) return;

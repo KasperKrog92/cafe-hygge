@@ -185,12 +185,12 @@
   };
   const oldPlan=SIM.plan;
   SIM.plan=function(w,open) {
-    if(SIM.homeSceneActive(w))return false;
+    if(SIM.homeSceneActive(w) || open && w.moment)return false;
     if(SIM.homePlanRequired(w)) {w.plannerOpen=true;return true;}
     return oldPlan(w,open);
   };
   SIM.goToSleep=function(w) {
-    if(w.shop.phase!=='home' || SIM.homeSceneActive(w) || SIM.homePlanRequired(w) ||
+    if(w.shop.phase!=='home' || w.moment || SIM.homeSceneActive(w) || SIM.homePlanRequired(w) ||
       w.memory.life.mode!=='game' && !state(w).firstNight)return false;
     // Save the start point in the existing checkpoint; first route leads to
     // the clear lane before the bathroom doorway, from any ambient activity.

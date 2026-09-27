@@ -430,6 +430,17 @@ leaving or reloading restarts that short moment without awarding it. Their
 lasting effects and existing save IDs remain unchanged. This supersedes the
 older caption-run-only interaction described above.
 
+## Evening moments at home — 27 September 2026
+
+The invitation-waits rule applies upstairs too. On an evening at home in game
+mode, one moment may wait (`SIM.eveningStory`, chosen as the evening begins):
+a quiet icon bubble over Lunafreya, wherever she is. It never expires and is
+never consumed by idle mode or bedtime; it simply waits for another evening.
+Opened, it plays where she is (`SIM.beginHomeMoment`, no approach) with the
+same saved-node, choice and reload contract as café conversations; the
+evening's routine, clock, bed and planner hold until it is finished or put
+aside. Something the day brought back to mind comes before the post.
+
 ## Character bubbles and voices — 7 September 2026
 
 Conversations are invited through an icon bubble above the other character.

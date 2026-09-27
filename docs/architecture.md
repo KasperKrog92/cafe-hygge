@@ -30,6 +30,7 @@ js/sim-regulars.js      → extends SIM    (data-driven regular introductions an
 js/sim-gerda.js         → extends SIM    (window-gated visits, pillow placement and conversations)
 js/sim-visitors.js      → extends SIM    (Keira/Tomas jobs and saved greetings)
 js/sim-home.js          → extends SIM    (saved first apartment tour, first planner, bedtime)
+js/sim-evenings.js      → extends SIM    (evening moments at home; home keepsake placement)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -656,6 +657,29 @@ once per identity per running café day after day one (Keira from 10, Tomas from
 nodes cannot. Active jobs suppress off-duty duplicates. Invitations appear in
 game mode only while seated, after service, and remain unconsumed in idle.
 No calendar or new purchase is needed.
+
+## Evening moments and keepsakes (v17)
+
+`SIM.beginHomeMoment(world, lines, prefix, finish)` (sim-moments.js) is the
+home counterpart of `beginSavedMoment`: `moment.home`, no owner, no approach;
+`step()` holds the evening (time, home routine) and only reveals dialogue;
+`leaveMoment` simply closes it; bed and planner refuse while it is open.
+`sim-evenings.js` offers one `CAST.homeStories` entry per evening (`mug` after
+`luna-bookshop-*`, then `calandra` from `daysCompleted >= 3`) through the
+ordinary invitation registry, whose sources may now give an `icon` and a
+`label`; the home frame draws those bubbles and main.js routes home clicks to
+`SIM.invitationAt`. Prefix `home-<id>-`, completion `home-<id>-done`.
+
+Arcs gained `after` (flags that must exist before progress accrues:
+`SIM._.arcStarted`) and `payoff: 'scene'` (the generic bubble, tap and
+caption beat skip it; the owner's saved scene consumes `pendingBeat`). Gerda's
+`gerda-blanket` uses both, plus `colors`/`patterns` keyed by the choice flag,
+which the knitting pose reads. The `blanket` improvement is a keepsake
+(`gift`, `keepsake`, `homeFlag`): the gift scene schedules it folded on the
+counter (`L.projects.blanket`); without the home flag it is draped over the
+table-hearth chair as one four-second phase of ordinary work; with it,
+`pending()` skips it and sim-evenings installs it the first time she settles on
+the bed that evening. `MEMORY.VERSION` 17 (new project record).
 
 ## Regular introductions and neighbour stories (v16)
 

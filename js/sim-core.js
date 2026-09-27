@@ -1574,6 +1574,8 @@
 
   // an arc's total beat count (default 1); stage === stages means done
   function arcStages(arc) { return arc.stages || 1; }
+  // An arc with `after` flags begins only once those saved moments happened.
+  function arcStarted(mem, arc) { return !arc.after || arc.after.every(function (f) { return mem.flags[f]; }); }
 
   // the café-day threshold for a stage: `rows` is one number, or an array
   // carrying one entry per stage
@@ -1606,6 +1608,7 @@
 
     arcDefs().forEach(function (arc) {
       if (!arc.anchor && !regularIds[arc.owner]) return;   // drift: names a regular that no longer exists
+      if (!arcStarted(mem, arc)) return;                    // waits for the moment that begins it
       const rec = arcRecord(mem, arc.id);
       if (rec.stage >= arcStages(arc) || rec.pendingBeat) return;
       const rows = arcRows(arc, rec.stage);
@@ -1676,7 +1679,9 @@
      accessible button (main.js) all read this one list, so a new character's
      hello never edits the shared loops.
        SIM.addInvitation({ key, actors(world) → [actor], start(world, actor),
-                           pulse(world, actor) → optional first-time emphasis }) */
+                           pulse(world, actor) → optional first-time emphasis,
+                           icon(world, actor) → bubble glyph (default 'dots'),
+                           label(world, actor) → button text (default "Talk with …") }) */
   const INVITATIONS = [];
   SIM.addInvitation = function (source) { INVITATIONS.push(source); };
   SIM.invitations = function (world) {
@@ -1684,6 +1689,7 @@
     INVITATIONS.forEach(function (src) {
       src.actors(world).forEach(function (actor) {
         out.push({ key: src.key(actor), actor: actor, pulse: !!(src.pulse && src.pulse(world, actor)),
+          icon: src.icon ? src.icon(world, actor) : 'dots', label: src.label ? src.label(world, actor) : null,
           start: function () { return src.start(world, actor); } });
       });
     });
@@ -1709,7 +1715,7 @@
     makePatron: makePatron, borrowBook: borrowBook, borrowLine: borrowLine, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
     captionAllowed: captionAllowed, pickCaption: pickCaption, captionFacts: captionFacts, captionWindow:captionWindow,
     arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
-    arcStages: arcStages, arcRows: arcRows, arcBeat: arcBeat, arcFlag: arcFlag,
+    arcStages: arcStages, arcStarted: arcStarted, arcRows: arcRows, arcBeat: arcBeat, arcFlag: arcFlag,
     advanceArcs: advanceArcs, updateNarrative: updateNarrative,
     applyArrivalTraits: applyArrivalTraits, enqueueArrival: enqueueArrival,
     spawnCouple: spawnCouple, updateRegulars: updateRegulars,

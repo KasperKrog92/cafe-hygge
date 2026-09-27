@@ -83,7 +83,7 @@
     const arcs = (window.CAST && CAST.arcs) || [];
     for (var i = 0; i < arcs.length; i++) {
       var arc = arcs[i];
-      if (arc.knits && arc.owner === p.regularId) {
+      if (arc.knits && arc.owner === p.regularId && R.arcStarted(world.memory, arc)) {
         var rec = world.memory.arcs[arc.id];
         if (rec && rec.stage === 0) return arc;   // knits until the beat plays
       }
@@ -880,7 +880,10 @@
       p.knitting = true;
       const krec = world.memory.arcs[knitArc.id];
       p.knitProgress = krec ? Math.min(1, krec.progress / knitArc.rows) : 0;
-      p.knitColor = knitArc.scarfColor;
+      // A chosen pattern sets the wool and the stitches on the lap.
+      const chosen = Object.keys(knitArc.colors || {}).find(function (f) { return world.memory.flags[f]; });
+      p.knitColor = chosen ? knitArc.colors[chosen] : knitArc.scarfColor;
+      p.knitPattern = chosen && knitArc.patterns ? knitArc.patterns[chosen] : null;
       if (p.sipPhase <= 0) {
         p.knitT -= dt;
         if (p.knitT <= 0) {

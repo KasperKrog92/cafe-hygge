@@ -35,6 +35,24 @@
     w.moment.index=index;w.moment.memoryPrefix=prefix;
     return true;
   };
+  // An evening moment at home: Lunafreya alone (a letter, something from a
+  // box). It plays where she is, the evening's routine holds while it lasts,
+  // and it uses the same saved-node contract as café conversations.
+  SIM.beginHomeMoment=function(w,lines,prefix,finish) {
+    if(w.moment || w.shop.phase!=='home' || w.plannerOpen)return false;
+    const ids=new Set();
+    lines.forEach(function(line) {
+      if(!prefix || typeof line.id!=='string' || !line.id || ids.has(line.id))
+        throw new Error('Saved conversation needs unique node IDs');
+      ids.add(line.id);
+    });
+    const index=unreadIndex(w,lines,prefix,0);
+    if(index===lines.length)return false;
+    w.moment={lines:lines,index:index,owner:null,finish:finish,phase:'talk',visible:0,clock:0,syllable:0,
+      home:true,memoryPrefix:prefix};
+    w.activeCaption=null;w.captionQueue=[];
+    return true;
+  };
   function startApproach(w) {
     const m=w.moment,owner=m.owner;
     const b=w.barista,saved={x:b.x,y:b.y,path:b.path,pose:b.pose,heading:b.heading,facing:b.facing};
@@ -126,6 +144,7 @@
   SIM.leaveMoment=function(w) {
     const m=w.moment;if(!m || m.phase==='return')return;
     w.context.sound.stopDialogue();
+    if(m.home){w.moment=null;return;}
     const b=w.barista;
     if(m.phase==='waiting'){w.moment=null;return;}
     if(Math.hypot(b.x-m.saved.x,b.y-m.saved.y)<1) {Object.assign(b,m.saved);w.moment=null;return;}

@@ -363,6 +363,19 @@ open/closed drapes and the later fireside chairs confirms both the wall
 silhouette and installation route. The large bookcase remains a later idea;
 this placement does not reserve or implement a new cat corner.
 
+**Keepsakes.** Gerda's blanket is drawn by one helper (`SCENE.drawBlanket`):
+winter blue `#3d4a5c` with a gold dot grid (stars) or sage `#6b7a55` with
+light vertical reeds, a lit top edge and shaded bottom. Folded (18×7) it waits
+on the counter's free left end (x666), rides in her arms, or sits on her bag at
+home; downstairs it is folded over the top rail of the table-hearth chair with
+one end hanging toward the room, drawn inside that chair's drawable so a
+sitter covers it correctly; upstairs it lies across the lower duvet. Her lap
+knitting shows the same colour and marks while it grows. The old shop mug is
+a 5×7 cream mug with a dark band: on the desk left of the keyboard, or on the
+back bar right of the kettle (x724; x788 on the full counter). Calandra's letter
+lies at the desk's left end (11×4, cream, red stamp). Invitation icons `letter`
+and `mug` join the bubble set.
+
 **Books on the little shelves.** Spines are 3–5 px wide and 11–15 px tall, four
 to a board (a row never exceeds 17 px of the 18 px board), lower board first.
 Each source has its own six designs in `SCENE.bookDesigns` (the purchased box:

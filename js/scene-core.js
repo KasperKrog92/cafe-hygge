@@ -141,6 +141,9 @@
       // A handed-over gift waits on the counter's free left end, clear of the
       // cups and of whoever stands to order.
       holgerBooks: {pickup:{x:664,y:286},parcel:{x:650,y:271}},
+      // Gerda's folded blanket waits beside that spot until it is placed; the
+      // drape is done from beside the chair nearest the fire (table-hearth).
+      blanket: {pickup:{x:664,y:286},parcel:{x:666,y:271},work:{x:330,y:444}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},

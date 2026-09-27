@@ -739,6 +739,17 @@ The sign reads **NEW CAFE** in uneven paint on two scrap boards. She has not
 chosen a proper café name; naming it through later patron conversations is a
 future story, not a timer or a choice forced during this introduction.
 
+## Keepsakes and evenings — shipped 27 September 2026
+
+Gerda asks about a lap blanket on a later visit once the cat's scarf is given,
+knits it in the chosen pattern over six café days, and presents it in her own
+scene; Lunafreya places it over the chair nearest the fire (a short reach at
+`L.projects.blanket.work`, after carrying it from the counter) or takes it home,
+where it goes over the foot of the bed when she first settles there. At home,
+one evening moment may wait over Lunafreya each evening (game mode): the old
+shop mug after her talk with Holger, and Calandra's first letter from the third
+evening. Opening one holds the evening where she is.
+
 ## Introductions and neighbour stories — shipped 27 September 2026
 
 Nora (from her second visit), Kasper (third) and Antonia (second) offer a saved

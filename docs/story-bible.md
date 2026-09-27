@@ -148,6 +148,8 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | First hope: a reading corner / learning neighbours' names | Shipped, Holger introduction | `luna-cafe-books` / `luna-cafe-neighbours` |
 | Her old work, told to Holger | Shipped, Holger's books | She worked in a shop with books, coffee and evening readings, "mostly finding enough chairs". Choice: `luna-bookshop-fond` (leaving took long because she loved a lot of it) or `luna-bookshop-later` (most of it; the rest another day). Only Holger has heard this |
 | What came before the move | Planned direction | Withdrawn promotion and a prepared move; not yet disclosed, and no invented traumatic cause |
+| The old shop mug | Shipped, evening moment | The evening after she tells Holger about the shop, a box marked "kitchen" holds the shop mug she'd told herself she packed by accident; she drank the last coffee from it at closing, standing up, counting chairs. It recalls her exact answer to Holger. Choice: `luna-mug-home` (on the desk, for tea) or `luna-mug-cafe` (on the back bar; at closing she drinks the last coffee from it, standing up) |
+| Calandra's first letter | Shipped, evening moment | From the third evening: "Luna. It's your sister. You know that. I'm saying it for the record." Mum and she want photos; Dad asks about the chairs; is she eating; it's quiet without her arguing with the crossword. Lunafreya writes back about the people (`calandra-told-people`) or the room (`calandra-told-place`), and leaves out the bread and cheese. The letter stays on her desk |
 | Naming the café | Planned | Find its name through lived experience; Fleur de Lune remains provisional |
 
 The reading-corner answer makes no purchase, price commitment or upgrade gate.
@@ -257,12 +259,22 @@ later visit can reopen the offer. Thanks can follow her into another visit
 and never expires. Preexisting fully furnished window saves keep their old
 seating via `gerda-window-legacy`, with no invented new dialogue history.
 
-**Planned:** let Lunafreya ask about a pattern or a garden before reaching for
-a more personal subject.
-The accepted plan's working history makes Erik her late husband; the exact
-history remains unauthored, and current lines do not yet identify him that way.
-A later blanket remembers Lunafreya's pattern choice. Gerda also learns to ask
-what people want and makes something for herself. Preserve the shipped cat scarf.
+**Shipped 27 September — the blanket.** On a later visit after the cat's scarf
+is given (decided at the door), Gerda says her needles have nothing to do and
+offers a lap blanket; this time she *asks* which pattern (`gerda-blanket-reeds`,
+"you'll see the lake in it", or `gerda-blanket-stars`, winter blue). Lunafreya
+notices she asked instead of deciding; Gerda: "Erik used to say I knitted for
+people the way other people give advice. I'm practising." Completion
+`gerda-blanket-asked` starts the six-café-day arc `gerda-blanket`; she knits it
+in the chosen colour and pattern. The finished blanket is presented in her own
+saved scene (`blanketGift`, never a caption beat): she counted the stars (212)
+or did the water twice. Lunafreya chooses where it lives: `gerda-blanket-cafe`
+(over the chair nearest the fire, "for whoever gets cold") or
+`gerda-blanket-home` (upstairs, for the evenings). "Erik would have said it's too
+nice to use. He was wrong about that sort of thing." Completion sets
+`gerda-blanket-given`; placing it is ordinary work (the `blanket` keepsake).
+Erik is spoken of in the past tense; he is not yet explicitly identified.
+**Planned:** Gerda making something in a colour *she* loves, and a garden story.
 
 ## Nora — attention through painting
 
@@ -337,7 +349,7 @@ Use this table to distinguish identities from what the runtime currently contain
 | Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | New character; existing plants remain independent of her friendship |
 | Ida | Librarian; welcoming book exchange and learning when to organize less | New character; not required for the first usable shelf or Holger's gift |
 | Ezra | Young adult student with imaginary bus maps; possible later colleague | New character; friendship precedes any future shared-work implementation |
-| Calandra | Lunafreya's sister; brings old and new lives together through an invited visit | New character; messages, visits and shared home scenes remain to implement |
+| Calandra | Lunafreya's sister; brings old and new lives together through an invited visit | First letter shipped (evening moment); later letters, the visit and shared home scenes remain to implement |
 
 Keira, Nora, Kasper and Saira are the working adult romance candidates. Specific
 routes and household outcomes remain later writing work. Friendship, employment,
@@ -372,7 +384,8 @@ Voice differences are deliberately small synthesized variations, not recorded
 speech or caricatures: Lunafreya retains the intro voice; Holger is lower,
 warmer and slightly slower. Gerda is gently lower and slower; Nora slightly
 brighter and quicker; Kasper lower and nearly the same pace; Freya softly muted.
-Keira is lightly brighter and quicker; Tomas lower and measured. Every named
+Keira is lightly brighter and quicker; Tomas lower and measured. Calandra's
+letter reads brisk and bright (pace 0.92), as her sister hears it. Every named
 character has dialogue sounds through the same volume and mute controls.
 These profiles are ready for their authored conversations. Existing third-person
 arc narration remains unvoiced. Speech shares the existing dialogue volume,

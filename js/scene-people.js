@@ -612,6 +612,9 @@
       px(g, x - sw, y - 19, sw * 2, 1, shade(scol, 0.16));
       for (let stitch = -sw + 2; stitch < sw; stitch += 3)
         px(g, x + stitch, y - 16, 1, 3, shade(scol, -0.16));
+      // Gerda's blanket shows its chosen pattern as it grows.
+      if (p.knitPattern === 'stars') for (let s = -sw + 3; s < sw - 1; s += 5) px(g, x + s, y - 17 + ((s / 5) & 1) * 2, 1, 1, '#e0c070');
+      else if (p.knitPattern === 'reeds') for (let s = -sw + 2; s < sw - 1; s += 4) px(g, x + s, y - 19, 1, 5, shade(scol, 0.28));
       // The needle tips cross above the live stitches; grips follow their shafts.
       limb(g, x - 8, y - 24 + knit, x + 5, y - 19 - knit, 1, '#d9c9a0');
       limb(g, x + 8, y - 25 - knit, x - 5, y - 19 + knit, 1, '#c9b28a');
@@ -1362,6 +1365,22 @@
         px(g, x + 11, y + 10, 3, 5, '#c9b28a');
         px(g, x + 13, y + 7, 3, 6, '#4a3038');
         px(g, x + 14, y + 5, 2, 2, '#4a3038');
+        break;
+      case 'letter':
+        // a folded letter with a small red stamp: Calandra writes
+        px(g, x, y + 3, 16, 11, '#e8dfc9');
+        px(g, x, y + 3, 16, 1, '#c9b28a');
+        px(g, x + 1, y + 4, 7, 5, '#d9d2c0'); px(g, x + 8, y + 4, 7, 5, '#d9d2c0');
+        px(g, x + 7, y + 8, 2, 2, '#c9b28a');
+        px(g, x + 11, y + 5, 3, 3, '#a94f3f');
+        break;
+      case 'mug':
+        // the old shop mug: cream, a dark band, a handle
+        px(g, x + 2, y + 3, 11, 12, '#e8dfc9');
+        px(g, x + 2, y + 7, 11, 3, '#4a3222');
+        px(g, x + 13, y + 6, 3, 6, '#e8dfc9');
+        px(g, x + 3, y + 3, 9, 2, '#6b4429');
+        px(g, x + 4, y - 1, 2, 3, '#b5aa92'); px(g, x + 8, y - 2, 2, 3, '#b5aa92');
         break;
       case 'palette':
         px(g, x + 2, y + 4, 12, 10, '#b78355');

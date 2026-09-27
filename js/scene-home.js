@@ -26,6 +26,21 @@
     px(g,x-12,y-14,4,2,'#c9a477');px(g,x+8,y-14,4,2,'#c9a477');
   }
   SCENE.drawBookBox = function(g,x,y,source) { bookBox(g,x,y,{bookSource:source},0,false); };
+  // Gerda's blanket in its chosen pattern: winter-blue stars or green reeds.
+  SCENE.blanketPattern = function(w) { return w.memory.flags['gerda-blanket-stars'] ? 'stars' : 'reeds'; };
+  SCENE.drawBlanket = function(g,x,y,width,height,pattern) {
+    const stars=pattern==='stars',col=stars?'#3d4a5c':'#6b7a55';
+    px(g,x,y,width,height,col);
+    px(g,x,y,width,1,SCENE._.shade(col,.2));px(g,x,y+height-1,width,1,SCENE._.shade(col,-.2));
+    if(stars) {for(let i=2;i<width-1;i+=4)for(let j=2;j<height-1;j+=4)px(g,x+i+((j/4)&1)*2,y+j,1,1,'#e0c070');}
+    else {for(let i=1;i<width-1;i+=3)px(g,x+i,y+1+(i%2),1,height-3,'#8a9a6a');}
+  };
+  function foldedBlanket(g,w,x,y) {
+    ell(g,x,y+1,11,3,'rgba(20,12,8,.18)');
+    SCENE.drawBlanket(g,x-9,y-7,18,7,SCENE.blanketPattern(w));
+    px(g,x-9,y-4,18,1,'rgba(20,12,8,.25)');
+  }
+  SCENE.drawFoldedBlanket = foldedBlanket;
   SCENE.drawFirstPlant = function(g,x,y) {
     px(g,x-7,y-13,14,11,'#b5654a'); px(g,x-5,y-3,10,3,'#8f4a35');
     px(g,x-9,y-16,18,4,'#d39a70'); px(g,x-5,y-12,3,7,'#c98f73');
@@ -99,6 +114,7 @@
       const carried=b.project===id && b.holding==='parcel';
       if (carried) draws.push({y:b.y+.1,draw:g=>{
         const x=Math.round(b.x),y=Math.round(b.y),d=IMPROVEMENTS.projects[id];
+        if(d.keepsake) {const f=b.heading?1:b.facing;foldedBlanket(g,w,x+f*9,y-18);px(g,x+f*9-(f>0?10:-7),y-27,4,4,b.colors.skin);return;}
         // A box of books keeps its own small carton in her arms.
         if(d.bookSource) {const f=b.heading?1:b.facing;bookBox(g,x+f*10,y-16,d,0,false);px(g,x+f*10-(f>0?11:-8),y-26,4,4,b.colors.skin);}
         else box(g,x+12,y-22,false);
@@ -114,6 +130,12 @@
           else {px(g,t.x+9,t.base-21,5,18,'#8a6142');px(g,t.x+9,t.base-23,4,2,'#b08a64');}
           px(g,t.x+10,t.base-5,8,3,'#7a89a5');
         }});
+      } else if (IMPROVEMENTS.projects[id].keepsake) {
+        // Folded on the counter until placed (or until she takes it home).
+        if(p.stage==='scheduled' && !carried) {
+          const at=a.parcel;
+          draws.push({y:SCENE.L.basic.counter.baseY+.6,draw:g=>foldedBlanket(g,w,at.x,at.y)});
+        }
       } else if (IMPROVEMENTS.projects[id].bookSource) {
         const d=IMPROVEMENTS.projects[id];
         if(p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
@@ -525,6 +547,9 @@
       px(g,H.bag.x-12,H.bag.y-25,24,25,'#8f4a35'); px(g,H.bag.x-7,H.bag.y-30,14,4,'#4a3222');
       px(g,H.bag.x-7,H.bag.y-29,3,4,'#4a3222'); px(g,H.bag.x+4,H.bag.y-29,3,4,'#4a3222');
       px(g,H.bag.x-5,H.bag.y-23,3,21,'#c08a58');
+      // Brought home tonight, it waits on the bag until she settles on the bed.
+      if(w.memory.flags['gerda-blanket-home'] && w.memory.life.projects.blanket.stage==='scheduled')
+        SCENE.drawFoldedBlanket(g,w,H.bag.x,H.bag.y-25);
     }});
     draws.push({y:H.desk.y,draw:g=>{
       const x=H.desk.x,y=H.desk.y;
@@ -537,6 +562,10 @@
       px(g,x-17,y-32,33,5,'#b8bfc7'); px(g,x-15,y-31,29,2,'#64706d');
       for(let k=0;k<7;k++) px(g,x-14+k*4,y-31,2,1,'#d3d9de');
       px(g,x+21,y-32,5,5,'#b8bfc7');
+      // Keepsakes of evening moments: Calandra's letter, the old shop mug.
+      const f=w.memory.flags;
+      if(f['home-calandra-done']) {px(g,x-45,y-36,11,4,'#e8dfc9');px(g,x-45,y-36,11,1,'#f5efdf');px(g,x-38,y-35,2,2,'#a94f3f');}
+      if(f['luna-mug-home']) {px(g,x-31,y-44,6,8,'#e8dfc9');px(g,x-31,y-41,6,2,'#4a3222');px(g,x-25,y-42,2,4,'#e8dfc9');px(g,x-30,y-44,4,1,'#6b4429');}
       if(w.barista.pose==='supperEat')mealPlate(g,x-32,y-32,w.homeMeal.progress<.4?2:w.homeMeal.progress<.8?1:0);
       const a=H.lamps.desk;
       px(g,a.x-2,a.y+3,3,a.base-a.y-3,'#4a3222');
@@ -591,6 +620,9 @@
       px(g,x+30,y+57,26,2,'#8492aa');
       px(g,x,y+b.h-12,width,7,'#6e4a33'); px(g,x+2,y+b.h-12,width-4,2,'#a8764a');
       if(!w.barista.reading) { px(g,x+24,y+32,15,10,'#a94f3f'); px(g,x+26,y+34,11,2,'#e8dfc9'); }
+      // Gerda's blanket, if she chose it for home, across the foot of the bed.
+      if(w.memory.flags['gerda-blanket-home'] && w.memory.life.projects.blanket.stage==='installed')
+        SCENE.drawBlanket(g,x+6,y+b.h-36,width-12,12,SCENE.blanketPattern(w));
     }});
     // Sort the bedside lamp at its own foot, behind the bedside approach.
     draws.push({y:H.lamps.bedside.base,draw:g=>{
@@ -616,6 +648,10 @@
     draws.push({y:story.sleepStep>=3?H.bed.y+H.bed.h+.2:w.cat.y,draw:g=>SCENE.drawCat(g,w.cat)});
     draws.sort((a,b)=>a.y-b.y); draws.forEach(d=>d.draw(g));
     homeLighting(g,w);
+    // A waiting evening moment: its bubble over Lunafreya, above the lighting.
+    if(!w.moment)SIM.invitations(w).forEach(inv=>{
+      const a=inv.actor;SCENE.drawBubble(g,a.x,a.pose==='sit'?a.y+6:a.y,inv.icon);
+    });
     SCENE.drawCaption(g,w);
     SCENE.drawIntroDialogue(g,w);
     // Only idle departs on this timer. Explicit sleep uses the café dawn fade.

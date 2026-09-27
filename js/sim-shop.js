@@ -159,7 +159,12 @@
           cat.target = L.catSpots.find(s=>s.id==='cushion');
           b.holding = null;
         }
-        else if (task.kind === 'stock') { s.stocked = opening; SND.clink(0.5, 0.025); }
+        else if (task.kind === 'stock') {
+          s.stocked = opening; SND.clink(0.5, 0.025);
+          // The old shop mug, if it came downstairs, keeps its closing habit.
+          if (!opening && world.memory.flags['luna-mug-cafe'] && R.random() < 0.6)
+            caption(world, 'Lunafreya drinks the last of the coffee from her old mug, standing up.');
+        }
         else if (task.kind === 'lights') s.lights = opening ? 1 : 0;
         else if (task.kind === 'hearth') {
           world.candles.mantel = world.candles.mantelTarget = 0;

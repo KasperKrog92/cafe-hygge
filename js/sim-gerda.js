@@ -10,13 +10,21 @@
     if(!SCENE.windowOpen(w,L.win))return false;
     return ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.windowSeat.stage)<0;
   };
+  // The blanket is her next project once the cat's scarf is given; she asks
+  // about it on a later visit (decided at the door), knits it as an arc, and
+  // presents it in her own scene once it is ready.
+  function blanketAskReady(w) {
+    const scarf=w.memory.arcs['gerda-scarf'];
+    return !w.memory.flags['gerda-blanket-asked'] && !!scarf && scarf.stage>=1;
+  }
   function chapter(w) {
-    const f=w.memory.flags;
-    if(f['gerda-window-legacy'])return !f['fireplace-unlocked'] && !SCENE.hasFurniture(w,'hearth') ? 'hearth' : null;
-    if(!f['gerda-introduced'])return 'hello';
+    const f=w.memory.flags,legacy=f['gerda-window-legacy'],blanket=w.memory.arcs['gerda-blanket'];
+    if(!legacy && !f['gerda-introduced'])return 'hello';
     if(!f['fireplace-unlocked'] && !SCENE.hasFurniture(w,'hearth'))return 'hearth';
-    if(!f['gerda-pillows-accepted'])return 'offer';
-    if(f['gerda-pillow-right'] && !f['gerda-window-thanked'])return 'thanks';
+    if(!legacy && f['gerda-pillow-right'] && !f['gerda-window-thanked'])return 'thanks';
+    if(blanket && blanket.pendingBeat)return 'blanketGift';
+    if(blanketAskReady(w))return 'blanket';
+    if(!legacy && !f['gerda-pillows-accepted'])return 'offer';
     return null;
   }
   SIM.gerdaAvailable=function(w) {
@@ -24,11 +32,13 @@
     if(w.moment || w.shop.phase!=='open' || !part || !SCENE.windowOpen(w,L.win))return null;
     return w.patrons.find(p=>p.regularId==='gerda' && !p.outside && !p.gerdaDeferred &&
       (part==='thanks' ? p.state==='seated' && p.seat.window && R.SEAT_PREFS.leftWindowPerch(p.seat) :
+        part==='blanket' ? p.state==='seated' && p.storyChapter==='blanket' :
+        part==='blanketGift' ? p.state==='seated' :
         p.state==='ordering' || p.state==='seated')) || null;
   };
   SIM.startGerda=function(w) {
     const p=SIM.gerdaAvailable(w),part=chapter(w);if(!p)return false;
-    const lines=CAST.gerdaWindow[part].map(line=>Object.assign({},line));
+    const lines=SIM.contextLines(CAST.gerdaWindow[part],{stars:!!w.memory.flags['gerda-blanket-stars']});
     if(part==='hello' && SCENE.hasFurniture(w,'hearth')) {
       lines.find(l=>l.id==='hearth').text="And you have a working fireplace. A little fire on a cold afternoon is something to look forward to.";
       lines.find(l=>l.id==='hearth-reply').text="I'm glad it's ready. A warm window and a little fire. That sounds like a good afternoon.";
@@ -37,6 +47,8 @@
       lines.find(line=>line.id==='name').text="I've been meaning to say a proper hello. I'm Gerda. That clear window caught my eye today.";
     const prefix='gerda-'+part+'-',f=w.memory.flags;
     if(!SIM.beginSavedMoment(w,lines,p,prefix,function() {
+      if(part==='blanket'){f['gerda-blanket-asked']=true;p.storyChapter=null;return;}
+      if(part==='blanketGift'){giveBlanket(w);return;}
       if(part==='hello'||part==='hearth')f['fireplace-unlocked']=true;
       if(part==='thanks')f['gerda-window-thanked']=true;
       else if(part==='hearth')return;
@@ -54,6 +66,19 @@
     }))return false;
     return true;
   };
+  // The finished blanket consumes the arc's waiting beat exactly once and
+  // becomes a keepsake folded on the counter, placed as ordinary work.
+  function giveBlanket(w) {
+    const rec=w.memory.arcs['gerda-blanket'];
+    if(!rec || !rec.pendingBeat)return;
+    rec.pendingBeat=null;rec.stage=1;
+    w.memory.flags['gerda-blanket-given']=true;
+    const bond=w.memory.bonds.gerda || (w.memory.bonds.gerda={known:true,warmth:0});
+    bond.warmth=(bond.warmth||0)+1;
+    const job=w.memory.life.projects.blanket;
+    if(job.stage==='available')job.stage='scheduled';
+    R.commitLife(w);
+  }
   // Accepted gift placement is ordinary work. Each pillow saves separately;
   // reload repeats only the unfinished hand action, never a completed placement.
   SIM.prepareGerdaArrival=function(w,p,ring) {
@@ -100,6 +125,7 @@
   // Gerda first comes once the left window is clear, and her own arrivals
   // are described through that window until her table exists.
   SIM.gateRegular('gerda', { mayVisit:w=>SIM.gerdaMayVisit(w), due:w=>SIM.gerdaDeliveryDue(w),
+    arrive:(w,p)=>{p.storyChapter=blanketAskReady(w)?'blanket':null;},
     arrivalLine:w=>!w.memory.flags['gerda-introduced'] && !w.memory.flags['gerda-window-legacy']
       ? 'a woman pauses to look through the clear window, then steps inside.'
       : !SCENE.hasFurniture(w,'left-window-table') ? 'Gerda comes in for a warm cup and a little company.' : null });

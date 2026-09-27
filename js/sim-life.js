@@ -8,7 +8,9 @@
   function pending(w) {
     // Finish the job already laid out before opening another kit.
     for (const stage of ['working','arrived','scheduled']) {
+      // A keepsake chosen for home goes upstairs with her instead.
       const id=Object.keys(PROJECTS).find(id => PROJECTS[id].delivery !== 'contractor' && id!=='bookshelf' &&
+        !(PROJECTS[id].homeFlag && w.memory.flags[PROJECTS[id].homeFlag]) &&
         !(id==='table' && (stage==='scheduled' || w.deliveryVisitor)) && w.memory.life.projects[id].stage === stage);
       if(id) return id;
     }
@@ -94,6 +96,7 @@
       p.stage = 'working'; b.holding = null; b.state = 'projectWork'; b.projectSession = 0; commit(w);
     }
     if (d.bookSource) shelvingPose(b,d,p);
+    else if (d.keepsake) { b.pose = 'reach'; b.heading = ''; b.facing = 1; }
     else { b.pose = id === 'fireplace' ? 'kneel' : 'wipe'; b.heading = 'up'; b.facing = -1; }
     const before = p.time;
     // If a stroke ended on the previous frame, an arriving order wins now.
@@ -110,6 +113,7 @@
       if (p.step === d.phases.length) {
         p.stage = 'installed'; R.installProjects(w);
         R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : id==='windowSeat' ? 'a little table beside the water; room for Gerda’s wool and a cup.' :
+          id === 'blanket' ? 'Gerda’s blanket hangs over the chair nearest the fire, for whoever gets cold.' :
           d.bookSource ? (CAST.shelfLines[d.bookSource] || 'the box is empty; the little shelves look lived in.') : 'the boards are gone; the first small fire catches.');
         if (id === 'fireplace') R.addLog(w);
       } else if (d.bookSource && d.shelves[p.step-1] && w.memory.life.shelf.length === d.shelves[p.step-1] && !d.shelves[p.step-2])

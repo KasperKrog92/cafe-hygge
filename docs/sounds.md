@@ -186,7 +186,7 @@ No new work sound or audio layer is introduced.
 retains the first-morning voice. All use the same quiet triangle synthesis,
 0.032 peak envelope, dialogue bus and volume/mute controls. Holger uses a
 155 Hz base with a 1.12 duration multiplier; Lunafreya retains 205 Hz and 1.0.
-Profiles for Gerda, Nora, Kasper, Antonia, Keira and Tomas are authored alongside
+Profiles for Gerda, Nora, Kasper, Antonia, Keira, Tomas and Calandra are authored alongside
 the roster. Keira uses 215 Hz, a 760 Hz lowpass and 0.98 pace; Tomas uses
 165 Hz, a 640 Hz lowpass and 1.08 pace. All named characters must have a
 profile; the audit checks roster members and authored introduction speakers.

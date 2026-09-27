@@ -85,6 +85,7 @@
             px(g, sx - 14, sy - 30, 2, 24, '#4a3222');   // slat groove
             px(g, sx - 17, sy - 38, 8, 4, '#6e4c30');    // top rail
             px(g, sx - 17, sy - 38, 8, 2, '#7d5334');
+            if (tb.furniture === 'table-hearth') drawChairBlanket(g, sx, sy, world);
           }
           px(g, sx - 9, sy, 5, 14, '#4a3222'); px(g, sx + 4, sy, 5, 14, '#4a3222');
           px(g, sx - 4, sy + 8, 8, 2, '#5a3d28');        // cross-brace
@@ -249,7 +250,10 @@
       px(g, LP.x - 9, LP.y - 18, 20, 6, '#6b4429'); ell(g, LP.x - 9, LP.y - 15, 3, 3, '#8a6142');
     } });
 
-    out.push({ y: L.backBar.baseY, draw: function (g) { if(SCENE.fullCounter(world)) SCENE.drawCoffeeStation(g, world); else drawBasicStation(g,world); } });
+    out.push({ y: L.backBar.baseY, draw: function (g) {
+      if(SCENE.fullCounter(world)) SCENE.drawCoffeeStation(g, world); else drawBasicStation(g,world);
+      drawOldMug(g, world);
+    } });
     // the counter itself
     out.push({ y: C.baseY, draw: function (g) { drawCounter(g, world); } });
 
@@ -756,6 +760,25 @@
     }
   }
 
+  // The old shop mug, if Lunafreya brought it downstairs: on the back bar's
+  // free end, beside the kettle (or past the plates on the full counter).
+  function drawOldMug(g, world) {
+    if (!world.memory.flags['luna-mug-cafe'] || !SCENE.hasFurniture(world,'counter-equipment')) return;
+    const x = SCENE.fullCounter(world) ? 788 : 724, y = L.backBar.slabY;
+    px(g, x, y - 7, 5, 7, '#e8dfc9'); px(g, x, y - 5, 5, 2, '#4a3222');
+    px(g, x + 5, y - 6, 2, 4, '#e8dfc9'); px(g, x + 1, y - 7, 3, 1, '#6b4429');
+  }
+  // Gerda's blanket, left downstairs: folded over the rail of the chair
+  // nearest the fire, one end hanging toward the room.
+  function drawChairBlanket(g, sx, sy, world) {
+    const life = world.memory.life;
+    if (world.memory.flags['gerda-blanket-home'] || !IMPROVEMENTS.installed(life, 'gerda-blanket')) return;
+    const pattern = SCENE.blanketPattern(world);
+    SCENE.drawBlanket(g, sx - 20, sy - 40, 14, 5, pattern);
+    SCENE.drawBlanket(g, sx - 21, sy - 36, 6, 22, pattern);
+    SCENE.drawBlanket(g, sx - 11, sy - 36, 4, 12, pattern);
+    px(g, sx - 21, sy - 15, 6, 1, 'rgba(20,12,8,.25)');
+  }
   function drawBasicStation(g,world) {
     const B=L.basic,A=B.backBar;
     px(g,A.x,A.frontY,A.w,A.baseY-A.frontY,'#6b4529');

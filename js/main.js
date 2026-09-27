@@ -124,14 +124,15 @@
   // An accessible button over each waiting invitation (SIM.invitations),
   // created on first need and kept as #meet-<key>.
   const meetButtons={};
-  function meetButton(key,name) {
+  function meetButton(key,name,label) {
     if(!meetButtons[key]) {
       const b=document.createElement('button');
       b.id='meet-'+key;b.className='meet-visitor';b.type='button';b.hidden=true;
-      b.setAttribute('aria-label','Talk with '+name);b.title='Talk with '+name;
       stage.insertBefore(b,momentPanel);meetButtons[key]=b;
     }
-    return meetButtons[key];
+    const text=label||'Talk with '+name,b=meetButtons[key];
+    if(b.title!==text){b.setAttribute('aria-label',text);b.title=text;}
+    return b;
   }
   document.getElementById('conversation-later').addEventListener('click',function(){SIM.leaveMoment(world);refreshMoment();});
   function screenPoint(x,y) {
@@ -146,7 +147,7 @@
   function refreshMoment() {
     const waiting=SIM.invitations(world),shown={};
     waiting.forEach(function(inv){
-      const a=inv.actor,button=meetButton(inv.key,a.name);
+      const a=inv.actor,button=meetButton(inv.key,a.name,inv.label);
       shown[inv.key]=true;button.hidden=false;
       button.onclick=function(){inv.start();refreshMoment();};
       placeHit(button,a.x-24,a.y+(a.pose==='sit'?6:0)-102,48,42);
@@ -476,6 +477,11 @@
     const y = (e.clientY - r.top) / r.height * view.h + view.y;
     // Attended hellos (SIM.invitations) and waiting story beats both live in beatAt.
     if (world.shop.phase !== 'home' && SIM.beatAt(world, x, y)) return;
+    // At home only an evening moment (SIM.eveningStory) can be waiting.
+    if (world.shop.phase === 'home') {
+      const inv = SIM.invitationAt(world, x, y);
+      if (inv) { inv.start(); refreshMoment(); return; }
+    }
     const cat = world.cat;
     if (Math.hypot(x - cat.x, y - (cat.y - 10)) < 36) SIM.petCat(world);
   });

@@ -86,6 +86,12 @@ shelves.”, “the box is folded flat; six secondhand books wait on the little
 shelves.”, and for readers “… drifts over to the little shelves.”, “… wanders
 over to the little shelves.”, “… takes a book down from the little shelves.”
 
+Keepsakes add: “Gerda’s blanket hangs over the chair nearest the fire, for
+whoever gets cold.” or, at home, “Gerda’s blanket goes over the foot of the
+bed.”; and, if the old shop mug went downstairs, at closing (60%): “Lunafreya
+drinks the last of the coffee from her old mug, standing up.” Gerda’s blanket
+arc adds three knitting lines about its long rows and pattern.
+
 Holger's books add: “Holger comes in with a small box held carefully under one
 arm.” (his gift visit); “Holger's books stand together on the little shelves;
 the box is folded flat.”; and reader lines that remember the handover: a note

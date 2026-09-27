@@ -145,7 +145,7 @@ the old names. Settled names are in [story-bible.md](docs/story-bible.md).
   retired `archive/idle-2026-09-06` and `archive/game-2026-09-06` tags are
   reference material; do not resume the separate game engine or merge it.
 
-## Architecture (27 scripts, deliberate order)
+## Architecture (28 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -174,6 +174,7 @@ the old names. Settled names are in [story-bible.md](docs/story-bible.md).
 | `js/sim-gerda.js` | `SIM` | Gerda's window gate, pillow offer, gift placement and thank-you (registers her invitation and visit gate). |
 | `js/sim-visitors.js` | `SIM` | Keira and Tomas: jobs, visits and saved greetings (registers their invitations). |
 | `js/sim-home.js` | `SIM` | Saved first apartment tour, required first planner and bedtime sequence. |
+| `js/sim-evenings.js` | `SIM` | Evening moments at home (`CAST.homeStories`: Calandra's letter, the old mug) and placing home keepsakes. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing, fast-forward, scenario forcing, fixtures, overlay, `shot`, `film`, invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass, UI controls; builds the planner and invitation buttons from the registries. |
 
@@ -181,8 +182,8 @@ Load order matters: improvements → audio → scene-core → scene-waterfront �
 scene-bg → scene-furniture → scene-people → scene-fx → scene-home → scene-intro →
 characters-roster → memory → sim-core → sim-waterfront → sim-patrons → sim-shop →
 sim-characters → sim-life → sim-intro → sim-moments → sim-holger → sim-regulars →
-sim-gerda → sim-visitors → sim-home → dev → main. Scene-core creates `SCENE` and the renderer siblings
-extend it; `CAST` is pure data; `MEMORY` loads the save; the thirteen sim scripts
+sim-gerda → sim-visitors → sim-home → sim-evenings → dev → main. Scene-core creates `SCENE` and the renderer siblings
+extend it; `CAST` is pure data; `MEMORY` loads the save; the fourteen sim scripts
 build `SIM` (sim-core first); dev consumes the `SIM._` contract; main reads all.
 
 Full detail: [docs/architecture.md](docs/architecture.md).

@@ -94,9 +94,20 @@ visits. Gerda's hello and Holger's books were already shipped. Regulars keep
 their habits in the small café: a due regular may take one clean seat past the
 popularity target, so Holger's espresso stays in the morning.
 
-**Next: the plan's third release, things worth taking upstairs** — Gerda's
-selectable blanket, placement in either room, one apartment recollection and
-Calandra's first message. The current status/next task lives here; a brief owns scope and acceptance
+## Things worth taking upstairs — shipped 27 September 2026
+
+The ensemble plan's third release. Gerda's lap blanket (reeds or little stars,
+asked rather than decided) knits over six café days and is presented in her own
+scene; Lunafreya keeps it over the chair nearest the fire or takes it home to
+the foot of her bed. Evening moments now happen at home: the old shop mug turns
+up after she tells Holger about the shop (it stays on her desk or goes down to
+the back bar), and her sister Calandra's first letter arrives on the third
+evening. Each waits over Lunafreya, one per evening, and holds the evening
+while it plays.
+
+**Next: the plan's fourth release, the neighbourhood meets itself** — Marcel's
+visit, Ida and Elody introductions, the book exchange and one shared reading
+gathering. The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
 Keira and Tomas share saved-node resumption. Existing dialogue and choices are

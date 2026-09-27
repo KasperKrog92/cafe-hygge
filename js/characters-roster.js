@@ -694,3 +694,101 @@
   CAST.visitors.keira.returningAfter = {flags:['keira-cup-done'], text:'Keira comes in and has her coat off before she reaches the counter.'};
   CAST.visitors.tomas.returningAfter = {flags:['tomas-cupboard-done'], text:'Tomas comes in without a toolbox, a little flour on one sleeve.'};
 })();
+
+/* Evening moments at home: Lunafreya alone with a letter or something from a
+   box. One is offered per evening (game mode), over her, wherever she is; it
+   waits, never expires, and plays where she is. Saved prefix `home-<id>-`,
+   completion `home-<id>-done`. `alt`: later (she told Holger "another day"). */
+(function () {
+  'use strict';
+  CAST.voices.Calandra = {pitch:212,filter:780,pace:.92};
+  CAST.homeStories = {
+    mug: {icon:'mug', label:"Unpack a box", lines:[
+      {id:'box',speaker:'Lunafreya',text:"This box says kitchen. It has never been anywhere near a kitchen."},
+      {id:'mug',speaker:'Lunafreya',text:"Oh. The shop mug. I told myself I'd packed it by accident."},
+      {id:'closing',speaker:'Lunafreya',text:"At closing I'd drink the last of the coffee from it, standing up, counting chairs."},
+      {id:'holger',speaker:'Lunafreya',text:"I told Holger I loved a lot of it. I did.",
+        alt:{later:"I told Holger I'd tell him the rest another day. Maybe I'll tell the mug first."}},
+      {id:'cat',speaker:'Lunafreya',text:"Don't look at me like that. It's only a mug."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Lunafreya',text:"It can live…",choices:[
+        {text:"…here, on the desk. For tea in the evenings.",flag:'luna-mug-home',
+          reply:"Home, then. It's earned a sit-down."},
+        {text:"…downstairs. Someone should drink the last coffee standing up.",flag:'luna-mug-cafe',
+          reply:"Back to work, then. It knows the job."}
+      ]}
+    ]},
+    calandra: {icon:'letter', label:"Read Calandra's letter", lines:[
+      {id:'record',speaker:'Calandra',text:"Luna. It's your sister. You know that. I'm saying it for the record."},
+      {id:'photos',speaker:'Calandra',text:"Did the sign survive? Mum wants photos. I want photos. Dad wants to know if the chairs are sturdy."},
+      {id:'eating',speaker:'Calandra',text:"Also: are you eating? Properly? A bun from your own counter does not count."},
+      {id:'crossword',speaker:'Calandra',text:"It's very quiet here without you arguing with the crossword."},
+      {id:'clue',speaker:'Lunafreya',text:"She has never once let me finish a clue."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Lunafreya',text:"I'll write back and tell her…",choices:[
+        {text:"…about the people. Who comes in, and when.",flag:'calandra-told-people',
+          reply:"There. Now she'll want to meet every one of them."},
+        {text:"…about the room, and what I've done to it.",flag:'calandra-told-place',
+          reply:"There. Now she'll want a floor plan, and a photo of every chair."}
+      ]},
+      {id:'bread',speaker:'Lunafreya',text:"And yes, I'm eating. Mostly bread and cheese. I'll leave that part out."},
+      {id:'night',speaker:'Lunafreya',text:"Goodnight, Cal."}
+    ]}
+  };
+})();
+
+/* Gerda's blanket (ensemble release 3): she asks which pattern, knits it
+   over six café days (arc `gerda-blanket`, which only runs once asked), then
+   presents exactly what was chosen in her own saved scene. Lunafreya chooses
+   where it lives; placing it is ordinary work (improvement `blanket`). */
+(function () {
+  'use strict';
+  CAST.arcs.push({
+    id: 'gerda-blanket',
+    owner: 'gerda',
+    knits: true,
+    rows: 6,
+    after: ['gerda-blanket-asked'],          // no stitches before she has asked
+    payoff: 'scene',                         // presented by Gerda's saved scene, not a caption beat
+    scarfColor: '#6b7a55',
+    colors: { 'gerda-blanket-reeds': '#6b7a55', 'gerda-blanket-stars': '#3d4a5c' },
+    patterns: { 'gerda-blanket-reeds': 'reeds', 'gerda-blanket-stars': 'stars' },
+    glyph: 'yarn',
+    flag: 'gerda-blanket-given',
+    knitLines: [
+      "Gerda's needles work a long, patient row of the blanket.",
+      'Gerda spreads the blanket over her knees to see how far it has come.',
+      'Gerda counts under her breath, then nods at the pattern.'
+    ],
+    beat: ['Gerda folds the finished blanket over her arm.']
+  });
+  CAST.gerdaWindow.blanket = [
+    {id:'needles',speaker:'Gerda',text:"The cat's scarf is finished and my needles have nothing to do. That's dangerous at my age."},
+    {id:'make',speaker:'Gerda',text:"I'd like to make you something. A lap blanket, for the evenings. Don't argue, I've already bought the wool."},
+    {id:'colour',speaker:'Lunafreya',text:"I wasn't going to argue. I was going to ask what colour."},
+    {id:'pattern',speaker:'Gerda',text:"Good question. The pattern first. I have two in mind, and this time I'm asking."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Gerda',text:"The pattern…",choices:[
+      {text:"Reeds, like the ones along the water.",flag:'gerda-blanket-reeds',
+        reply:"Reeds. Long stitches and a bit of green. You'll see the lake in it."},
+      {text:"Little stars.",flag:'gerda-blanket-stars',
+        reply:"Little stars. Fiddly, but I like fiddly. Winter blue, then."}
+    ]},
+    {id:'noticed',speaker:'Lunafreya',text:"You asked me. You didn't just decide."},
+    {id:'erik',speaker:'Gerda',text:"Erik used to say I knitted for people the way other people give advice. I'm practising."},
+    {id:'while',speaker:'Gerda',text:"It will take a while. Good things are allowed to."}
+  ];
+  CAST.gerdaWindow.blanketGift = [
+    {id:'close',speaker:'Gerda',text:"Close your eyes. No, open them, you'll walk into a chair. Here."},
+    {id:'see',speaker:'Lunafreya',text:"Gerda, the reeds look as if they're moving.",
+      alt:{stars:"Gerda, there must be a hundred stars."}},
+    {id:'count',speaker:'Gerda',text:"I did the water twice. The first lake was too busy.",
+      alt:{stars:"Two hundred and twelve. I counted them twice and lost count once."}},
+    {id:'chose',speaker:'Gerda',text:"You chose it. I only did the counting. That was the nice part, this time."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Gerda',text:"It could live…",choices:[
+      {text:"Here, over the chair nearest the fire, for whoever gets cold.",flag:'gerda-blanket-cafe',
+        reply:"Then I'll know where to find it when I'm the one who's cold."},
+      {text:"Upstairs with me, for the evenings.",flag:'gerda-blanket-home',
+        reply:"Good. Somebody should look after you in the evenings too."}
+    ]},
+    {id:'use',speaker:'Gerda',text:"Erik would have said it's too nice to use. He was wrong about that sort of thing. Use it."},
+    {id:'thanks',speaker:'Lunafreya',text:"Thank you, Gerda. I will."}
+  ];
+})();

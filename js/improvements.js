@@ -34,6 +34,12 @@
       phases:['open his box',"shelve the bosun's book and the cookbook",'shelve the garden and bird books','shelve the last two','fold the box flat'],
       phaseIds:['open','first','second','last','fold'], duration:12, capability:'holger-books',
       bookSource:'holger', shelves:[0,2,2,2,0] },
+    // Gerda's blanket, a keepsake: never offered or bought. Her gift scene
+    // leaves it folded on the counter; downstairs it is draped over the chair
+    // nearest the fire as ordinary work, upstairs it goes home with her.
+    blanket: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Gerda's blanket",
+      label:"Gerda's blanket", phases:['drape the blanket over the chair'], phaseIds:['drape'], duration:4,
+      capability:'gerda-blanket', homeFlag:'gerda-blanket-home' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
