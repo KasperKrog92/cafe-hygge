@@ -162,7 +162,8 @@
     if(w.moment && (!a || w.moment.owner===a)){if(a)a.animT+=dt;return;}
     if(w.shop.phase==='home') { w.windowWorker=null;return; }
     if(!a) {
-      if(w.shop.phase!=='open' || ['scheduled','arrived','working'].indexOf(p.stage)<0)return;
+      // Tomas is one person: the partition crew goes first.
+      if(w.shop.phase!=='open' || ['scheduled','arrived','working'].indexOf(p.stage)<0 || w.expansionCrew)return;
       a=w.windowWorker=R.makeVisitor(w,'tomas');
       a.project=id;
       a.x=p.stage==='working'?site.x:L.doorSpot.x;a.y=p.stage==='working'?site.y:L.doorSpot.y;

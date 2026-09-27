@@ -57,6 +57,13 @@ rituals/partial work; transient patrons and incomplete orders are not serialized
 Only established furnished saves keep the seeded-room behavior. New cafés reload
 without a crowd; an unfinished mandatory first hello restores Holger at the counter.
 
+**The room expansion.** Tomas and his daughter come after opening (never while
+the window worker is in), work until closing and resume the next morning; the
+door stays propped open while boards go out (the bell rings only as they arrive
+and leave). Captions: their arrival (the first day, then "back for the rest"),
+an occasional board or nail while the partition comes down (8% of knocks), the
+new boards going in, and the finished room.
+
 Newer regulars keep a rhythm (Marcel even days from day 4, Ida every third day
 from day 5, Elody odd days from day 6, Saira every third day from day 7,
 Birgit every third day from day 8 and only before noon; any regular who cannot

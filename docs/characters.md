@@ -766,6 +766,14 @@ chosen name: the café finds its name, Flourish, later through its neighbours
 (the naming arc), never through a timer or a choice forced during this
 introduction.
 
+## Tomas's crew — shipped 27 September 2026
+
+For the room expansion Tomas brings his daughter, the one who wanted the plain
+cupboard for her towels. She carries the partition boards out over her
+shoulder while he pries them off, and helps with the dust sheets and the new
+floor boards. She has no hello of her own yet (`quiet`). Her look: brown hair
+up, a terracotta work top, navy trousers.
+
 ## A name people already use — shipped 27 September 2026
 
 After Elody's `grow` scene and Birgit's recipe, one evening (home moment

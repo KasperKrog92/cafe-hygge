@@ -9,10 +9,11 @@
     w.visitorDays=w.visitorDays||{};w.visitorDays[id]=w.memory.life.daysCompleted;
     return a;
   };
-  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.shelfVisitor].concat(w.patrons.filter(a=>a.social)).filter(Boolean);};
+  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.shelfVisitor].concat(w.expansionCrew||[],w.patrons.filter(a=>a.social)).filter(Boolean);};
   SIM.visitorInvites=function(w) {
     if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
-    return SIM.visitorActors(w).filter(a=>(a.social ? a.state==='seated' && !a.outside :
+    // (Tomas's daughter, on his crew, has no hello of her own yet.)
+    return SIM.visitorActors(w).filter(a=>!a.quiet && (a.social ? a.state==='seated' && !a.outside :
       a.state!=='leaving' && a.state!=='descending' && !a.mantelLift) && (!a.path || !a.path.length) &&
       !w.memory.flags[a.visitorId+'-introduced']);
   };

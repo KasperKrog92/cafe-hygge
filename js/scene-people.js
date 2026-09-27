@@ -967,6 +967,9 @@
           px(g, x + 8, y - 27, 9, 11, '#e8e0d0');
           px(g, x + 9, y - 25, 7, 1, '#8b8070'); px(g, x + 9, y - 22, 5, 1, '#8b8070');
           px(g, x + 10, y - 18, 4, 3, c.skin);
+        } else if (held === 'boards') {                    // partition boards over the shoulder
+          px(g, x - 15, y - 50, 32, 3, '#d9d0bd'); px(g, x - 14, y - 47, 32, 3, '#c9c0aa');
+          px(g, x + 11, y - 46, 4, 4, c.skin);
         } else if (held === 'mug') {                       // the old shop mug
           px(g, x + 8, y - 27, 9, 9, '#e8dfc9');
           px(g, x + 8, y - 25, 9, 2, '#4a3222');
@@ -1048,6 +1051,11 @@
       px(g, bkx, y - 25, 10, 2, shade(p.bookColor || '#a94f3f', -0.2));
       px(g, bkx + (facing > 0 ? 8 : 0), y - 24, 2, 6, '#f5efdf');   // page edges
       px(g, x + facing * 8 - (facing > 0 ? 0 : 2), y - 22, 4, 4, c.skin);
+    } else if (held === 'boards') {
+      // two partition boards over the shoulder, on their way out of the door
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 40, 5, 10, c.top);
+      px(g, x - 17, y - 50, 34, 3, '#d9d0bd'); px(g, x - 16, y - 47, 34, 3, '#c9c0aa');
+      px(g, x + facing * 9 - 2, y - 46, 4, 4, c.skin);
     } else if (held === 'log') {
       // a split billet carried in the crook of the arm, off to the hearth
       px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 12, c.top);

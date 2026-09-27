@@ -112,6 +112,13 @@ It is fitted around the photographs wherever they are. Later arrivals: Tomas
 comes in with the look of a man who has been baking. Birgit's advice on his
 bread remains planned.
 
+**The partition, shipped 27 September.** For the room expansion Tomas brings
+his daughter, the one who wanted the plain cupboard for her towels. Over two
+café days they take down the partition the previous tenant put up; she carries
+the boards out over her shoulder and says something that makes him laugh. She
+is not yet named and has no conversation of her own; her introduction, and the
+family scenes it could open, remain planned.
+
 ## Writing and choices
 
 The café is a place to belong. People have lives beyond its door, and reveal

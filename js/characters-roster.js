@@ -1720,3 +1720,22 @@
     {id:'night',speaker:'Lunafreya',text:"Goodnight, Cal. From Café Flourish."}
   ]};
 })();
+
+/* The room expansion's crew (sim-expansion.js): Tomas and his daughter, the
+   one who wanted the plain cupboard for her towels. She helps him on bigger
+   jobs and has no hello of her own yet. */
+(function () {
+  'use strict';
+  CAST.expansionCrew = {
+    helper: { name: 'Tomas’s daughter', nameStyle: 'feminine',
+      colors: { skin: '#ddb58d', hair: '#6b4a30', top: '#b5654a', pants: '#3d4a5c', scarf: null, longHair: false, hairStyle: 3, beard: false } },
+    lines: {
+      arrive: 'Tomas arrives with his daughter and a trestle. The partition is coming down.',
+      back: 'Tomas and his daughter are back for the rest of the partition.',
+      knock: ['A board comes away from the partition with a soft creak.',
+        'Tomas taps the partition, listens, and finds the next nail.',
+        'Tomas’s daughter carries two boards out and says something that makes him laugh.'],
+      patch: 'Tomas kneels to fit new boards where the partition stood.'
+    }
+  };
+})();

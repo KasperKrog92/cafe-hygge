@@ -37,6 +37,9 @@
   const view = { x: 0, y: SCENE.VIEW_Y, w: SCENE.VIEW_W, h: SCENE.VIEW_H };
   const camera=Object.assign({},view);
   let shownRoom = null;
+  // The room expansion: when the small café's view becomes the full room the
+  // camera pulls back over three seconds instead of jumping (render).
+  let pullBack = null;
 
   function fit() {
     const dpr = window.devicePixelRatio || 1;
@@ -46,7 +49,8 @@
     const A = vw / vh;
 
     // choose the crop window inside the overscan budgets
-    const room = SCENE.presentation(world); shownRoom = room;
+    const room = SCENE.presentation(world), was = shownRoom, from = { x: view.x, y: view.y, w: view.w, h: view.h };
+    shownRoom = room;
     let mw = room.w;
     let mh = Math.max(room.minH, Math.min(room.h, Math.round(room.w / A)));
     if (mw / mh > A) mw = Math.max(room.minW, Math.min(room.w, Math.round(mh * A)));
@@ -55,6 +59,8 @@
     view.x = (room.w - mw) >> 1;
     // distribute vertical crop like the designed 16:9 crop (36 top / 24 bottom)
     view.y = Math.round((room.h - mh) * (room.top / (room.h - room.minH)));
+    pullBack = was === SCENE.L.rooms.small && room === SCENE.L.rooms.full && world.shop.phase !== 'home' ?
+      { from: from, t: 0 } : null;
 
     const scale = Math.min(vw / mw, vh / mh);
     const sInt = Math.round(scale);
@@ -473,8 +479,8 @@
     if(SIM.homeSceneActive(world)) {SIM.advanceHomeDialogue(world);return;}
     if(SIM.introActive(world)) {SIM.advanceIntro(world);return;}
     const r = canvas.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width * view.w + view.x;
-    const y = (e.clientY - r.top) / r.height * view.h + view.y;
+    const x = (e.clientX - r.left) / r.width * camera.w + camera.x;
+    const y = (e.clientY - r.top) / r.height * camera.h + camera.y;
     // Attended hellos (SIM.invitations) and waiting story beats both live in beatAt.
     if (world.shop.phase !== 'home' && SIM.beatAt(world, x, y)) return;
     // At home only an evening moment (SIM.eveningStory) can be waiting.
@@ -496,6 +502,13 @@
     SCENE.composeFrame(g, world);
     // present: blit the chosen view of the master at an integer scale
     const now=performance.now(),delta=Math.min(.1,(now-focusLast)/1000);focusLast=now;
+    let frame=view;
+    if(pullBack) {
+      pullBack.t=Math.min(1,pullBack.t+delta/3);
+      const e=pullBack.t*pullBack.t*(3-2*pullBack.t),f=pullBack.from;
+      frame={x:f.x+(view.x-f.x)*e,y:f.y+(view.y-f.y)*e,w:f.w+(view.w-f.w)*e,h:f.h+(view.h-f.h)*e};
+      if(pullBack.t>=1)pullBack=null;
+    }
     focusAmount+=(world.moment && world.moment.phase==='talk'?1-focusAmount:-focusAmount)*Math.min(1,delta*5);
     if(world.moment) {
       const owner=world.moment.owner || world.barista,b=world.barista;
@@ -506,17 +519,17 @@
     let targetZoom=world.moment && world.moment.wide ? 1 : 1.3;
     if(bubble) {
       const bottom=Math.max(world.barista.y,world.moment.owner?world.moment.owner.y:world.barista.y)+20;
-      targetZoom=Math.max(1,Math.min(targetZoom,view.h/(bottom-bubble.y+20),view.w/(bubble.w+40)));
+      targetZoom=Math.max(1,Math.min(targetZoom,frame.h/(bottom-bubble.y+20),frame.w/(bubble.w+40)));
     }
-    const zoom=1+focusAmount*(targetZoom-1),cw=view.w/zoom,ch=view.h/zoom;
-    let cx=Math.max(view.x,Math.min(view.x+view.w-cw,focusPoint.x-cw/2));
-    let cy=Math.max(view.y,Math.min(view.y+view.h-ch,focusPoint.y-ch*.68));
+    const zoom=1+focusAmount*(targetZoom-1),cw=frame.w/zoom,ch=frame.h/zoom;
+    let cx=Math.max(frame.x,Math.min(frame.x+frame.w-cw,focusPoint.x-cw/2));
+    let cy=Math.max(frame.y,Math.min(frame.y+frame.h-ch,focusPoint.y-ch*.68));
     if(bubble) {
-      cx=Math.max(view.x,Math.min(cx,bubble.x-12));
-      cx=Math.min(view.x+view.w-cw,Math.max(cx,bubble.x+bubble.w+12-cw));
-      cy=Math.max(view.y,Math.min(cy,bubble.y-12));
+      cx=Math.max(frame.x,Math.min(cx,bubble.x-12));
+      cx=Math.min(frame.x+frame.w-cw,Math.max(cx,bubble.x+bubble.w+12-cw));
+      cy=Math.max(frame.y,Math.min(cy,bubble.y-12));
       const feet=Math.max(world.barista.y,world.moment.owner?world.moment.owner.y:world.barista.y);
-      cy=Math.min(view.y+view.h-ch,Math.max(cy,feet+8-ch));
+      cy=Math.min(frame.y+frame.h-ch,Math.max(cy,feet+8-ch));
     }
     // cw/ch already interpolate the zoom; interpolating the clamped origin a
     // second time can cut off speakers at the bottom of the room mid-transition.

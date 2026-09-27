@@ -7,6 +7,7 @@
   const L = R.L;
   const px = R.px, ell = R.ell, shade = R.shade, h2 = R.h2;
   const drawTinyPlant = R.drawTinyPlant;
+  const W = SCENE.W, H = SCENE.H;
 
   // One contact frame for the side-view laptop, hands and screen light.
   SCENE.tableItemOffsetY = function (tb, it) {
@@ -32,8 +33,71 @@
 
   /* ================= FURNITURE (depth-sorted) ================= */
 
+  // The previous tenant's partition around the small room and the closed-off
+  // strips beyond it, seen once the view pulls back for the work: dusty
+  // storeroom wall and floor, dust sheets while the work goes on, the
+  // cut-away partition shrinking as its boards come away, the dark line where
+  // it stood until new boards are fitted. Gone with the saved 'full' room.
+  function dustSheet(g, x, y, w, h, down) {
+    if (w < 2 || h < 2) return;
+    px(g, x, y, w, h, 'rgba(172,163,146,0.9)');
+    px(g, x, y, w, 1, 'rgba(192,184,168,0.9)');
+    if (down) for (let k = 0; k < h; k += 23) px(g, x + 3 + (k * 7) % (w - 6 || 1), y + k, 1, Math.min(12, h - k), 'rgba(138,129,114,0.8)');
+    else for (let k = 0; k < w; k += 29) px(g, x + k, y + 3 + (k * 5) % (h - 6 || 1), Math.min(14, w - k), 1, 'rgba(138,129,114,0.8)');
+    // the loose end of the cloth, not a ruled line
+    for (let k = 0; k < (down ? w : h); k += 5) {
+      if (down) px(g, x + k, y + h, 3, 1 + (k / 5 & 1), 'rgba(172,163,146,0.9)');
+      else px(g, x + w, y + k, 1 + (k / 5 & 1), 3, 'rgba(172,163,146,0.9)');
+    }
+  }
+  function partitionDrawables(world, out) {
+    if (world.memory.life.room !== 'small') return;
+    const d = IMPROVEMENTS.projects.expansion, p = world.memory.life.projects.expansion, E = L.expansion;
+    const on = p.stage === 'arrived' || p.stage === 'working', step = on ? p.step : 0, q = on ? p.time / d.duration : 0;
+    const right = step > 1 ? 0 : step === 1 ? 1 - q : 1, front = step > 2 ? 0 : step === 2 ? 1 - q : 1;
+    const sheets = !on ? 0 : step === 0 ? q : step < 5 ? 1 : 1 - q, patch = step < 4 ? 0 : step === 4 ? q : 1;
+    const X = E.x + E.t, ry = Math.round(L.wallY + (1 - right) * (E.y - L.wallY)), fx = Math.round(X * front);
+    out.push({ y: L.wallY - 2, draw: function (g) {
+      px(g, X, 0, W - X, L.wallY, 'rgba(40,30,22,0.24)');
+      px(g, X, L.wallY, W - X, E.y - L.wallY, 'rgba(60,46,34,0.3)');
+      px(g, 0, E.y + E.t, W, H - E.y - E.t, 'rgba(60,46,34,0.3)');
+      // One dust sheet per strip, unrolled along it and later gathered up:
+      // an old grey-cream cloth with a few creases and a ragged leading edge.
+      if (sheets > 0) {
+        const len = Math.round((E.y - L.wallY - 14) * sheets), wid = Math.round((W - 8) * sheets);
+        dustSheet(g, X + 5, L.wallY + 7, W - X - 10, len, true);
+        dustSheet(g, 4, E.y + E.t + 12, wid, H - E.y - E.t - 18, false);
+      }
+      // where the partition stood: a dark line, then new boards
+      const scar = 'rgba(30,20,12,0.35)', fresh = '#b8875a';
+      px(g, E.x, L.wallY, E.t, E.y + E.t - L.wallY, scar);
+      px(g, 0, E.y, E.x + E.t, E.t, scar);
+      if (patch > 0) {
+        const n = Math.round((E.y - L.wallY) * Math.min(1, patch * 2)), m = Math.round((E.x + E.t) * Math.max(0, patch * 2 - 1));
+        px(g, E.x, L.wallY, E.t, n, fresh);
+        px(g, E.x + E.t - m, E.y, m, E.t, fresh);
+      }
+      // the partition's end against the back wall, and its right run
+      if (right > 0.97) { px(g, E.x, 30, E.t, L.wallY - 30, '#d9d0bd'); px(g, E.x, 30, 1, L.wallY - 30, '#b8ae98'); }
+      if (right > 0) {
+        px(g, E.x - 2, ry, 2, E.y - ry, 'rgba(20,12,8,0.18)');
+        px(g, E.x, ry, E.t, E.y - ry, '#d9d0bd');
+        for (let y = ry + 12; y < E.y; y += 24) px(g, E.x + 2, y, E.t - 4, 1, '#b8ae98');
+      }
+    } });
+    // the front run, cut away low so the room stays in view
+    if (front > 0) out.push({ y: E.y + E.t + 12, draw: function (g) {
+      px(g, 0, E.y, fx, 4, '#e8e0d0');
+      px(g, 0, E.y + 4, fx, 12, '#d9d0bd');
+      px(g, 0, E.y + 16, fx, 2, 'rgba(20,12,8,0.2)');
+      for (let x = 12; x < fx; x += 24) px(g, x, E.y + 6, 1, 8, '#b8ae98');
+      if (fx >= E.x) px(g, E.x, E.y, E.t, 16, '#d9d0bd');
+    } });
+  }
+
   SCENE.furnitureDrawables = function (world) {
     const out = [];
+    partitionDrawables(world, out);
     // (A room that never put its first sign out keeps it here until it goes
     // under the counter with the new one's arrival.)
     if(world.memory.life.intro && world.memory.life.intro.sign==='stored' &&

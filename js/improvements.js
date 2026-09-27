@@ -92,6 +92,16 @@
       label:'The new sign', phases:['slide the old sign under the counter'], phaseIds:['stow'], duration:3,
       capability:'cafe-sign', carry:'sign', door:true, setsFlag:'cafe-named',
       doneLine:'Outside the door, Marcel’s sign says Café Flourish; the old one lives under the counter now.' },
+    // The room expansion (owner, 27 September): the previous tenant's partition
+    // along the right and front of the small room comes down. Tomas and his
+    // daughter take it down over about two café days, working from inside the
+    // room while guests keep to it; the view pulls back as they begin. It
+    // opens floor only, never furniture or equipment (sim-expansion.js).
+    expansion: { price:150, destination:'cafe', delivery:'contractor', title:'open up the rest of the room',
+      label:'Open up the rest of the room', smallRoom:true,
+      phases:['lay dust sheets','take down the right partition','take down the front partition','carry out the boards','patch the floor','sweep and lift the sheets'],
+      phaseIds:['sheets','right','front','boards','patch','sweep'], duration:150, capability:'expanded-room',
+      doneLine:'the partition is gone. The room is bigger than it ever looked, and there is nothing in the new part yet.' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
@@ -115,7 +125,7 @@
     duration:4, maxTime:8, capability:'first-plant' };
   I.all = Object.assign({}, I.projects, {plant:I.plant});
   // The order choices appear in the evening planner.
-  I.planOrder = ['window','table','windowSeat','bookshelf','books','readingChair','plant','fireplace','mantel'];
+  I.planOrder = ['window','table','windowSeat','bookshelf','books','readingChair','plant','fireplace','mantel','expansion'];
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];
@@ -154,6 +164,7 @@
     const d = I.all[id], l = world.memory.life, h = l.homeStory;
     if (!d || d.gift || (h && h.firstNight && !d.tutorial)) return false;
     if (d.unlockFlag && !world.memory.flags[d.unlockFlag]) return false;
+    if (d.smallRoom && l.room !== 'small' && I.state(l,id).stage !== 'installed') return false;
     if (d.furniture && l.furniture[d.furniture] && I.state(l,id).stage !== 'installed') return false;
     if (d.showsWith && !SCENE.hasFurniture(world, d.showsWith)) return false;
     return true;

@@ -305,6 +305,11 @@
   SND.lunaHum=guard(function(){humLine(CAST.voices.Lunafreya);});
   // Lunafreya humming to herself behind the counter: softer, into the room.
   SND.lunaHumRoom=guard(function(){hum(CAST.voices.Lunafreya,sfx,.016);});
+  // A partition board coming away: a dull wooden knock and a short creak.
+  SND.boardKnock=guard(function(){
+    tone(150+Math.random()*30,{gain:.03,dur:.14,sweepTo:110,sweepDur:.12,lp:900});
+    hiss({dur:.12,gain:.012,bp:700+Math.random()*200,q:3,attack:.01,release:.08,delay:.06});
+  });
   // Saira's fingertips on a tabletop: a tiny woody tick, barely there.
   SND.fingerTap=guard(function(){hiss({dur:.035,gain:.014,bp:1500+Math.random()*300,q:2.2,attack:.002,release:.03});});
   SND.doorUnlock=guard(function(){hiss({dur:.09,gain:.022,lp:1400,attack:.005,release:.08});});

@@ -143,6 +143,7 @@ slider controls all three layers without changing their visual behavior.
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |
 | `murmur(pitch)` | chatting patrons | triangle osc walking around the patron's 125–235 Hz voice pitch, 5.5 Hz vibrato, lowpass 480 — speech-shaped, wordless |
 | `meow()` | cat, rarely; the cat choosing a key in Saira's scene | sine sweep 620→890→520 Hz through bandpass 900 |
+| `boardKnock()` | a partition board coming away while Tomas pries the partition down (every 2.6–4.6 s) | 150–180 Hz sine knock sweeping to 110 Hz under a 900 Hz lowpass (0.03) plus a short bandpassed creak around 700–900 Hz (0.012) |
 | `fingerTap()` | Saira tapping a rhythm on the table edge (one per tap of the pattern) | 35 ms bandpassed noise tick around 1.5–1.8 kHz (Q 2.2), peak 0.014 |
 | `lunaHumRoom()` | Lunafreya humming Saira's score behind the counter (at most once a café day) | the same hummed eight bars as `lunaHum`, into the room on sfx at 0.016 peak |
 | `purr(dur)` | sleeping/petted cat | 24 Hz sawtooth → lowpass 95, slow swell, ~2–3 s |

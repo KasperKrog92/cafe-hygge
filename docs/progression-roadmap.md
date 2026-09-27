@@ -206,11 +206,25 @@ her stool, where she sees it every time she sits down. From then on the
 neighbours use the name, the chalk menu is titled FLOURISH, and Calandra's next
 letter comes addressed to Café Flourish ("I'm coming to see it. When you say.").
 
+**The room expansion — shipped 27 September 2026.** Owner decisions the same
+day: what closes off the extra floor is **a partition wall** the previous tenant
+put up along the right and front of the room, and **the view widens as soon as
+the work starts**. A 150-coin evening choice while the café is small. After the
+next opening Tomas arrives with his daughter and a trestle, and the view pulls
+back over three seconds to the whole room: the plain partition (drawn cut away
+low at the front so the room stays in view) and the dusty strips beyond it.
+Working from inside the room while guests keep to it, they lay dust sheets,
+take the right run down from the back forward and then the front run, carry the
+boards out through the propped door, fit new boards where it stood and gather
+the sheets: six saved phases of about two and a half café hours each, so it
+spans two café days, leaving at closing and resuming the next morning or after
+a reload. Finished, the saved room is `full`: the new floor is open to
+everyone, and nothing else comes with it.
+
 **Next, in order:**
-The room expansion upgrade, then the piano. **The piano waits for the room
-expansion (owner, 27 September 2026):** its place (`L.piano`) lies in the front
-strip that only the full room opens, so the expansion upgrade comes first and
-the piano after it, never squeezed into the small room.
+The piano and Saira's playing scenes, at `L.piano` in the full room (owner,
+27 September: the piano waits for the expansion and is never squeezed into the
+small room). Then the candidates from the 27 September hand-off, by judgement.
 The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
@@ -353,10 +367,10 @@ Absent furniture must never leave a patron walking toward an invisible target.
 
 The first room is 832×516 master pixels, with tighter right and front boundaries
 and a 832×468 desktop crop. Objects retain their original pixel dimensions.
-A later **room expansion upgrade** opens the full 960×600 café, adding space
-at the right and front. Expansion is separate from furnishing purchases; it
-does not grant decorations or equipment. Its price, construction sequence and
-purchase option remain future work. Existing furnished saves keep the full room.
+The **room expansion upgrade** (shipped 27 September, below) opens the full
+960×600 café, adding space at the right and front. Expansion is separate from
+furnishing purchases; it does not grant decorations or equipment. Existing
+furnished saves keep the full room and are never offered it.
 
 ## Menu, counter and kitchen progression
 

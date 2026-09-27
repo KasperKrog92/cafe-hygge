@@ -145,7 +145,7 @@ the old names. Settled names are in [story-bible.md](docs/story-bible.md).
   retired `archive/idle-2026-09-06` and `archive/game-2026-09-06` tags are
   reference material; do not resume the separate game engine or merge it.
 
-## Architecture (32 scripts, deliberate order)
+## Architecture (33 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -178,6 +178,7 @@ the old names. Settled names are in [story-bible.md](docs/story-bible.md).
 | `js/sim-evenings.js` | `SIM` | Evening moments at home (`CAST.homeStories`: Calandra's letter, the old mug) and placing home keepsakes. |
 | `js/sim-gathering.js` | `SIM` | Gatherings: Ida's reading afternoon (`CAST.gathering`), booked on her visit, readers called in ahead of other guests, the wide saved scene. |
 | `js/sim-counter.js` | `SIM` | Lunafreya's slow spells at the counter (`SIM._.counterHabits`): her stool and a book, the crossword, a coffee of her own, chin in hand; each ends when someone needs her. |
+| `js/sim-expansion.js` | `SIM` | The room expansion: Tomas and his daughter take the partition down over two café days (their crew, saved phases, the propped door); finishing sets the saved room to `'full'`. |
 | `js/sim-saira.js` | `SIM` | Saira's score once it is pinned behind the counter: on a quiet spell, at most once a café day, Lunafreya steps over and hums its eight bars. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing, fast-forward, scenario forcing, fixtures, overlay, `shot`, `film`, invariant audit. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass, UI controls; builds the planner and invitation buttons from the registries. |
@@ -186,8 +187,8 @@ Load order matters: improvements → audio → scene-core → scene-waterfront �
 scene-bg → scene-furniture → scene-people → scene-fx → scene-home → scene-intro →
 characters-roster → memory → sim-core → sim-waterfront → sim-patrons → sim-shop →
 sim-characters → sim-life → sim-intro → sim-moments → sim-holger → sim-regulars →
-sim-marcel → sim-gerda → sim-visitors → sim-home → sim-evenings → sim-gathering → sim-counter → sim-saira → dev → main. Scene-core creates `SCENE` and the renderer siblings
-extend it; `CAST` is pure data; `MEMORY` loads the save; the eighteen sim scripts
+sim-marcel → sim-gerda → sim-visitors → sim-home → sim-evenings → sim-gathering → sim-counter → sim-saira → sim-expansion → dev → main. Scene-core creates `SCENE` and the renderer siblings
+extend it; `CAST` is pure data; `MEMORY` loads the save; the nineteen sim scripts
 build `SIM` (sim-core first); dev consumes the `SIM._` contract; main reads all.
 
 Full detail: [docs/architecture.md](docs/architecture.md).
@@ -195,9 +196,11 @@ Full detail: [docs/architecture.md](docs/architecture.md).
 ## Invariants & gotchas (learned the hard way)
 
 - **C0 uses a smaller 832×516 room (832×468 at 16:9)** with floor bounds in
-  `SCENE.L.rooms.small`. The full room remains available for a future expansion;
-  its size is saved separately as `life.room`. The apartment always uses full
-  framing.
+  `SCENE.L.rooms.small`. The room expansion upgrade (150 coins; the previous
+  tenant's partition comes down over two café days) opens the full room; its size
+  is saved separately as `life.room`. The view pulls back to the full framing as
+  soon as the work starts (`SCENE.presentation`), while floor bounds stay small
+  until it is done. The apartment always uses full framing.
 - **The master canvas is 960×600 (16:10)**; everything renders there in
   master coordinates. A 16:9 window shows the 960×540 crop (rows 36–576);
   other aspects get a variable crop (visible height 540–600, width 936–960 —

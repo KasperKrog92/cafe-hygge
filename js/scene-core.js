@@ -51,8 +51,13 @@
   SCENE.room = function(world) {
     return world.memory && world.memory.life.room === 'small' ? L.rooms.small : L.rooms.full;
   };
+  // The view pulls back to the whole room once the partition work begins.
   SCENE.presentation = function(world) {
-    return world.shop.phase === 'home' ? L.rooms.full : SCENE.room(world);
+    return world.shop.phase === 'home' || SCENE.expansionWork(world) ? L.rooms.full : SCENE.room(world);
+  };
+  SCENE.expansionWork = function(world) {
+    const p = world.memory && world.memory.life.projects && world.memory.life.projects.expansion;
+    return !!p && (p.stage === 'arrived' || p.stage === 'working');
   };
   SCENE.activeGeometry = function (world, list) {
     return list.filter(function (item) { return SCENE.hasFurniture(world, item.furniture); }).map(function (item) {
@@ -189,6 +194,13 @@
       fireplace: { x: 390, y: 246, work: { x: 390, y: 274 } },
       mantel: {work:{x:390,y:254},ladderHeight:80}
     },
+    // The previous tenant's partition around the small room: a right run
+    // along x 832-840 from the back wall to the front, and a front run along
+    // y 516-524 (drawn as a cut-away stub). Tomas works along it from inside
+    // the room (right: x 806, y 318-488; front: y 488, x 780-70); boards go
+    // out through the door. Guests keep to the small room until it is down.
+    expansion: { x: 832, y: 516, t: 8, right: { x: 806, y0: 318, y1: 488 }, front: { y: 488, x0: 780, x1: 70 },
+      sheets: { x: 810, y: 470 } },
     wallY: 232,               // where wall meets floor
     door: { x: 28, y: 130, w: 52, h: 102 },   // 1.7 CH
     doorSpot: { x: 54, y: 252 },     // where people appear

@@ -907,7 +907,7 @@
   function updateDoor(world, dt) {
     const d = world.door;
     d.holdT = Math.max(0, (d.holdT || 0) - dt);
-    let near = d.holdT > 0;
+    let near = d.holdT > 0 || !!d.propped;   // propped open while boards go out
     world.patrons.forEach(function (p) {
       if (Math.hypot(p.x - L.doorSpot.x, p.y - L.doorSpot.y) < 44 &&
           (p.state === 'enter' || p.state === 'enterDelay' || p.state === 'wipeFeet' ||

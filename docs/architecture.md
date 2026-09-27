@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Thirty-two IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Thirty-three IIFE scripts expose the production globals
 (`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -35,6 +35,7 @@ js/sim-evenings.js      → extends SIM    (evening moments at home; home keepsa
 js/sim-gathering.js     → extends SIM    (Ida's reading afternoon: booking, arrivals, the wide scene)
 js/sim-counter.js       → extends SIM    (Lunafreya's slow spells: stool and book, crossword, own coffee, chin in hand)
 js/sim-saira.js         → extends SIM    (Saira's score behind the counter: Lunafreya's once-a-day hum)
+js/sim-expansion.js     → extends SIM    (the room expansion: the partition crew, saved phases, room 'full')
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -830,6 +831,22 @@ story with a non-gift `parcel` (`tastes`: the counter parcel is cleared when
 any parcel story completes), and the keepsake `recipe` (capability
 `birgit-recipe`, `homeFlag 'birgit-recipe-home'`; `L.projects.recipe`,
 `L.home.recipe`, drawn by `SCENE.drawRecipe`).
+
+The room expansion (v25) is a contractor project with `smallRoom` (offered only
+while `life.room` is small). sim-expansion.js wraps `SIM._.updateWindowWorker`:
+while the job is scheduled/arrived/working and the café is open it spawns
+`world.expansionCrew` (Tomas via `makeVisitor`, his daughter as a `quiet`
+visitor with no invitation), included in `SIM.visitorActors` so drawing,
+posture easing, audits and closing treat them like any working visitor; the
+window worker waits while they are there. Their stops come from `L.expansion`
+(all inside the small room's floor bounds); `world.door.propped` holds the door
+open while boards go out. `SCENE.presentation` returns the full room from the
+crew's arrival (`SCENE.expansionWork`), `SCENE.room` only once the saved room
+is `full`; main.js eases the camera from the small framing to the full one
+over three seconds when the view changes that way outside the apartment, and
+clicks map through the drawn camera. `partitionDrawables` (scene-furniture.js)
+draws the partition, the dust sheets and the line where it stood from the
+job's saved step and time.
 
 The naming arc (v24) adds project fields for a carried job: `carry` (what she
 holds from the pickup spot to the work spot: the old sign; after a reload

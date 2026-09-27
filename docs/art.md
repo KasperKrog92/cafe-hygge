@@ -13,6 +13,18 @@ inside the small-room desktop crop. Only the first line carries her name.
 The small dialogue controls sit above the ordinary control bar; complete
 sentences also reach an accessible live region.
 
+**The partition** around the small room (`L.expansion`) is plain plasterboard
+`#d9d0bd` with stud marks `#b8ae98`: an 8 px right run along x 832 from the
+back wall (its end standing full height against the wall) to the front, and a
+front run along y 516 drawn cut away low (a 4 px cap and a 12 px face) so the
+room stays in view. Beyond it the strips are dimmed (dusty storeroom floor and
+wall) until the room opens. The dust sheets are one worn grey-cream cloth per
+strip `rgba(172,163,146,.9)` with creases and a ragged loose end, dark enough
+that captions over the front strip stay legible. Where the partition stood a
+dark line shows until new boards `#b8875a` are fitted. Tomas's daughter has
+brown hair up (style 3), a terracotta work top and navy trousers; carried
+boards are two pale planks over the shoulder.
+
 **Café Flourish** is Marcel's painted board (`SCENE.drawFlourishSign`) on the
 same little legs: a dark green frame `#3f5a44` round a green panel `#4a7a5a`,
 CAFÉ in the first sign's blocky 2-pixel letters and FLOURISH in narrow
