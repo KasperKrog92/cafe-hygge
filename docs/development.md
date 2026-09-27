@@ -145,6 +145,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `nora-routing` | Lunafreya's route pairs, blocked routes and complete care chores |
 | `pathing` | Sampled obstacle clearance and real walker arrival across patron routes |
 | `projects` | Orders interrupt hand work; overnight/reload/mode resumption; queued jobs |
+| `reading-chair` | Offered once the little shelves are up and never beside the fireside pair; one charge across a reload; Keira's blanket-wrapped delivery; three unwrapping phases each surviving a reload, never redelivered; the worksite released; one chair and side table; Holger reads in his usual seat; the evening lamp; closing mid-job resumes the next morning |
 | `second-visits` | Holger's fire story by a working or cold hearth and then, on a later visit, Aksel; Kasper's endings (recalling the reading afternoon and his three good lines) with a mid-scene reload resuming; Nora's three portrait answers; Antonia's bench remembered at home that night, and a second asking that ends kindly; one scene per visit, idle hides them, musings remember |
 | `ship` | Sailing ship movement, window visits, seat reservations, closing |
 | `visitors` | Keira and Tomas: jobs, separate greetings, customer visits, both modes |

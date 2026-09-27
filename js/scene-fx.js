@@ -56,6 +56,8 @@
     // window poseur tables carry no candle: cups only, cushions nearby
     world.tables.forEach(function (tb, i) {
       if (tb.tall || tb.piano) return;
+      // the reading chair's little lamp: a small warm pool over the chair
+      if (SCENE.readingLamp(world, tb)) glow(g, tb.x - 1, tb.y - 26, 44, 255, 190, 100, (0.03 + 0.26 * pal.lamp) * power);
       const a = tb.candle * (0.07 + 0.07 * (1 - d) + 0.025 * Math.sin(t * 9 + i * 2.1));
       glow(g, tb.x + (tb.small ? 7 : 0), tb.y - 14, 34, 255, 195, 105, a);
       tb.items.forEach(function (it) {

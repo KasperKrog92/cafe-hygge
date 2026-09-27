@@ -82,21 +82,31 @@
       R.commitLife(w);
     } else if(Math.floor(before/3)!==Math.floor(p.time/3))R.commitLife(w);
   }
+  // Keira's trolley deliveries (improvements with delivery 'keira'), one at a
+  // time: the table kit, and the reading chair wrapped in blankets. Each has
+  // its own drop site; she kneels to set it down, then leaves.
+  const TROLLEY={
+    table:{site:()=>L.projects.table.work,first:'Keira brings the table kit in on a little trolley.',
+      again:'Keira is back, steering a table kit through the door.',down:'the kit is set down, ready for a quiet moment.'},
+    readingChair:{site:()=>L.projects.readingChair.drop,first:'Keira wheels in something large, wrapped in blankets.',
+      again:'Keira is back, wheeling in something large and wrapped in blankets.',down:'a wing chair, still in its blankets, waits by the fire.'}
+  };
   R.updateVisitors=function(w,dt) {
-    const p=w.memory.life.projects.table,open=w.shop.phase==='open';
+    const open=w.shop.phase==='open';
     let a=w.deliveryVisitor;
+    const id=a?a.delivers:Object.keys(TROLLEY).find(k=>w.memory.life.projects[k].stage==='scheduled');
+    const p=id&&w.memory.life.projects[id],site=id&&TROLLEY[id].site();
     // A scheduled kit has not crossed the handoff boundary. Arrived/working
     // saves (including old carried kits) already own it and never redeliver.
     // Give the paired first visits separate space: Tomas finishes and leaves
     // before Keira arrives. Saved repair progress owns the spacing, so reload
     // cannot bunch the arrivals or restart a timer. Neither hello is required.
     const repair=w.memory.life.projects.window;
-    if(!w.moment && !a && !w.shelfVisitor && !w.patrons.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && !w.windowWorker &&
+    if(id && !w.moment && !a && !w.shelfVisitor && !w.patrons.some(v=>v.visitorId==='keira') && open && p.stage==='scheduled' && !w.windowWorker &&
         ['purchased','scheduled','arrived','working'].indexOf(repair.stage)<0) {
-      a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;
-      R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);
-      R.ringDoor(w);R.caption(w,w.memory.flags['keira-introduced']?
-        'Keira is back, steering a table kit through the door.':'Keira brings the table kit in on a little trolley.');
+      a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;a.delivers=id;
+      R.makePath(a,site.x,site.y);
+      R.ringDoor(w);R.caption(w,w.memory.flags['keira-introduced']?TROLLEY[id].again:TROLLEY[id].first);
     }
     if(a && (!w.moment || w.moment.owner!==a)) {
       a.animT+=dt;
@@ -104,13 +114,13 @@
         if(exit(w,a,dt)){w.deliveryVisitor=null;R.ringDoor(w);}
       } else if(a.path && a.path.length)R.walker(a,dt);
       else {
-        if(Math.hypot(a.x-L.projects.table.work.x,a.y-L.projects.table.work.y)>1) {
-          R.makePath(a,L.projects.table.work.x,L.projects.table.work.y);return;
+        if(Math.hypot(a.x-site.x,a.y-site.y)>1) {
+          R.makePath(a,site.x,site.y);return;
         }
         a.state='handoff';a.pose='kneel';a.stateT=(a.stateT||0)+dt;
         if(p.stage==='scheduled' && a.stateT>=3) {
           p.stage='arrived';a.trolleyEmpty=true;R.commitLife(w);
-          R.caption(w,'the kit is set down, ready for a quiet moment.');
+          R.caption(w,TROLLEY[id].down);
         }
         if(a.stateT>=18)exit(w,a,0);
       }

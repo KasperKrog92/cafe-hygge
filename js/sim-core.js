@@ -259,7 +259,7 @@
     // Filter before creating any occupants. Array references are runtime-only;
     // furniture identity in the save is stable across both room variants.
     world.memory = context.memory.state;
-    const tableIds = L.tables.map(t => t.furniture).concat(['nook','nook','window-seats','window-seats','studio','piano','fireside','fireside']);
+    const tableIds = L.tables.map(t => t.furniture).concat(['nook','nook','window-seats','window-seats','studio','piano','fireside-left','fireside']);
     const tableMap = {};
     world.tables = world.tables.filter(function (tb, i) {
       tb.furniture = tableIds[i];

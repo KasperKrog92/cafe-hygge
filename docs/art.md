@@ -339,6 +339,13 @@ Known constraints, without inventing a complete future layout:
   for counter/kitchen growth, piano, art and terrace access; inspect their relevant
   plans before using space they may need. Unspecified dimensions remain decisions,
   not invented reservations with guessed coordinates.
+- The reading chair is the left fireside wing chair at `L.armchairs[0]`
+  (298, 296), facing the hearth, with the first fire table beside it: the
+  fireside position the fuller room already uses, below the left window's
+  right perch (whose `via` 240 descent was designed around it). Its lamp is a
+  10 px amber shade on a stem at the back of the side table (x − 1), clear of
+  a reader's book; the grey moving-blanket bundle and the unwrapped chair use
+  the chair's own footprint while she works from (298, 334).
 - Keira's photographs (`L.projects.photo.spot`, 752, 198) are two small prints
   pinned to the wall panel behind the till, right of the machine, below the
   full room's back-bar shelves and left of its menu board; Tomas's pine frame

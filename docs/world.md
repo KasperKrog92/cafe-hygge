@@ -160,7 +160,7 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 
 - `daylight` scales the multiply-tint over the whole scene and patron spawn
   rates; `lamp` scales the electric warm glows (hanging lamps, the two
-  nook reading lamps, the studio floor lamp by the easel, and the little brass
+  nook reading lamps, the reading chair's table lamp by the fire, the studio floor lamp by the easel, and the little brass
   piano lamp) and the star/moon alpha. Candle light has its own
   per-flame state, tended by Lunafreya.
 - Threshold captions: lamps crossing on → "The streetlamps flicker on, one by
@@ -290,7 +290,9 @@ Applied after all sprites, in `SCENE.drawLighting`:
    a compact bloom below its shade and a pool directly beneath it on the bar
    (machine + pass, pastry case). Both use `L.pendants` and fade with `pal.lamp`;
    there are no ceiling-light halos across the windows. Also lit are the
-   two reading lamps in the nook and the studio floor lamp beside the easel;
+   two reading lamps in the nook, the reading chair's small table lamp by the
+   fire (only when bought as the reading chair), and the studio floor lamp
+   beside the easel;
    the piano lamp's tight pool over the score,
    keys, and bench; the fireplace (never out — its glow pool grows and
    brightens with the live burn `world.fire.level` and shrinks to a small

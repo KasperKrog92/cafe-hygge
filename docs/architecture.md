@@ -100,6 +100,18 @@ interruptions and closing remain in their original owners. Keira's wall-shelf
 job uses the same purchase and saved-phase contract, and so does book stocking
 (below).
 
+Keira's trolley (sim-visitors.js `TROLLEY`) delivers any `delivery: 'keira'`
+project that is scheduled, one at a time, to its own drop site: the table kit,
+and the reading chair (`readingChair`, save v21). Lunafreya's work on such a
+project waits until its visitor has set it down (`pending()` in sim-life.js).
+The reading chair installs the left fireside chair alone: `fireside-left` is
+`life.furniture.fireside` (the fuller room's pair) or the `reading-chair`
+capability, and keys `L.armchairs[0]`, `wing chair 0`, `fireside table 0`,
+the first fire table and the cat's `armchair` spot; `installProjects` adds its
+side table and seat mid-session. While it is being unwrapped, `chair-worksite`
+reserves the chair's footprint. `SCENE.readingLamp` draws (and lights) the
+small lamp only for the bought chair.
+
 ## Registries for characters
 
 Shared loops never name a character. A character's own file registers:

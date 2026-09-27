@@ -485,6 +485,12 @@
     px(g, m(-13, 7), A.y + 13, 7, 4, '#4a3222'); px(g, m(21, 7), A.y + 13, 7, 4, '#4a3222');
   }
 
+  // The reading chair (Holger's) while it is unwrapped: the fireside art.
+  SCENE.wingChair = {
+    back: function (g, A) { wingChairBack(g, A, CHAIR_RED); },
+    front: function (g, A) { wingChairFront(g, A, CHAIR_RED); }
+  };
+
   function drawFloorLamp(g, x, y) {
     ell(g, x + 1, y - 2, 12, 4, 'rgba(20,12,8,0.2)');
     px(g, x - 8, y - 6, 18, 6, '#4a3222');
@@ -521,9 +527,25 @@
       px(g, cx - 1, sy - 17, 2, 2, '#f8dc8a');
       g.globalAlpha = 1;
     }
+    // The reading chair's small lamp stands at the back of the table, clear of the reader's book.
+    if (SCENE.readingLamp(world, tb)) {
+      const lx = sx - 1, on = SCENE.lampLevel(world) > 0.15;
+      px(g, lx - 3, sy - 6, 7, 2, '#4a3222');
+      px(g, lx, sy - 18, 2, 12, '#8a6142');
+      px(g, lx - 4, sy - 25, 10, 7, on ? '#f0c070' : '#d9a05a');
+      px(g, lx - 3, sy - 26, 8, 1, '#e8dfc9');
+      px(g, lx - 4, sy - 19, 10, 1, '#b57c38');
+    }
     // Crockery sits on the near plane, in front of the candle.
     tb.items.forEach(function (it) { if (!it.hidden) drawTableItem(g, sx, sy - 2, it); });
   }
+  // Only a bought reading chair brings the lamp; the full fireside pair
+  // keeps its candles alone.
+  SCENE.readingLamp = function (world, tb) {
+    const life = world && world.memory && world.memory.life;
+    return !!life && tb.furniture === 'fireside-left' && !life.furniture.fireside &&
+      IMPROVEMENTS.installed(life, 'reading-chair');
+  };
 
   /* a slim poseur table under each window, tall enough that its top meets
      the sill — both window perches set their drinks on it (reach 12) */

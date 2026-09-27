@@ -200,6 +200,24 @@
             px(g,k.x-8,k.y-5,9,2,'#b8bfc7');px(g,k.x-8,k.y-5,3,3,'#6e4a33');
           }
         }});
+      } else if (id==='readingChair') {
+        // Set down in grey moving blankets, then unwrapped where it will stay;
+        // once installed the fireside renderer draws it with its side table.
+        if(p.stage!=='arrived' && p.stage!=='working') return;
+        const A=SCENE.L.armchairs[0];
+        if(p.stage==='arrived' || p.step===0) draws.push({y:A.y+12,draw:g=>{
+          ell(g,A.x,A.y+4,30,7,'rgba(20,12,8,.2)');
+          px(g,A.x-24,A.y-48,18,50,'#7a89a5');px(g,A.x-24,A.y-24,48,26,'#7a89a5');
+          px(g,A.x-24,A.y-48,18,3,'#94a1b4');px(g,A.x-24,A.y-24,48,3,'#94a1b4');
+          px(g,A.x+14,A.y-30,10,8,'#6a7890');
+          px(g,A.x-25,A.y-38,20,2,'#4b5260');px(g,A.x-25,A.y-10,50,2,'#4b5260');
+          if(p.stage==='working')px(g,A.x+6,A.y-26,14,5,'#94a1b4');   // a corner turned back
+        }});
+        else {
+          draws.push({y:A.y-4,draw:g=>SCENE.wingChair.back(g,A)});
+          draws.push({y:A.y+12,draw:g=>SCENE.wingChair.front(g,A)});
+          draws.push({y:A.y+16,draw:g=>{px(g,A.x-38,A.y+6,18,6,'#7a89a5');px(g,A.x-38,A.y+6,18,1,'#94a1b4');px(g,A.x-38,A.y+9,18,1,'#6a7890');}});
+        }
       } else if (id==='table') {
         if(p.stage==='installed') return; // normal furniture renderer + real seats
         draws.push({y:a.y+32,draw:g=>{

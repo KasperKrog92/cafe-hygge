@@ -11,7 +11,7 @@
       // A keepsake chosen for home goes upstairs with her instead.
       const id=Object.keys(PROJECTS).find(id => PROJECTS[id].delivery !== 'contractor' && id!=='bookshelf' &&
         !(PROJECTS[id].homeFlag && w.memory.flags[PROJECTS[id].homeFlag]) &&
-        !(id==='table' && (stage==='scheduled' || w.deliveryVisitor)) && w.memory.life.projects[id].stage === stage);
+        !(PROJECTS[id].delivery==='keira' && (stage==='scheduled' || w.deliveryVisitor && w.deliveryVisitor.delivers===id)) && w.memory.life.projects[id].stage === stage);
       if(id) return id;
     }
     return null;
@@ -26,6 +26,13 @@
       const index=w.tables.findIndex(t=>t.tall && t.x===L.winTables[0].x);
       L.winSeats.filter(s=>s.win===0).forEach(s=>w.seats.push({x:s.x,y:s.y,perchX:s.perchX,perchY:s.perchY,via:s.via,
         facing:-s.side,table:index,side:s.side,window:true,armchair:false,taken:false,furniture:'left-window-table'}));
+    }
+    // The reading chair: the left fireside chair and its side table join the room.
+    if (SCENE.hasFurniture(w,'fireside-left') && !w.tables.some(t => t.furniture === 'fireside-left')) {
+      const st = L.fireTables[0], A = L.armchairs[0], index = w.tables.length;
+      w.tables.push({ x:st.x, y:st.y, tag:'by the fire', small:true, fireside:true, busVia:st.busVia,
+        items:[], candle:0, candleTarget:0, furniture:'fireside-left' });
+      w.seats.push({ x:A.x + 6 * A.dir, y:A.y, facing:A.dir, table:index, side:0, armchair:true, taken:false, furniture:'fireside-left' });
     }
     if (w.memory.life.projects.table.stage !== 'installed' || w.tables.some(t => t.project === 'table')) return;
     const t = L.projects.table, index = w.tables.length;

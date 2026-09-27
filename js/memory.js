@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 20;
+  const KEY = 'cafe-hygge-save', VERSION = 21;
   const UNPACK_BOXES = 7;   // the apartment's moving boxes (SIM.unpackBoxes)
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',

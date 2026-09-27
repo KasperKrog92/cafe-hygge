@@ -165,7 +165,15 @@ he took off the left window on the second day. Gerda knits a scarf in a colour
 Erik hated and wears it from then on. (Tomas's planned coat hook became this
 frame; the apartment already has a coat hanger.)
 
-**Next, in order:** the reading chair by the fire (C2); then
+**The reading chair by the fire — shipped 27 September 2026.** A 45-coin C2
+choice once the little wall shelves are up: Keira wheels in the left fireside
+wing chair (Holger's usual seat) wrapped in grey moving blankets; Lunafreya
+unwraps it between customers, turns it to the fire and sets a small lamp on
+its side table. Holger reads there from then on, the cat has its spot beside
+it, and the lamp glows in the evenings. The right fireside chair remains part
+of the fuller room.
+
+**Next, in order:**
 Saira without a piano (the piano's place needs an owner decision); then Birgit
 and the naming arc, which arrives at **Café Flourish** (owner decision).
 The current status/next task lives here; a brief owns scope and acceptance
@@ -361,7 +369,7 @@ Each row specifies a visible journey, not an instant menu toggle.
 | Larger bookcase (later idea) | Future layout decision; preserve both windows and their access | Delivery/unpacking design remains later work. | A larger library; not part of the initial purchase. |
 | First box of books | Installed bookshelf | She brings books, puts the box down and shelves a handful at a time between duties. | Shelf visibly fills; usable books enable browsing before every shelf is full. |
 | More books | Shelf capacity remaining | Another box and further shelving sessions on a later day. | Fuller shelves and more variety; no requirement to fill every shelf. |
-| Reading chair and lamp | Clear reading-corner position | Chair delivered and unpacked; she places the lamp and arranges the corner. | Reading seat and evening light become active together. |
+| Reading chair and lamp (shipped) | The little wall shelves; never where the fireside pair already stands | Keira brings the left fireside wing chair wrapped in blankets on her trolley; Lunafreya unwraps it, turns it to the fire and sets a small lamp on its side table, in three interruptible phases. | Holger's usual seat by the fire, its side table and an evening lamp become active together. |
 | Paint the walls | Suitable work area | Painter arrives after opening, lays protection, prepares, paints sections and clears up; normally one café day. | New wall finish, with intermediate patches visible during work. |
 | Repair the windows | Work area and access | Worker arrives with tools, protects the area, repairs frames and finishes; normally one café day. | Repaired frames; the exterior view remains part of the room throughout. |
 | Piano | Delivery route and reserved position | Movers transport and unpack it; setup completes before it becomes usable. | Current piano activities and later musical relationship beats. |

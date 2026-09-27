@@ -48,6 +48,14 @@
       capability:'elody-cutting', homeFlag:'elody-cutting-home',
       doneLine:'Maud sits on the counter now, in her hand-labelled pot.',
       homeLine:'Maud goes on the windowsill, where she can see the night.' },
+    // C2's reading chair: the left fireside wing chair (Holger's usual seat)
+    // and its side table with a small lamp. Keira brings it wrapped in
+    // blankets on her trolley; Lunafreya unwraps it, turns it to the fire and
+    // sets the lamp. A room that already has the fireside pair never needs it.
+    readingChair: { price:45, destination:'cafe', delivery:'keira', title:'a reading chair by the fire',
+      label:'A reading chair by the fire', furniture:'fireside', showsWith:'wall-shelves', requires:['empty-bookshelf'],
+      phases:['unwrap the chair','turn it to the fire','set a lamp beside it'], phaseIds:['unwrap','turn','lamp'],
+      duration:12, capability:'reading-chair', doneLine:'a reading chair by the fire, and a small lamp for the evenings.' },
     // Keira's two photographs (an early delivery morning, and now): pinned up
     // by the till, or upstairs beside the old harbour print.
     photo: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Keira's photographs",
@@ -85,7 +93,7 @@
     duration:4, maxTime:8, capability:'first-plant' };
   I.all = Object.assign({}, I.projects, {plant:I.plant});
   // The order choices appear in the evening planner.
-  I.planOrder = ['window','table','windowSeat','bookshelf','books','plant','fireplace','mantel'];
+  I.planOrder = ['window','table','windowSeat','bookshelf','books','readingChair','plant','fireplace','mantel'];
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];
