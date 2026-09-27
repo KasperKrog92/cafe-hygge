@@ -761,9 +761,24 @@ doorway for one more look at it. The cat hug uses the same carried cat and
 preserves its scarf. Only after placing the sign and returning to the counter
 does she admit the first customer.
 
-The sign reads **NEW CAFE** in uneven paint on two scrap boards. She has not
-chosen a proper café name; naming it through later patron conversations is a
-future story, not a timer or a choice forced during this introduction.
+The sign reads **NEW CAFE** in uneven paint on two scrap boards. It is not a
+chosen name: the café finds its name, Flourish, later through its neighbours
+(the naming arc), never through a timer or a choice forced during this
+introduction.
+
+## A name people already use — shipped 27 September 2026
+
+After Elody's `grow` scene and Birgit's recipe, one evening (home moment
+`name`) Lunafreya puts the neighbours' words together: Café Flourish. Marcel's
+next visit is his `sign` scene (after `marcel-introduced`), the one after it
+`signboard`, which schedules the gift project `cafeSign`: Lunafreya walks to the
+doorstep (the door opens for her, with the bell), takes the old sign from beside
+the new one, carries it behind the counter and kneels to slide it under the
+counter by her stool. Finishing sets `cafe-named`. Afterwards nine regulars
+have a line that uses the name (most as a remembered arrival; Kasper and Saira
+as musings), Keira photographs the sign on her way in, her stool caption notices
+the old sign underneath, and Saira's score, if it comes later, is titled
+Flourish.
 
 ## Keepsakes and evenings — shipped 27 September 2026
 

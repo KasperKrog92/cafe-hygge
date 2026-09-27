@@ -43,7 +43,9 @@
     'Lunafreya pulls her stool out from under the counter and opens a book.',
     'Lunafreya perches behind the counter with a book, one ear on the door.',
     { text: 'Lunafreya reads one of her own books, down from the windowsill upstairs.',
-      when: w => w.memory.life.homeUnpack.boxes >= 3 }
+      when: w => w.memory.life.homeUnpack.boxes >= 3 },
+    { text: 'Lunafreya pulls her stool out, glances at the old sign underneath, and opens a book.',
+      flags: ['cafe-named'] }
   ];
   const CROSSWORD_START = [
     'Lunafreya folds the newspaper to the crossword and finds a pencil.',

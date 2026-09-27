@@ -177,7 +177,8 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | Sitting down when nobody needs anything, told to Saira | Shipped, Saira's eight bars | Asked only to listen, she reaches to wipe a clean table. `saira-listen-sit` (she isn't very good at sitting down when nobody needs anything; "Then sit badly. Everybody starts badly.") or `saira-listen-cloth` (it's easier to listen with something in her hands). That evening upstairs the week's receipts wait until morning (home moment `rest`) |
 | Her last thing before locking up, told to Birgit | Shipped, Birgit's closing habits | `luna-closing-chairs` (she counts the chairs, then again, in case one's gone somewhere) or `luna-closing-others` (at the old shop she did everybody else's last job, and still walks the room as if somebody's forgotten something). Either way Birgit tells her to get a last thing that's only hers; with the old mug downstairs it already is one. Only Birgit has heard this |
 | What she likes for herself, told to Birgit | Shipped, Birgit's tastes | `luna-taste-orange` (bitter and bright, "like waking up") or `luna-taste-cardamom` (properly, not shy). It titles Birgit's recipe card |
-| Naming the café | Planned | Find its name through lived experience. Saira left her score untitled because "this room hasn't told me its name yet". **Owner decision (27 September): it becomes Flourish, "Café Flourish"**, for flour and baking and for a place where people flourish rather than just get by. It replaces the provisional Fleur de Lune |
+| Naming the café | Shipped, an evening at home | One evening, once Birgit has said everything good starts with flour and Elody that things flourish in here, she puts it together: the sign still says NEW CAFE and isn't new any more; people come in cold and stay until they're warm, nobody just getting by, not even her. "Flour. Flourish." **Café Flourish** (owner decision, 27 September: flour and baking, and a place where people flourish rather than just get by). "I think it's been called that for weeks. I just hadn't heard it yet." It recalls Saira's untitled score and Gerda's yellow when those have happened. Marcel paints the sign (below); the handmade NEW CAFE sign lives under the counter by her stool |
+| Calandra's second letter | Shipped, evening moment | After the sign is out: addressed to Café Flourish, the first thing to come with the name on it. Lunafreya wrote it on the back of her envelope in capitals; Dad likes it because it has flour in it. "You write about people now. You used to write about work." Calandra will come and see it, "when you say", and bring too much food. "Goodnight, Cal. From Café Flourish." |
 
 The reading-corner answer makes no purchase, price commitment or upgrade gate.
 The neighbours answer never prevents buying books later.
@@ -484,7 +485,7 @@ Use this table to distinguish identities from what the runtime currently contain
 | Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | Shipped: introduction and Maud, her geranium cutting (see below); sharing her plot and later scenes remain planned |
 | Ida | Librarian; welcoming book exchange and learning when to organize less | Shipped: introduction, the exchange preference and the reading afternoon she hosts (see below); the fuller exchange, Gerda's sign and her bookplates remain planned |
 | Ezra | Young adult student with imaginary bus maps; possible later colleague | New character; friendship precedes any future shared-work implementation |
-| Calandra | Lunafreya's sister; brings old and new lives together through an invited visit | First letter shipped (evening moment); later letters, the visit and shared home scenes remain to implement |
+| Calandra | Lunafreya's sister; brings old and new lives together through an invited visit | First letter and the letter addressed to Café Flourish shipped (evening moments); she will visit "when you say": the invitation, the visit and shared home scenes remain to implement |
 
 Keira, Nora, Kasper and Saira are the working adult romance candidates. Specific
 routes and household outcomes remain later writing work. Friendship, employment,
@@ -509,6 +510,19 @@ and asks why this side of the lake. **Lunafreya's second disclosure:**
 `luna-lake-tuesday` (on the viewing day she sat by the water with a coffee and
 imagined an ordinary Tuesday here) or `luna-lake-later` ("I'll tell you when
 I've worked it out"). Only Marcel has heard it. The facade is terracotta.
+
+**The sign — shipped 27 September.** After the naming evening, Lunafreya asks
+Marcel for a proper sign. He painted the fishmonger's sign on the corner twenty
+years ago; it came down in the spring and the shop sells phones now. "I miss
+that sign. The phone people are nice. Both of those are true." Green, cream
+letters: `sign-curl` (a flourish under the name, since it's the word; he has
+been practising it on the back of a door) or `sign-plain` (plain letters like
+the first sign, "harder to paint than people think"). He wishes he had kept the
+fishmonger's; she will keep hers under the counter by her stool. On his next
+visit it is leaning by her door ("I didn't want to carry it through your
+customers"), the old one beside it for her to bring in herself. "Places change.
+It turns out they can still look like themselves. Go on. It's your door."
+Afterwards he checks his lettering on his way in.
 
 **Ida** (she/her; auburn hair in a bun, deep red cardigan, ochre scarf; cinnamon
 latte; reads extremely melodramatic novels, currently a lighthouse keeper in
@@ -562,6 +576,13 @@ presents her in a short saved scene (`CAST.regularStories.elody`, `maud`); an
 ignored Maud goes home with her and comes back. Placing Maud is ordinary work
 (the `cutting` keepsake): between the cash tin and the cake stand, or on the
 bedroom windowsill when Lunafreya settles for the evening.
+**Things flourish in here** (`grow`, a later visit): Maud has put out three
+new leaves (or, upstairs, is flourishing on the sill). People come in like
+cuttings and after a few weeks put out new leaves (Gerda in her yellow, if she
+has it). What makes it? `elody-grow-talk` (being talked to; nobody gets left on
+a shelf) or `elody-grow-alone` (being left alone to get on with it, with
+somebody nearby). "Plants can survive almost anywhere. Flourishing's
+different. It takes a place." It goes in her rainfall notebook.
 
 ## The cat — company without explanation
 

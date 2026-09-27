@@ -34,7 +34,10 @@
 
   SCENE.furnitureDrawables = function (world) {
     const out = [];
-    if(world.memory.life.intro && world.memory.life.intro.sign==='stored')
+    // (A room that never put its first sign out keeps it here until it goes
+    // under the counter with the new one's arrival.)
+    if(world.memory.life.intro && world.memory.life.intro.sign==='stored' &&
+       ['arrived','working','installed'].indexOf(world.memory.life.projects.cafeSign.stage)<0)
       out.push({y:L.intro.signStored.y,draw:function(g){SCENE.drawNewSign(g,L.intro.signStored.x,L.intro.signStored.y);}});
     const C = L.counter;
     const SHADOW = 'rgba(20,12,8,0.2)';

@@ -916,6 +916,9 @@
     });
     const b = world.barista;
     if (!b.outside && b.state === 'terraceOut' && Math.hypot(b.x - L.doorSpot.x, b.y - L.doorSpot.y) < 44) near = true;
+    // Work at the doorstep (the sign swap) holds the door open while she is there.
+    const job = b.state === 'projectOut' && b.project && IMPROVEMENTS.projects[b.project];
+    if (job && job.door && Math.hypot(b.x - L.doorSpot.x, b.y - L.doorSpot.y) < 44) near = true;
     d.target = near ? 1 : 0;
     d.open += (d.target - d.open) * Math.min(1, dt * 5);
     if (d.jiggle > 0) d.jiggle = Math.max(0, d.jiggle - dt * 0.8);

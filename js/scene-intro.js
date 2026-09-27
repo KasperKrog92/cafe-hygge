@@ -22,14 +22,45 @@
     });
     g.restore();
   };
+  // Marcel's sign for Café Flourish: a green board on the same little legs,
+  // CAFÉ in the first sign's blocky letters and FLOURISH in narrow painted
+  // ones, with a gold flourish under the name unless she asked for plain.
+  const narrow={F:['111','100','110','100','100'],L:['100','100','100','100','111'],O:['111','101','101','101','111'],
+    U:['101','101','101','101','111'],R:['110','101','110','101','101'],I:['1','1','1','1','1'],
+    S:['111','100','111','001','111'],H:['101','101','111','101','101']};
+  function word(g,text,x,y,set,cw,ch,color) {
+    text.split('').forEach(function(c) {
+      set[c].forEach((line,row)=>line.split('').forEach((v,k)=>{ if(v==='1')px(g,x+k*cw,y+row*ch,cw,ch,color); }));
+      x+=(set[c][0].length+1)*cw;
+    });
+  }
+  S.drawFlourishSign=function(g,x,y,plain) {
+    g.save();g.translate(Math.round(x),Math.round(y));
+    px(g,-18,-6,4,9,'#4a3222');px(g,14,-6,4,9,'#4a3222');
+    px(g,-22,-36,44,31,'#3f5a44');px(g,-21,-35,42,29,'#4a7a5a');
+    px(g,-21,-35,42,1,'#6b9a5f');px(g,-21,-7,42,1,'#35493a');
+    word(g,'CAFE',-15,-32,letters,2,2,'#f5e8cb');px(g,11,-34,2,1,'#f5e8cb');   // É
+    word(g,'FLOURISH',-14,-20,narrow,1,2,'#f5e8cb');
+    if(!plain) {
+      // A painted swash under the name, curling up at both ends.
+      px(g,-11,-9,22,1,'#c9a04a');px(g,-14,-10,3,1,'#c9a04a');px(g,-15,-11,1,1,'#c9a04a');
+      px(g,11,-10,3,1,'#c9a04a');px(g,14,-11,1,2,'#c9a04a');px(g,13,-12,1,1,'#c9a04a');
+    }
+    g.restore();
+  };
   S.drawIntroPorch=function(g,w) {
-    const i=w.memory.life.intro;if(!i)return;
+    const i=w.memory.life.intro||{};
     const d=L.door;
     g.save();g.beginPath();g.rect(d.x,d.y,d.w,d.h);g.clip();
     px(g,d.x,d.y,d.w,d.h,w.pal.skyBot);
     px(g,d.x,d.y+65,d.w,d.h-65,'#969080');
     px(g,d.x,d.y+88,d.w,2,'#777666');
-    if(i.sign==='outside')S.drawNewSign(g,L.intro.porchSign.x,L.intro.porchSign.y,.72);
+    // Once Marcel has set the new sign out it stands behind the old one,
+    // until Lunafreya takes the old one in.
+    const job=w.memory.life.projects.cafeSign,out=job.stage!=='available',b=w.barista;
+    const taken=job.stage==='working'||job.stage==='installed'||job.stage==='arrived'&&b.project==='cafeSign'&&b.holding==='sign';
+    if(out)S.drawFlourishSign(g,L.intro.porchSign.x-11,L.intro.porchSign.y,!!w.memory.flags['sign-plain']);
+    if(i.sign==='outside'&&!taken)S.drawNewSign(g,L.intro.porchSign.x+(out?4:0),L.intro.porchSign.y+(out?2:0),.72);
     if(w.barista.introOutside) {
       // She walks out over the sill (the door clip hides her feet), turns to
       // set the sign down beside the step, then walks back in towards us.

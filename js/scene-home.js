@@ -281,6 +281,12 @@
           // Folded cloth and screwdriver, set down whenever service calls.
           px(g,x+17,y+23,10,4,'#7a89a5'); px(g,x+17,y+29,9,2,'#b8bfc7'); px(g,x+25,y+28,5,4,'#a8764a');
         }});
+      } else if (id==='cafeSign') {
+        // The old sign slides down out of her hands behind the counter and
+        // under it, beside her stool; the counter front hides the rest.
+        if(p.stage!=='working')return;
+        const at=a.work,q=Math.min(1,p.time/2.5);
+        draws.push({y:b.y-.1,draw:g=>SCENE.drawNewSign(g,at.x-8,at.y-8+Math.round(q*26),.85)});
       } else if (id==='fireplace') {
         if(p.stage==='scheduled'||p.stage==='installed')return;
         draws.push({y:a.y+3,draw:g=>{

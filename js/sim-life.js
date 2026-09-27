@@ -94,16 +94,20 @@
     if (b.state === 'projectOut') {
       // A carried kit is set down at its reserved site before returning;
       // it must never pop across the room when an order arrives mid-carry.
-      if (busy(w) && b.holding !== 'parcel') { projectHome(w); return true; }
+      const carry = d.carry || 'parcel';
+      if (busy(w) && b.holding !== carry) { projectHome(w); return true; }
       if (!R.walker(b,dt)) return true;
-      if (p.stage === 'scheduled') {
-        p.stage = 'arrived'; b.holding = 'parcel'; b.path = [workSpot(id)];
+      // Something carried (the old sign) is taken up again after a reload.
+      if (p.stage === 'scheduled' || d.carry && p.stage === 'arrived' && b.holding !== carry) {
+        p.stage = 'arrived'; b.holding = carry; b.path = [workSpot(id)];
+        if (d.door) R.ringDoor(w);
         commit(w); return true;
       }
       p.stage = 'working'; b.holding = null; b.state = 'projectWork'; b.projectSession = 0; commit(w);
     }
     if (d.bookSource) shelvingPose(b,d,p);
     else if (d.keepsake) { b.pose = 'reach'; b.heading = ''; b.facing = 1; }
+    else if (d.carry) { b.pose = 'kneel'; b.heading = ''; b.facing = -1; }
     else { b.pose = id === 'fireplace' ? 'kneel' : 'wipe'; b.heading = 'up'; b.facing = -1; }
     const before = p.time;
     // If a stroke ended on the previous frame, an arriving order wins now.
@@ -119,6 +123,7 @@
       p.time = 0; p.step++;
       if (p.step === d.phases.length) {
         p.stage = 'installed'; R.installProjects(w);
+        if (d.setsFlag) w.memory.flags[d.setsFlag] = true;
         R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : id==='windowSeat' ? 'a little table beside the water; room for Gerda’s wool and a cup.' :
           d.doneLine ? d.doneLine :
           d.bookSource ? (CAST.shelfLines[d.bookSource] || 'the box is empty; the little shelves look lived in.') : 'the boards are gone; the first small fire catches.');
@@ -135,7 +140,8 @@
     if (!id || busy(w) || w.projectRest > 0) return false;
     const p = w.memory.life.projects[id];
     b.project = id; b.state = 'projectOut'; b.pose = 'stand'; b.holding = null;
-    b.path = [p.stage === 'scheduled' ? pickupSpot(id) : workSpot(id)];
+    const d = PROJECTS[id];
+    b.path = [p.stage === 'scheduled' || d.carry && p.stage === 'arrived' ? pickupSpot(id) : workSpot(id)];
     return true;
   };
   // Every box of books is opened at the one place under the wall shelves; a

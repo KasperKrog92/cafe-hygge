@@ -396,7 +396,9 @@ contrast against the floor, with no backing rectangle.
   at most once a café day, worded for the room's chosen sound), gifts put in
   their place (Keira's photographs by the till or beside the harbour print,
   Tomas's frame around them, Saira's score behind the counter or above the
-  bed), Saira stopping her tapping for a nearby reader (35%, only while that
+  bed), the old sign glimpsed under the counter as she pulls her stool out
+  (after the naming), the neighbours using the name as they arrive (a
+  remembered arrival line), Saira stopping her tapping for a nearby reader (35%, only while that
   reader still reads) or, alone, a rare tapping line or musing (10%), a pianist
   settling at the bench / beginning a sparse burst, and the dusk/dawn
   candle ritual, weather changes, noon church bells, the evening kettle, lamp

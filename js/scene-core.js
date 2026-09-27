@@ -39,7 +39,8 @@
   SCENE.layoutKey = function (world) {
     const life = world && world.memory && world.memory.life;
     return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'book-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') + ':' + SCENE.mantelShelf(world) + ':' + SCENE.hasFurniture(world,'mantel-decor') +
-      ':' + SCENE.hasFurniture(world,'fireside-left') + ':' + SCENE.hasFurniture(world,'chair-worksite') : 'full';
+      ':' + SCENE.hasFurniture(world,'fireside-left') + ':' + SCENE.hasFurniture(world,'chair-worksite') +
+      ':' + SCENE.hasFurniture(world,'cafe-sign') : 'full';
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
@@ -177,6 +178,10 @@
       // Birgit's recipe card leans at the counter's right end, just past the
       // cake stand (and left of the fuller room's pastry case).
       recipe: {pickup:{x:664,y:286},parcel:{x:656,y:270},work:{x:790,y:286},spot:{x:810,y:265}},
+      // The sign swap: the old sign is taken in from the doorstep (the
+      // threshold) and slid under the counter beside her stool, which lives
+      // there too; nothing new stands on the floor.
+      cafeSign: {pickup:{x:54,y:252},work:{x:722,y:286}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},

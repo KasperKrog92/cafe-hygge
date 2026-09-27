@@ -13,6 +13,15 @@ inside the small-room desktop crop. Only the first line carries her name.
 The small dialogue controls sit above the ordinary control bar; complete
 sentences also reach an accessible live region.
 
+**Café Flourish** is Marcel's painted board (`SCENE.drawFlourishSign`) on the
+same little legs: a dark green frame `#3f5a44` round a green panel `#4a7a5a`,
+CAFÉ in the first sign's blocky 2-pixel letters and FLOURISH in narrow
+1×2-pixel ones, both cream `#f5e8cb`, with a gold `#c9a04a` swash under the
+name that curls up at both ends (left out for "plain"). It stands on the
+doorstep at full size, 11 px left of the old sign's place so it sits inside the
+door opening; while both are out the old one stands in front of it. The chalk
+menu's title reads FLOURISH once the café is named.
+
 The “NEW CAFE” sign uses two uneven scrap boards, nail marks and hand-painted
 3×5 letters (a wider W). `L.intro` owns its storage, pickup and porch anchors;
 the pickup stands just in front of the stored sign, so it moves only from wall

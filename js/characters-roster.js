@@ -1602,3 +1602,121 @@
     ]}
   ];
 })();
+
+/* A name people already use (ensemble release 6, part two): the café finds
+   its name, Flourish (owner decision, 27 September), through what the
+   neighbours say it is. Elody says things flourish in here (her `grow`
+   scene); Birgit has said everything good starts with flour (her recipe);
+   Saira left her score untitled because the room hadn't told her its name.
+   One evening at home Lunafreya puts it together (home story `name`). She
+   asks Marcel, who once painted the fishmonger's sign, for a proper one
+   (his `sign` scene: a flourish under the name, or plain letters like the
+   first sign); he sets it out by the door, and Lunafreya brings the old NEW
+   CAFE sign in and leans it just inside, where it stays (project
+   `cafeSign`, which sets `cafe-named`). From then on people use the name:
+   arrival lines, the chalk menu's title, Saira's score, and Calandra's next
+   letter, addressed to Café Flourish. */
+(function () {
+  'use strict';
+  CAST.regularStories.elody.push(
+    {id:'grow', after:['elody-maud-done'], lines:[
+      {id:'leaves',speaker:'Elody',text:"Maud's put out three new leaves since I brought her. Things flourish in here. I've been trying to work out why.",
+        alt:{'flag:elody-cutting-home':"How's Maud on your windowsill? Flourishing, I bet. Things flourish around you. I've been trying to work out why."}},
+      {id:'light',speaker:'Lunafreya',text:"The light, probably."},
+      {id:'people',speaker:'Elody',text:"Partly. But look at the room. People come in here like cuttings, and after a few weeks they've put out new leaves.",
+        alt:{'flag:gerda-colour-worn':"Partly. But look at Gerda in that yellow. People come in here like cuttings, and after a few weeks they've put out new leaves."}},
+      {id:'ask',speaker:'Elody',text:"So what is it? You must know. You're the one who waters everything."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Elody',text:"I think…",choices:[
+        {text:"Being talked to. Nobody in here gets left on a shelf.",flag:'elody-grow-talk',
+          reply:"Being talked to. Maud would agree. She's very chatty for a geranium."},
+        {text:"Being left alone to get on with it, with somebody nearby.",flag:'elody-grow-alone',
+          reply:"Left alone, with somebody nearby. That's the whole trick with gardens. And people, it turns out."}
+      ]},
+      {id:'survive',speaker:'Elody',text:"Plants can survive almost anywhere. Flourishing's different. It takes a place."},
+      {id:'notebook',speaker:'Elody',text:"I'm writing that in my rainfall notebook. It's the most interesting thing that's happened this week, and it rained twice."}
+    ]}
+  );
+  // One evening she puts it together (Saira, Gerda and Marcel are recalled
+  // only if their scenes have happened).
+  CAST.homeStories.name = {icon:'letter', label:'Think about what the café is called', after:['elody-grow-done','birgit-recipe-done'], lines:[
+    {id:'sign',speaker:'Lunafreya',text:"The sign still says NEW CAFE. It isn't new any more. I don't think it ever wanted to be."},
+    {id:'asked',speaker:'Lunafreya',text:"People keep asking what it's called, and I keep saying “the café”, as if there were only one.",
+      alt:{'flag:saira-score-done':"Saira left her score without a title. She said the room hadn't told her its name yet."}},
+    {id:'flour',speaker:'Lunafreya',text:"Birgit says everything good starts with flour."},
+    {id:'grow',speaker:'Lunafreya',text:"Elody says things flourish in there. Plants survive almost anywhere; flourishing takes a place."},
+    {id:'people',speaker:'Lunafreya',text:"People come in cold and stay until they're warm. Nobody in there is just getting by. Not even me.",
+      alt:{'flag:gerda-colour-worn':"Gerda's knitting in yellow now. Nobody in there is just getting by. Not even me."}},
+    {id:'both',speaker:'Lunafreya',text:"Flour. Flourish."},
+    {id:'name',speaker:'Lunafreya',text:"Café Flourish. I think it's been called that for weeks. I just hadn't heard it yet."},
+    {id:'painter',speaker:'Lunafreya',text:"It needs a proper sign, painted by somebody who knows letters.",
+      alt:{'flag:marcel-introduced':"It needs a proper sign. Marcel paints signs. I'll ask him."}},
+    {id:'cat',speaker:'Lunafreya',text:"Don't look at me like that. You were going to say Flourish too."}
+  ]};
+  CAST.regularStories.marcel = [
+    {id:'sign', after:['home-name-done','marcel-introduced'], lines:[
+      {id:'ask',speaker:'Lunafreya',text:"Marcel, can I ask you something? The café has a name now. It needs a proper sign."},
+      {id:'what',speaker:'Marcel',text:"Go on, then. What's it called?"},
+      {id:'name',speaker:'Lunafreya',text:"Flourish. Café Flourish."},
+      {id:'flour',speaker:'Marcel',text:"Flourish. Flour, and flourish. Birgit will say it was her idea. Let her."},
+      {id:'fishmonger',speaker:'Marcel',text:"I painted the fishmonger's sign on the corner, twenty years ago. They took it down in the spring. It's a phone shop now."},
+      {id:'true',speaker:'Marcel',text:"I miss that sign. The phone people are nice. Both of those are true."},
+      {id:'paint',speaker:'Marcel',text:"I'd like to paint yours. Green, cream letters. And I'd put a flourish under the name, since it's the word. Or not."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Marcel',text:"The letters…",choices:[
+        {text:"With the flourish. It's the word, after all.",flag:'sign-curl',
+          reply:"With the flourish. I was hoping you'd say that. I've been practising it on the back of a door."},
+        {text:"Plain letters, like the first sign. It was honest.",flag:'sign-plain',
+          reply:"Plain and honest. That's harder to paint than people think. Good."}
+      ]},
+      {id:'old',speaker:'Marcel',text:"Keep the old one, though. The NEW CAFE one. I wish I'd kept the fishmonger's."},
+      {id:'keep',speaker:'Lunafreya',text:"It can live under the counter, next to my stool. I'll see it every time I sit down."},
+      {id:'dry',speaker:'Marcel',text:"Give me two dry days. I'll set it out by your door on my way in."}
+    ]},
+    {id:'signboard', after:['marcel-sign-done'], gift:'cafeSign', lines:[
+      {id:'outside',speaker:'Marcel',text:"It's outside, leaning by your door. I didn't want to carry it through your customers."},
+      {id:'look',speaker:'Lunafreya',text:"Marcel, it's beautiful.",
+        alt:{'flag:sign-plain':"Marcel, it's perfect. Plain and honest."}},
+      {id:'curl',speaker:'Marcel',text:"The flourish went on in one stroke. I'm not saying how many doors it took.",
+        alt:{'flag:sign-plain':"Plain letters. I didn't add a single curl. You've no idea what that cost me."}},
+      {id:'swap',speaker:'Marcel',text:"The old one's still standing next to it. I thought you'd want to bring that in yourself."},
+      {id:'thanks',speaker:'Lunafreya',text:"I would. Thank you, Marcel."},
+      {id:'changes',speaker:'Marcel',text:"Places change. It turns out they can still look like themselves. Go on. It's your door."}
+    ]}
+  ];
+  // Once the sign is out, people use the name.
+  const named = {
+    holger: {arrivalReturn:'Holger stops to read the new sign, nods to it like a shipmate, and comes in.'},
+    gerda: {arrivalReturn:'Gerda comes in saying “Flourish” to herself, trying it out.'},
+    kasper: {musing:{text:'Kasper types “Flourish”, looks at it, and leaves it there.', requires:['laptop']}},
+    freya: {arrivalReturn:'Antonia says the drivers on the 9A call this stop Flourish now.'},
+    marcel: {arrivalReturn:'Marcel checks his lettering on the sign outside and comes in pleased with himself.'},
+    ida: {arrivalReturn:'Ida comes in and says the library has started sending people “round to Flourish”.'},
+    elody: {arrivalReturn:'Elody comes in and reports that Maud approves of the sign.'},
+    saira: {musing:{text:'Saira pencils a title onto her folded sheet at last, and smiles at it.'}},
+    birgit: {arrivalReturn:'Birgit comes into Flourish and tells the room the name was partly her idea.'}
+  };
+  CAST.regulars.forEach(function (r) {
+    const n = named[r.id];
+    if (!n) return;
+    Object.keys(n).forEach(function (pool) {
+      const line = typeof n[pool] === 'string' ? {text:n[pool]} : Object.assign({}, n[pool]);
+      line.flags = (line.flags || []).concat(['cafe-named']);
+      (r.lines[pool] = r.lines[pool] || []).push(line);
+    });
+  });
+  CAST.visitors.keira.returningAfter = [].concat(CAST.visitors.keira.returningAfter,
+    {flags:['cafe-named'], text:'Keira stops outside to photograph the new sign, then comes in grinning.'});
+  // Saira's untitled score, if it comes after the name.
+  const score = CAST.regularStories.saira.find(s => s.id === 'score');
+  score.lines.find(l => l.id === 'blank').alt = {'flag:cafe-named':"I was going to leave it blank until the room told me its name. It has. So it's called Flourish."};
+  // Calandra's next letter, addressed to the café by name.
+  CAST.homeStories.flourish = {icon:'letter', label:"Read Calandra's letter", after:['cafe-named','home-calandra-done'], lines:[
+    {id:'envelope',speaker:'Lunafreya',text:"A letter from Cal. It's addressed to Café Flourish. The first thing that's ever come with the name on it."},
+    {id:'caps',speaker:'Calandra',text:"Luna. Café Flourish! You wrote it on the back of your envelope in capitals, so I assume we're shouting it."},
+    {id:'dad',speaker:'Calandra',text:"Dad says it's a good name because it has flour in it. He's very pleased with himself for noticing. Don't tell him that was the point."},
+    {id:'people',speaker:'Calandra',text:"You write about people now. You never used to. You used to write about work.",
+      alt:{'flag:calandra-told-place':"Last time you wrote about the room. This time you wrote about people. You never used to. You used to write about work."}},
+    {id:'visit',speaker:'Calandra',text:"I'm coming to see it. Not yet. When you say. I'll bring too much food and pretend it's for the neighbours."},
+    {id:'soon',speaker:'Lunafreya',text:"When I say. I think I'll say soon."},
+    {id:'night',speaker:'Lunafreya',text:"Goodnight, Cal. From Café Flourish."}
+  ]};
+})();

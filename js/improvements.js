@@ -84,6 +84,14 @@
       capability:'birgit-recipe', homeFlag:'birgit-recipe-home',
       doneLine:'Birgit’s recipe card leans by the cake stand, waiting for an oven.',
       homeLine:'Birgit’s recipe card goes up on the kitchen wall.' },
+    // The new sign (the naming arc): Marcel sets it out by the door, and
+    // Lunafreya brings the old NEW CAFE sign in from beside it (`carry`, the
+    // door opening as she takes it) and slides it under the counter by her
+    // stool. Finishing it names the café (`setsFlag`).
+    cafeSign: { price:0, gift:true, destination:'cafe', delivery:'gift', title:'the new sign',
+      label:'The new sign', phases:['slide the old sign under the counter'], phaseIds:['stow'], duration:3,
+      capability:'cafe-sign', carry:'sign', door:true, setsFlag:'cafe-named',
+      doneLine:'Outside the door, Marcel’s sign says Café Flourish; the old one lives under the counter now.' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],

@@ -831,6 +831,17 @@ any parcel story completes), and the keepsake `recipe` (capability
 `birgit-recipe`, `homeFlag 'birgit-recipe-home'`; `L.projects.recipe`,
 `L.home.recipe`, drawn by `SCENE.drawRecipe`).
 
+The naming arc (v24) adds project fields for a carried job: `carry` (what she
+holds from the pickup spot to the work spot: the old sign; after a reload
+mid-carry she goes back for it, since it is still on the doorstep), `door`
+(the door opens with its bell as she takes it and stays open while she is at
+the doorstep, `updateDoor`) and `setsFlag` (set on installation: `cafe-named`).
+`cafeSign` is that job, scheduled by Marcel's `signboard` story (Marcel now
+has `CAST.regularStories`). The porch draws the new sign once scheduled and
+the old one until she takes it (`drawIntroPorch`); `layoutKey` includes
+`cafe-sign` so the static background's chalk menu can change its title. Home
+stories `name` and `flourish` use `after` flags; Elody's `grow` follows Maud.
+
 Arrivals: `arrivalRoom(world, extra)` lets a familiar face (a due regular,
 `dueRegular`, or an off-duty neighbour, `SIM._.socialVisitorDue`) take a clean
 seat one guest past the popularity target, never on opening day; walk-ins

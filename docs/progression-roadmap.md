@@ -193,12 +193,24 @@ shop); tastes, a paper bag of two small things for Lunafreya herself; and the
 handwritten recipe card, "Everything good starts with flour", kept by the cake
 stand or on the kitchen wall. No oven is required.
 
+**A name people already use — shipped 27 September 2026.** The café finds its
+name, **Café Flourish** (owner decision), through what the neighbours say it
+is. Birgit's recipe says everything good starts with flour; Elody says things
+flourish in here (plants survive almost anywhere, flourishing takes a place);
+Saira's score has no title yet. One evening at home Lunafreya puts it together.
+Marcel, who painted the fishmonger's sign twenty years ago and still misses it,
+paints the new one, green with cream letters (a flourish under the name, or
+plain), and sets it out by the door beside the old one. Lunafreya opens the
+door, takes the handmade NEW CAFE sign in and slides it under the counter by
+her stool, where she sees it every time she sits down. From then on the
+neighbours use the name, the chalk menu is titled FLOURISH, and Calandra's next
+letter comes addressed to Café Flourish ("I'm coming to see it. When you say.").
+
 **Next, in order:**
-The naming arc, which arrives at **Café Flourish** (owner decision). **The
-piano waits for the room expansion (owner, 27 September 2026):** its place
-(`L.piano`) lies in the front strip that only the full room opens, so the
-expansion upgrade comes first and the piano after it, never squeezed into the
-small room.
+The room expansion upgrade, then the piano. **The piano waits for the room
+expansion (owner, 27 September 2026):** its place (`L.piano`) lies in the front
+strip that only the full room opens, so the expansion upgrade comes first and
+the piano after it, never squeezed into the small room.
 The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
@@ -239,7 +251,8 @@ households stay at their later boundaries.
 - **The café's name (owner, 27 September 2026): Flourish — "Café Flourish".** A
   play on flour and baking, and a place where people flourish and thrive, not
   just survive. It replaces the provisional Fleur de Lune. The café stays
-  unnamed until the naming arc arrives there through lived experience.
+  unnamed until the naming arc arrives there through lived experience (shipped:
+  see "A name people already use" above).
 
 The concrete stages, pacing and rules below are recommendations to prototype.
 They should be revised after watching the first complete day-and-home loop.
@@ -603,16 +616,15 @@ direction. A large catalogue or a redesigned whole café would hide that test.
 
 The first-morning cutscene shipped on 7 September: Lunafreya talks to her cat,
 hugs it, takes a silent breath and puts out a crude **NEW CAFE** sign as her
-last opening action. The café has no chosen in-story name. A later conversation
-with patrons should help her find it over the coming café days; that naming
-arc remains future work. The sign currently stays outside after first opening;
-daily retrieval/replacement can join the planned daily street-sign routine.
+last opening action. The naming arc (shipped 27 September) finds its name,
+Café Flourish, and Marcel's painted sign replaces it by the door; the handmade
+sign lives under the counter. The sign stays outside after opening; daily
+retrieval/replacement can join the planned daily street-sign routine.
 
 - Evening length and how the planner allows lingering without a feeling of hurry.
 - Prices, starting savings and how much progress a normal reading session funds.
 - The apartment's framing; C0's initial furniture is specified above.
 - Whether one new project per evening feels sufficient or overly restrictive.
-- How the naming arc arrives at Flourish, and the sign scene that follows.
 - Recipes, food portions and replenishment, counter layouts, oven routines and
   the order of kitchen upgrades; the working-day role and pay model for a helper.
 - Who might become a colleague, close friend, partner or temporary guest; the

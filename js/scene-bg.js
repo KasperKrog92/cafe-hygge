@@ -280,7 +280,7 @@
 
     if(world.memory.life.furniture['mantel-decor']) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
     drawFireplaceStatic(g,world);
-    if(SCENE.hasFurniture(world,'wall-menu')) drawMenuBoard(g);
+    if(SCENE.hasFurniture(world,'wall-menu')) drawMenuBoard(g, SCENE.hasFurniture(world,'cafe-sign'));
     if(SCENE.fullCounter(world)) drawShelves(g);
     if (SCENE.hasFurniture(world,'hearth')) drawFirewood(g);
   }
@@ -822,7 +822,7 @@
   }
 
   /* ---------- menu board, shelves, lamps ---------- */
-  function drawMenuBoard(g) {
+  function drawMenuBoard(g, named) {
     const m = L.menu;
     // A substantial oak frame sits off the wall, with recessed slate inside.
     px(g, m.x + 3, m.y + 4, m.w, m.h + 2, 'rgba(30,18,10,0.22)');
@@ -835,7 +835,8 @@
     px(g, m.x + 6, m.y + 8, 2, m.h - 14, 'rgba(0,0,0,0.18)');
     // The title and four rows have separate margins; even the widest doodle
     // fits beside the prices without touching the frame or the lettering.
-    SCENE.chalkText(g, m.x + 23, m.y + 15, 'CAFÉ HYGGE', '#e8dfc9');
+    // Titled with the café's own name once it has one.
+    SCENE.chalkText(g, m.x + (named ? 29 : 23), m.y + 15, named ? 'FLOURISH' : 'CAFÉ HYGGE', '#e8dfc9');
     px(g, m.x + 16, m.y + 28, m.w - 32, 2, 'rgba(232,223,201,0.35)');
     ['KAFFE', 'MATCHA', 'KAKAO', 'BOLLER'].forEach(function (label, i) {
       const y = m.y + 36 + i * 15;
