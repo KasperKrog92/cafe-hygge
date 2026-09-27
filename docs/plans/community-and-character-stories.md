@@ -11,8 +11,8 @@ Acceptance does not mean every recommendation is immutable or already shipped.
 The [story bible](../story-bible.md) distinguishes existing facts from planned
 writing; the [narrative contract](../narrative.md) owns the shared rules. The
 [progression roadmap](../progression-roadmap.md) owns the current build order.
-Second-day visitors are shipped. The next bounded brief is
-[First books, first connection](first-books.md).
+Second-day visitors and the first release, First books, first connection, are
+shipped (27 September).
 This larger document remains the durable ensemble direction at its existing
 path; it is not a disposable execution checklist to delete after one release.
 
@@ -765,9 +765,9 @@ what she said. Let some emotionally important lines remain plain.
 These are working content releases, not in-game levels. The shipped second-day visitor
 milestone introduces Keira and Tomas through the first table delivery and
 window repair.
-[First books, first connection](first-books.md) then
-splits the first release into three reviewable passes: Keira's empty-shelf
-delivery, usable purchased books, then the attended character conversations.
+First books, first connection (shipped 27 September) split the first release
+into three reviewable passes: Keira's empty-shelf delivery, usable purchased
+books, then Holger's offer and handover with Lunafreya's first disclosure.
 
 | Release | Complete player-facing result | Preparation at that boundary |
 | --- | --- | --- |

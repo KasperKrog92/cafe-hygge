@@ -77,7 +77,12 @@
      sits; slots fill the lower board first, left to right. */
   const BOOK_DESIGNS = SCENE.bookDesigns = {
     box: [{w:4,h:14,col:'#a94f3f',band:'#c9a04a'},{w:3,h:12,col:'#4a7a5a'},{w:5,h:15,col:'#7a89a5',band:'#e8dfc9'},
-      {w:4,h:13,col:'#d9a05a'},{w:3,h:15,col:'#8a6a9a',band:'#c9a04a'},{w:4,h:12,col:'#5a7a8a'}]
+      {w:4,h:13,col:'#d9a05a'},{w:3,h:15,col:'#8a6a9a',band:'#c9a04a'},{w:4,h:12,col:'#5a7a8a'}],
+    // Holger's crew books: the bosun's adventure, the cook's worn cookbook,
+    // the inexplicable gardening book, a bird guide, a sea-stained detective
+    // novel and a thin book of poems.
+    holger: [{w:4,h:15,col:'#3d4a5c',band:'#c9a04a'},{w:5,h:13,col:'#b5654a',worn:true},{w:4,h:14,col:'#6b7a55',band:'#d8c9ad'},
+      {w:3,h:12,col:'#7a89a5'},{w:5,h:15,col:'#6e4a33',band:'#c9a04a',worn:true},{w:3,h:11,col:'#d8c9ad'}]
   };
   SCENE.drawShelfBook = function (g, b) {
     const top = b.y - b.h;

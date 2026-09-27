@@ -504,3 +504,70 @@
   };
 })();
 
+
+/* Holger's books (first-books Pass 3). Two saved scenes: the offer, which
+   recalls Lunafreya's first answer to him, and the handover, where she first
+   mentions her old bookshop work. `alt` holds context variants, chosen by
+   sim-holger.js in the order written: neighbours (she chose names over
+   books), no-shelf (nowhere to put them yet), keep (the books stay his),
+   library (an established café's big shelf). Node IDs are saved identities. */
+(function () {
+  'use strict';
+  CAST.holgerBooks = {
+    offer: [
+      {id:'recall',speaker:'Holger',text:"You told me you'd like a quiet corner for books someday. I've been eyeing my own shelves ever since.",
+        alt:{neighbours:"You said you wanted to learn everyone's names first. I've been wondering how people get talking in a new place."}},
+      {id:'recall-reply',speaker:'Lunafreya',text:"Eyeing them how?",alt:{neighbours:"Any conclusions?"}},
+      {id:'box',speaker:'Holger',text:"There's a box I never unpacked after my last ship. Books the crew left behind, mostly.",
+        alt:{neighbours:"A book on the table helps. Nobody has to think of what to say. I've a box of them I never unpacked after my last ship."}},
+      {id:'count',speaker:'Holger',text:"There are six books. Seven if you count the one holding the box shut."},
+      {id:'seventh',speaker:'Lunafreya',text:"What's the seventh?"},
+      {id:'tide',speaker:'Holger',text:"A tide table from 1998. It has retired from everything except boxes."},
+      {id:'offer',speaker:'Holger',text:"The other six would rather be read. I wondered if they might live here, where somebody could pick one up."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Holger',text:'Your books, here…',choices:[
+        {text:"I'd love that. Anyone who comes in could borrow one.",flag:'holger-books-lend',
+          reply:"Good. Books shouldn't sit still. I'll write a little something in the front of each."},
+        {text:"I'd love that. They could stay yours, just kept here.",flag:'holger-books-keep',
+          reply:"Mine, on your wall. Then I'll have a reason to come and visit them."}
+      ]},
+      {id:'when',speaker:'Holger',text:"I'll bring them next time, before the box changes its mind.",
+        alt:{'no-shelf':"They'll wait at mine until you've somewhere to put them. Books are patient. So am I."}},
+      {id:'thanks',speaker:'Lunafreya',text:"Thank you, Holger. Really."}
+    ],
+    gift: [
+      {id:'here',speaker:'Holger',text:"I've brought them. They're on your counter, before I could think better of it."},
+      {id:'look',speaker:'Lunafreya',text:"Can I look?"},
+      {id:'adventure',speaker:'Holger',text:"The adventure one was the bosun's. He read it every crossing and never once finished it. Said he liked not knowing."},
+      {id:'cookbook',speaker:'Holger',text:"The cookbook was the cook's, naturally. I nearly kept it. There was something in it I meant to try."},
+      {id:'what',speaker:'Lunafreya',text:"What was it?"},
+      {id:'decided',speaker:'Holger',text:"I haven't decided. I've only had it twenty years."},
+      {id:'shop',speaker:'Lunafreya',text:"We had one like that in the shop where I used to work. Everyone meant to cook from it."},
+      {id:'worked',speaker:'Holger',text:"You worked with books?"},
+      {id:'readings',speaker:'Lunafreya',text:"Books, coffee, readings in the evening. Mostly I was finding enough chairs."},
+      {id:'enjoy',speaker:'Holger',text:"Did you enjoy it? If you don't mind my asking."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Holger',text:'I…',choices:[
+        {text:"A lot of it. I think that's why leaving took so long.",flag:'luna-bookshop-fond',
+          reply:"Then these are in good hands. Somebody who minded leaving a place."},
+        {text:"Most of it. I'll tell you the rest another day.",flag:'luna-bookshop-later',
+          reply:"Another day, then. I'm very good at waiting. Ask the tide table."}
+      ]},
+      {id:'garden',speaker:'Holger',text:"The gardening book I can't explain. Nobody on that ship grew anything but beards."},
+      {id:'plates',speaker:'Holger',text:"I've put a note in the front of each. For anyone who stays a while.",
+        alt:{keep:"I've written my name in the front of each. So they know where they came from, and where they live now."}},
+      {id:'place',speaker:'Lunafreya',text:"They'll go on the little shelves by the fire. I'll put them up between customers.",
+        alt:{library:"I'll make room on the big shelf. They'll have plenty of company."}},
+      {id:'new',speaker:'Lunafreya',text:"The café feels a little less new already."},
+      {id:'crew',speaker:'Holger',text:"Thank the crew. I only carried them."}
+    ]
+  };
+  CAST.shelfLines.holger = "Holger's books stand together on the little shelves; the box is folded flat.";
+  // A pool may vary with a remembered choice: the first set flag wins.
+  CAST.borrowLines.holger = {
+    lines: ["takes down one of Holger's books; there's a note in the front, for anyone who stays a while.",
+      "chooses the bosun's adventure book from Holger's row.", "opens Holger's old cookbook and reads a recipe twice."],
+    flags: { 'holger-books-keep': ["takes down one of Holger's books; his name is written neatly inside the cover.",
+      "chooses the bosun's adventure book from Holger's row.", "opens Holger's old cookbook and reads a recipe twice."] }
+  };
+  // Someone taking down a book that came from them.
+  CAST.borrowLinesOwn = { holger: ['takes down one of his own books, as if calling on an old shipmate.'] };
+})();

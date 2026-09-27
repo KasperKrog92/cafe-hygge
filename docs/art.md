@@ -315,7 +315,7 @@ y=600 ── master bottom: 24 px overscan strip (plus 12 px per side)
 ### Placement and future room use
 
 Before choosing furniture coordinates, read the [progression roadmap](progression-roadmap.md),
-its upgrade catalogue and the relevant [improvement brief](plans/first-books.md).
+its upgrade catalogue and any current improvement brief in [plans](plans/).
 Compare the candidate's full visible silhouette and footprint with both the
 current room and its documented later uses. Check window repair and use, doors,
 exterior sightlines, planned furnishings/improvements, and the space people need

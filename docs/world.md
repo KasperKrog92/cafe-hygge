@@ -86,6 +86,13 @@ shelves.”, “the box is folded flat; six secondhand books wait on the little
 shelves.”, and for readers “… drifts over to the little shelves.”, “… wanders
 over to the little shelves.”, “… takes a book down from the little shelves.”
 
+Holger's books add: “Holger comes in with a small box held carefully under one
+arm.” (his gift visit); “Holger's books stand together on the little shelves;
+the box is folded flat.”; and reader lines that remember the handover: a note
+“for anyone who stays a while” (lent) or his name inside the cover (kept), the
+bosun's adventure book, the old cookbook read twice, and Holger taking down
+one of his own books “as if calling on an old shipmate.”
+
 Shelf captions use the ordinary quiet queue: first arrival, “Keira brings a
 little shelf kit and her folding steps”; familiar arrival, “Keira returns with
 a small bundle of shelves”; resumption, “Keira is back to finish the little

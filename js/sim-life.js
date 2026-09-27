@@ -88,7 +88,7 @@
       if (busy(w) && b.holding !== 'parcel') { projectHome(w); return true; }
       if (!R.walker(b,dt)) return true;
       if (p.stage === 'scheduled') {
-        p.stage = 'arrived'; b.holding = 'parcel'; b.path = [L.projects[id].work];
+        p.stage = 'arrived'; b.holding = 'parcel'; b.path = [workSpot(id)];
         commit(w); return true;
       }
       p.stage = 'working'; b.holding = null; b.state = 'projectWork'; b.projectSession = 0; commit(w);
@@ -124,9 +124,14 @@
     if (!id || busy(w) || w.projectRest > 0) return false;
     const p = w.memory.life.projects[id];
     b.project = id; b.state = 'projectOut'; b.pose = 'stand'; b.holding = null;
-    b.path = [p.stage === 'scheduled' ? L.projects.pickup : L.projects[id].work];
+    b.path = [p.stage === 'scheduled' ? pickupSpot(id) : workSpot(id)];
     return true;
   };
+  // Every box of books is opened at the one place under the wall shelves; a
+  // project may name where its scheduled parcel waits (a gift on the counter).
+  function workSpot(id) { return PROJECTS[id].bookSource ? L.projects.books.work : L.projects[id].work; }
+  function pickupSpot(id) { return (L.projects[id] && L.projects[id].pickup) || L.projects.pickup; }
+  R.workSpot = workSpot; R.pickupSpot = pickupSpot;
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
   R.commitLife = commit;
   // The booked craftsperson has a private walking actor, never a customer,

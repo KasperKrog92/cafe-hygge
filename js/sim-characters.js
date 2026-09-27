@@ -1592,6 +1592,9 @@
     if (!shopBusy) updateBarista(world, world.barista, dt);
     world.patrons.forEach(function (p) { updatePatron(world, p, dt); });
     world.patrons = world.patrons.filter(function (p) { return !p.gone; });
+    // A parcel never outlives its owner's visit on the counter.
+    if (world.counterParcel && !world.patrons.some(function (p) { return p.id === world.counterParcel.owner; }))
+      world.counterParcel = null;
     if (!world.shop.carryingCat) {
       if (world.cat.state === 'shopWalk') {
         world.cat.animT += dt; walker(world.cat, dt);
@@ -1697,6 +1700,12 @@
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment && world.moment.owner===p ?
         Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null},
           world.moment.phase==='talk' && world.moment.owner===p ? {heading:'',facing:world.barista.x>p.x?1:-1} : {}) : withShelfReach(world, p)); } });
+      // A small carton held against the hip (a gift brought for Lunafreya).
+      if(p.parcel)draws.push({y:p.y+.1,draw:function(g){
+        const f=p.heading?1:p.facing,x=Math.round(p.x)+f*10,y=Math.round(p.y)-17;
+        SCENE.drawBookBox(g,x,y,p.parcel==='books'?'holger':p.parcel);
+        SCENE._.px(g,x-f*9-(f>0?0:4),y-9,4,4,p.colors.skin);
+      }});
       if(p.carryingPillows)draws.push({y:p.y+.1,draw:function(g){
         for(let n=0;n<p.carryingPillows;n++)SCENE.drawKnittedPillow(g,Math.round(p.x)+4,Math.round(p.y)-34+n*11,true);
       }});
@@ -1704,6 +1713,12 @@
         alpha: pulsing[p.id] && !world.reducedMotion ? .45+.55*(.5+.5*Math.cos(p.animT*Math.PI)) : 1 });
       else if (p.bubble) bubbles.push({ x: p.x, y: p.pose === 'sit' ? p.y + 6 : p.y, icon: p.bubble.icon });
     });
+    const parcel = world.counterParcel;
+    if (parcel) {
+      const at = L.projects.holgerBooks.parcel;
+      draws.push({ y: L.basic.counter.baseY + .5, draw: function (g) {
+        SCENE.drawBookBox(g, at.x, at.y, parcel.kind === 'books' ? 'holger' : parcel.kind); } });
+    }
     const b = world.barista;
     if (!b.introOutside && !b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {
       const life=world.memory.life,first=life.firstOpening,intro=life.intro,task=world.shop.task;

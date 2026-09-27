@@ -62,10 +62,10 @@ later idle mode then leaves automatically. First evenings and game evenings stil
 wait for explicit sleep. Reload resumes the meal without adding offline time;
 established pre-v12 evenings continue in place and receive dinner next evening.
 
-## Current next milestone — First books, first connection
+## First books, first connection — shipped 27 September 2026
 
-The [implementation brief](plans/first-books.md) translates the accepted story
-direction into one complete near-term experience, delivered in reviewable passes:
+The first release of the [ensemble plan](plans/community-and-character-stories.md),
+delivered in three passes (the executed brief is in git history):
 
 1. **Three little wall shelves — shipped 8 September.** Ordinary 40-coin
    evening purchase, Keira's small kit and folding steps, saved installation
@@ -75,13 +75,19 @@ direction into one complete near-term experience, delivered in reviewable passes
    secondhand books, carried in the next morning and shelved a handful at a
    time between customers. The saved shelf list, visible spines and browsing
    agree; readers borrow real books and slide them back.
-3. **The shelf acquires a history.** Keira's returning-visitor continuity, Holger's
-   remembered offer and attended gift, and Lunafreya's first disclosure about
-   her former bookshop/café work. Gift books share the established stocking path.
+3. **The shelf acquires a history — shipped 27 September.** From his third
+   visit Holger offers the crew's six books, recalling her first answer; she
+   chooses to lend them to anyone or let them stay his. On a later visit (once
+   a shelf exists) he brings the box, and while they look through it Lunafreya
+   first mentions her old bookshop work. The gift is shelved through the same
+   stocking work; an ignored box goes home with him and comes back another day.
+   Keira's returning-visitor continuity shipped with the shelves.
 
-The current status/next task lives here; the brief owns scope and acceptance
-checks, the story bible owns continuity, and the larger plan owns ensemble arcs.
-Build only the next requested pass. Stable conversation preparation shipped
+The next milestone is the plan's second release, **familiar faces become
+people**: proper introductions for the regulars who have none yet and first
+callbacks for Keira and Tomas. Its brief lives in `docs/plans/` when written.
+The current status/next task lives here; a brief owns scope and acceptance
+checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
 Keira and Tomas share saved-node resumption. Existing dialogue and choices are
 unchanged. The old conversation/UI checks passed before extraction; new writing

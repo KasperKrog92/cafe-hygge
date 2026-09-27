@@ -342,6 +342,12 @@
         if(p.regularId==='holger' && SIM.holgerRequired(world))break;
         if (p.stateT > 2.0) {
           world.barista.orders.push({ patron: p, drink: p.drink });
+          // Something brought for Lunafreya is set down on the counter while
+          // they order; it stays theirs until she accepts it.
+          if (p.parcel && !world.counterParcel) {
+            world.counterParcel = { owner: p.id, kind: p.parcel }; p.parcel = null;
+            SND.softThump();
+          }
           // leave the queue
           world.queue.shift();
           world.queue.forEach(function (q, i) {
@@ -654,6 +660,18 @@
           SND.clink(0.45, 0.025);
           p.state = 'seated'; p.stateT = 0;
           beginDeparture(world, p, dt);
+        }
+        break;
+      }
+      case 'collectParcel': {
+        // Their unaccepted parcel goes home with them; it can come another day.
+        if (!walker(p, dt)) { p.stateT = 0; break; }
+        p.heading = 'up'; p.facing = 1;
+        if (p.stateT > 0.6) {
+          const parcel = world.counterParcel;
+          if (parcel && parcel.owner === p.id) { p.parcel = parcel.kind; world.counterParcel = null; }
+          p.heading = '';
+          leaveCafe(world, p);
         }
         break;
       }
@@ -1080,6 +1098,11 @@
 
   function leaveCafe(world, p, seat) {
     p.stateT = 0; p.rangBell = false;
+    if (world.counterParcel && world.counterParcel.owner === p.id) {
+      p.state = 'collectParcel';
+      pathFrom(p, seat, L.orderSpot.x, L.orderSpot.y);
+      return;
+    }
     if (p.umbrellaParked) {
       p.state = 'collectUmbrella';
       pathToUmbrella(p, seat);

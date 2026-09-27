@@ -5,8 +5,10 @@
 > Story invitations remain saved until chosen in game mode; idle hides their
 > controls without consuming them. Both modes share the same progress and home.
 > The initial wall shelves follow this rule too: authorized delivery and fitting
-> can finish unattended, leaving empty boards. Keira's greeting waits separately;
-> book stocking, Holger's gift and personal disclosure remain later passes.
+> can finish unattended, leaving empty boards. Keira's greeting waits separately.
+> Books follow it as well: shelving a bought box or an accepted gift is practical
+> work; Holger's offer and handover wait for the player, and an ignored gift goes
+> home with him and returns another day (27 September 2026).
 >
 > **Owner-directed tutorial exception (7 September 2026):** the new café’s first
 > Holger introduction is mandatory in both modes. He waits at the counter;

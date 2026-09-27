@@ -25,6 +25,7 @@
     }
     px(g,x-12,y-14,4,2,'#c9a477');px(g,x+8,y-14,4,2,'#c9a477');
   }
+  SCENE.drawBookBox = function(g,x,y,source) { bookBox(g,x,y,{bookSource:source},0,false); };
   SCENE.drawFirstPlant = function(g,x,y) {
     px(g,x-7,y-13,14,11,'#b5654a'); px(g,x-5,y-3,10,3,'#8f4a35');
     px(g,x-9,y-16,18,4,'#d39a70'); px(g,x-5,y-12,3,7,'#c98f73');
@@ -96,7 +97,12 @@
       const p=jobs[id], a=anchors[id];
       if (p.stage==='available'||p.stage==='purchased') return;
       const carried=b.project===id && b.holding==='parcel';
-      if (carried) draws.push({y:b.y+.1,draw:g=>box(g,Math.round(b.x)+12,Math.round(b.y)-22,false)});
+      if (carried) draws.push({y:b.y+.1,draw:g=>{
+        const x=Math.round(b.x),y=Math.round(b.y),d=IMPROVEMENTS.projects[id];
+        // A box of books keeps its own small carton in her arms.
+        if(d.bookSource) {const f=b.heading?1:b.facing;bookBox(g,x+f*10,y-16,d,0,false);px(g,x+f*10-(f>0?11:-8),y-26,4,4,b.colors.skin);}
+        else box(g,x+12,y-22,false);
+      }});
       if (id==='windowSeat') {
         if(p.stage==='scheduled'||p.stage==='installed')return;
         const t=SCENE.L.winTables[0];
@@ -112,9 +118,11 @@
         const d=IMPROVEMENTS.projects[id];
         if(p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
         if(p.stage==='scheduled') {
-          // Brought in with the morning; it waits inside the door.
-          const at=SCENE.L.projects.pickup;
-          draws.push({y:at.y,draw:g=>bookBox(g,at.x+20,at.y,d,0,false)});
+          // A handed-over gift waits on the counter; a morning purchase
+          // waits inside the door.
+          const own=a && a.parcel;
+          if(own) draws.push({y:SCENE.L.basic.counter.baseY+.5,draw:g=>bookBox(g,own.x,own.y,d,0,false)});
+          else { const at=SCENE.L.projects.pickup; draws.push({y:at.y,draw:g=>bookBox(g,at.x+20,at.y,d,0,false)}); }
           return;
         }
         if(carried)return;

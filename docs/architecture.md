@@ -25,6 +25,7 @@ js/sim-characters.js    → extends SIM    (barista, cat, update + draw bridge)
 js/sim-life.js          → extends SIM    (home, plant, presentation, saved lifecycle)
 js/sim-intro.js         → extends SIM    (first-morning dialogue and opening finale)
 js/sim-moments.js       → extends SIM    (shared attended moments and saved replies)
+js/sim-holger.js        → extends SIM    (Holger's books offer and handover, visit gate)
 js/sim-gerda.js         → extends SIM    (window-gated visits, pillow placement and conversations)
 js/sim-visitors.js      → extends SIM    (Keira/Tomas jobs and saved greetings)
 js/sim-home.js          → extends SIM    (saved first apartment tour, first planner, bedtime)
@@ -654,6 +655,29 @@ once per identity per running café day after day one (Keira from 10, Tomas from
 nodes cannot. Active jobs suppress off-duty duplicates. Invitations appear in
 game mode only while seated, after service, and remain unconsumed in idle.
 No calendar or new purchase is needed.
+
+## Holger's books (v16)
+
+`sim-holger.js` owns Holger after his introduction. `SIM.holgerChapter(world)`
+names what he has to share: `offer` from his third visit after the
+introduction, then `gift` once `holger-books-promised` is saved and a shelf
+exists (wall shelves or the legacy library). His visit gate's new `arrive`
+hook (`SIM.gateRegular(id, {arrive(world, patron)})`, called as a regular comes
+through the door) stamps that chapter on the patron, so a scene can never open
+on the visit that made it possible, and gives him the box (`p.parcel`).
+
+A patron's `parcel` is generic: set down on the counter while ordering as
+`world.counterParcel = {owner, kind}` (transient, drawn at
+`L.projects.holgerBooks.parcel`), and collected again on the way out
+(`collectParcel` state) unless accepted; an owner who is gone clears it. The
+handover's finish turns it into the saved gift project `holgerBooks`
+(`gift: true`, never offered, price 0): `scheduled` on the counter, picked up
+from `L.projects.holgerBooks.pickup` and stocked through the ordinary book
+work, six `holger` books. In an established library it installs at once.
+Scene packets are `CAST.holgerBooks.offer/gift` with `alt` context variants
+(neighbours, no-shelf, keep, library); saved prefixes `holger-books-offer-`
+and `holger-books-gift-`; choice flags `holger-books-lend/keep` and
+`luna-bookshop-fond/later`; results `holger-books-promised/given`.
 
 ## Initial wall shelves (v9)
 

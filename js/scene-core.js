@@ -138,6 +138,9 @@
       // hearth side; readers browse from the window side, so both can happen
       // at once. Both clear the window perch and the firebox.
       books: {work:{x:352,y:252},box:{x:328,y:248,w:20,h:12},browse:{x:304,y:256}},
+      // A handed-over gift waits on the counter's free left end, clear of the
+      // cups and of whoever stands to order.
+      holgerBooks: {pickup:{x:664,y:286},parcel:{x:650,y:271}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},

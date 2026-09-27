@@ -26,6 +26,14 @@
       phases:['open the box','shelve the first books','shelve a few more','shelve the last of them','fold the box flat'],
       phaseIds:['open','first','second','last','fold'], duration:12, capability:'shelf-books',
       bookSource:'box', shelves:[0,2,2,2,0] },
+    // Holger's six books, a gift: never offered or bought. His attended
+    // handover makes it `scheduled` on the counter; the shelving is the same
+    // ordinary work as a purchased box.
+    holgerBooks: { price:0, gift:true, destination:'cafe', delivery:'gift', title:"Holger's books",
+      label:"Holger's books", requires:['empty-bookshelf'],
+      phases:['open his box',"shelve the bosun's book and the cookbook",'shelve the garden and bird books','shelve the last two','fold the box flat'],
+      phaseIds:['open','first','second','last','fold'], duration:12, capability:'holger-books',
+      bookSource:'holger', shelves:[0,2,2,2,0] },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
@@ -86,7 +94,7 @@
   // Whether the planner shows this choice at all (bought ones stay, ticked).
   I.offered = function (world, id) {
     const d = I.all[id], l = world.memory.life, h = l.homeStory;
-    if (!d || (h && h.firstNight && !d.tutorial)) return false;
+    if (!d || d.gift || (h && h.firstNight && !d.tutorial)) return false;
     if (d.unlockFlag && !world.memory.flags[d.unlockFlag]) return false;
     if (d.furniture && l.furniture[d.furniture] && I.state(l,id).stage !== 'installed') return false;
     if (d.showsWith && !SCENE.hasFurniture(world, d.showsWith)) return false;

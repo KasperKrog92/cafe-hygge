@@ -10,9 +10,8 @@ on 7 September 2026. It supplies the working ensemble, backstory and connected
 arcs. This bible keeps concise continuity facts and distinguishes **shipped**
 content from **planned direction**. Planned details remain editable when scenes
 are authored; they must not be mistaken for events the player has experienced.
-The [progression roadmap](progression-roadmap.md) owns build order, with
-the shipped second-day visitors followed by
-[First books, first connection](plans/first-books.md).
+The [progression roadmap](progression-roadmap.md) owns build order; the
+second-day visitors and the first books release (27 September) are shipped.
 
 ## Names and the neighborhood
 
@@ -118,8 +117,8 @@ withdrew from a promotion and prepared a place of her own. Planning took months;
 the actual move/opening took days. Calandra is her sister in the old city.
 Reveal this gradually through patron conversations, with ordinary pleasures,
 humor and agency alongside her difficulty feeling welcome without being useful.
-The exact scenes and wording remain to be authored. Her first new disclosure
-in the books milestone is only her former bookshop/café work, not the whole history.
+The exact scenes and wording remain to be authored. Her first disclosure, told
+to Holger over his books, is only her former bookshop/café work, not the whole history.
 
 **Voice:** concrete observations, little admissions, affection without speeches.
 She can ask a direct question, admit uncertainty and set a boundary. She should
@@ -132,7 +131,8 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | Bedtime: teeth, curtains, bed and a whispered goodnight to the cat | Shipped | Saved bedtime cursor; same cat settles on the pillow |
 | Why this café: a place to belong / a new beginning | Shipped, Holger introduction | `luna-beginning-belonging` / `luna-beginning-new-start` |
 | First hope: a reading corner / learning neighbours' names | Shipped, Holger introduction | `luna-cafe-books` / `luna-cafe-neighbours` |
-| What came before the move | Planned direction | Bookshop/café work, withdrawn promotion and a prepared move; not yet disclosed in shipped dialogue, and no invented traumatic cause |
+| Her old work, told to Holger | Shipped, Holger's books | She worked in a shop with books, coffee and evening readings, "mostly finding enough chairs". Choice: `luna-bookshop-fond` (leaving took long because she loved a lot of it) or `luna-bookshop-later` (most of it; the rest another day). Only Holger has heard this |
+| What came before the move | Planned direction | Withdrawn promotion and a prepared move; not yet disclosed, and no invented traumatic cause |
 | Naming the café | Planned | Find its name through lived experience; Fleur de Lune remains provisional |
 
 The reading-corner answer makes no purchase, price commitment or upgrade gate.
@@ -167,10 +167,26 @@ child or maritime disaster without a later, deliberate writing decision.
 | Beat | Status | Content and continuity |
 | --- | --- | --- |
 | H1 — The new sign | Shipped | Mutual names, first espresso, her two choices, polishing a brass handle from nerves, galley table, missing familiar voices |
-| H2 — A corner for company | Planned | Recall her actual chosen hope. Offer a few books or introduce a neighbour; never require an upgrade to keep the friendship growing |
+| H2 — Books with a history | Shipped | Offer recalls her hope (books or names); the crew's six books (seven counting the 1998 tide table holding the box shut). She chooses lending them to anyone or letting them stay his, kept here. Handover on a later visit, once a shelf exists |
 | H3 — Keeping a fire | Planned | When a hearth is available, a small stove-at-sea story; provide another ordinary setting if it is never bought |
 | H4 — The voices at the table | Planned | Lunafreya may ask about someone he mentioned or simply keep him company. Let him decide how much to tell |
 | H5 — Being welcome, too | Planned | Lunafreya notices that he also needs encouragement. A reciprocal moment, not a rescue |
+
+**H2, shipped 27 September.** Trigger: his third visit after the introduction
+(game mode; ordering or seated). The `offer` packet (`holger-books-offer-`
+nodes recall/recall-reply/box/count/seventh/tide/offer/choice/when/thanks)
+recalls `luna-cafe-books` or `luna-cafe-neighbours` and says the books wait at
+his flat if there is nowhere to put them. Choice: `holger-books-lend` (anyone
+may borrow; he writes a note in each, "for anyone who stays a while") or
+`holger-books-keep` (his, kept here; his name in each). Completion saves
+`holger-books-promised`. The next visit after a shelf exists, he brings the
+box; the `gift` packet (here/look/adventure/cookbook/what/decided/shop/worked/
+readings/enjoy/choice/garden/plates/place/new/crew) tells who recommended which
+book (the bosun never finished his adventure; the cook's cookbook he nearly
+kept; nobody on that ship grew anything but beards) and holds Lunafreya's first
+disclosure. Completion saves `holger-books-given` and hands her the box. Known
+facts: the tide table from 1998 stays at his flat. Afterwards his books are
+borrowed like any others, and with `keep` he sometimes reads his own.
 
 H1 completes with `holger-introduced`. Acknowledged node flags are
 `holger-introduction-node-ID` (since 11 September); IDs are `sign`, `opening`,

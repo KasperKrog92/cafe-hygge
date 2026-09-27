@@ -739,6 +739,19 @@ The sign reads **NEW CAFE** in uneven paint on two scrap boards. She has not
 chosen a proper café name; naming it through later patron conversations is a
 future story, not a timer or a choice forced during this introduction.
 
+## Holger's books — shipped 27 September 2026
+
+From his third visit after the introduction, Holger may offer the crew's books
+(game-mode invitation, while ordering or seated). Once promised and once a
+shelf exists, his next visit starts with a small box under his arm. He sets it
+down on the counter's left end as he orders, sits as usual and waits with a
+steady invitation. If the handover is not opened, he stops at the counter on
+the way out to take the box home, and brings it on a later visit. After the
+handover the box is Lunafreya's: she carries it to the shelves in a quiet
+moment and shelves it like a purchased box. If she chose to let the books stay
+his, some days (40%) he leaves his own book at home and takes one of his down
+from the wall instead.
+
 ## Holger's first visit
 
 Holger is now the first arriving customer in a newly opened café. His optional

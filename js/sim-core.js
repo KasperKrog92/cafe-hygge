@@ -375,7 +375,8 @@
       // the reader slides it back.
       const books = SCENE.shelfAvailable(world);
       if (!books.length) return;
-      const b = pick(books);
+      const own = books.filter(function (b) { return b.source === p.prefersSource; });
+      const b = pick(own.length ? own : books);
       p.shelfSlot = b.i; p.shelfSource = b.source; p.bookColor = b.col; p.hasShelfBook = true;
       return;
     }
@@ -390,7 +391,15 @@
   }
 
   function borrowLine(world, p) {
-    const pool = p.shelfSource && CAST.borrowLines[p.shelfSource];
+    // Someone taking down a book that came from them; then the book's own
+    // history (Holger's kept books carry his name, lent ones a note).
+    const own = p.regularId && p.shelfSource === p.regularId && CAST.borrowLinesOwn && CAST.borrowLinesOwn[p.regularId];
+    if (own) return p.name + ' ' + pick(own);
+    let pool = p.shelfSource && CAST.borrowLines[p.shelfSource];
+    if (pool && !Array.isArray(pool)) {
+      const flag = Object.keys(pool.flags || {}).find(function (k) { return world.memory.flags[k]; });
+      pool = flag ? pool.flags[flag] : pool.lines;
+    }
     if (pool && random() < 0.6) return p.name + ' ' + pick(pool);
     return p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']);
   }
@@ -1400,7 +1409,10 @@
   }
 
   /* A regular's story can gate their visits from their own file:
-       SIM.gateRegular(id, { mayVisit(world), due(world), arrivalLine(world) }) */
+       SIM.gateRegular(id, { mayVisit(world), due(world), arrive(world, patron),
+                            arrivalLine(world) })
+     arrive runs as they come through the door, before the arrival caption:
+     the place to decide what they bring with them today. */
   const REGULAR_GATES = {};
   SIM.gateRegular = function (id, gate) { REGULAR_GATES[id] = gate; };
 
@@ -1423,6 +1435,7 @@
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
       const info = noteRegularVisit(world, spec);
+      if (gate.arrive) gate.arrive(world, p);
       caption(world, (gate.arrivalLine && gate.arrivalLine(world)) || regularArrivalLine(world, spec, info, p),{actor:p});
       arrived=true;
     });
