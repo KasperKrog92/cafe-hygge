@@ -117,6 +117,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `animations` | Equal travel at 1/60 s and 0.25 s, planted shoes, attached legs, visible motion in eight sprite rows |
 | `arrivals` | Real-service occupancy at 4/6/8/16 seats and popularity stages; queue and capacity bounds |
 | `art` | Ten repeatable review images, occupancy fixtures, capture isolation and composition timing |
+| `familiar-faces` | Antonia's display rename; Nora/Kasper/Antonia introductions from their authored visit (idle hides them; leave/reload resume; both answers; once; flagged musings); Keira's second cup on a later visit with the photograph and remembered arrival; Tomas's cupboard only after his promised news; regulars' morning habit and the target+1 bound |
 | `holger-books` | Holger's offer after later visits (both first answers, idle hides it), leave/reload/choice resumption, promise waiting for shelves, box on the counter, ignored box going home and returning, handover with the disclosure choice, both orders with the bought box, kept books, library gift |
 | `books` | Book-box purchase, morning carry, each stocking phase across a reload, service interruption, closing mid-box, browsing from the first handful, a real borrow and return, codec shelf agreement |
 | `bookshelf` | Wall-shelf purchase, delivery, partial-work reloads, closing mid-job and greetings |

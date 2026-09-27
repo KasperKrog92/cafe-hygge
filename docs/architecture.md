@@ -26,6 +26,7 @@ js/sim-life.js          → extends SIM    (home, plant, presentation, saved lif
 js/sim-intro.js         → extends SIM    (first-morning dialogue and opening finale)
 js/sim-moments.js       → extends SIM    (shared attended moments and saved replies)
 js/sim-holger.js        → extends SIM    (Holger's books offer and handover, visit gate)
+js/sim-regulars.js      → extends SIM    (data-driven regular introductions and gates)
 js/sim-gerda.js         → extends SIM    (window-gated visits, pillow placement and conversations)
 js/sim-visitors.js      → extends SIM    (Keira/Tomas jobs and saved greetings)
 js/sim-home.js          → extends SIM    (saved first apartment tour, first planner, bedtime)
@@ -655,6 +656,27 @@ once per identity per running café day after day one (Keira from 10, Tomas from
 nodes cannot. Active jobs suppress off-duty duplicates. Invitations appear in
 game mode only while seated, after service, and remain unconsumed in idle.
 No calendar or new purchase is needed.
+
+## Regular introductions and neighbour stories (v16)
+
+`sim-regulars.js` runs every packet in `CAST.introductions` (`{visits, lines}`,
+keyed by regular ID: `lunafreya` for Nora, `kasper`, `freya` for Antonia).
+Its visit gate's `arrive` stamps `storyChapter: 'hello'` from the authored
+visit on, so an introduction never opens on a first visit. The invitation shows
+in game mode while seated; the saved prefix is `<id>-hello-`, completion
+`<id>-introduced` plus one bond warmth. Choice flags feed flagged musings in
+the roster. `SIM.contextLines(lines, when)` (sim-moments.js) resolves authored
+`alt` variants for Holger's books, these introductions and the neighbours'
+stories alike. `CAST.visitorStories` gives Keira and Tomas one later story each
+(`after` lists the saved flags/nodes it builds on); `arriveSocialVisitor`
+decides it at the door, `SIM.visitorStoryInvites` offers it seated, and
+`<id>-<story>-done` completes it. `returningAfter` supplies the remembered
+arrival caption.
+
+Arrivals: `arrivalRoom(world, extra)` lets a familiar face (a due regular,
+`dueRegular`, or an off-duty neighbour, `SIM._.socialVisitorDue`) take a clean
+seat one guest past the popularity target, never on opening day; walk-ins
+still wait for the target. The shared spacing timer is unchanged.
 
 ## Holger's books (v16)
 

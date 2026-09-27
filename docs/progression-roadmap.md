@@ -83,10 +83,20 @@ delivered in three passes (the executed brief is in git history):
    stocking work; an ignored box goes home with him and comes back another day.
    Keira's returning-visitor continuity shipped with the shelves.
 
-The next milestone is the plan's second release, **familiar faces become
-people**: proper introductions for the regulars who have none yet and first
-callbacks for Keira and Tomas. Its brief lives in `docs/plans/` when written.
-The current status/next task lives here; a brief owns scope and acceptance
+## Familiar faces become people — shipped 27 September 2026
+
+The ensemble plan's second release. Nora, Kasper and the evening reader, now
+displayed as **Antonia** (id `freya`), each get a proper saved introduction
+from their second or third visit, with one remembered answer that shows up
+afterwards in their quiet musings. Keira's **second cup** (coat off, asking to
+photograph the café) and Tomas's **cupboard report** follow on later off-duty
+visits. Gerda's hello and Holger's books were already shipped. Regulars keep
+their habits in the small café: a due regular may take one clean seat past the
+popularity target, so Holger's espresso stays in the morning.
+
+**Next: the plan's third release, things worth taking upstairs** — Gerda's
+selectable blanket, placement in either room, one apartment recollection and
+Calandra's first message. The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
 Keira and Tomas share saved-node resumption. Existing dialogue and choices are

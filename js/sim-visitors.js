@@ -116,28 +116,70 @@
       }
     }
     updateShelf(w,dt);
+    // A promised photograph is taken once the conversation has ended: part
+    // of the chosen moment, so it uses the story caption queue.
+    w.patrons.forEach(function(a){
+      if(!a.photoPending || w.moment)return;
+      a.photoPending=false;
+      R.captionRun(w,['Keira turns in her chair and takes one quiet photograph of the room.']);
+      R.sound.cameraClick();
+    });
   };
   // Called by the shared seat-aware arrival timer. Off duty, the neighbours
   // belong to the ordinary customer lifecycle, including service and closing.
-  R.arriveSocialVisitor=function(w) {
+  // The neighbour who would drop in off duty now, or null (no side effects).
+  R.socialVisitorDue=function(w) {
     const day=w.memory.life.daysCompleted;
     w.visitorDays=w.visitorDays||{};
-    if(w.moment || w.shop.phase!=='open' || day<1)return false;
-    return ['keira','tomas'].some(function(id,n) {
+    if(w.moment || w.shop.phase!=='open' || day<1)return null;
+    return ['keira','tomas'].find(function(id,n) {
       const job=w.memory.life.projects[id==='keira'?'table':'window'];
-      if(id==='keira' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.bookshelf.stage)>=0)return;
-      if(id==='tomas' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.mantel.stage)>=0)return;
-      if(w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
+      if(id==='keira' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.bookshelf.stage)>=0)return false;
+      if(id==='tomas' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.mantel.stage)>=0)return false;
+      return !(w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
         ['purchased','scheduled','arrived','working'].indexOf(job.stage)>=0 ||
-        SIM.visitorActors(w).some(a=>a.visitorId===id))return;
+        SIM.visitorActors(w).some(a=>a.visitorId===id));
+    }) || null;
+  };
+  R.arriveSocialVisitor=function(w) {
+    const id=R.socialVisitorDue(w);
+    if(!id)return false;
+    {
       const guest=R.makeVisitor(w,id);guest.social=true;guest.kind='patron';
       guest.pianist=false;guest.wantsBook=false;guest.ownBook=false;
       guest.drink=R.DRINKS.find(d=>d.name==='espresso');
+      // A later story is decided at the door, so it never follows the hello
+      // on the same visit.
+      guest.storyChapter=storyDue(w,id)?CAST.visitorStories[id].id:null;
       R.enqueueArrival(w,guest,0,true);
-      R.caption(w,w.memory.flags[id+'-introduced']?CAST.visitors[id].returning:CAST.visitors[id].arrival);
+      const v=CAST.visitors[id],after=v.returningAfter;
+      R.caption(w,!w.memory.flags[id+'-introduced']?v.arrival:
+        after && after.flags.every(f=>w.memory.flags[f])?after.text:v.returning);
       return true;
-    });
+    }
   };
   SIM.addInvitation({ key:a=>a.visitorId, actors:w=>SIM.visitorInvites(w),
     start:(w,a)=>SIM.startVisitor(w,a.visitorId) });
+  // Their next story (CAST.visitorStories): Keira's second cup, Tomas's
+  // cupboard report. One at a time, off duty and seated, game mode.
+  function storyDue(w,id) {
+    const s=CAST.visitorStories[id];
+    return !!s && s.after.every(f=>w.memory.flags[f]) && !w.memory.flags[id+'-'+s.id+'-done'];
+  }
+  SIM.visitorStoryInvites=function(w) {
+    if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
+    return w.patrons.filter(a=>a.social && a.storyChapter && a.state==='seated' && !a.outside && storyDue(w,a.visitorId));
+  };
+  SIM.startVisitorStory=function(w,id) {
+    const a=SIM.visitorStoryInvites(w).find(a=>a.visitorId===id);if(!a)return false;
+    const s=CAST.visitorStories[id],books=SCENE.shelfBooks(w).length>0;
+    const lines=SIM.contextLines(s.lines,{books:books,shelves:!books && SCENE.hasFurniture(w,'wall-shelves'),
+      boarded:!SCENE.windowOpen(w,L.win)});
+    return SIM.beginSavedMoment(w,lines,a,id+'-'+s.id+'-',function(){
+      w.memory.flags[id+'-'+s.id+'-done']=true;a.storyChapter=null;
+      if(w.memory.flags['keira-photo-yes'] && id==='keira')a.photoPending=true;
+    });
+  };
+  SIM.addInvitation({ key:a=>a.visitorId, actors:w=>SIM.visitorStoryInvites(w),
+    start:(w,a)=>SIM.startVisitorStory(w,a.visitorId) });
 })();

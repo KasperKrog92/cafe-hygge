@@ -360,10 +360,10 @@ painting/sketching habit described below.
 | **Gerda** | ~10:00 | chamomile tea | window perch | window-gazing, chatty | warm, older; watches the street |
 | **Nora** | ~11:00 | flat white | artist stool above the piano | painting, later sketching | deliberate; paints the café into its walls |
 | **Kasper** | ~13:30 | iced matcha | dining table | laptop typing | young writer; mutters at the screen |
-| **Freya** | ~18:30 | matcha latte, own book | right fireside armchair | reading, dozing | evening reader; drifts off by the fire |
+| **Antonia** | ~18:30 | matcha latte, own book | right fireside armchair | reading, dozing | evening reader; drifts off by the fire |
 
 Deliberate contrasts keep them from blurring together: morning versus dusk
-(only Freya sits late enough that the after-dark doze can take her), silent
+(only Antonia sits late enough that the after-dark doze can take her), silent
 versus chatty (Holger's story arrives as solo musings, Gerda's as overheard
 talk), and one of each existing behavior.
 
@@ -414,7 +414,7 @@ later.
 dark-red scarf, 130 Hz murmur, 46 px/s. Gerda: bun of grey hair, mauve top and
 warm-red scarf, a slower 40 px/s. Nora: long brown hair with a side-part fringe (`hairStyle: 1`),
 sea-blue top under a paint-flecked cream smock, deliberate 42 px/s. Kasper: long brown hair, muted-blue top,
-brisk 52 px/s. Freya: long red hair, mossy-green top. Each carries a fixed umbrella
+brisk 52 px/s. Antonia: long red hair, mossy-green top. Each carries a fixed umbrella
 colour brought reliably in rain, a fixed stay range, and its own `nameStyle`
 (no name special-case remains in `nameStyleFor`; the roster names live outside
 the random `PATRON_NAMES` pools so no walk-in ever shares one). The fresh 08:24
@@ -430,9 +430,9 @@ from the matching pool and, if it speaks, suppresses the generic line, so a
 regular's own words replace "turns a page" rather than doubling it. A solo
 musing has a small chance (`BACKSTORY_GATE`, 3.5%) of surfacing a backstory
 fragment instead — a life leaks out only across many visits (Holger's sea years,
-Gerda's Erik, Kasper's unfinished chapter, Freya's re-read). Seams and contexts:
+Gerda's Erik, Kasper's unfinished chapter, Antonia's re-read). Seams and contexts:
 window-gaze and reading page-turn and laptop bout → `musing`; the table murmur →
-`overheard`. A `chatty: false` regular (Holger, Kasper, Freya) carries no
+`overheard`. A `chatty: false` regular (Holger, Kasper, Antonia) carries no
 `overheard` pool by design — their narrative is solo; only Gerda's overheard
 pool ever fires, and only when a walk-in shares her window table.
 
@@ -738,6 +738,17 @@ does she admit the first customer.
 The sign reads **NEW CAFE** in uneven paint on two scrap boards. She has not
 chosen a proper café name; naming it through later patron conversations is a
 future story, not a timer or a choice forced during this introduction.
+
+## Introductions and neighbour stories — shipped 27 September 2026
+
+Nora (from her second visit), Kasper (third) and Antonia (second) offer a saved
+introduction while seated, in game mode; it is decided as they come through the
+door, so it never opens on a first visit, and it waits until chosen. Afterwards
+each has two flagged musings, one per remembered answer (Nora sketching a
+neighbour or the corner by the door; Kasper holding up three fingers or deciding
+there is no hurry; Antonia glad to be let alone or checking the water is still
+on her route). Keira's second cup and Tomas's cupboard report are one-time
+stories on a later off-duty visit, with remembered arrival captions after.
 
 ## Holger's books — shipped 27 September 2026
 

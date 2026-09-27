@@ -45,7 +45,7 @@
      Gerda    ~10:00  chamomile tea   window perch    window-gaze, chatty
      Kasper   ~13:30  iced matcha     dining table    laptop typing
      Nora~11:00  flat white      artist stool    painting / sketching
-     Freya    ~18:30  matcha latte    right fireside  reading, dozes by the fire
+     Antonia  ~18:30  matcha latte    right fireside  reading, dozes by the fire (id 'freya')
    Deliberate contrasts: morning vs. dusk (only Liv sits late enough to doze),
    silent vs. chatty, and one of each behavior so no new behavior code exists. */
 (function () {
@@ -175,7 +175,9 @@
             {text:'Kasper types a sentence, reads it back, and deletes it.', requires:['laptop']},
             {text:'Kasper lingers over a paragraph on the screen.', requires:['laptop']},
             {text:'Kasper glances from the screen to his cup.', requires:['laptop','cup']},
-            {text:'Kasper writes a few lines and looks cautiously pleased.', requires:['laptop']}
+            {text:'Kasper writes a few lines and looks cautiously pleased.', requires:['laptop']},
+            {text:'Kasper catches Lunafreya\'s eye and holds up three fingers: three good lines.', requires:['laptop'], flags:['kasper-good-lines']},
+            {text:'Kasper stretches, looks at the clock, and decides there is no hurry.', requires:['laptop'], flags:['kasper-table']}
           ],
           backstory: [
             'Kasper has been on chapter seven since spring; he doesn\'t mention it anymore.',
@@ -214,7 +216,10 @@
             {text:'Nora pauses over the canvas and lets the room settle first.', requires:['painting']},
             {text:'Nora studies the shadow in the corner of the canvas.', requires:['painting']},
             'Nora leans back and takes in the room.',
-            'A strand of Nora\'s hair slips loose; she tucks it back with a clean knuckle.'
+            'A strand of Nora\'s hair slips loose; she tucks it back with a clean knuckle.',
+            // Her introduction's remembered answer: what a painting should keep.
+            {text:'Nora sketches someone at the next table, quickly, before they move.', flags:['lunafreya-remember-people']},
+            {text:'Nora sketches the corner by the door, as if keeping it for later.', flags:['lunafreya-remember-start']}
           ],
           backstory: [
             'Nora paints cafés because every chair remembers a different kind of waiting.',
@@ -224,7 +229,7 @@
       },
       {
         id: 'freya',
-        name: 'Freya',
+        name: 'Antonia',
         nameStyle: 'feminine',
         colors: {
           skin: '#b57a4a', hair: '#8f4a35', top: '#6b7a55', pants: '#3d4a5c',
@@ -238,21 +243,23 @@
         stay: [280, 420],
         seat: 'firesideRight',
         lines: {
-          arrival: ['Freya slips inside, her book already in hand.'],
-          arrivalRain: ['Freya ducks in from the rain, hugging her book dry.'],
-          arrivalReturn: ['Freya returns with a bookmark peeking out of her book.'],
-          settle: ['Freya sinks into the fireside chair, book already open.'],
-          usualTaken: ['Her fireside chair is taken; Freya looks for another seat.'],
+          arrival: ['Antonia slips inside, her book already in hand.'],
+          arrivalRain: ['Antonia ducks in from the rain, hugging her book dry.'],
+          arrivalReturn: ['Antonia returns with a bookmark peeking out of her book.'],
+          settle: ['Antonia sinks into the fireside chair, book already open.'],
+          usualTaken: ['Her fireside chair is taken; Antonia looks for another seat.'],
           overheard: [],
           musing: [
-            {text:'Freya turns a page and sinks a little deeper into the armchair.', requires:['reading','armchair']},
-            {text:'Freya reads until the words go soft and warm.', requires:['reading']},
-            {text:'Freya loses her place, finds it, loses it again.', requires:['reading']},
-            {text:'Freya lets the fire do the talking for a while.', requires:['fire']}
+            {text:'Antonia turns a page and sinks a little deeper into the armchair.', requires:['reading','armchair']},
+            {text:'Antonia reads until the words go soft and warm.', requires:['reading']},
+            {text:'Antonia loses her place, finds it, loses it again.', requires:['reading']},
+            {text:'Antonia lets the fire do the talking for a while.', requires:['fire']},
+            {text:'Antonia turns a page, glad to be let alone.', requires:['reading'], flags:['freya-quiet']},
+            {text:'Antonia glances at the water, as if checking it is still on her route.', requires:['view'], flags:['freya-route']}
           ],
           backstory: [
-            'Freya has read this one before; she comes back for the ending anyway.',
-            {text:'Freya says the fire here is better than the one at home.', requires:['fire']}
+            'Antonia has read this one before; she comes back for the ending anyway.',
+            {text:'Antonia says the fire here is better than the one at home.', requires:['fire']}
           ]
         }
       }
@@ -406,7 +413,7 @@
   };
   CAST.voices={Lunafreya:{pitch:205,filter:720,pace:1},Holger:{pitch:155,filter:620,pace:1.12},
     Gerda:{pitch:190,filter:670,pace:1.08},Nora:{pitch:220,filter:800,pace:.95},
-    Kasper:{pitch:180,filter:690,pace:1.02},Freya:{pitch:200,filter:650,pace:1.05},
+    Kasper:{pitch:180,filter:690,pace:1.02},Antonia:{pitch:200,filter:650,pace:1.05},
     Keira:{pitch:215,filter:760,pace:.98},Tomas:{pitch:165,filter:640,pace:1.08}};
   CAST.holgerIntroduction = [
     {id:'sign',speaker:'Holger', text:"Good morning. I hoped that sign meant what I thought it meant."},
@@ -570,4 +577,120 @@
   };
   // Someone taking down a book that came from them.
   CAST.borrowLinesOwn = { holger: ['takes down one of his own books, as if calling on an old shipmate.'] };
+})();
+
+/* Familiar faces become people (ensemble release 2). Introductions for the
+   regulars who had none, keyed by regular ID (Nora's is the legacy
+   `lunafreya`; Antonia's is `freya`), and first callbacks for the two working
+   neighbours, keyed by visitor ID. Saved prefixes are `<id>-hello-` and
+   `<id>-<story>-`; completion sets `<id>-introduced` / `<id>-<story>-done`.
+   `alt` variants: familiar (a long-known face), hearth (a working fire),
+   menu (the regular's own drink is served), and the named story conditions. */
+(function () {
+  'use strict';
+  CAST.introductions = {
+    // visits: the visit (as they arrive) from which the hello is offered;
+    // staggered so a new café meets its regulars over several days.
+    lunafreya: {visits:2, lines:[
+      {id:'cup',speaker:'Nora',text:"Could you leave that cup there? No, not forever. I know you need cups."},
+      {id:'why',speaker:'Lunafreya',text:"Is something wrong with it?"},
+      {id:'light',speaker:'Nora',text:"Nothing. The light's sitting in it. It won't stay long."},
+      {id:'name',speaker:'Nora',text:"Sorry. I'm Nora. I paint. That's usually the explanation for this sort of thing.",
+        alt:{familiar:"Sorry. We've shared this room for weeks and I've never said. I'm Nora. I paint."}},
+      {id:'luna',speaker:'Lunafreya',text:"Lunafreya. I've seen your sketchbook. I didn't want to look over your shoulder."},
+      {id:'chairs',speaker:'Nora',text:"You can. It's mostly chairs. I've drawn your chairs a great deal."},
+      {id:'grand',speaker:'Nora',text:"I used to paint big rooms for the people who owned them. Ballrooms. Libraries nobody read in."},
+      {id:'evidence',speaker:'Nora',text:"They always asked me to leave out the cups. The coats on the chairs. Anything that showed somebody had been there."},
+      {id:'here',speaker:'Lunafreya',text:"There's a lot of evidence here."},
+      {id:'better',speaker:'Nora',text:"That's why I keep coming back."},
+      {id:'question',speaker:'Nora',text:"Can I ask you something? If somebody painted this place, what would you want it to remember?"},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Nora',text:"I think…",choices:[
+        {text:"How it was at the start, before any of us knew what it would be.",flag:'lunafreya-remember-start',
+          reply:"The first version. Nobody paints first versions. They're gone before anyone thinks to."},
+        {text:"An ordinary afternoon, with somebody in it.",flag:'lunafreya-remember-people',
+          reply:"Somebody in it. Good. That's harder. People never sit still for quite the right amount of time."}
+      ]},
+      {id:'gone',speaker:'Nora',text:"You can have the cup back now. The light's moved on."},
+      {id:'another',speaker:'Lunafreya',text:"I'll bring you another. Light included, if I can manage it."}
+    ]},
+    kasper: {visits:3, lines:[
+      {id:'sentence',speaker:'Kasper',text:"I fixed the first sentence. It has caused problems for the second."},
+      {id:'day',speaker:'Lunafreya',text:"Is that a good day or a bad day?"},
+      {id:'both',speaker:'Kasper',text:"Both, mostly. I'm Kasper. I apologise in advance for the sighing.",
+        alt:{familiar:"Both, mostly. I'm Kasper, by the way. You've been very patient with the sighing."}},
+      {id:'name',speaker:'Lunafreya',text:"Lunafreya. You're welcome to sigh here. The machine does it all day."},
+      {id:'seven',speaker:'Kasper',text:"It's a novel. I've been on chapter seven since spring. People have stopped asking, which is kind of them."},
+      {id:'ask',speaker:'Lunafreya',text:"I won't ask what it's about."},
+      {id:'story',speaker:'Kasper',text:"Thank you. I wrote a short story once that people liked. Now everything has to prove that wasn't an accident."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Kasper',text:"Then…",choices:[
+        {text:"Then stay as long as you like. The table doesn't mind slow chapters.",flag:'kasper-table',
+          reply:"That's the nicest thing anyone has said about chapter seven."},
+        {text:"Then tell me when you write three good lines. I'd like to know.",flag:'kasper-good-lines',
+          reply:"Three good lines. That's a reasonable unit. I'll report."}
+      ]},
+      {id:'matcha',speaker:'Kasper',text:"And if you ever have iced matcha, I'll become unbearable about it.",
+        alt:{menu:"The iced matcha helps. Don't tell the chapter."}},
+      {id:'back',speaker:'Lunafreya',text:"Back to the second sentence, then."},
+      {id:'waiting',speaker:'Kasper',text:"Back to it. It's waiting. They always are."}
+    ]},
+    freya: {visits:2, lines:[
+      {id:'pages',speaker:'Antonia',text:"Don't mind me. I'm only here for the last forty pages. Again."},
+      {id:'again',speaker:'Lunafreya',text:"You've read it before?"},
+      {id:'times',speaker:'Antonia',text:"Four times. I know how it ends. I like watching them get there."},
+      {id:'name',speaker:'Antonia',text:"I'm Antonia. I drive the 9A, mostly. You're on my way home, which is dangerous for my bedtime.",
+        alt:{familiar:"I'm Antonia, by the way. I drive the 9A. You've been on my way home for a while now."}},
+      {id:'luna',speaker:'Lunafreya',text:"Lunafreya. I'll try not to keep you up."},
+      {id:'quiet',speaker:'Antonia',text:"You don't have to entertain me, you know. Being let alone is one of the nicest things a place can do."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Antonia',text:"Then…",choices:[
+        {text:"Then I'll leave you to your forty pages.",flag:'freya-quiet',
+          reply:"Perfect. See? We get along already."},
+        {text:"Then tell me your favourite stretch of the route, sometime.",flag:'freya-route',
+          reply:"Along the water after eleven. Nobody on board, every light on. Like driving a lantern."}
+      ]},
+      {id:'list',speaker:'Antonia',text:"It's warm in here. That's on the list of nice things too.",
+        alt:{hearth:"And the fire. Put that on the list of nice things a place can do."}},
+      {id:'enjoy',speaker:'Lunafreya',text:"Enjoy the ending."},
+      {id:'same',speaker:'Antonia',text:"I always do. It's the same one. That's the point."}
+    ]}
+  };
+  // One story at a time per neighbour, offered on a later off-duty visit.
+  CAST.visitorStories = {
+    keira: {id:'cup', after:['keira-introduced','keira-hello-permission'], lines:[
+      {id:'coat',speaker:'Keira',text:"I've taken my coat off. I'd like that noted."},
+      {id:'noted',speaker:'Lunafreya',text:"Noted. Second cup?"},
+      {id:'second',speaker:'Keira',text:"Go on. I never have time for the second one. Today I've decided I do."},
+      {id:'passed',speaker:'Keira',text:"I've passed here four times this week on other deliveries. Every time I looked in to see what had changed."},
+      {id:'changed',speaker:'Lunafreya',text:"And had anything?"},
+      {id:'what',speaker:'Keira',text:"The window's clearer every time I pass. Or I'm paying more attention.",
+        alt:{books:"You've got books now. Somebody was reading one by the window.",
+          shelves:"The little shelves. Still waiting for their books, I noticed.",
+          boarded:"Not much, from outside. Boards keep their secrets. I kept looking anyway."}},
+      {id:'ask',speaker:'Keira',text:"I said I'd ask before I photographed your café. So I'm asking."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Keira',text:"A photograph…",choices:[
+        {text:"Yes. Take it as it is, while it's still new.",flag:'keira-photo-yes',
+          reply:"As it is. That's the only way I ever take them."},
+        {text:"Not yet. Let it become a bit more itself first.",flag:'keira-photo-later',
+          reply:"Fair. I'll ask again when it's had time. I'm patient with doors."}
+      ]},
+      {id:'finish',speaker:'Keira',text:"I should go. I'm going to finish this cup first, though. Sitting down."},
+      {id:'chairs',speaker:'Lunafreya',text:"Good. That's what the chairs are for."}
+    ]},
+    tomas: {id:'cupboard', after:['tomas-introduced','tomas-hello-news'], lines:[
+      {id:'report',speaker:'Tomas',text:"Cupboard report, as promised."},
+      {id:'and',speaker:'Lunafreya',text:"And?"},
+      {id:'plain',speaker:'Tomas',text:"I made the plain version. Two shelves, one door. The hinges are the ones she chose."},
+      {id:'believed',speaker:'Lunafreya',text:"You believed her."},
+      {id:'decided',speaker:'Tomas',text:"I decided to. It's level. Her wall has a different opinion, but that's the wall's business."},
+      {id:'towels',speaker:'Lunafreya',text:"And the towels?"},
+      {id:'folded',speaker:'Tomas',text:"In it. She sent me a picture. Folded, which is new."},
+      {id:'proud',speaker:'Lunafreya',text:"You sound proud."},
+      {id:'mostly',speaker:'Tomas',text:"Of the towels, mostly. A little of the cupboard."},
+      {id:'bread',speaker:'Tomas',text:"I've moved on to bread. That's going worse."},
+      {id:'worse',speaker:'Lunafreya',text:"How much worse?"},
+      {id:'door',speaker:'Tomas',text:"The last loaf could have held a door open. I'll bring the next one if it's safe."}
+    ]}
+  };
+  // Remembered-story evidence on later off-duty arrivals.
+  CAST.visitors.keira.returningAfter = {flags:['keira-cup-done'], text:'Keira comes in and has her coat off before she reaches the counter.'};
+  CAST.visitors.tomas.returningAfter = {flags:['tomas-cupboard-done'], text:'Tomas comes in without a toolbox, a little flour on one sleeve.'};
 })();

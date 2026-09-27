@@ -29,13 +29,8 @@
   // Context variants are data (line.alt); the first true condition wins.
   function packet(w, part) {
     const f = w.memory.flags;
-    const when = { neighbours: !!f['luna-cafe-neighbours'] && !f['luna-cafe-books'], 'no-shelf': !shelfReady(w),
-      keep: !!f['holger-books-keep'], library: SCENE.hasFurniture(w,'bookshelf') };
-    return CAST.holgerBooks[part].map(function (line) {
-      const out = Object.assign({}, line);
-      if (line.alt) Object.keys(line.alt).some(function (k) { if (when[k]) out.text = line.alt[k]; return when[k]; });
-      return out;
-    });
+    return SIM.contextLines(CAST.holgerBooks[part], { neighbours: !!f['luna-cafe-neighbours'] && !f['luna-cafe-books'],
+      'no-shelf': !shelfReady(w), keep: !!f['holger-books-keep'], library: SCENE.hasFurniture(w,'bookshelf') });
   }
   // The accepted box becomes Lunafreya's: a scheduled gift on the counter,
   // shelved later as ordinary work. An established library makes room at once.

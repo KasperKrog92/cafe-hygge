@@ -128,6 +128,7 @@ slider controls all three layers without changing their visual behavior.
 | `candlePop()` | each candle stop | soft 90 ms airy filtered-noise fwip, peak 0.018 |
 | `fireCatch()` | a fresh log laid on the fire (Lunafreya or a fireside regular) | an 84→54 Hz settle thump + a soft low whoomph (lowpass-440 noise swelling to 0.05 over 0.2 s, ~1.1 s tail) + 5 fresh crackles scattered over ~0.7 s; on the fire bus |
 | `pageTurn()` | readers | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
+| `cameraClick()` | Keira's one photograph of the café | two damped bandpassed ticks 60 ms apart (2.4/1.8 kHz), peak 0.012 |
 | `bookSlide()` | each book Lunafreya puts on the little wall shelves | 200 ms bandpassed paper/cloth whisper sweeping 1300→700 Hz (peak 0.018), ending in a 50 ms 210→170 Hz wooden tock (0.012) |
 | `needle()` | Gerda knitting (scarf arc) | soft wooden tick: 540–650 Hz tone under a 2.6 kHz lowpass (peak 0.013) + a fainter harmonic, with a half-chance second tap — quieter than the fire, on purpose |
 | `brush(jar?)` | Nora's short painting bouts | 90–170 ms filtered bristle hiss, peak 0.012–0.018, lowpass 1.5 kHz / bandpass 620–1040 Hz; rare palette-mixing calls may add a brush-jar clink at 0.014 |
@@ -185,7 +186,7 @@ No new work sound or audio layer is introduced.
 retains the first-morning voice. All use the same quiet triangle synthesis,
 0.032 peak envelope, dialogue bus and volume/mute controls. Holger uses a
 155 Hz base with a 1.12 duration multiplier; Lunafreya retains 205 Hz and 1.0.
-Profiles for Gerda, Nora, Kasper, Freya, Keira and Tomas are authored alongside
+Profiles for Gerda, Nora, Kasper, Antonia, Keira and Tomas are authored alongside
 the roster. Keira uses 215 Hz, a 760 Hz lowpass and 0.98 pace; Tomas uses
 165 Hz, a 640 Hz lowpass and 1.08 pace. All named characters must have a
 profile; the audit checks roster members and authored introduction speakers.

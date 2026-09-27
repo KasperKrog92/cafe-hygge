@@ -123,8 +123,8 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 - The **regulars** each keep their own once-per-day schedule (`world.regulars`,
   one slot per roster id). Every café day their arrival hour is rolled fresh
   inside that regular's window — Holger ~09:00, Gerda ~10:00, Nora
-  ~11:00, Kasper ~13:30, Freya ~18:30 — and `updateRegulars` brings each in once, never two of the same
-  face at once. Spread across the day, they rarely all overlap; only Freya sits
+  ~11:00, Kasper ~13:30, Antonia ~18:30 — and `updateRegulars` brings each in once, never two of the same
+  face at once. Spread across the day, they rarely all overlap; only Antonia sits
   late enough for the after-dark doze. See characters.md for the roster.
 - The palette comes from `SCENE.dayPalette(hour)`, interpolating these
   keyframes (`DAYKEYS` in `scene-core.js`):
@@ -529,7 +529,11 @@ credit from completed café days (four minutes for the first opening); old furni
 rooms receive at least five service days. Partial time saves with ordinary life
 checkpoints and reload adds no time.
 
-All walk-ins, regulars and off-duty neighbours share one timer. Below target,
+All walk-ins, regulars and off-duty neighbours share one timer. Familiar faces
+keep their habits in a small room: a regular whose hour has come, or Keira or
+Tomas dropping in off duty, may take a clean seat one guest past the target
+(never on opening day, never an unclean or reserved seat), so Holger's morning
+espresso stays in the morning. Walk-ins still wait for the target. Below target,
 an opportunity takes 20–34 seconds; a deficit of two or more guests advances it
 twice as fast. At target or without a clean unreserved seat, the opportunity
 waits. Incoming orders count toward occupancy and reserve admission capacity;

@@ -180,10 +180,8 @@ funny, established, contented and simply at home here. Lunafreya is not the only
 person who has moved, and moving need not mean the same thing to everyone.
 
 The rest of this proposal uses the revised names. The existing evening reader
-is still displayed as **Freya** in the shipped game; **Antonia** is the planned
-display-name change for that same person. Preserve her `freya` save identity,
-habits and history when that change is implemented. This is parallel to keeping
-Nora's legacy internal ID while using her proper displayed name.
+is displayed as **Antonia** since 27 September; her `freya` save identity,
+habits and history are preserved, parallel to Nora's legacy internal ID.
 
 ### The roster
 

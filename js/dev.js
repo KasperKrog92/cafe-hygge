@@ -1135,7 +1135,9 @@
       const speakers=['Lunafreya'].concat(CAST.regulars.map(r=>r.name),
         Object.values(CAST.visitors).map(r=>r.name),CAST.holgerIntroduction.map(line=>line.speaker),
         Object.values(CAST.visitors).flatMap(r=>r.hello.map(line=>line.speaker)),
-        Object.values(CAST.holgerBooks).flat().map(line=>line.speaker));
+        Object.values(CAST.holgerBooks).flat().map(line=>line.speaker),
+        Object.values(CAST.introductions).flatMap(i=>i.lines.map(line=>line.speaker)),
+        Object.values(CAST.visitorStories).flatMap(s=>s.lines.map(line=>line.speaker)));
       speakers.forEach(function(name) {
         const voice=CAST.voices[name];
         if(!voice || ![voice.pitch,voice.filter,voice.pace].every(n=>Number.isFinite(n)&&n>0))

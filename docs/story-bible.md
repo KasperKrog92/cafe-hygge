@@ -23,9 +23,9 @@ lives; names alone do not establish nationality or background.
 
 The current working names are Tomas, Marcel, Keira, Saira, Elody, Ezra and
 Antonia in place of its earlier seven names, with Calandra as Lunafreya's sister
-and Ida as the librarian. These names guide new writing. Freya's shipped
-display name and `freya` save identity are unchanged; a future display rename
-must preserve the same character and history.
+and Ida as the librarian. These names guide new writing. The evening reader is
+displayed as Antonia since 27 September; her `freya` save identity, look,
+habits and history are unchanged (flags use `freya-`).
 
 **Delivery character:** the owner subsequently chose a woman for this role.
 Her working name is Keira (she/her), from the owner's reference list. Carry this
@@ -73,8 +73,23 @@ the three little wall shelves keeps the same identity and saved hello nodes.
 An unfinished hello adapts its opening to the small shelf kit and reuses the
 off-duty place/practical lines; it does not replay acknowledged nodes. A completed
 hello receives a familiar arrival caption. The same expanded introduction can
-be finished during that job or an off-duty visit. Full backstories, book gifts
-and Lunafreya's former-work disclosure remain planned.
+be finished during that job or an off-duty visit.
+
+**First callbacks, shipped 27 September** (`CAST.visitorStories`, one story per
+neighbour, offered on a later off-duty visit, seated, game mode). **Keira's
+second cup** (after `keira-introduced` and her `permission` node): she has taken
+her coat off and wants it noted; she passed four times this week and looked in
+to see what had changed (books on the shelves, empty shelves or the window).
+She asks, as promised, before photographing the café: `keira-photo-yes` (as it
+is, while it's new; she takes one quiet photograph from her chair) or
+`keira-photo-later` (she'll ask again; "I'm patient with doors"). Completion:
+`keira-cup-done`; later arrivals note her coat off before the counter.
+**Tomas's cupboard report** (after `tomas-introduced` and his `news` node): he
+made the plain version, two shelves and one door, with her hinges; he decided to
+believe her. The towels are in it, folded. He has moved on to bread, which is
+going worse ("could have held a door open"). Completion: `tomas-cupboard-done`;
+later arrivals come without a toolbox, flour on one sleeve. The printed photo,
+the re-ask and bread gifts remain planned.
 
 ## Writing and choices
 
@@ -259,10 +274,17 @@ of looking is a form of care; avoid making every sentence a poetic aphorism.
 save IDs still use `lunafreya-paintings` and regular ID `lunafreya`; that is
 compatibility history, never the artist's displayed name.
 
-**Planned:** an introduction about what she noticed; later a choice about what
-Lunafreya wants a painting to remember. The working background is commissioned
-paintings of grand rooms, alongside an interest in the café's lived spaces.
-A later portrait asks Lunafreya's permission and respects private/public display.
+**Shipped 27 September — introduction** (from her second visit, seated): she
+asks Lunafreya to leave a cup where the light is sitting in it. She paints; her
+sketchbook is mostly the café's chairs. She used to paint big rooms for their
+owners, who always asked her to leave out the cups, coats and any evidence that
+somebody had been there; that is why she keeps coming back. Choice, what a
+painting of this place should remember: `lunafreya-remember-start` (how it was
+at the start; "nobody paints first versions") or `lunafreya-remember-people`
+(an ordinary afternoon with somebody in it). Flags use her legacy regular ID.
+Each answer adds a flagged sketching musing; the later painting is planned.
+**Planned:** a portrait that asks Lunafreya's permission and respects
+private/public display, shaped by the remembered answer.
 
 ## Kasper — the unfinished chapter
 
@@ -271,22 +293,33 @@ in three good lines. Usually quiet. His preferred iced matcha follows menu
 availability; he remains welcome in the small café with its simpler menu.
 
 **Shipped:** autonomous writing, hesitation and occasional backstory musings.
-**Planned:** introductions without demanding to read his work; a later invitation
-to share a paragraph. Finishing a manuscript must never become a timed task.
+**Shipped 27 September — introduction** (from his third visit, seated): "I fixed
+the first sentence. It has caused problems for the second." Chapter seven since
+spring; people have stopped asking, which is kind. He once wrote a short story
+people liked; now everything has to prove it wasn't an accident. Lunafreya
+doesn't ask what the novel is about. Choice: `kasper-table` (stay as long as
+you like; the table doesn't mind slow chapters) or `kasper-good-lines` (tell me
+when you write three good lines; he will report, and later holds up three
+fingers across the room). He has not shown any writing.
+**Planned:** a later invitation to share a paragraph. Finishing a manuscript must never become a timed task.
 The working arc builds on an earlier successful short story, his fear of not
 repeating that success, and an offered small piece shaped by a remembered
 preference about endings. Sharing Lunafreya's private history requires permission.
 
-## Antonia — a familiar ending (shipped as Freya)
+## Antonia — a familiar ending
 
 **Established:** evening reader, returning to a book she knows, fond of the
 hearth. Quiet is comfortable to her; it is not automatically shyness or sadness.
 
 **Shipped:** reading, dozing and small observations about her familiar book.
+**Shipped 27 September — introduction:** she drives the 9A; the café is on her
+way home, "dangerous for my bedtime". She is only here for the last forty pages,
+again (fourth time; she likes watching them get there). Being let alone is one
+of the nicest things a place can do. Choice: `freya-quiet` (Lunafreya leaves
+her to it) or `freya-route` (her favourite stretch: along the water after
+eleven, nobody on board, every light on, "like driving a lantern"). Each answer
+adds a flagged musing.
 **Planned:** a book conversation that permits keeping the ending private.
-The working background is a city bus driver, comfortable in her quiet and
-familiar with the neighborhood. Her display rename to Antonia is still pending;
-retain the `freya` identity and existing history when implementing it.
 
 ## The wider ensemble — planned direction
 
@@ -296,8 +329,8 @@ Use this table to distinguish identities from what the runtime currently contain
 
 | Name | Working direction | Current implementation boundary |
 | --- | --- | --- |
-| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries and expanded saved hello establish her shopfront photographs and standing coffee habit; gifts and deeper scenes remain later |
-| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair and expanded saved hello introduce his daughter's cupboard; its later progress, bread-making and gifts remain planned |
+| Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries, expanded hello and her second cup (coat off; photograph permission) are shipped; the printed photograph, gifts and deeper scenes remain later |
+| Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair, expanded hello and the cupboard report (plain version, towels, bread going worse) are shipped; bread gifts and deeper family scenes remain planned |
 | Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
 | Marcel | Painter across the lake; recognizes changing places and people | Existing `street-house` arc stays intact; personal identity and café visits remain to implement |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |

@@ -1247,12 +1247,14 @@
     return world.patrons.filter(p => !p.gone && p.terraceTable==null &&
       !(p.seat && (p.seat.artist || p.seat.piano))).length;
   }
-  function arrivalRoom(world) {
+  // extra: an expected regular may use one clean seat past the target.
+  function arrivalRoom(world, extra) {
     const clean=world.seats.filter(s => !s.piano && !s.artist && !s.taken && (s.table<0 ||
       !world.tables[s.table].items.some(it => it.owner===null && it.side===s.side))).length;
     const waiting=world.patrons.filter(p => !p.gone && !p.seat && p.terraceTable==null &&
       ['returnBook','return','collectUmbrella','exit'].indexOf(p.state)<0).length;
-    return Math.max(0,Math.min(arrivalTarget(world)-arrivalPopulation(world),clean-waiting,3-waiting));
+    const allowance=arrivalFirstDay(world) ? 0 : (extra || 0);
+    return Math.max(0,Math.min(arrivalTarget(world)+allowance-arrivalPopulation(world),clean-waiting,3-waiting));
   }
   function arrivalGap(world) {
     return arrivalFirstDay(world) ? rnd(90,130) : rnd(20,34);
@@ -1416,21 +1418,31 @@
   const REGULAR_GATES = {};
   SIM.gateRegular = function (id, gate) { REGULAR_GATES[id] = gate; };
 
+  // The first regular whose habit brings them in now, or null.
+  function dueRegular(world) {
+    const day = dayIndex(world), firstDay = arrivalFirstDay(world);
+    return CAST.regulars.find(function (spec) {
+      const r = world.regulars[spec.id];
+      if (!r) return false;
+      const gate = REGULAR_GATES[spec.id] || {};
+      if (gate.mayVisit && !gate.mayVisit(world)) return false;
+      if (day !== r.day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
+      // one visit at a time per regular; never two of the same face
+      if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return false;
+      const due = r.force || (gate.due && gate.due(world)) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
+      return due && !(firstDay && spec.id!=='holger' && !r.force);
+    }) || null;
+  }
+  // Familiar faces keep their habits in a small room: a regular whose hour
+  // has come may take a clean seat one guest past the popularity target.
   function updateRegulars(world) {
     const day = dayIndex(world);
     let arrived=false;
-    CAST.regulars.forEach(function (spec) {
-      if(arrived)return;
+    [dueRegular(world)].forEach(function (spec) {
+      if(!spec)return;
       const r = world.regulars[spec.id];
-      if (!r) return;
       const gate = REGULAR_GATES[spec.id] || {};
-      if (gate.mayVisit && !gate.mayVisit(world)) return;
-      if (day !== r.day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
-      // one visit at a time per regular; never two of the same face
-      if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return;
-      const due = r.force || (gate.due && gate.due(world)) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
-      const firstDay=arrivalFirstDay(world);
-      if (!due || arrivalRoom(world)<1 || (firstDay && spec.id!=='holger' && !r.force)) return;
+      if (arrivalRoom(world,1)<1) return;
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
@@ -1466,11 +1478,15 @@
     if(SIM.holgerRequired && SIM.holgerRequired(world))return;
     // Keep one pending opportunity while full/dirty. When well below target,
     // fill gradually at twice the near-target pace, with at most three waiting.
-    if(arrivalRoom(world)<1)return;
+    // Familiar faces (a due regular, an off-duty neighbour) may use one clean
+    // seat past the target; everyone else waits for it.
+    const open=arrivalRoom(world)>=1;
+    const familiar=function(){return dueRegular(world) || SIM._.socialVisitorDue(world);};
+    if(!open && !(arrivalRoom(world,1)>=1 && familiar()))return;
     world.spawnT -= dt*(!arrivalFirstDay(world) && arrivalTarget(world)-arrivalPopulation(world)>=2 ? 2 : 1);
     if (world.spawnT > 0) return;
     world.spawnT = arrivalGap(world);
-    if (arrivalRoom(world)<1) return;
+    if (arrivalRoom(world)<1) { if(!SIM._.arriveSocialVisitor(world))updateRegulars(world); return; }
     if(SIM._.arriveSocialVisitor(world))return;
     if(updateRegulars(world))return;
     if (world.memory.life.daysCompleted>0 && arrivalRoom(world)>=2 && random() < 0.22) {
@@ -1705,7 +1721,7 @@
     dayIndex: dayIndex, candleTables: candleTables,
     snapCandles: snapCandles, updateCandles: updateCandles,
     updateFire: updateFire, addLog: addLog,
-    arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom,
+    arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom, arrivalPopulation: arrivalPopulation,
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };

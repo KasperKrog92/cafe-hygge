@@ -60,6 +60,16 @@
     else {b.pose='stand';b.heading='';if(owner)b.facing=owner.x>b.x?1:-1;}
     return true;
   }
+  // Authored context variants are data: a line's `alt` maps condition names
+  // to replacement text, and the first condition that holds (in the order
+  // written) wins. Returns copies; the packet itself is never changed.
+  SIM.contextLines=function(lines,when) {
+    return lines.map(function(line) {
+      const out=Object.assign({},line);
+      if(line.alt)Object.keys(line.alt).some(function(k){if(when[k])out.text=line.alt[k];return !!when[k];});
+      return out;
+    });
+  };
   SIM.startHolger=function(w) {
     const owner=SIM.holgerAvailable(w);
     if(!owner)return false;

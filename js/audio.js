@@ -621,6 +621,13 @@
     tone(210, { gain: 0.012, dur: 0.05, sweepTo: 170, sweepDur: 0.04, delay: 0.18 });
   });
 
+  /* Keira's one photograph: the smallest soft shutter tick, two damped
+     clicks 60 ms apart, well under everything else in the room. */
+  SND.cameraClick = guard(function () {
+    hiss({ dur: 0.025, gain: 0.012, bp: 2400, q: 1.4, attack: 0.002, release: 0.015 });
+    hiss({ dur: 0.03, gain: 0.009, bp: 1800, q: 1.4, attack: 0.002, release: 0.02, delay: 0.06 });
+  });
+
   SND.softThump = guard(function () {
     tone(90, { gain: 0.03, dur: 0.12, sweepTo: 58, sweepDur: 0.1 });
     hiss({ dur: 0.045, gain: 0.012, lp: 480, attack: 0.002, release: 0.035 });
