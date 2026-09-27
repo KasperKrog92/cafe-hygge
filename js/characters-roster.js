@@ -1813,3 +1813,85 @@
     gentle: 'Lunafreya plays Saira’s tune on the empty room’s piano, gently, all the way to the end.'
   };
 })();
+
+/* Old friends and a finished chapter (after the second visits). Holger's
+   shipmate Aksel: if Holger suggested a walk, Holger first tells how it went
+   (`walked`); either way Aksel comes in with him one day, when there is a
+   table for two (`visit`, story field `companion`: the companion comes
+   through the door with him and must be sitting with him), tells everything
+   like the shipping forecast and asks Lunafreya for the forecast for this
+   place. Afterwards he sometimes comes with Holger. Kasper finishes chapter
+   seven and asks her to read its last paragraph, which leans the way she
+   said endings should, after asking whether he may keep a habit of hers. */
+(function () {
+  'use strict';
+  CAST.aksel = { name: 'Aksel', drink: 'espresso',
+    colors: { skin: '#e8b48a', hair: '#a5763f', top: '#3d4a5c', pants: '#4a3222', scarf: null, longHair: false, hairStyle: 0, beard: true } };
+  CAST.voices.Aksel = {pitch:138,filter:560,pace:1.15};
+  CAST.regularStories.holger.push(
+    {id:'walked', after:['holger-aksel-done','holger-aksel-walk'], lines:[
+      {id:'walked',speaker:'Holger',text:"We walked. Along the water, out to the lighthouse and back."},
+      {id:'route',speaker:'Holger',text:"We argued about the route for twenty minutes. Then neither of us said anything for an hour."},
+      {id:'alright',speaker:'Lunafreya',text:"Was that all right?"},
+      {id:'best',speaker:'Holger',text:"It was the best afternoon I've had since I came ashore. Nobody had to be interesting."},
+      {id:'wants',speaker:'Holger',text:"He wants to see this place. Apparently I've been talking about it. He says for weeks."},
+      {id:'bring',speaker:'Lunafreya',text:"Bring him. I'll keep a table."},
+      {id:'chairs',speaker:'Holger',text:"He'll complain about the chairs. It's how he says he likes somewhere."}
+    ]},
+    {id:'visit', after:['holger-aksel-done'], afterAny:['holger-aksel-cafe','holger-walked-done'], companion:'aksel', lines:[
+      {id:'this',speaker:'Holger',text:"Lunafreya. This is Aksel. Aksel, this is the person who runs the place I keep talking about."},
+      {id:'forecast',speaker:'Aksel',text:"Kattegat. North-westerly, four. Holger, seasick. Visibility, poor. Morale, good."},
+      {id:'sorry',speaker:'Lunafreya',text:"Sorry?"},
+      {id:'hello',speaker:'Holger',text:"That's hello. He tells everything like the shipping forecast. You get used to it. It takes about nineteen years."},
+      {id:'report',speaker:'Aksel',text:"Chairs, small. Coffee, excellent. Company, improving.",
+        alt:{'flag:holger-fire-his':"Chairs, small. Coffee, excellent. Fire, his, apparently. He told me on the bus."}},
+      {id:'join',speaker:'Lunafreya',text:"I'll bring a cup and sit with you both for a minute, if that's allowed."},
+      {id:'allowed',speaker:'Holger',text:"It's your café. You may sit where you like."},
+      {id:'ask',speaker:'Aksel',text:"Forecast for this place, then. You tell me."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Aksel',text:"Forecast…",choices:[
+        {text:"Settled. Warm by the fire. Rain on the window, now and then.",flag:'aksel-forecast-settled',
+          reply:"Settled, warm, rain on the window. A good forecast. Rare, on land."},
+        {text:"Changeable. That's the good part.",flag:'aksel-forecast-changeable',
+          reply:"Changeable. Ha. She's a sailor, Holger. You never said she was a sailor."}
+      ]},
+      {id:'years',speaker:'Holger',text:"Four years, twenty minutes on the bus. We could have been doing this all along."},
+      {id:'stubborn',speaker:'Aksel',text:"We were busy. Being stubborn is a full-time job."},
+      {id:'yours',speaker:'Lunafreya',text:"Come back, both of you. The table's yours."}
+    ]}
+  );
+  const holger = CAST.regulars.find(r => r.id === 'holger');
+  holger.lines.overheard.push(
+    {text:'Holger and Aksel argue about a buoy, fondly, for some time.', flags:['holger-visit-done']},
+    {text:'Aksel reads out the weather to Holger like a forecast; Holger corrects the wind.', flags:['holger-visit-done']},
+    {text:'Holger laughs at something Aksel says, a proper laugh, the whole table hears it.', flags:['holger-visit-done']}
+  );
+  CAST.akselArrival = {
+    first: 'Holger holds the door for a broad man in a navy jumper: Aksel, at last.',
+    again: 'Holger comes in with Aksel, who is already talking about the wind.'
+  };
+
+  CAST.regularStories.kasper.push(
+    {id:'paragraph', after:['kasper-endings-done'], lines:[
+      {id:'finished',speaker:'Kasper',text:"I finished chapter seven. Don't clap. People are working.",
+        alt:{'flag:kasper-good-lines':"Three good lines. Then eleven more. I finished chapter seven. Don't clap."}},
+      {id:'kasper',speaker:'Lunafreya',text:"Kasper! That's…"},
+      {id:'read',speaker:'Kasper',text:"Would you read the last paragraph? Just the one. You told me which way endings should lean, so it's partly your fault."},
+      {id:'borrow',speaker:'Kasper',text:"The woman in it runs a café. She isn't you. But I borrowed the way you look up whenever the door opens. May I keep that?"},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Kasper',text:"The door…",choices:[
+        {text:"Keep it. It's a good door.",flag:'kasper-borrow-yes',
+          reply:"Thank you. She'll look after it. She's very like you about doors."},
+        {text:"Give her a door of her own. She deserves one.",flag:'kasper-borrow-no',
+          reply:"A door of her own. You're right. I'll find her one. It'll take a week."}
+      ]},
+      {id:'nice',speaker:'Kasper',text:"Here. Don't say anything nice straight away. Nice is suspicious."},
+      {id:'paragraph',speaker:'Lunafreya',text:"“The last customer put on his coat the way people do when they would rather stay. She waited until the door had closed before she turned the chairs up, one by one, and the room let her.”",
+        alt:{'flag:kasper-ending-open':"“The last customer put on his coat, and at the door he stopped and held it open a moment longer than he needed to, as if somebody else were on their way. She left one chair down. Just in case.”"}},
+      {id:'hush',speaker:'Lunafreya',text:"…"},
+      {id:'good',speaker:'Lunafreya',text:"It's good. Not nice. Good."},
+      {id:'still',speaker:'Kasper',text:"Good is allowed. Good is almost unbearable. I'm going to sit very still for a while."}
+    ]}
+  );
+  const kasper = CAST.regulars.find(r => r.id === 'kasper');
+  kasper.lines.musing.push({text:'Kasper starts chapter eight and, for once, leaves the first line alone.', requires:['laptop'], flags:['kasper-paragraph-done']});
+  kasper.lines.arrivalReturn.push({text:'Kasper comes in with the look of somebody who has finished a chapter and is trying not to mention it.', flags:['kasper-paragraph-done']});
+})();

@@ -53,6 +53,7 @@
     return ((CAST.regularStories || {})[id] || []).find(function (s) {
       return !f[id + '-' + s.id + '-done'] && s.after.every(function (x) { return f[x]; }) &&
         !(s.unless || []).some(function (x) { return f[x]; }) &&
+        (!s.afterAny || s.afterAny.some(function (x) { return f[x]; })) &&
         (s.requires || []).every(function (id) { return SCENE.hasFurniture(w, id); }) &&
         (!s.beforeBuying || w.memory.life.projects[s.beforeBuying].stage === 'available');
     }) || null;
@@ -62,8 +63,10 @@
     const s = nextStory(w, id);
     const p = s && w.patrons.find(q => q.regularId === id && !q.outside && q.storyChapter === s.id && q.state === 'seated');
     if (!p || s.parcel && !(w.counterParcel && w.counterParcel.owner === p.id)) return null;
-    // A scene at the piano waits for a visit when she is sitting at it.
+    // A scene at the piano waits for a visit when she is sitting at it; one
+    // with a companion, until they are both sitting down together.
     if (s.seat === 'piano' && !p.seat.piano) return null;
+    if (s.companion && !(p.partner && p.partner.companionId === s.companion && p.partner.state === 'seated')) return null;
     return p;
   };
   SIM.startRegularStory = function (w, id) {
@@ -94,9 +97,18 @@
     SIM.gateRegular(id, { arrive: function (w, p) {
       if (p.storyChapter) return;
       const s = nextStory(w, id);
+      // A companion comes through the door with them only when there is a
+      // table for two; otherwise the scene waits for another visit.
+      if (s && s.companion && !(SIM.companions[s.companion] && SIM.companions[s.companion](w, p))) return;
       if (s) { p.storyChapter = s.id; if (s.parcel) p.parcel = s.parcel; if (s.seat === 'piano') p.preferPiano = true; }
     } });
   });
+  // A companion who has visited once comes along again on every third visit
+  // (when there is a table for two).
+  SIM.gateRegular('holger', { arrive: function (w, p) {
+    const bond = w.memory.bonds.holger;
+    if (!p.storyChapter && !p.partner && w.memory.flags['holger-visit-done'] && bond && bond.visits % 3 === 0 && SIM.companions.aksel) SIM.companions.aksel(w, p);
+  } });
   Object.keys(CAST.introductions).forEach(function (id) {
     SIM.addInvitation({ key: () => id, actors: w => { const p = SIM.introductionAvailable(w, id); return p ? [p] : []; },
       start: w => SIM.startIntroduction(w, id) });

@@ -234,11 +234,18 @@ brightly, or down, gently); later she asks Lunafreya to play four low notes
 under it, or to listen. From then on Lunafreya sometimes plays Saira's tune on
 a quiet night before her own playing.
 
-**Next, by judgement** (the 27 September hand-off's candidates): Aksel visiting
-with Holger (from `holger-aksel-cafe`), Nora's portrait itself
-(`lunafreya-portrait-*`), Kasper's paragraph (`kasper-ending-*`), Calandra's
-visit ("when you say"), Ezra, Elody sharing her plot, more of Lunafreya's idle
-life.
+**Old friends and a finished chapter — shipped 27 September 2026.** Holger's
+shipmate Aksel comes in with him one day when there is a table for two (after
+Holger has told of their walk, if he suggested one), tells everything like the
+shipping forecast and asks Lunafreya, sitting with them for a cup, for this
+place's forecast; afterwards he comes along on every third visit. Kasper
+finishes chapter seven, asks before keeping her way of looking at the door, and
+has her read its last paragraph, which leans the way she said endings should.
+
+**Next, by judgement** (the 27 September hand-off's remaining candidates):
+Nora's portrait itself (`lunafreya-portrait-*`), Calandra's visit ("when you
+say"), Ezra, Elody sharing her plot, Tomas's daughter's hello, a small music
+evening, more of Lunafreya's idle life.
 The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,

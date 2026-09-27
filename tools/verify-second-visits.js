@@ -62,11 +62,12 @@
     check(!SIM.regularStoryAvailable(w,'holger'),'the shipmate followed on the same visit');
     arrive(w,'holger','aksel');begin(w,'holger');talk(w,i);
     check(w.memory.flags['holger-aksel-done']&&w.memory.flags[i?'holger-aksel-walk':'holger-aksel-cafe'],'shipmate answer not saved');
-    arrive(w,'holger',false);
+    // Next comes the walk told, or Aksel himself (verify-old-friends.js).
+    arrive(w,'holger',i?'walked':'visit');
     check(!__dev.audit(w).length,'audit: '+__dev.audit(w).join('; '));
   });
   check(musing('holger','holger-fire-his')&&musing('holger','holger-aksel-walk'),'Holger\'s musings do not remember');
-  checks.push('Holger: the fire story by a working or a cold hearth, then Aksel on a later visit; both answers kept; nothing more after');
+  checks.push('Holger: the fire story by a working or a cold hearth, then Aksel on a later visit; both answers kept; the walk or his visit follows');
 
   // Kasper: endings, recalling the reading afternoon; a reload mid-scene resumes.
   let w=world('furnished',20,{'kasper-introduced':true,'kasper-good-lines':true,'reading-afternoon-kasper':true},13.5);

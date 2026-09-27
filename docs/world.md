@@ -57,6 +57,10 @@ rituals/partial work; transient patrons and incomplete orders are not serialized
 Only established furnished saves keep the seeded-room behavior. New cafés reload
 without a crowd; an unfinished mandatory first hello restores Holger at the counter.
 
+**Aksel.** Holger holding the door for a broad man in a navy jumper (the first
+time) or coming in with Aksel already talking about the wind (later) replaces
+Holger's usual arrival line.
+
 **The piano.** Keira and Tomas bring it in together (their arrival and the
 bundle being tipped into its corner are captioned), Lunafreya's unwrapping ends
 with the piano standing in the corner, lid up, a little out of tune. On a quiet

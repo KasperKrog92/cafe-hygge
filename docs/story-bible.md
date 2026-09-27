@@ -222,7 +222,8 @@ child or maritime disaster without a later, deliberate writing decision.
 | H1 — The new sign | Shipped | Mutual names, first espresso, her two choices, polishing a brass handle from nerves, galley table, missing familiar voices |
 | H2 — Books with a history | Shipped | Offer recalls her hope (books or names); the crew's six books (seven counting the 1998 tide table holding the box shut). She chooses lending them to anyone or letting them stay his, kept here. Handover on a later visit, once a shelf exists |
 | H3 — Keeping a fire | Shipped | On a later visit after the books: the galley stove on his second ship went out in a storm and the cook, who had kept it for eleven years, sat on the floor and cried; the crew kept it lit all night, two at a time, and nobody said it was for him ("Not very. That wasn't what it was for"). Opens by a working fire or a cold hearth. Choice: `holger-fire-his` (when he is here the fire is his to keep) or `holger-fire-told` (she is glad he told it; he never has on land). The cook still sends a Christmas card with a stove on it |
-| H4 — The voices at the table | Shipped (the meeting itself planned) | On a later visit: a letter from **Aksel**, nineteen years his shipmate, now twenty minutes away on the bus; four years and neither has suggested anything. His was the loudest of the voices; he tells a story like the shipping forecast. Choice: `holger-aksel-cafe` (ask him here; a table for two) or `holger-aksel-walk` (a walk along the water). Holger writes back himself that night. Aksel's visit, and Lunafreya joining them for a cup, remain planned |
+| H4 — The voices at the table | Shipped (the meeting itself planned) | On a later visit: a letter from **Aksel**, nineteen years his shipmate, now twenty minutes away on the bus; four years and neither has suggested anything. His was the loudest of the voices; he tells a story like the shipping forecast. Choice: `holger-aksel-cafe` (ask him here; a table for two) or `holger-aksel-walk` (a walk along the water). Holger writes back himself that night |
+| H4b — Aksel comes in | Shipped | After a walk (`walked`: along the water to the lighthouse and back, twenty minutes arguing about the route and an hour saying nothing; "Nobody had to be interesting"; Aksel wants to see the place Holger keeps talking about) or directly after "ask him here": one visit Aksel comes through the door with him, when there is a table for two (`visit`). Broad, navy jumper; everything like the shipping forecast ("Kattegat. North-westerly, four. Holger, seasick. Visibility, poor. Morale, good."; "Chairs, small. Coffee, excellent.", and the fire is Holger's if she said so). Lunafreya sits with them for a cup and gives the forecast for this place: `aksel-forecast-settled` (warm by the fire, rain on the window now and then) or `aksel-forecast-changeable` ("She's a sailor, Holger."). "Being stubborn is a full-time job." Afterwards Aksel comes along on every third visit and they talk (a buoy, the wind, a proper laugh) |
 | H5 — Being welcome, too | Planned | Lunafreya notices that he also needs encouragement. A reciprocal moment, not a rescue |
 
 **H2, shipped 27 September.** Trigger: his third visit after the introduction
@@ -374,8 +375,17 @@ Choice: `kasper-ending-quiet` ("like the last customer going home") or
 `kasper-ending-open` ("I like wondering who comes in next"; "of course a café
 would say that"). He recalls the reading afternoon and his three good lines when
 they happened; chapter seven now knows which way it wants to end. She still
-hasn't asked what it's about. **Planned:** a later invitation to share a
-paragraph shaped by that answer. Finishing a manuscript must never become a timed task.
+hasn't asked what it's about.
+**Shipped 27 September — the last paragraph** (a later visit): chapter seven is
+finished ("Don't clap. People are working.", after three good lines and eleven
+more if he promised them). Before she reads it he asks whether he may keep the
+way she looks up whenever the door opens, for the woman in it, who runs a café
+and isn't her: `kasper-borrow-yes` ("Keep it. It's a good door.") or
+`kasper-borrow-no` (a door of her own; he will find her one). The paragraph
+leans as she said: the last customer's coat, the chairs turned up one by one
+"and the room let her" (quiet), or the door held open a moment longer and one
+chair left down, just in case (open). "It's good. Not nice. Good." Afterwards
+he starts chapter eight. Finishing a manuscript must never become a timed task.
 The working arc builds on an earlier successful short story, his fear of not
 repeating that success, and an offered small piece shaped by a remembered
 preference about endings. Sharing Lunafreya's private history requires permission.

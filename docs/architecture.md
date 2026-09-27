@@ -832,6 +832,11 @@ any parcel story completes), and the keepsake `recipe` (capability
 `birgit-recipe`, `homeFlag 'birgit-recipe-home'`; `L.projects.recipe`,
 `L.home.recipe`, drawn by `SCENE.drawRecipe`).
 
+Regular stories also take `afterAny` (at least one of these flags) and
+`companion` (a named companion brought in at the door by `SIM.companions[id]`,
+which returns false when there is no table for two; the story then waits and
+the invitation needs both seated at one table). No save change.
+
 The piano (v26): improvement `piano` (Keira's trolley with a `helper`,
 `world.deliveryHelper`, a quiet Tomas in `SIM.visitorActors`; `workFacing` for
 the unwrapping pose), `SCENE.hasFurniture('piano')` for the fuller room's or

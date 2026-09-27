@@ -766,6 +766,17 @@ chosen name: the café finds its name, Flourish, later through its neighbours
 (the naming arc), never through a timer or a choice forced during this
 introduction.
 
+## Old friends — shipped 27 September 2026
+
+A regular story may name a `companion` (Holger's `visit`: Aksel). At the door
+the companion's hook (`SIM.companions.aksel`, sim-holger.js) brings him in
+through the same door a moment later as Holger's partner, but only if a table
+has two free, clean seats; otherwise Holger comes alone and the scene waits.
+They ride the ordinary pair path (order, sit together, talk, leave together);
+with Aksel at the table Holger talks instead of reading, and his overheard lines
+about buoys and the wind can surface. The invitation waits until both sit.
+After the first visit Aksel comes along on every third Holger visit.
+
 ## The piano — shipped 27 September 2026
 
 A bought piano (after the room expansion) joins the room with its lid, bench

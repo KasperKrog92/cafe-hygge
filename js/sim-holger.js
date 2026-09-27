@@ -59,6 +59,34 @@
   };
   SIM.addInvitation({ key: () => 'holger', actors: w => { const h = SIM.holgerBooksAvailable(w); return h ? [h] : []; },
     start: w => SIM.startHolgerBooks(w) });
+  /* Aksel, Holger's shipmate of nineteen years, comes in with him when there
+     is a table for two: a named companion on the ordinary pair path (they
+     order, sit together, talk and leave together). His first visit is
+     Holger's `visit` scene; afterwards he sometimes comes along. */
+  SIM.companions = SIM.companions || {};
+  function tableForTwo(w) {
+    return w.tables.some(function (tb, ti) {
+      if (tb.small || tb.tall || tb.piano || tb.artist) return false;
+      return w.seats.filter(function (s) {
+        return s.table === ti && !s.taken && !tb.items.some(function (it) { return it.owner === null && it.side === s.side; });
+      }).length >= 2;
+    });
+  }
+  SIM.companions.aksel = function (w, holger) {
+    if (holger.partner || !tableForTwo(w)) return false;
+    const d = CAST.aksel, a = R.makePatron(w, d.name);
+    a.colors = Object.assign({}, d.colors); a.nameStyle = 'masculine'; a.companionId = 'aksel';
+    const drink = R.DRINKS.find(function (x) { return x.name === d.drink; });
+    if (drink) a.drink = drink;
+    a.wantsBook = false; a.ownBook = false; a.chatty = true; a.laptop = false; a.pianist = false;
+    a.chatT = R.rnd(8, 16); a.umbrella = null;
+    a.partner = holger; holger.partner = a;
+    // With a friend at the table he talks rather than reads.
+    holger.chatty = true; holger.wantsBook = false; holger.ownBook = false; holger.chatT = R.rnd(12, 20);
+    R.enqueueArrival(w, a, R.rnd(1.2, 1.8), false);
+    holger.doorCloseT = 0;
+    return true;
+  };
   SIM.gateRegular('holger', {
     arrive: function (w, p) {
       p.storyChapter = chapter(w);
@@ -71,6 +99,9 @@
       }
     },
     arrivalLine: function (w) {
+      const h = w.patrons.find(p => p.regularId === 'holger' && !p.seat);
+      if (h && h.partner && h.partner.companionId === 'aksel')
+        return w.memory.flags['holger-visit-done'] ? CAST.akselArrival.again : CAST.akselArrival.first;
       return w.patrons.some(p => p.regularId === 'holger' && p.parcel === 'books') ?
         'Holger comes in with a small box held carefully under one arm.' : null;
     }
