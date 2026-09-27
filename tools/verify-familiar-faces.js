@@ -34,7 +34,7 @@
   // resumable, both answers saved once, and visible later in her/his musings.
   const choiceFlags={lunafreya:['lunafreya-remember-start','lunafreya-remember-people'],
     kasper:['kasper-table','kasper-good-lines'],freya:['freya-quiet','freya-route']};
-  Object.keys(CAST.introductions).forEach(function(id,n){
+  Object.keys(choiceFlags).forEach(function(id,n){
     [0,1].forEach(function(pick){
       let w=__dev.modestWorld({random:SIM.seededRandom(40+n*2+pick)});
       const need=CAST.introductions[id].visits;

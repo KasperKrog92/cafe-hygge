@@ -93,6 +93,12 @@
     g.globalAlpha = 1;
   }
 
+  // An arc's distant `figure` is a regular; while they sit in the café they
+  // are not also working across the water.
+  SCENE.figureInside = function (world, arcId) {
+    const def = window.CAST && CAST.arcs.find(function (a) { return a.id === arcId; });
+    return !!(def && def.figure && world.patrons && world.patrons.some(function (p) { return p.regularId === def.figure && !p.gone; }));
+  };
   function paintState(world) {
     const mem = world.memory, rec = mem && mem.arcs['street-house'];
     const def = window.CAST && CAST.arcs.find(function (a) { return a.id === 'street-house'; });
@@ -149,7 +155,7 @@
       px(g, lx - 3, top, 2, F.bankY - top, tone('#b8bfc7', world));
       px(g, lx + 3, top, 2, F.bankY - top, tone('#b8bfc7', world));
       for (let y = top + 4; y < F.bankY; y += 5) px(g, lx - 1, y, 4, 1, tone('#b8bfc7', world));
-      if (world.daylight > 0.45 && world.rain < 0.3) {
+      if (world.daylight > 0.45 && world.rain < 0.3 && !SCENE.figureInside(world, 'street-house')) {
         const y = Math.min(F.bankY - 3, top + 15), stroke = Math.floor(world.t * 1.2) % 3;
         px(g, lx - 2, y - 10, 5, 7, '#e8dfc9');
         px(g, lx - 1, y - 14, 4, 4, '#c9b28a');

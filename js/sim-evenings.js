@@ -38,8 +38,8 @@
     label: w => CAST.homeStories[SIM.eveningStory(w)].label });
 })();
 
-/* A keepsake chosen for home comes upstairs with her and is laid out when
-   she first settles on the bed that evening (saved, once). */
+/* A keepsake chosen for home comes upstairs with her and is put in its place
+   when she first settles on the bed that evening (saved, once). */
 (function () {
   'use strict';
   const R = SIM._, before = R.updateHome;
@@ -51,7 +51,7 @@
       const d = IMPROVEMENTS.projects[id], p = l.projects[id];
       if (!d.homeFlag || !w.memory.flags[d.homeFlag] || p.stage !== 'scheduled') return;
       p.stage = 'installed'; p.step = d.phases.length; p.time = 0;
-      R.caption(w, 'Gerda’s blanket goes over the foot of the bed.', {place:'home'});
+      R.caption(w, d.homeLine, {place:'home'});
       R.commitLife(w);
     });
   };

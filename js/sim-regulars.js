@@ -14,12 +14,17 @@
     if (w.moment || w.shop.phase !== 'open' || w.memory.life.mode !== 'game' || !due(w, id)) return null;
     return w.patrons.find(p => p.regularId === id && !p.outside && p.storyChapter === 'hello' && p.state === 'seated') || null;
   };
-  function packet(w, p) {
+  function packet(w, p) { return packetOf(w, p, CAST.introductions[p.regularId].lines); }
+  function packetOf(w, p, lines) {
     const bond = w.memory.bonds[p.regularId];
-    return SIM.contextLines(CAST.introductions[p.regularId].lines, {
+    return SIM.contextLines(lines, {
       familiar: (bond.visits || 0) > 4,
       hearth: SCENE.hasFurniture(w, 'hearth') && !SCENE.hearthWork(w),
-      menu: !!p.spec && !!p.drink && p.drink.name === p.spec.drink
+      menu: !!p.spec && !!p.drink && p.drink.name === p.spec.drink,
+      rain: w.rain > 0.3,
+      facadeDone: !!w.memory.flags['street-house-painted'],
+      noShelf: !SCENE.hasFurniture(w, 'wall-shelves') && !SCENE.hasFurniture(w, 'bookshelf'),
+      noPlant: !SCENE.hasFurniture(w, 'first-plant') && !SCENE.hasFurniture(w, 'plants')
     });
   }
   SIM.startIntroduction = function (w, id) {
@@ -32,6 +37,47 @@
       bond.warmth = (bond.warmth || 0) + 1;
     });
   };
+  // Later saved scenes (CAST.regularStories), one at a time and in order,
+  // each decided at the door. A story that brings a parcel waits until it is
+  // set down on the counter; one that gives a keepsake schedules it.
+  function nextStory(w, id) {
+    return ((CAST.regularStories || {})[id] || []).find(function (s) {
+      return !w.memory.flags[id + '-' + s.id + '-done'] && s.after.every(function (f) { return w.memory.flags[f]; });
+    }) || null;
+  }
+  SIM.regularStoryAvailable = function (w, id) {
+    if (w.moment || w.shop.phase !== 'open' || w.memory.life.mode !== 'game') return null;
+    const s = nextStory(w, id);
+    const p = s && w.patrons.find(q => q.regularId === id && !q.outside && q.storyChapter === s.id && q.state === 'seated');
+    if (!p || s.parcel && !(w.counterParcel && w.counterParcel.owner === p.id)) return null;
+    return p;
+  };
+  SIM.startRegularStory = function (w, id) {
+    const p = SIM.regularStoryAvailable(w, id);
+    if (!p) return false;
+    const s = nextStory(w, id);
+    return SIM.beginSavedMoment(w, packetOf(w, p, s.lines), p, id + '-' + s.id + '-', function () {
+      w.memory.flags[id + '-' + s.id + '-done'] = true;
+      p.storyChapter = null;
+      const bond = w.memory.bonds[id];
+      bond.warmth = (bond.warmth || 0) + 1;
+      if (s.gift) {
+        w.counterParcel = null;
+        const job = w.memory.life.projects[s.gift];
+        if (job.stage === 'available') job.stage = 'scheduled';
+        SIM._.commitLife(w);
+      }
+    });
+  };
+  Object.keys(CAST.regularStories || {}).forEach(function (id) {
+    SIM.addInvitation({ key: () => id, actors: w => { const p = SIM.regularStoryAvailable(w, id); return p ? [p] : []; },
+      start: w => SIM.startRegularStory(w, id) });
+    SIM.gateRegular(id, { arrive: function (w, p) {
+      if (p.storyChapter) return;
+      const s = nextStory(w, id);
+      if (s) { p.storyChapter = s.id; if (s.parcel) p.parcel = s.parcel; }
+    } });
+  });
   Object.keys(CAST.introductions).forEach(function (id) {
     SIM.addInvitation({ key: () => id, actors: w => { const p = SIM.introductionAvailable(w, id); return p ? [p] : []; },
       start: w => SIM.startIntroduction(w, id) });

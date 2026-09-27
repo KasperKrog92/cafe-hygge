@@ -361,6 +361,9 @@ painting/sketching habit described below.
 | **Nora** | ~11:00 | flat white | artist stool above the piano | painting, later sketching | deliberate; paints the café into its walls |
 | **Kasper** | ~13:30 | iced matcha | dining table | laptop typing | young writer; mutters at the screen |
 | **Antonia** | ~18:30 | matcha latte, own book | right fireside armchair | reading, dozing | evening reader; drifts off by the fire |
+| **Marcel** | ~17:00, even days from day 4, never while painting | cappuccino | window perch | window-gazing, chat | the painter across the lake |
+| **Ida** | ~15:00, every third day from day 5 | cinnamon latte, own book | dining table | reading, chat | the librarian on the corner |
+| **Elody** | ~12:00, odd days from day 6 | cardamom bun | dining table | chat, sky-watching | the gardener; brings Maud |
 
 Deliberate contrasts keep them from blurring together: morning versus dusk
 (only Antonia sits late enough that the after-dark doze can take her), silent
@@ -749,6 +752,14 @@ where it goes over the foot of the bed when she first settles there. At home,
 one evening moment may wait over Lunafreya each evening (game mode): the old
 shop mug after her talk with Holger, and Calandra's first letter from the third
 evening. Opening one holds the evening where she is.
+
+## The neighbourhood — shipped 27 September 2026
+
+Marcel, Ida and Elody are data rows in `CAST.regulars` with `firstDay` and a
+`rhythm` ({every, offset}, on `daysCompleted`), so the growing cast varies across
+days instead of crowding every afternoon. When several regulars are due, the
+one who has gone longest without a visit comes in first (roster order breaks
+ties). Marcel's gate (sim-marcel.js) adds the window and painting conditions.
 
 ## Introductions and neighbour stories — shipped 27 September 2026
 

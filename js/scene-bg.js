@@ -70,6 +70,12 @@
       px(g,s.x,y+1,s.w,3,'#6e4a33');
     });
     SCENE.shelfBooks(w).forEach(function(b){ if(!b.loaned && !b.pending) SCENE.drawShelfBook(g,b); });
+    // Ida's few handwritten notes, if Lunafreya asked for them: little paper
+    // tabs peeking out of every third book.
+    if(w.memory.flags['ida-exchange-notes'])SCENE.shelfBooks(w).forEach(function(b){
+      if(b.loaned || b.pending || b.i%3!==1)return;
+      px(g,b.x+1,b.y-b.h-3,2,4,'#f5efdf');px(g,b.x+1,b.y-b.h-3,2,1,'#c9b28a');
+    });
   }
 
   /* Books on the little wall shelves, source by source. Each source keeps

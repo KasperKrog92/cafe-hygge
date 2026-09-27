@@ -26,7 +26,8 @@ js/sim-life.js          → extends SIM    (home, plant, presentation, saved lif
 js/sim-intro.js         → extends SIM    (first-morning dialogue and opening finale)
 js/sim-moments.js       → extends SIM    (shared attended moments and saved replies)
 js/sim-holger.js        → extends SIM    (Holger's books offer and handover, visit gate)
-js/sim-regulars.js      → extends SIM    (data-driven regular introductions and gates)
+js/sim-regulars.js      → extends SIM    (data-driven regular introductions, stories and gates)
+js/sim-marcel.js        → extends SIM    (Marcel: one presence across the water and indoors)
 js/sim-gerda.js         → extends SIM    (window-gated visits, pillow placement and conversations)
 js/sim-visitors.js      → extends SIM    (Keira/Tomas jobs and saved greetings)
 js/sim-home.js          → extends SIM    (saved first apartment tour, first planner, bedtime)
@@ -657,6 +658,24 @@ once per identity per running café day after day one (Keira from 10, Tomas from
 nodes cannot. Active jobs suppress off-duty duplicates. Invitations appear in
 game mode only while seated, after service, and remain unconsumed in idle.
 No calendar or new purchase is needed.
+
+## The neighbourhood: rhythm, rotation, one presence (v18)
+
+`SIM.gateRegular` now stacks gates per regular: every `mayVisit` must allow,
+any `due` brings them, every `arrive` runs, the first `arrivalLine` wins.
+`dueRegular` filters regulars whose hour has come and whose `firstDay`/`rhythm`
+(`{every, offset}` on `life.daysCompleted`) allow today, then admits the one
+with the oldest `lastDay` (forced ones first). An arc's `figure` names the
+regular who is its distant worker; `SCENE.figureInside(world, arcId)` hides the
+far-bank figure, removes the `painter` caption fact and holds the anchored
+invitation while that regular is a patron. `CAST.regularStories[id]` lists later
+saved scenes (`{id, after, parcel?, gift?, lines}`), decided at the door; a
+`parcel` rides the generic counter-parcel path and `gift` schedules a keepsake
+improvement on completion. Keepsakes are generic: `doneLine`/`homeLine`
+captions, `SCENE.drawParcel(kind)` for anything waiting on the counter or in her
+arms, and `hasFurniture(capability)` for any installed improvement capability.
+The `cutting` keepsake (Maud) sits at `L.projects.cutting.spot` or on the
+bedroom sill. `MEMORY.VERSION` 18.
 
 ## Evening moments and keepsakes (v17)
 

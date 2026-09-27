@@ -39,7 +39,15 @@
     // nearest the fire as ordinary work, upstairs it goes home with her.
     blanket: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Gerda's blanket",
       label:"Gerda's blanket", phases:['drape the blanket over the chair'], phaseIds:['drape'], duration:4,
-      capability:'gerda-blanket', homeFlag:'gerda-blanket-home' },
+      capability:'gerda-blanket', homeFlag:'gerda-blanket-home',
+      doneLine:'Gerda’s blanket hangs over the chair nearest the fire, for whoever gets cold.',
+      homeLine:'Gerda’s blanket goes over the foot of the bed.' },
+    // Elody's geranium cutting, Maud: on the counter, or the windowsill upstairs.
+    cutting: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Maud, Elody's cutting",
+      label:"Maud", phases:['set Maud in her place'], phaseIds:['place'], duration:3,
+      capability:'elody-cutting', homeFlag:'elody-cutting-home',
+      doneLine:'Maud sits on the counter now, in her hand-labelled pot.',
+      homeLine:'Maud goes on the windowsill, where she can see the night.' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],

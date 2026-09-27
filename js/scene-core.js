@@ -28,6 +28,8 @@
     if (id === 'first-plant') return IMPROVEMENTS.installed(life,'first-plant');
     if (id === 'hearth') return life.furniture.hearth || IMPROVEMENTS.installed(life,'hearth');
     if (id === 'mantel-decor') return life.furniture[id] || IMPROVEMENTS.installed(life,id);
+    // Any other improvement capability (a keepsake's, say) is its installation.
+    if (IMPROVEMENTS.ids.some(k => IMPROVEMENTS.all[k].capability === id)) return IMPROVEMENTS.installed(life,id);
     return life.furniture[id] === true;
   };
   SCENE.layoutKey = function (world) {
@@ -144,6 +146,9 @@
       // Gerda's folded blanket waits beside that spot until it is placed; the
       // drape is done from beside the chair nearest the fire (table-hearth).
       blanket: {pickup:{x:664,y:286},parcel:{x:666,y:271},work:{x:330,y:444}},
+      // Maud waits where Elody set her down, then lives between the cash tin
+      // and the cake stand (placed from behind the counter).
+      cutting: {pickup:{x:664,y:286},parcel:{x:650,y:271},work:{x:760,y:286},spot:{x:766,y:264}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},

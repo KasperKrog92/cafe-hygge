@@ -23,7 +23,7 @@ function boot(raw) {
   };
   sandbox.window = sandbox;
   const ctx = vm.createContext(sandbox);
-  for (const file of ['improvements', 'audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro', 'sim-moments', 'sim-gerda', 'sim-visitors', 'sim-home']) {
+  for (const file of ['improvements', 'audio', 'scene-core', 'scene-waterfront', 'scene-bg', 'scene-furniture', 'scene-people', 'scene-fx', 'characters-roster', 'memory', 'sim-core', 'sim-waterfront', 'sim-patrons', 'sim-shop', 'sim-characters', 'sim-life', 'sim-intro', 'sim-moments', 'sim-holger', 'sim-regulars', 'sim-marcel', 'sim-gerda', 'sim-visitors', 'sim-home', 'sim-evenings']) {
     vm.runInContext(fs.readFileSync(path.join(root, 'js', file + '.js'), 'utf8'), ctx, { filename: file + '.js' });
   }
   return { ctx, data, events, timers, writes: () => writes, prompts: () => prompts,
@@ -46,6 +46,7 @@ async function test(name, fn) { await fn(); passed++; console.log('PASS ' + name
       const warmth=w.memory.bonds.holger.warmth;
       CAST.holgerIntroduction=[{id:'test-inserted',speaker:'Holger',text:'Test insertion.'},...packet.slice(0,6).reverse(),...packet.slice(6)];
       if(!SIM.startHolger(w)||w.moment.lines[w.moment.index].id!=='test-inserted')throw Error('new node not offered');
+      for(let n=0;n<600&&w.moment.phase!=='talk';n++)SIM.update(w,.1);   // she may walk over first
       w.moment.visible=999;SIM.advanceMoment(w);
       if(w.moment.lines[w.moment.index].id!=='beginning'||SIM.momentLine(w).text!==packet[6].choices[1].reply)throw Error('acknowledged nodes replayed');
       const saved=w.context.memory.exportText();

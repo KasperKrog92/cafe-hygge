@@ -150,6 +150,7 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | What came before the move | Planned direction | Withdrawn promotion and a prepared move; not yet disclosed, and no invented traumatic cause |
 | The old shop mug | Shipped, evening moment | The evening after she tells Holger about the shop, a box marked "kitchen" holds the shop mug she'd told herself she packed by accident; she drank the last coffee from it at closing, standing up, counting chairs. It recalls her exact answer to Holger. Choice: `luna-mug-home` (on the desk, for tea) or `luna-mug-cafe` (on the back bar; at closing she drinks the last coffee from it, standing up) |
 | Calandra's first letter | Shipped, evening moment | From the third evening: "Luna. It's your sister. You know that. I'm saying it for the record." Mum and she want photos; Dad asks about the chairs; is she eating; it's quiet without her arguing with the crossword. Lunafreya writes back about the people (`calandra-told-people`) or the room (`calandra-told-place`), and leaves out the bread and cheese. The letter stays on her desk |
+| Why this side of the lake, told to Marcel | Shipped, Marcel's hello | `luna-lake-tuesday` (an ordinary Tuesday imagined by the water on the viewing day) or `luna-lake-later` |
 | Naming the café | Planned | Find its name through lived experience; Fleur de Lune remains provisional |
 
 The reading-corner answer makes no purchase, price commitment or upgrade gate.
@@ -344,10 +345,10 @@ Use this table to distinguish identities from what the runtime currently contain
 | Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries, expanded hello and her second cup (coat off; photograph permission) are shipped; the printed photograph, gifts and deeper scenes remain later |
 | Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair, expanded hello and the cupboard report (plain version, towels, bread going worse) are shipped; bread gifts and deeper family scenes remain planned |
 | Saira | Choir accompanist/teacher; her own quiet composition; possible romance | New named character; existing generic piano behavior is not her authored story |
-| Marcel | Painter across the lake; recognizes changing places and people | Existing `street-house` arc stays intact; personal identity and café visits remain to implement |
+| Marcel | Painter across the lake; recognizes changing places and people | Shipped as a regular (see below); the `street-house` arc is intact and he is its distant figure. Later painting and his gift remain planned |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |
-| Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | New character; existing plants remain independent of her friendship |
-| Ida | Librarian; welcoming book exchange and learning when to organize less | New character; not required for the first usable shelf or Holger's gift |
+| Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | Shipped: introduction and Maud, her geranium cutting (see below); sharing her plot and later scenes remain planned |
+| Ida | Librarian; welcoming book exchange and learning when to organize less | Shipped: introduction and the exchange preference (see below); the fuller exchange, Gerda's sign and her bookplates remain planned |
 | Ezra | Young adult student with imaginary bus maps; possible later colleague | New character; friendship precedes any future shared-work implementation |
 | Calandra | Lunafreya's sister; brings old and new lives together through an invited visit | First letter shipped (evening moment); later letters, the visit and shared home scenes remain to implement |
 
@@ -355,6 +356,45 @@ Keira, Nora, Kasper and Saira are the working adult romance candidates. Specific
 routes and household outcomes remain later writing work. Friendship, employment,
 housing and romance are separate decisions; no current interaction is reclassified
 as a date or commitment by adopting this plan.
+
+## Marcel, Ida and Elody — the neighbourhood, shipped 27 September
+
+Newer faces keep a rhythm and start after the café's first days: Marcel from
+day 4 on even days, Ida from day 5 every third day, Elody from day 6 on odd
+days. Their saved hellos use `CAST.introductions` like the other regulars.
+
+**Marcel** (he/him; short dark hair, beard, painter's cream jacket, slate
+trousers; cappuccino; likes a window perch) is the man on the ladder across the
+water. One presence: he comes in only once the left window is clear and only
+when he could not be painting (rain or the light gone, or once the facade is
+done); while he sits inside, the far-bank figure is not drawn, the ladder stands
+empty and the facade's finishing invitation waits. His hello (first visit)
+acknowledges the facade as it actually is ("I'm the one on the ladder" or "I
+was ... a while back now"), says they have been watching each other's progress,
+and asks why this side of the lake. **Lunafreya's second disclosure:**
+`luna-lake-tuesday` (on the viewing day she sat by the water with a coffee and
+imagined an ordinary Tuesday here) or `luna-lake-later` ("I'll tell you when
+I've worked it out"). Only Marcel has heard it. The facade is terracotta.
+
+**Ida** (she/her; auburn hair in a bun, deep red cardigan, ochre scarf; cinnamon
+latte; reads extremely melodramatic novels, currently a lighthouse keeper in
+love with a shipwreck, "metaphorically, mostly") works at the library on the
+corner and reads spines as a professional failing. Her hello follows the
+actual shelf (or its absence) and offers to help people swap books. Choice:
+`ida-exchange-loose` (no labels; she tries not to alphabetise when nobody is
+looking) or `ida-exchange-notes` (a few handwritten notes, which then peek out of
+every third book). She means to lend Lunafreya the lighthouse book.
+
+**Elody** (she/her; dark curly hair, green work jacket, rust scarf; a cardamom
+bun; keeps rainfall in a notebook) tends an allotment she now shares with the
+slugs. Her hello (second visit) notices the café's plant, or kindly notes there
+is none yet, and offers a geranium cutting: `elody-cutting-cafe` (the counter)
+or `elody-cutting-home` (the windowsill upstairs). On a later visit she brings
+**Maud** in a hand-labelled pot, sets her on the counter as she orders and
+presents her in a short saved scene (`CAST.regularStories.elody`, `maud`); an
+ignored Maud goes home with her and comes back. Placing Maud is ordinary work
+(the `cutting` keepsake): between the cash tin and the cake stand, or on the
+bedroom windowsill when Lunafreya settles for the evening.
 
 ## The cat — company without explanation
 

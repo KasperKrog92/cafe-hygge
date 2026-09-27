@@ -14,7 +14,7 @@
   /* Pick the name style before appearance so strongly gender-coded details do
      not contradict it. Everything else stays independent and varied. */
   const PATRON_NAMES = {
-    feminine: ['Freja', 'Astrid', 'Ida', 'Clara', 'Sofie', 'Maja', 'Ellen', 'Alma'],
+    feminine: ['Freja', 'Astrid', 'Nanna', 'Clara', 'Sofie', 'Maja', 'Ellen', 'Alma'],
     masculine: ['Søren', 'Mikkel', 'Emil', 'Anton', 'Johan', 'Viggo', 'Oskar', 'Karl']
   };
   const SKINS = ['#e8b48a', '#d99c6b', '#b57a4a', '#8a5a3a', '#f0c49a'];
@@ -511,7 +511,7 @@
     rain: w => w.rain > 0.3,
     dry: w => w.rain < 0.15,
     painter: w => captionFacts.view(w) && w.daylight > 0.45 && w.rain < 0.3 &&
-      w.memory.arcs['street-house'] && w.memory.arcs['street-house'].stage === 0,
+      w.memory.arcs['street-house'] && w.memory.arcs['street-house'].stage === 0 && !SCENE.figureInside(w,'street-house'),
     candles: w => w.candles.mantel > 0.05 || w.tables.some(tb => tb.candle > 0.05),
     empty: w => !w.patrons.length,
     reading: (w,p) => !!p && p.state === 'seated' && p.reading && !p.dozing,
@@ -1252,9 +1252,12 @@
     const clean=world.seats.filter(s => !s.piano && !s.artist && !s.taken && (s.table<0 ||
       !world.tables[s.table].items.some(it => it.owner===null && it.side===s.side))).length;
     const waiting=world.patrons.filter(p => !p.gone && !p.seat && p.terraceTable==null &&
-      ['returnBook','return','collectUmbrella','exit'].indexOf(p.state)<0).length;
+      ['returnBook','return','collectUmbrella','collectParcel','exit'].indexOf(p.state)<0).length;
+    // The allowance never takes the room past its customer seats: someone
+    // still leaving counts until they are out of the door.
+    const capacity=world.seats.filter(s => !s.piano && !s.artist).length;
     const allowance=arrivalFirstDay(world) ? 0 : (extra || 0);
-    return Math.max(0,Math.min(arrivalTarget(world)+allowance-arrivalPopulation(world),clean-waiting,3-waiting));
+    return Math.max(0,Math.min(Math.min(capacity,arrivalTarget(world)+allowance)-arrivalPopulation(world),clean-waiting,3-waiting));
   }
   function arrivalGap(world) {
     return arrivalFirstDay(world) ? rnd(90,130) : rnd(20,34);
@@ -1415,23 +1418,51 @@
                             arrivalLine(world) })
      arrive runs as they come through the door, before the arrival caption:
      the place to decide what they bring with them today. */
+  // Several files may gate one regular (a story file, the introductions); the
+  // gates combine: every mayVisit must allow, any due brings them, every
+  // arrive runs, and the first arrivalLine that has something wins.
   const REGULAR_GATES = {};
-  SIM.gateRegular = function (id, gate) { REGULAR_GATES[id] = gate; };
+  SIM.gateRegular = function (id, gate) { (REGULAR_GATES[id] = REGULAR_GATES[id] || []).push(gate); };
+  function regularGate(id) {
+    const gates = REGULAR_GATES[id] || [];
+    return {
+      mayVisit: function (w) { return gates.every(function (g) { return !g.mayVisit || g.mayVisit(w); }); },
+      due: function (w) { return gates.some(function (g) { return g.due && g.due(w); }); },
+      arrive: function (w, p) { gates.forEach(function (g) { if (g.arrive) g.arrive(w, p); }); },
+      arrivalLine: function (w) {
+        for (let i = 0; i < gates.length; i++) { const line = gates[i].arrivalLine && gates[i].arrivalLine(w); if (line) return line; }
+        return null;
+      }
+    };
+  }
+  // A newer face keeps a rhythm (spec.rhythm {every, offset}) and starts only
+  // once the café has had time to become itself (spec.firstDay).
+  function onRhythm(world, spec) {
+    const d = world.memory.life.daysCompleted, r = spec.rhythm;
+    if (spec.firstDay && d < spec.firstDay) return false;
+    return !r || (d + (r.offset || 0)) % r.every === 0;
+  }
 
-  // The first regular whose habit brings them in now, or null.
+  // The regular whose habit brings them in now, or null. When several are
+  // due, whoever has gone longest without a visit comes first (fair rotation;
+  // roster order breaks ties), so a small room still sees every face.
   function dueRegular(world) {
     const day = dayIndex(world), firstDay = arrivalFirstDay(world);
-    return CAST.regulars.find(function (spec) {
+    return CAST.regulars.filter(function (spec) {
       const r = world.regulars[spec.id];
       if (!r) return false;
-      const gate = REGULAR_GATES[spec.id] || {};
-      if (gate.mayVisit && !gate.mayVisit(world)) return false;
+      const gate = regularGate(spec.id);
+      if (!gate.mayVisit(world)) return false;
       if (day !== r.day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
+      if (!r.force && !onRhythm(world, spec)) return false;
       // one visit at a time per regular; never two of the same face
       if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return false;
-      const due = r.force || (gate.due && gate.due(world)) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
+      const due = r.force || gate.due(world) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
       return due && !(firstDay && spec.id!=='holger' && !r.force);
-    }) || null;
+    }).sort(function (a, b) {
+      const ra = world.regulars[a.id], rb = world.regulars[b.id];
+      return (rb.force ? 1 : 0) - (ra.force ? 1 : 0) || ra.lastDay - rb.lastDay;
+    })[0] || null;
   }
   // Familiar faces keep their habits in a small room: a regular whose hour
   // has come may take a clean seat one guest past the popularity target.
@@ -1441,14 +1472,14 @@
     [dueRegular(world)].forEach(function (spec) {
       if(!spec)return;
       const r = world.regulars[spec.id];
-      const gate = REGULAR_GATES[spec.id] || {};
+      const gate = regularGate(spec.id);
       if (arrivalRoom(world,1)<1) return;
       const p = makeRegular(world, spec);
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
       const info = noteRegularVisit(world, spec);
-      if (gate.arrive) gate.arrive(world, p);
-      caption(world, (gate.arrivalLine && gate.arrivalLine(world)) || regularArrivalLine(world, spec, info, p),{actor:p});
+      gate.arrive(world, p);
+      caption(world, gate.arrivalLine(world) || regularArrivalLine(world, spec, info, p),{actor:p});
       arrived=true;
     });
     return arrived;
@@ -1727,7 +1758,7 @@
     dayIndex: dayIndex, candleTables: candleTables,
     snapCandles: snapCandles, updateCandles: updateCandles,
     updateFire: updateFire, addLog: addLog,
-    arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom, arrivalPopulation: arrivalPopulation,
+    arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom, arrivalPopulation: arrivalPopulation, dueRegular: dueRegular,
     updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };

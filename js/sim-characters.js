@@ -1415,7 +1415,7 @@
     const out = [];
     if (!world.memory) return out;
     ((CAST && CAST.arcs) || []).forEach(function (arc) {
-      if (!arc.anchor) return;
+      if (!arc.anchor || SCENE.figureInside(world, arc.id)) return;
       const rec = world.memory.arcs[arc.id];
       if (rec && rec.pendingBeat) out.push({ x: arc.anchor.x, y: arc.anchor.y + 100, icon: arc.glyph });
     });
@@ -1489,7 +1489,9 @@
       const rec = world.memory.arcs[arc.id];
       if (!rec || !rec.pendingBeat || arc.payoff === 'scene') continue;
       if (arc.anchor) {
-        // a fixed invitation: a forgiving box around the drawn bubble
+        // a fixed invitation: a forgiving box around the drawn bubble; its
+        // distant figure must be out there to finish the work
+        if (SCENE.figureInside(world, arc.id)) continue;
         const a = arc.anchor;
         if (x > a.x - 26 && x < a.x + 26 && y > a.y - 6 && y < a.y + 46) {
           playBeat(world, arc, null);
@@ -1711,7 +1713,7 @@
       // A small carton held against the hip (a gift brought for Lunafreya).
       if(p.parcel)draws.push({y:p.y+.1,draw:function(g){
         const f=p.heading?1:p.facing,x=Math.round(p.x)+f*10,y=Math.round(p.y)-17;
-        SCENE.drawBookBox(g,x,y,p.parcel==='books'?'holger':p.parcel);
+        SCENE.drawParcel(g,world,p.parcel,x,y);
         SCENE._.px(g,x-f*9-(f>0?0:4),y-9,4,4,p.colors.skin);
       }});
       if(p.carryingPillows)draws.push({y:p.y+.1,draw:function(g){
@@ -1725,7 +1727,7 @@
     if (parcel) {
       const at = L.projects.holgerBooks.parcel;
       draws.push({ y: L.basic.counter.baseY + .5, draw: function (g) {
-        SCENE.drawBookBox(g, at.x, at.y, parcel.kind === 'books' ? 'holger' : parcel.kind); } });
+        SCENE.drawParcel(g, world, parcel.kind, at.x, at.y); } });
     }
     const b = world.barista;
     if (!b.introOutside && !b.outside && (!world.shop || !world.shop.away)) draws.push({ y: b.y, draw: function (g) {

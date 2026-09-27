@@ -363,6 +363,15 @@ open/closed drapes and the later fireside chairs confirms both the wall
 silhouette and installation route. The large bookcase remains a later idea;
 this placement does not reserve or implement a new cat corner.
 
+**Marcel, Ida and Elody** reuse the person renderer with fixed colors: Marcel
+skin `#b57a4a`, short dark hair, beard, painter's cream top `#d8c9ad`, slate
+trousers (the same cream and cap tones as the far-bank figure); Ida auburn bun,
+deep red cardigan `#9c4848`, ochre scarf; Elody dark curly long hair, green work
+jacket `#6b7a55`, rust scarf. **Maud** is a 10-pixel terracotta pot with a paper
+label, three green leaves and a pink flower (`SCENE.drawMaud`): on the counter at
+(766,264) between the cash tin and cake stand, or on the bedroom sill clear of
+the curtain. Ida's notes are 2×4 paper tabs above every third shelved book.
+
 **Keepsakes.** Gerda's blanket is drawn by one helper (`SCENE.drawBlanket`):
 winter blue `#3d4a5c` with a gold dot grid (stars) or sage `#6b7a55` with
 light vertical reeds, a lit top edge and shaded bottom. Folded (18×7) it waits

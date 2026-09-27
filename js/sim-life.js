@@ -113,7 +113,7 @@
       if (p.step === d.phases.length) {
         p.stage = 'installed'; R.installProjects(w);
         R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : id==='windowSeat' ? 'a little table beside the water; room for Gerda’s wool and a cup.' :
-          id === 'blanket' ? 'Gerda’s blanket hangs over the chair nearest the fire, for whoever gets cold.' :
+          d.doneLine ? d.doneLine :
           d.bookSource ? (CAST.shelfLines[d.bookSource] || 'the box is empty; the little shelves look lived in.') : 'the boards are gone; the first small fire catches.');
         if (id === 'fireplace') R.addLog(w);
       } else if (d.bookSource && d.shelves[p.step-1] && w.memory.life.shelf.length === d.shelves[p.step-1] && !d.shelves[p.step-2])

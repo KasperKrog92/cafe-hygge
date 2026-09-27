@@ -52,8 +52,8 @@ can play). Then leave it running next to your book.
   (each with its own sound), rings the little counter bell, and putters between
   orders: wiping the counter, polishing cups, tending the fire, and in the
   evening going home to her apartment.
-- **Regulars and neighbours** (Holger, Gerda, Nora, Kasper, Antonia, Keira and
-  Tomas) come back, remember what you told them, and now and then have
+- **Regulars and neighbours** (Holger, Gerda, Nora, Kasper, Antonia, Keira,
+  Tomas, and later Marcel, Ida and Elody) come back, remember what you told them, and now and then have
   something to share. Their invitations wait until you tap them.
 - **Improvements**: savings from quiet service buy a repaired window, tables,
   little wall shelves and a box of books to fill them, or a reopened fireplace,

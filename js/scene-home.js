@@ -41,6 +41,20 @@
     px(g,x-9,y-4,18,1,'rgba(20,12,8,.25)');
   }
   SCENE.drawFoldedBlanket = foldedBlanket;
+  // Maud: a geranium cutting in a small terracotta pot with a paper label.
+  SCENE.drawMaud = function(g,x,y) {
+    px(g,x-4,y-6,8,6,'#b5654a');px(g,x-5,y-7,10,2,'#c98f73');px(g,x-2,y-4,4,2,'#f5efdf');
+    px(g,x-1,y-13,2,7,'#4a7a5a');
+    [[-5,-12,5,3],[1,-15,5,3],[-4,-17,4,3]].forEach((a,i)=>px(g,x+a[0],y+a[1],a[2],a[3],i%2?'#6b9a5f':'#4a7a5a'));
+    px(g,x+1,y-18,3,2,'#d9738a');px(g,x+2,y-19,1,1,'#e8a0b0');
+  };
+  // Whatever a regular brings in (a parcel set on the counter, a gift not
+  // yet placed): Holger's box of books, Maud, Gerda's folded blanket.
+  SCENE.drawParcel = function(g,w,kind,x,y) {
+    if(kind==='cutting')SCENE.drawMaud(g,x,y);
+    else if(kind==='blanket')foldedBlanket(g,w,x,y);
+    else SCENE.drawBookBox(g,x,y,kind==='books'?'holger':kind);
+  };
   SCENE.drawFirstPlant = function(g,x,y) {
     px(g,x-7,y-13,14,11,'#b5654a'); px(g,x-5,y-3,10,3,'#8f4a35');
     px(g,x-9,y-16,18,4,'#d39a70'); px(g,x-5,y-12,3,7,'#c98f73');
@@ -114,7 +128,7 @@
       const carried=b.project===id && b.holding==='parcel';
       if (carried) draws.push({y:b.y+.1,draw:g=>{
         const x=Math.round(b.x),y=Math.round(b.y),d=IMPROVEMENTS.projects[id];
-        if(d.keepsake) {const f=b.heading?1:b.facing;foldedBlanket(g,w,x+f*9,y-18);px(g,x+f*9-(f>0?10:-7),y-27,4,4,b.colors.skin);return;}
+        if(d.keepsake) {const f=b.heading?1:b.facing;SCENE.drawParcel(g,w,id,x+f*9,y-18);px(g,x+f*9-(f>0?10:-7),y-27,4,4,b.colors.skin);return;}
         // A box of books keeps its own small carton in her arms.
         if(d.bookSource) {const f=b.heading?1:b.facing;bookBox(g,x+f*10,y-16,d,0,false);px(g,x+f*10-(f>0?11:-8),y-26,4,4,b.colors.skin);}
         else box(g,x+12,y-22,false);
@@ -131,11 +145,13 @@
           px(g,t.x+10,t.base-5,8,3,'#7a89a5');
         }});
       } else if (IMPROVEMENTS.projects[id].keepsake) {
-        // Folded on the counter until placed (or until she takes it home).
+        // On the counter until placed (or until she takes it home).
         if(p.stage==='scheduled' && !carried) {
           const at=a.parcel;
-          draws.push({y:SCENE.L.basic.counter.baseY+.6,draw:g=>foldedBlanket(g,w,at.x,at.y)});
+          draws.push({y:SCENE.L.basic.counter.baseY+.6,draw:g=>SCENE.drawParcel(g,w,id,at.x,at.y)});
         }
+        if(id==='cutting' && p.stage==='installed' && !w.memory.flags['elody-cutting-home'])
+          draws.push({y:SCENE.L.basic.counter.baseY+.7,draw:g=>SCENE.drawMaud(g,a.spot.x,a.spot.y)});
       } else if (IMPROVEMENTS.projects[id].bookSource) {
         const d=IMPROVEMENTS.projects[id];
         if(p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
@@ -502,6 +518,8 @@
     g.restore();
     px(g,win.x+62,win.y,4,win.h,'#6e4a33'); px(g,win.x,win.y+57,win.w,4,'#6e4a33');
     px(g,win.x-10,win.y+win.h,win.w+20,7,'#c08a58');
+    // Maud, if she lives upstairs, on the windowsill.
+    if(w.memory.flags['elody-cutting-home'] && w.memory.life.projects.cutting.stage==='installed')SCENE.drawMaud(g,win.x+36,win.y+win.h+1);
     if(story.step>=10 || story.step===9 && w.homeAction==='reach') {
       px(g,win.x-15,win.y-10,win.w+30,3,'#5a3d28');
       const width=homeCurtains(w);

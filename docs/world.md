@@ -57,6 +57,10 @@ rituals/partial work; transient patrons and incomplete orders are not serialized
 Only established furnished saves keep the seeded-room behavior. New cafés reload
 without a crowd; an unfinished mandatory first hello restores Holger at the counter.
 
+Newer regulars keep a rhythm (Marcel even days from day 4, Ida every third day
+from day 5, Elody odd days from day 6) and, whenever several regulars are due at
+once, whoever has gone longest without a visit comes in first.
+
 New cafés begin with 90 coins, enough for the first two planner choices: a
 30-coin left-window repair and 60-coin table with two chairs. Both can be chosen
 in one evening, in either order, including across a reload. Affordability never
@@ -90,7 +94,9 @@ Keepsakes add: “Gerda’s blanket hangs over the chair nearest the fire, for
 whoever gets cold.” or, at home, “Gerda’s blanket goes over the foot of the
 bed.”; and, if the old shop mug went downstairs, at closing (60%): “Lunafreya
 drinks the last of the coffee from her old mug, standing up.” Gerda’s blanket
-arc adds three knitting lines about its long rows and pattern.
+arc adds three knitting lines about its long rows and pattern. Maud adds “Maud
+sits on the counter now, in her hand-labelled pot.” or, at home, “Maud goes on
+the windowsill, where she can see the night.”
 
 Holger's books add: “Holger comes in with a small box held carefully under one
 arm.” (his gift visit); “Holger's books stand together on the little shelves;

@@ -105,9 +105,19 @@ the back bar), and her sister Calandra's first letter arrives on the third
 evening. Each waits over Lunafreya, one per evening, and holds the evening
 while it plays.
 
-**Next: the plan's fourth release, the neighbourhood meets itself** — Marcel's
-visit, Ida and Elody introductions, the book exchange and one shared reading
-gathering. The current status/next task lives here; a brief owns scope and acceptance
+## The neighbourhood meets itself — shipped 27 September 2026 (in part)
+
+Marcel, the painter across the lake, visits when he could not be painting (his
+ladder stands empty while he is inside) and asks Lunafreya why this side of the
+lake. Ida the librarian asks how the shelf should work (loose, or a few notes
+that then appear), and Elody the gardener brings Maud, a geranium cutting, for
+the counter or the bedroom sill. Newer faces keep a visit rhythm and due
+regulars rotate fairly, so a small room still sees everyone.
+
+**Next:** the release's remaining piece, **one shared reading gathering** (a
+quiet afternoon, booked "ready when you want to begin", with a few regulars each
+reading their own book), then the fifth release, **a tune for the room** (Saira
+and an optional piano). The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,
 Keira and Tomas share saved-node resumption. Existing dialogue and choices are

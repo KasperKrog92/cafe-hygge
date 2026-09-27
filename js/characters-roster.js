@@ -792,3 +792,212 @@
     {id:'thanks',speaker:'Lunafreya',text:"Thank you, Gerda. I will."}
   ];
 })();
+
+/* The neighbourhood meets itself (ensemble release 4): Marcel, the house
+   painter across the lake. He is the distant figure on the ladder
+   (`street-house` arc `figure`), so he comes in only when he could not be
+   painting (sim-marcel.js) and the far-bank figure is never drawn while he
+   sits inside. Newer faces keep a visit rhythm and start after a few days. */
+(function () {
+  'use strict';
+  CAST.regulars.push({
+    id: 'marcel',
+    name: 'Marcel',
+    nameStyle: 'masculine',
+    colors: {
+      skin: '#b57a4a', hair: '#2a1a12', top: '#d8c9ad', pants: '#3c414d',
+      scarf: null, longHair: false, hairStyle: 0, beard: true
+    },
+    drink: 'cappuccino',
+    traits: { wantsBook: false, ownBook: false, chatty: true, laptop: false, pianist: false },
+    murmurPitch: 140, speed: 48,
+    umbrella: '#4a7a5a',
+    arrival: { from: 16.5, to: 17.5 },
+    stay: [220, 320],
+    seat: 'windowPerch',
+    firstDay: 4,
+    rhythm: { every: 2, offset: 0 },
+    lines: {
+      arrival: ['Marcel comes in with paint on his cuffs.'],
+      arrivalRain: ['Marcel comes in out of the rain; no painting in this.'],
+      arrivalReturn: ['Marcel is back, a fleck of terracotta still on one knuckle.'],
+      settle: ['Marcel takes a seat with a view of the far bank.'],
+      usualTaken: ['The window is taken; Marcel settles for a view of the room instead.'],
+      overheard: [
+        'Marcel talks about primer the way other people talk about the weather.',
+        'Marcel admits he misses an old shop sign he once painted, then says the new one is fine.',
+        {text:'Marcel points across the water at the terracotta house.', requires:['view']}
+      ],
+      musing: [
+        {text:'Marcel looks across the water at the wall he painted.', requires:['view'], flags:['street-house-painted']},
+        {text:'Marcel squints across the water, measuring tomorrow\'s light.', requires:['view']},
+        {text:'Marcel turns his cup and studies the colour of the foam.', requires:['cup']}
+      ],
+      backstory: [
+        'Marcel has painted half the stairwells on this street; he knows which ones are crooked.',
+        'Marcel says every wall has one patch that never takes the colour. He is fond of those.'
+      ]
+    }
+  });
+  CAST.voices.Marcel = {pitch:160,filter:650,pace:1.05};
+  const street = CAST.arcs.find(a => a.id === 'street-house');
+  street.figure = 'marcel';   // the painter on the far quay is this regular
+  CAST.introductions.marcel = {visits:1, lines:[
+    {id:'window',speaker:'Marcel',text:"I thought your window was getting larger. Turns out you were taking the boards off."},
+    {id:'met',speaker:'Lunafreya',text:"Have we met?"},
+    {id:'ladder',speaker:'Marcel',text:"Not properly. I'm the one on the ladder across the water. Marcel. The terracotta house.",
+      alt:{facadeDone:"Not properly. I was the one on the ladder across the water. Marcel. The terracotta house, a while back now."}},
+    {id:'painter',speaker:'Lunafreya',text:"You're the painter! I've been watching that wall go warm for days.",
+      alt:{facadeDone:"You're the painter! I watched that wall go warm, one stroke at a time."}},
+    {id:'both',speaker:'Marcel',text:"And I've been watching your window. We've been keeping an eye on each other's progress."},
+    {id:'why-here',speaker:'Marcel',text:"The light's gone for today, so here I am.",
+      alt:{facadeDone:"I'm on a stairwell in the next street now. Much less of a view.",
+        rain:"Can't paint in this, so here I am."}},
+    {id:'ask',speaker:'Marcel',text:"Can I ask why this side of the lake? Everyone new wants the other side. Better light, they say."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Marcel',text:"I…",choices:[
+      {text:"On the viewing day I sat by the water with a coffee and imagined an ordinary Tuesday here.",flag:'luna-lake-tuesday',
+        reply:"An ordinary Tuesday. That's the best reason I've heard for anything."},
+      {text:"I'll tell you when I've worked it out. It just felt right.",flag:'luna-lake-later',
+        reply:"Fair. Half my colours I pick the same way and call it experience."}
+    ]},
+    {id:'light',speaker:'Marcel',text:"For the record, their light is fine. Ours is better in the evenings."},
+    {id:'rain',speaker:'Lunafreya',text:"Come in whenever it rains, then."},
+    {id:'closer',speaker:'Marcel',text:"Or when it doesn't. I've a feeling I'll want a closer look at this place too."}
+  ]};
+})();
+
+/* Ida, the librarian, and Elody, the gardener (ensemble release 4). Both keep
+   a rhythm and start after the café's first week. CAST.regularStories holds
+   a regular's later saved scenes in order (after an introduction): each has
+   `after` flags, is decided at the door, may bring a `parcel` set down on the
+   counter, and may hand over a keepsake (`gift`, an improvement id). */
+(function () {
+  'use strict';
+  CAST.regulars.push({
+    id: 'ida',
+    name: 'Ida',
+    nameStyle: 'feminine',
+    colors: {
+      skin: '#e8b48a', hair: '#8f4a35', top: '#9c4848', pants: '#2c3038',
+      scarf: '#c9a04a', longHair: false, hairStyle: 3, beard: false
+    },
+    drink: 'cinnamon latte',
+    traits: { wantsBook: true, ownBook: true, chatty: true, laptop: false, pianist: false },
+    murmurPitch: 210, speed: 50,
+    umbrella: '#8a6a9a',
+    arrival: { from: 15, to: 15.7 },
+    stay: [240, 340],
+    seat: 'diningTable',
+    firstDay: 5,
+    rhythm: { every: 3, offset: 0 },
+    lines: {
+      arrival: ['Ida comes in with a tote bag of library returns.'],
+      arrivalRain: ['Ida comes in from the rain with her tote bag held under her coat.'],
+      arrivalReturn: [{text:'Ida is back, reading the spines on the little shelves before she reaches the counter.', requires:['wall-shelves']},
+        'Ida is back, a new and very dramatic novel under her arm.'],
+      settle: ['Ida settles in and opens something extremely dramatic.'],
+      usualTaken: ['Her table is taken; Ida finds another and pretends she prefers it.'],
+      overheard: [
+        'Ida recommends a novel to the next table, then warns them about chapter nine.',
+        'Ida explains the difference between a library and a book exchange, fondly and at length.',
+        'Something at the table makes Ida laugh into her sleeve.'
+      ],
+      musing: [
+        {text:'Ida reads with the absorbed frown of someone watching a shipwreck.', requires:['reading']},
+        {text:'Ida straightens one book on the little shelves, then, remembering, leaves the rest.', requires:['wall-shelves'], flags:['ida-exchange-loose']},
+        {text:'Ida tucks a small handwritten note into a book on the little shelves.', requires:['wall-shelves'], flags:['ida-exchange-notes']}
+      ],
+      backstory: [
+        'Ida has worked at the library on the corner for eleven years; she still re-shelves in her sleep.',
+        'Ida admits she reads the endings first, then pretends she did not.'
+      ]
+    }
+  });
+  CAST.regulars.push({
+    id: 'elody',
+    name: 'Elody',
+    nameStyle: 'feminine',
+    colors: {
+      skin: '#8a5a3a', hair: '#2a1a12', top: '#6b7a55', pants: '#5a5a5a',
+      scarf: '#b5654a', longHair: true, hairStyle: 2, beard: false
+    },
+    drink: 'cardamom bun',
+    traits: { wantsBook: false, ownBook: false, chatty: true, laptop: false, pianist: false },
+    murmurPitch: 195, speed: 50,
+    umbrella: null,
+    arrival: { from: 12, to: 12.7 },
+    stay: [200, 300],
+    seat: 'diningTable',
+    firstDay: 6,
+    rhythm: { every: 2, offset: 1 },
+    lines: {
+      arrival: ['Elody comes in with soil on her knees and a newspaper under her arm.'],
+      arrivalRain: ['Elody comes in from the rain looking thoroughly pleased about it.'],
+      arrivalReturn: ['Elody waves on her way to the counter, already reporting the rainfall.'],
+      settle: ['Elody sits down with the sigh of someone who has been digging all morning.'],
+      usualTaken: ['Her table is taken; Elody takes another and admires the view from it.'],
+      overheard: [
+        'Elody tells the next table about her beans, in some detail.',
+        'Elody and the slugs, an ongoing story, gets another chapter.',
+        'Elody explains why this week\'s weather was, technically, remarkable.'
+      ],
+      musing: [
+        'Elody inspects her fingernails, gives up on them, and eats her bun.',
+        {text:'Elody studies the sky through the window like a forecaster.', requires:['view']},
+        {text:'Elody glances at Maud on the counter and gives her an approving nod.', requires:['elody-cutting'], flags:['elody-cutting-cafe']}
+      ],
+      backstory: [
+        'Elody has kept the same allotment for nine years; the slugs have kept it longer.',
+        'Elody writes the rainfall in a notebook every morning, even on holiday.'
+      ]
+    }
+  });
+  CAST.voices.Ida = {pitch:222,filter:780,pace:.96};
+  CAST.voices.Elody = {pitch:198,filter:700,pace:1};
+  CAST.introductions.ida = {visits:1, lines:[
+    {id:'spines',speaker:'Ida',text:"Sorry. I read spines. It's a professional failing. I'm Ida, from the library on the corner.",
+      alt:{noShelf:"Sorry, is there a shelf somewhere? No? Then I brought my own. I'm Ida, from the library on the corner."}},
+    {id:'luna',speaker:'Lunafreya',text:"Lunafreya. The shelves are small, I'm afraid.",
+      alt:{noShelf:"Lunafreya. No shelves yet. Just tables."}},
+    {id:'small',speaker:'Ida',text:"Small shelves are the best kind. You can see everything at once.",
+      alt:{noShelf:"Tables are underrated. A book left on a table is an invitation."}},
+    {id:'novel',speaker:'Ida',text:"This one's about a lighthouse keeper who falls in love with a shipwreck. Metaphorically. Mostly."},
+    {id:'mostly',speaker:'Lunafreya',text:"Mostly?"},
+    {id:'nine',speaker:'Ida',text:"Chapter nine is very confusing."},
+    {id:'offer',speaker:'Ida',text:"If you ever want people swapping books here, I could help. I'd have it all labelled by Thursday."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Ida',text:"I think…",choices:[
+      {text:"Let people wander and find things. No labels.",flag:'ida-exchange-loose',
+        reply:"No labels. That's actually lovely. I'll try not to alphabetise anything when you're not looking."},
+      {text:"A few handwritten notes would be nice. Just a few.",flag:'ida-exchange-notes',
+        reply:"Just a few. I can do just a few. Probably."}
+    ]},
+    {id:'lighthouse',speaker:'Ida',text:"Either way, somebody should suffer through chapter nine with me. I'll lend you this one when I'm done."}
+  ]};
+  CAST.introductions.elody = {visits:2, lines:[
+    {id:'rain',speaker:'Elody',text:"Twelve millimetres last night. Don't mind me, I keep track. I'm Elody."},
+    {id:'luna',speaker:'Lunafreya',text:"Lunafreya. Twelve millimetres of rain?"},
+    {id:'plot',speaker:'Elody',text:"On my allotment. The beans were thrilled. The slugs were more thrilled."},
+    {id:'winning',speaker:'Lunafreya',text:"Who's winning?"},
+    {id:'shared',speaker:'Elody',text:"The slugs, honestly. I've decided it's a shared garden now."},
+    {id:'plant',speaker:'Elody',text:"Your plant by the window's doing well. Whoever waters it knows what they're doing.",
+      alt:{noPlant:"You've no plants yet. That's not a criticism. Some rooms need time to decide what they want."}},
+    {id:'cutting',speaker:'Elody',text:"I've a geranium that won't stop making babies. Would you like a cutting? It could live wherever you like."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Elody',text:"A cutting…",choices:[
+      {text:"Yes please. On the counter, where I'll see it all day.",flag:'elody-cutting-cafe',
+        reply:"The counter. Lots of company, a bit of steam. She'll love it."},
+      {text:"Yes please. For my windowsill upstairs.",flag:'elody-cutting-home',
+        reply:"A windowsill at home. Good. Plants like to know where you sleep."}
+    ]},
+    {id:'maud',speaker:'Elody',text:"I'll bring her next time, in a pot with her name on. She's called Maud. Don't ask."}
+  ]};
+  CAST.regularStories = {
+    elody: [
+      {id:'maud', after:['elody-introduced'], parcel:'cutting', gift:'cutting', lines:[
+        {id:'here',speaker:'Elody',text:"This is Maud. She's on your counter. Pink when she flowers, which is whenever she likes."},
+        {id:'care',speaker:'Elody',text:"Water when the soil's dry. Talk to her when it isn't. She doesn't mind which language."},
+        {id:'thanks',speaker:'Lunafreya',text:"Thank you, Elody. I'll look after her."},
+        {id:'trick',speaker:'Elody',text:"She'll look after herself. That's the whole trick with geraniums."}
+      ]}
+    ]
+  };
+})();
