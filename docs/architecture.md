@@ -832,6 +832,18 @@ any parcel story completes), and the keepsake `recipe` (capability
 `birgit-recipe`, `homeFlag 'birgit-recipe-home'`; `L.projects.recipe`,
 `L.home.recipe`, drawn by `SCENE.drawRecipe`).
 
+The piano (v26): improvement `piano` (Keira's trolley with a `helper`,
+`world.deliveryHelper`, a quiet Tomas in `SIM.visitorActors`; `workFacing` for
+the unwrapping pose), `SCENE.hasFurniture('piano')` for the fuller room's or
+the bought one, `piano-worksite` for the bundle's footprint, and
+`installProjects` adding the lid table and bench seat. Regular stories gained
+`requires` (installed capabilities), `beforeBuying` (a project still
+available), `seat: 'piano'` (a door-time seat preference; the invitation waits
+for a visit at the bench) and `sets` (flags on completion: `piano-tuned`). A
+line's `sound` now receives the world, so `SND.sairaDuet` can follow the
+choices already made. `SND.update` loosens the tuning of a bought piano until
+`piano-tuned`.
+
 The room expansion (v25) is a contractor project with `smallRoom` (offered only
 while `life.room` is small). sim-expansion.js wraps `SIM._.updateWindowWorker`:
 while the job is scheduled/arrived/working and the café is open it spawns

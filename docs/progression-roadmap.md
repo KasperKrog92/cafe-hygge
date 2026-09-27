@@ -221,10 +221,24 @@ spans two café days, leaving at closing and resuming the next morning or after
 a reload. Finished, the saved room is `full`: the new floor is open to
 everyone, and nothing else comes with it.
 
-**Next, in order:**
-The piano and Saira's playing scenes, at `L.piano` in the full room (owner,
-27 September: the piano waits for the expansion and is never squeezed into the
-small room). Then the candidates from the 27 September hand-off, by judgement.
+**The piano — shipped 27 September 2026.** Once the room is open (never
+beside the fuller room's own piano), a 120-coin choice for the new front-left
+corner (`L.piano`). Keira and Tomas wheel an upright in on a dolly, wrapped in
+blankets, and tip it into the corner; Lunafreya unwraps it, wipes it down and
+lifts the lid, and it joins the room with its bench and lamp: guests who play,
+the cat on the lid, Lunafreya's quiet-night playing. It arrives a little out of
+tune. Saira mentions the church hall's old upright before one is bought; once
+it is there she sits at it for her scenes: she tunes it, hears her eight bars
+on a piano for the first time and asks which way they should go on (up,
+brightly, or down, gently); later she asks Lunafreya to play four low notes
+under it, or to listen. From then on Lunafreya sometimes plays Saira's tune on
+a quiet night before her own playing.
+
+**Next, by judgement** (the 27 September hand-off's candidates): Aksel visiting
+with Holger (from `holger-aksel-cafe`), Nora's portrait itself
+(`lunafreya-portrait-*`), Kasper's paragraph (`kasper-ending-*`), Calandra's
+visit ("when you say"), Ezra, Elody sharing her plot, more of Lunafreya's idle
+life.
 The current status/next task lives here; a brief owns scope and acceptance
 checks, the story bible owns continuity, and the larger plan owns ensemble arcs. Stable conversation preparation shipped
 11 September: Holger's acknowledged nodes migrate to named IDs; Holger, Gerda,

@@ -769,8 +769,12 @@
   /* A soft felt-piano voice. Three restrained partials share one lowpass and
      envelope, so the stated peak is the whole note rather than three stacked
      peaks. This is also the single swap point for a future felt-piano sample. */
-  function pianoNote(f, vel, delay) {
+  // A piano bought for the opened corner arrives a little out of tune: until
+  // Saira tunes it (flag piano-tuned) each note drifts a few cents.
+  let pianoLoose = false;
+  function pianoNote(f, vel, delay, exact) {
     if (!ctx || !isFinite(f)) return;
+    if (pianoLoose && !exact) f *= Math.pow(2, (Math.random() - 0.5) * 36 / 1200);
     const t = ctx.currentTime + (delay || 0);
     const dur = 1.6 + Math.random() * 0.8;
     const lp = filt('lowpass', 1900);
@@ -821,6 +825,26 @@
   };
 
   SND.pianoActive = function () { return pianoActive; };
+
+  // Saira at the corner piano: tuning it (one A, pulled up to pitch), her
+  // eight bars an octave above the hum, and the whole tune with its second
+  // half, which goes up (bright) or down (gently) as Lunafreya chose; with
+  // Lunafreya's four low notes under it if she played along. On the music bus.
+  const TUNE_ON = { bright: [[293.7,1],[329.6,.6],[392,1],[440,1.8]], gentle: [[174.6,1],[164.8,.6],[146.8,1],[130.8,1.8]] };
+  function pianoTune(notes, octave, beat) {
+    let t = 0;
+    notes.forEach(function (n) { if (n[0]) pianoNote(n[0] * octave, 0.8, t, true); t += n[1] * beat; });
+    return t;
+  }
+  SND.pianoTuning = guard(function () {
+    [[-38,0],[-16,.7],[-5,1.3],[0,1.9],[0,2.3]].forEach(function (n) { pianoNote(440 * Math.pow(2, n[0] / 1200), 0.75, n[1], true); });
+  });
+  SND.sairaPiano = guard(function () { pianoTune(SAIRA_TUNE, 2, 0.5); });
+  SND.sairaDuet = guard(function (w) {
+    const f = w && w.memory ? w.memory.flags : {};
+    const end = pianoTune(SAIRA_TUNE.concat(TUNE_ON[f['saira-tune-bright'] ? 'bright' : 'gentle']), 2, 0.5);
+    if (f['saira-together-play']) for (let t = 0, i = 0; t < end; t += 1, i++) pianoNote([110, 164.8, 87.3, 130.8][i % 4], 0.5, t, true);
+  });
 
   SND.pianoPlinks = guard(function () {
     const count = 2 + (Math.random() < 0.45 ? 1 : 0);
@@ -876,6 +900,7 @@
 
   SND.update = function (dt, world) {
     if (!ctx) return;
+    pianoLoose = !!(world && world.memory && !world.memory.life.furniture.piano && !world.memory.flags['piano-tuned']);
 
     // Rain is heard only as droplets ticking on the window glass — denser
     // when it pours. A tap is sometimes followed almost immediately by

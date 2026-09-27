@@ -766,6 +766,18 @@ chosen name: the café finds its name, Flourish, later through its neighbours
 (the naming arc), never through a timer or a choice forced during this
 introduction.
 
+## The piano — shipped 27 September 2026
+
+A bought piano (after the room expansion) joins the room with its lid, bench
+and lamp: random pianists may play it, the cat perches on it and Lunafreya
+plays on empty nights, as in the fuller room. Saira's piano scenes (`seat:
+'piano'`) happen only on a visit when she sits at it: at the door such a scene
+makes her prefer the bench if it is free and clean, and she waits there with
+her hands in her lap (no bursts) until it is played; afterwards she plays a
+little before she goes. Once her tune lives in the room, Lunafreya's night
+playing opens with it about half the time (the generic playing follows nine
+seconds later).
+
 ## Tomas's crew — shipped 27 September 2026
 
 For the room expansion Tomas brings his daughter, the one who wanted the plain

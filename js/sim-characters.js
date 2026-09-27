@@ -261,15 +261,24 @@
             b.path = pianoHomeRoute();
           } else {
             b.state = 'pianoPlaying'; b.stateT = 0; b.pose = 'sit';
-            b.facing = -1; b.playing = true; SND.pianoStart('nora');
-            if (R.random() < 0.7) caption(world,'Lunafreya plays a little at the piano.',
-              {requires:['piano'],when:w => w.barista.playing});
+            b.facing = -1; b.playing = true;
+            // Saira's tune, once it lives here, sometimes comes first.
+            const f = world.memory.flags;
+            if (f['saira-together-done'] && R.random() < 0.5) {
+              SND.sairaDuet(world); b.pianoDelay = 9;
+              caption(world, CAST.pianoTune[f['saira-tune-bright'] ? 'bright' : 'gentle'], {requires:['piano'],when:w => w.barista.playing});
+            } else {
+              SND.pianoStart('nora'); b.pianoDelay = 0;
+              if (R.random() < 0.7) caption(world,'Lunafreya plays a little at the piano.',
+                {requires:['piano'],when:w => w.barista.playing});
+            }
           }
         }
         break;
       }
       case 'pianoPlaying': {
         b.pose = 'sit'; b.facing = -1; b.playing = true;
+        if (b.pianoDelay > 0 && (b.pianoDelay -= dt) <= 0) SND.pianoStart('nora');
         if (world.patrons.length || world.queue.length || b.orders.length || b.stateT >= b.pianoDur || world.shop.phase === 'closing') {
           b.playing = false; SND.pianoStop();
           b.pose = 'stand'; b.state = 'pianoHome'; b.stateT = 0;
@@ -1703,7 +1712,12 @@
           g.fillStyle='#4b5260';g.fillRect(x-9,y-30,2,28);g.fillRect(x+8,y-30,2,28);
           g.fillRect(x-9,y-31,19,2);g.fillRect(x-10,y-5,21,3);
           g.fillStyle='#302c2a';g.fillRect(x-11,y-3,5,5);g.fillRect(x+7,y-3,5,5);
-          if(!a.trolleyEmpty && a.delivers==='readingChair') {
+          if(!a.trolleyEmpty && a.delivers==='piano') {
+            // An upright on its side, in grey moving blankets, strapped on.
+            g.fillStyle='#7a89a5';g.fillRect(x-12,y-46,25,41);
+            g.fillStyle='#94a1b4';g.fillRect(x-12,y-46,25,3);
+            g.fillStyle='#4b5260';g.fillRect(x-13,y-36,27,2);g.fillRect(x-13,y-18,27,2);
+          } else if(!a.trolleyEmpty && a.delivers==='readingChair') {
             // A wing chair on its back in grey moving blankets, strapped on.
             g.fillStyle='#7a89a5';g.fillRect(x-9,y-40,19,35);g.fillRect(x-12,y-34,25,12);
             g.fillStyle='#94a1b4';g.fillRect(x-9,y-40,19,3);g.fillRect(x-12,y-34,25,2);

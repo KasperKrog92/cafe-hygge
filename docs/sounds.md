@@ -43,6 +43,10 @@ silences the speaking sound. Sound defaults preserve that text preference.
 `doorUnlock()` is a quiet 90 ms filtered click at 0.022 gain at the end of the
 first unlocking action. Existing room sounds remain on their original buses.
 
+A piano bought for the opened corner arrives a little out of tune: until the
+flag `piano-tuned` (Saira's tuning scene) every felt-piano note drifts up to
+±18 cents. The fuller room's own piano was always in tune.
+
 A conversation line may be hummed: `sairaHum()` and `lunaHum()` glide one
 triangle voice (5 Hz vibrato, lowpass at 85% of the speaker's filter) through
 Saira's eight bars (A3 G3 F3 G3 A3, a breath, C4 A3 G3; about 3.5 s at the
@@ -143,6 +147,9 @@ slider controls all three layers without changing their visual behavior.
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |
 | `murmur(pitch)` | chatting patrons | triangle osc walking around the patron's 125–235 Hz voice pitch, 5.5 Hz vibrato, lowpass 480 — speech-shaped, wordless |
 | `meow()` | cat, rarely; the cat choosing a key in Saira's scene | sine sweep 620→890→520 Hz through bandpass 900 |
+| `pianoTuning()` | Saira tuning the bought piano (a line's sound) | one A pulled up to pitch: 440 Hz at −38, −16, −5, 0 and 0 cents, 0.6 s apart, on the felt-piano voice |
+| `sairaPiano()` | Saira's eight bars on the piano, the first time | the hummed tune an octave up (A4–C5), 0.5 s beats, felt piano, music bus |
+| `sairaDuet(world)` | the whole tune, in her scene and on some of Lunafreya's quiet nights | the eight bars plus the second half, up (D5 E5 G5 A5) or down (F4 E4 D4 C4) as chosen; with Lunafreya's four low notes (A2 E3 F2 C3, one a second) if she played along |
 | `boardKnock()` | a partition board coming away while Tomas pries the partition down (every 2.6–4.6 s) | 150–180 Hz sine knock sweeping to 110 Hz under a 900 Hz lowpass (0.03) plus a short bandpassed creak around 700–900 Hz (0.012) |
 | `fingerTap()` | Saira tapping a rhythm on the table edge (one per tap of the pattern) | 35 ms bandpassed noise tick around 1.5–1.8 kHz (Q 2.2), peak 0.014 |
 | `lunaHumRoom()` | Lunafreya humming Saira's score behind the counter (at most once a café day) | the same hummed eight bars as `lunaHum`, into the room on sfx at 0.016 peak |

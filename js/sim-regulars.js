@@ -52,7 +52,9 @@
     const f = w.memory.flags;
     return ((CAST.regularStories || {})[id] || []).find(function (s) {
       return !f[id + '-' + s.id + '-done'] && s.after.every(function (x) { return f[x]; }) &&
-        !(s.unless || []).some(function (x) { return f[x]; });
+        !(s.unless || []).some(function (x) { return f[x]; }) &&
+        (s.requires || []).every(function (id) { return SCENE.hasFurniture(w, id); }) &&
+        (!s.beforeBuying || w.memory.life.projects[s.beforeBuying].stage === 'available');
     }) || null;
   }
   SIM.regularStoryAvailable = function (w, id) {
@@ -60,6 +62,8 @@
     const s = nextStory(w, id);
     const p = s && w.patrons.find(q => q.regularId === id && !q.outside && q.storyChapter === s.id && q.state === 'seated');
     if (!p || s.parcel && !(w.counterParcel && w.counterParcel.owner === p.id)) return null;
+    // A scene at the piano waits for a visit when she is sitting at it.
+    if (s.seat === 'piano' && !p.seat.piano) return null;
     return p;
   };
   SIM.startRegularStory = function (w, id) {
@@ -68,9 +72,12 @@
     const s = nextStory(w, id);
     return SIM.beginSavedMoment(w, packetOf(w, p, s.lines), p, id + '-' + s.id + '-', function () {
       w.memory.flags[id + '-' + s.id + '-done'] = true;
+      (s.sets || []).forEach(function (x) { w.memory.flags[x] = true; });
       p.storyChapter = null;
       const bond = w.memory.bonds[id];
       bond.warmth = (bond.warmth || 0) + 1;
+      // Having played it together, she plays a little more before she goes.
+      if (s.seat === 'piano') { p.pianoBursts = 2; p.pianoRestT = 3; p.preferPiano = false; }
       // What they set on the counter has been handed over (or shared and eaten).
       if (s.parcel) w.counterParcel = null;
       if (s.gift) {
@@ -87,7 +94,7 @@
     SIM.gateRegular(id, { arrive: function (w, p) {
       if (p.storyChapter) return;
       const s = nextStory(w, id);
-      if (s) { p.storyChapter = s.id; if (s.parcel) p.parcel = s.parcel; }
+      if (s) { p.storyChapter = s.id; if (s.parcel) p.parcel = s.parcel; if (s.seat === 'piano') p.preferPiano = true; }
     } });
   });
   Object.keys(CAST.introductions).forEach(function (id) {

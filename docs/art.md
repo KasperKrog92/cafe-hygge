@@ -13,6 +13,12 @@ inside the small-room desktop crop. Only the first line carries her name.
 The small dialogue controls sit above the ordinary control bar; complete
 sentences also reach an accessible live region.
 
+**The bought piano** arrives as a grey-blue blanket bundle strapped on Keira's
+dolly (25×41, two dark straps) and waits in its corner as a bundle just larger
+than the upright (a corner turned back while it is unwrapped); then the bare
+upright is drawn until the lid, bench and lamp arrive with the finished set.
+Tomas walks beside the dolly.
+
 **The partition** around the small room (`L.expansion`) is plain plasterboard
 `#d9d0bd` with stud marks `#b8ae98`: an 8 px right run along x 832 from the
 back wall (its end standing full height against the wall) to the front, and a

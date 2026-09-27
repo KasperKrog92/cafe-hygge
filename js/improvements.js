@@ -102,6 +102,15 @@
       phases:['lay dust sheets','take down the right partition','take down the front partition','carry out the boards','patch the floor','sweep and lift the sheets'],
       phaseIds:['sheets','right','front','boards','patch','sweep'], duration:150, capability:'expanded-room',
       doneLine:'the partition is gone. The room is bigger than it ever looked, and there is nothing in the new part yet.' },
+    // The piano (C4), once the room is open: an upright for the new front-left
+    // corner (L.piano). Keira and Tomas wheel it in on a dolly, wrapped in
+    // blankets; Lunafreya unwraps it, wipes it down and lifts the lid. It
+    // arrives a little out of tune until Saira tunes it.
+    piano: { price:120, destination:'cafe', delivery:'keira', title:'an upright piano',
+      label:'An upright piano for the new corner', furniture:'piano', showsWith:'expanded-room', requires:['expanded-room'],
+      phases:['unwrap the piano','wipe it down','lift the lid'], phaseIds:['unwrap','wipe','lid'],
+      duration:12, capability:'piano', workFacing:-1,
+      doneLine:'an upright piano stands in the new corner, lid up, a little out of tune.' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
@@ -125,7 +134,7 @@
     duration:4, maxTime:8, capability:'first-plant' };
   I.all = Object.assign({}, I.projects, {plant:I.plant});
   // The order choices appear in the evening planner.
-  I.planOrder = ['window','table','windowSeat','bookshelf','books','readingChair','plant','fireplace','mantel','expansion'];
+  I.planOrder = ['window','table','windowSeat','bookshelf','books','readingChair','plant','fireplace','mantel','expansion','piano'];
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];

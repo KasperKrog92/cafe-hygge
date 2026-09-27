@@ -171,7 +171,7 @@
     // once as the line begins.
     if(line.sound && line===m.lines[m.index] && m.soundAt!==m.index) {
       m.soundAt=m.index;
-      if(typeof w.context.sound[line.sound]==='function')w.context.sound[line.sound]();
+      if(typeof w.context.sound[line.sound]==='function')w.context.sound[line.sound](w);
     }
     SIM.revealDialogue(w,m,line.text,dt,CAST.voices[line.speaker]||false);
   };

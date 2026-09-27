@@ -114,6 +114,20 @@
     // the piano, and entity drawables place a sitter in front of both.
     const pianoTable = world.tables.find(function (tb) { return tb.piano; });
     const artistTable = world.tables.find(function (tb) { return tb.artist; });
+    // The bought piano while it is unwrapped: in its blankets in the corner,
+    // then the bare upright (bench and lamp come with the finished set).
+    const pj = world.memory.life.projects.piano;
+    if (SCENE.hasFurniture(world,'piano-worksite')) {
+      if (pj.stage === 'arrived' || pj.step === 0) out.push({ y: L.piano.baseline, draw: function (g) {
+        const P = L.piano;
+        ell(g, 30, P.baseline + 2, 22, 5, 'rgba(20,12,8,0.22)');
+        px(g, P.x - 2, P.y - 6, P.w + 18, P.baseline - P.y + 6, '#7a89a5');
+        px(g, P.x - 2, P.y - 6, P.w + 18, 3, '#94a1b4');
+        px(g, P.x - 3, P.y + 12, P.w + 20, 2, '#4b5260'); px(g, P.x - 3, P.y + 32, P.w + 20, 2, '#4b5260');
+        if (pj.stage === 'working') px(g, P.x + P.w + 4, P.y + 18, 12, 10, '#94a1b4');   // a corner turned back
+      } });
+      else out.push({ y: L.piano.baseline, draw: function (g) { drawPiano(g, null, world); } });
+    }
     if (SCENE.hasFurniture(world,'piano')) {
     out.push({ y: L.piano.catAnchor.y - 1, draw: function (g) { drawPianoLamp(g, world); } });
     out.push({ y: L.piano.baseline, draw: function (g) { drawPianoBench(g); } });

@@ -57,6 +57,12 @@ rituals/partial work; transient patrons and incomplete orders are not serialized
 Only established furnished saves keep the seeded-room behavior. New cafés reload
 without a crowd; an unfinished mandatory first hello restores Holger at the counter.
 
+**The piano.** Keira and Tomas bring it in together (their arrival and the
+bundle being tipped into its corner are captioned), Lunafreya's unwrapping ends
+with the piano standing in the corner, lid up, a little out of tune. On a quiet
+night her playing may open with Saira's tune (captioned the bright or the
+gentle way, only while she plays).
+
 **The room expansion.** Tomas and his daughter come after opening (never while
 the window worker is in), work until closing and resume the next morning; the
 door stays propped open while boards go out (the bell rings only as they arrive

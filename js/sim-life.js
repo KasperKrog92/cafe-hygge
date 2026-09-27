@@ -34,6 +34,13 @@
         items:[], candle:0, candleTarget:0, furniture:'fireside-left' });
       w.seats.push({ x:A.x + 6 * A.dir, y:A.y, facing:A.dir, table:index, side:0, armchair:true, taken:false, furniture:'fireside-left' });
     }
+    // The bought piano: its lid (a drink's place) and the bench join the room.
+    if (SCENE.hasFurniture(w,'piano') && !w.tables.some(t => t.piano)) {
+      const P = L.piano, index = w.tables.length;
+      w.tables.push({ x:P.saucer.x, y:P.saucer.y, base:P.baseline, tag:'at the piano', piano:true, busVia:P.via, reach:0,
+        items:[], candle:0, candleTarget:0, furniture:'piano' });
+      w.seats.push({ x:P.bench.x, y:P.bench.y, facing:-1, via:P.via, table:index, side:0, armchair:false, piano:true, taken:false, furniture:'piano' });
+    }
     if (w.memory.life.projects.table.stage !== 'installed' || w.tables.some(t => t.project === 'table')) return;
     const t = L.projects.table, index = w.tables.length;
     w.tables.push({ x:t.x, y:t.y, tag:t.tag, project:'table', furniture:'project-table', items:[], candle:0, candleTarget:0 });
@@ -108,6 +115,7 @@
     if (d.bookSource) shelvingPose(b,d,p);
     else if (d.keepsake) { b.pose = 'reach'; b.heading = ''; b.facing = 1; }
     else if (d.carry) { b.pose = 'kneel'; b.heading = ''; b.facing = -1; }
+    else if (d.workFacing) { b.pose = p.step === d.phases.length - 1 ? 'reach' : 'wipe'; b.heading = ''; b.facing = d.workFacing; }
     else { b.pose = id === 'fireplace' ? 'kneel' : 'wipe'; b.heading = 'up'; b.facing = -1; }
     const before = p.time;
     // If a stroke ended on the previous frame, an arriving order wins now.

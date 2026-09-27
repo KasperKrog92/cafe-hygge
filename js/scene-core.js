@@ -28,6 +28,10 @@
     if (id === 'first-plant') return IMPROVEMENTS.installed(life,'first-plant');
     if (id === 'hearth') return life.furniture.hearth || IMPROVEMENTS.installed(life,'hearth');
     if (id === 'mantel-decor') return life.furniture[id] || IMPROVEMENTS.installed(life,id);
+    // The piano: the fuller room's, or the one bought for the opened corner;
+    // its wrapped bundle holds the corner while it is unwrapped.
+    if (id === 'piano') return !!life.furniture.piano || IMPROVEMENTS.installed(life,'piano');
+    if (id === 'piano-worksite') return !life.furniture.piano && ['arrived','working'].indexOf(life.projects.piano.stage) >= 0;
     // The left fireside chair (and its side table) alone: the reading chair.
     if (id === 'fireside-left') return !!life.furniture.fireside || IMPROVEMENTS.installed(life,'reading-chair');
     if (id === 'chair-worksite') return !life.furniture.fireside &&
@@ -40,7 +44,7 @@
     const life = world && world.memory && world.memory.life;
     return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'book-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') + ':' + SCENE.mantelShelf(world) + ':' + SCENE.hasFurniture(world,'mantel-decor') +
       ':' + SCENE.hasFurniture(world,'fireside-left') + ':' + SCENE.hasFurniture(world,'chair-worksite') +
-      ':' + SCENE.hasFurniture(world,'cafe-sign') : 'full';
+      ':' + SCENE.hasFurniture(world,'cafe-sign') + ':' + SCENE.hasFurniture(world,'piano') + ':' + SCENE.hasFurniture(world,'piano-worksite') : 'full';
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
@@ -187,6 +191,9 @@
       // threshold) and slid under the counter beside her stool, which lives
       // there too; nothing new stands on the floor.
       cafeSign: {pickup:{x:54,y:252},work:{x:722,y:286}},
+      // The piano: Keira kneels with the dolly in front of the corner; the
+      // bundle is tipped into place and unwrapped from beside it.
+      piano: {drop:{x:62,y:550},work:{x:74,y:542}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},
@@ -536,6 +543,7 @@
   L.footprints.push({ name: 'magazine basket', x0: L.library.basket.x - 17, x1: L.library.basket.x + 17, y0: L.library.basket.y - 27, y1: L.library.basket.y + 1 });
   L.footprints.push({ name: 'log pile', x0: L.logPile.x - 18, x1: L.logPile.x + 18, y0: L.logPile.y - 20, y1: L.logPile.y + 2 });
   L.footprints.push({ name: 'piano', x0: 12, x1: 50, y0: 502, y1: 526 });
+  L.footprints.push({ name: 'piano worksite', x0: 12, x1: 50, y0: 502, y1: 526 });
   L.footprints.push({ name: 'piano bench', seat: true, x0: 51, x1: 77, y0: 516, y1: 528 });
   L.footprints.push({ name: 'artist easel', x0: 46, x1: 94, y0: 438, y1: 454 });
   L.footprints.push({ name: 'artist lamp', x0: L.artist.lamp.x - 9, x1: L.artist.lamp.x + 11, y0: L.artist.lamp.y - 7, y1: L.artist.lamp.y + 1 });
@@ -559,6 +567,7 @@
     else if (/^(bookshelf|magazine basket)/.test(n)) box.furniture = 'bookshelf';
     else if (/^window table/.test(n)) box.furniture = n==='window table 0' ? 'left-window-table' : 'window-seats';
     else if (/^artist/.test(n)) box.furniture = 'studio';
+    else if (n === 'piano worksite') box.furniture = 'piano-worksite';
     else if (/^piano/.test(n)) box.furniture = 'piano';
     else if (/^plant /.test(n)) box.furniture = 'plants';
     else if (n === 'log pile') box.furniture = 'hearth';

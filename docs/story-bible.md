@@ -184,6 +184,7 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | Sitting down when nobody needs anything, told to Saira | Shipped, Saira's eight bars | Asked only to listen, she reaches to wipe a clean table. `saira-listen-sit` (she isn't very good at sitting down when nobody needs anything; "Then sit badly. Everybody starts badly.") or `saira-listen-cloth` (it's easier to listen with something in her hands). That evening upstairs the week's receipts wait until morning (home moment `rest`) |
 | Her last thing before locking up, told to Birgit | Shipped, Birgit's closing habits | `luna-closing-chairs` (she counts the chairs, then again, in case one's gone somewhere) or `luna-closing-others` (at the old shop she did everybody else's last job, and still walks the room as if somebody's forgotten something). Either way Birgit tells her to get a last thing that's only hers; with the old mug downstairs it already is one. Only Birgit has heard this |
 | What she likes for herself, told to Birgit | Shipped, Birgit's tastes | `luna-taste-orange` (bitter and bright, "like waking up") or `luna-taste-cardamom` (properly, not shy). It titles Birgit's recipe card |
+| Playing badly after closing, told to Saira | Shipped, Saira's four hands | At the piano she admits she plays a little, badly, after closing when nobody can hear (her quiet-night habit). `saira-together-play` (four low notes, over and over, under Saira's tune) or `saira-together-listen` ("Listening's the other half of any duet. Don't wipe anything.") |
 | Naming the café | Shipped, an evening at home | One evening, once Birgit has said everything good starts with flour and Elody that things flourish in here, she puts it together: the sign still says NEW CAFE and isn't new any more; people come in cold and stay until they're warm, nobody just getting by, not even her. "Flour. Flourish." **Café Flourish** (owner decision, 27 September: flour and baking, and a place where people flourish rather than just get by). "I think it's been called that for weeks. I just hadn't heard it yet." It recalls Saira's untitled score and Gerda's yellow when those have happened. Marcel paints the sign (below); the handmade NEW CAFE sign lives under the counter by her stool |
 | Calandra's second letter | Shipped, evening moment | After the sign is out: addressed to Café Flourish, the first thing to come with the name on it. Lunafreya wrote it on the back of her envelope in capitals; Dad likes it because it has flour in it. "You write about people now. You used to write about work." Calandra will come and see it, "when you say", and bring too much food. "Goodnight, Cal. From Café Flourish." |
 
@@ -442,6 +443,22 @@ composition; the invited first sharing; Lunafreya joining for a few notes or
 listening; a small music evening), her rehearsal meeting Antonia's quiet, and a
 possible romance centred on shared attention.
 
+**The piano — shipped 27 September.** Once the wall is down she notices the
+room sounds bigger, "and politer", and mentions that the church hall's old
+upright needs a home: out of tune in a friendly way, about as heavy as a small
+car; she is not asking, only telling (`upright`, before a piano is bought).
+With a piano in the corner she sits at it and waits for Lunafreya (`tuning`):
+the middle is a little flat, "like most honest pianos"; she tunes it (it is
+now out of tune only in the ways that are its personality), plays her eight
+bars on a piano for the first time (never before: a bus, the bath), and asks
+which way they should go on: `saira-tune-bright` (up, like the lights coming
+on; "annoyingly cheerful") or `saira-tune-gentle` (down, like somebody
+settling into a chair). Anyone may play it. On a later visit (`together`) she
+has finished the rest, written for four hands: Lunafreya plays four low notes
+under it or listens (above). "It didn't stop." "No. It goes all the way to the
+end now. So do I, most days." The tune can live in the room; Lunafreya plays it
+some quiet nights. **Planned:** a small music evening, and Antonia's quiet.
+
 ## Birgit — breakfast in somebody else's place
 
 **Shipped 27 September.** Birgit (she/her; short light-brown curls, terracotta
@@ -486,7 +503,7 @@ Use this table to distinguish identities from what the runtime currently contain
 | --- | --- | --- |
 | Keira | Recurring delivery woman (she/her); learns to stay off duty; possible romance | Deliveries, expanded hello, her second cup, the second asking and her two prints (then and now) are shipped; deeper scenes remain later |
 | Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair, expanded hello, the cupboard report, the loaf (supper that night) and the frame from the window board are shipped; deeper family scenes remain planned |
-| Saira | Choir accompanist/teacher; her own quiet composition; possible romance | Shipped before any piano: hello, eight bars, the receipts left until morning, the handwritten score (see above); her piano scenes wait for the room expansion; the generic piano behavior is not her story |
+| Saira | Choir accompanist/teacher; her own quiet composition; possible romance | Shipped: hello, eight bars, the receipts left until morning, the handwritten score, the church hall's upright, tuning the piano and four hands (see above); a music evening remains planned; the generic piano behavior is not her story |
 | Marcel | Painter across the lake; recognizes changing places and people | Shipped as a regular (see below); the `street-house` arc is intact and he is its distant figure. Later painting and his gift remain planned |
 | Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | Shipped: hello, closing habits, tastes and the recipe card (see above); baking it follows an oven and the menu milestone |
 | Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | Shipped: introduction and Maud, her geranium cutting (see below); sharing her plot and later scenes remain planned |

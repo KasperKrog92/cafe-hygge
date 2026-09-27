@@ -1739,3 +1739,77 @@
     }
   };
 })();
+
+/* The piano (ensemble release 5, part two), in the room the expansion
+   opened: an upright at L.piano, delivered by Keira and Tomas on a dolly
+   and unwrapped by Lunafreya (improvement `piano`). It arrives a little out
+   of tune. Saira's scenes follow her score: the church hall's old upright
+   (`upright`, once the room is open and before a piano is bought); tuning
+   it and hearing her eight bars on a piano for the first time, and which
+   way they should go on (`tuning`, at the piano: `saira-tune-bright` or
+   `-gentle`); and four hands, or one listener (`together`). Afterwards the
+   tune is part of the room: Lunafreya sometimes plays it on a quiet night.
+   Story fields: `requires` (installed capabilities), `beforeBuying` (a
+   project still unbought), `seat: 'piano'` (she sits at the piano for it)
+   and `sets` (flags set on completion). */
+(function () {
+  'use strict';
+  CAST.regularStories.saira.push(
+    {id:'upright', after:['saira-score-done'], requires:['expanded-room'], beforeBuying:'piano', lines:[
+      {id:'bigger',speaker:'Saira',text:"You've taken a wall down. It sounds different in here now. Bigger, and politer."},
+      {id:'politer',speaker:'Lunafreya',text:"Politer?"},
+      {id:'further',speaker:'Saira',text:"Sound goes further before it bumps into anything. Which reminds me. The church hall's getting a new piano."},
+      {id:'old',speaker:'Saira',text:"The old upright needs a home. It's out of tune in a friendly way, and it weighs about as much as a small car."},
+      {id:'asking',speaker:'Saira',text:"I'm not asking you to take it. Pianos are enormous, and people feel they ought to. I'm only telling you it exists."},
+      {id:'where',speaker:'Lunafreya',text:"Where would it even go?"},
+      {id:'corner',speaker:'Saira',text:"Front left, on the new floor. Pianos like corners. So do pianists."}
+    ]},
+    {id:'tuning', after:['saira-score-done'], requires:['piano'], seat:'piano', sets:['piano-tuned'], lines:[
+      {id:'got',speaker:'Saira',text:"You got a piano.",
+        alt:{'flag:saira-upright-done':"You took the church hall's old upright. I did say it weighs as much as a small car."}},
+      {id:'tune',speaker:'Lunafreya',text:"It's out of tune, isn't it?"},
+      {id:'friendly',speaker:'Saira',text:"In a friendly way. The middle's a little flat, like most honest pianos. May I? I'll only swear under my breath."},
+      {id:'tuning',speaker:'Saira',text:"Mm. There. And there.",sound:'pianoTuning'},
+      {id:'personality',speaker:'Saira',text:"There. Now it's only out of tune in the ways that are its personality."},
+      {id:'never',speaker:'Saira',text:"I've never heard my eight bars on a piano. On a bus, yes. In the bath. Never on a piano."},
+      {id:'play',speaker:'Saira',text:"…",sound:'sairaPiano'},
+      {id:'years',speaker:'Lunafreya',text:"It sounds as if it's been in this room for years."},
+      {id:'further',speaker:'Saira',text:"It goes on by itself now. But it could go further. Up, or down."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Saira',text:"Let it go…",choices:[
+        {text:"…up. Bright, like the lights coming on.",flag:'saira-tune-bright',
+          reply:"Up, like the lights coming on. I can hear it already. It's annoyingly cheerful."},
+        {text:"…down. Gently, like somebody settling into a chair.",flag:'saira-tune-gentle',
+          reply:"Down, gently, like somebody settling into a chair. Yes. That's where it was going anyway."}
+      ]},
+      {id:'anyone',speaker:'Saira',text:"Anyone may play it, you know. It doesn't belong to me because I tuned it."}
+    ]},
+    {id:'together', after:['saira-tuning-done'], requires:['piano'], seat:'piano', lines:[
+      {id:'rest',speaker:'Saira',text:"I've finished the rest of it. It goes down, gently, like you said.",
+        alt:{'flag:saira-tune-bright':"I've finished the rest of it. It goes up, like the lights coming on."}},
+      {id:'hands',speaker:'Saira',text:"It's written for four hands. Two of them could be yours. Four notes, over and over. Even the cat could manage."},
+      {id:'badly',speaker:'Lunafreya',text:"I play a little. Badly. After closing, when nobody can hear."},
+      {id:'starts',speaker:'Saira',text:"Badly after closing is how everybody starts. Nobody plays badly at a concert on purpose."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Saira',text:"I'd…",choices:[
+        {text:"…like to try. Four notes. Show me.",flag:'saira-together-play',
+          reply:"These four. Over and over. Don't count. Listen to me instead."},
+        {text:"…rather listen. Play all of it for me.",flag:'saira-together-listen',
+          reply:"Listening's the other half of any duet. Sit there. Don't wipe anything."}
+      ]},
+      {id:'duet',speaker:'Saira',text:"…",sound:'sairaDuet'},
+      {id:'end',speaker:'Lunafreya',text:"It didn't stop."},
+      {id:'all',speaker:'Saira',text:"No. It goes all the way to the end now. So do I, most days."},
+      {id:'quiet',speaker:'Saira',text:"It can live here. Play it when the room's quiet. That's what it's for."}
+    ]}
+  );
+  const saira = CAST.regulars.find(r => r.id === 'saira');
+  saira.lines.musing.push(
+    {text:'Saira glances at the piano in the corner, the way people check on a friend.', requires:['piano'], flags:['saira-tuning-done']},
+    {text:'Saira hums the second half of her tune, the bright half, and grins at nobody.', flags:['saira-tune-bright']},
+    {text:'Saira hums the second half of her tune, low and slow, like settling into a chair.', flags:['saira-tune-gentle']}
+  );
+  // Lunafreya's quiet-night piano, once the tune is part of the room.
+  CAST.pianoTune = {
+    bright: 'Lunafreya plays Saira’s tune on the empty room’s piano, the bright way, all the way to the end.',
+    gentle: 'Lunafreya plays Saira’s tune on the empty room’s piano, gently, all the way to the end.'
+  };
+})();

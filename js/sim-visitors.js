@@ -9,7 +9,7 @@
     w.visitorDays=w.visitorDays||{};w.visitorDays[id]=w.memory.life.daysCompleted;
     return a;
   };
-  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.shelfVisitor].concat(w.expansionCrew||[],w.patrons.filter(a=>a.social)).filter(Boolean);};
+  SIM.visitorActors=function(w) {return [w.windowWorker,w.deliveryVisitor,w.deliveryHelper,w.shelfVisitor].concat(w.expansionCrew||[],w.patrons.filter(a=>a.social)).filter(Boolean);};
   SIM.visitorInvites=function(w) {
     if(w.moment || w.shop.phase!=='open' || w.memory.life.mode!=='game')return [];
     // (Tomas's daughter, on his crew, has no hello of her own yet.)
@@ -90,7 +90,10 @@
     table:{site:()=>L.projects.table.work,first:'Keira brings the table kit in on a little trolley.',
       again:'Keira is back, steering a table kit through the door.',down:'the kit is set down, ready for a quiet moment.'},
     readingChair:{site:()=>L.projects.readingChair.drop,first:'Keira wheels in something large, wrapped in blankets.',
-      again:'Keira is back, wheeling in something large and wrapped in blankets.',down:'a wing chair, still in its blankets, waits by the fire.'}
+      again:'Keira is back, wheeling in something large and wrapped in blankets.',down:'a wing chair, still in its blankets, waits by the fire.'},
+    // An upright is two people's work: Tomas walks beside the dolly.
+    piano:{site:()=>L.projects.piano.drop,helper:'tomas',first:'Keira and Tomas wheel an upright piano in on a dolly, wrapped in blankets.',
+      again:'Keira and Tomas wheel an upright piano in on a dolly, wrapped in blankets.',down:'the upright is tipped gently into its corner, still in its blankets.'}
   };
   R.updateVisitors=function(w,dt) {
     const open=w.shop.phase==='open';
@@ -107,7 +110,23 @@
         ['purchased','scheduled','arrived','working'].indexOf(repair.stage)<0) {
       a=w.deliveryVisitor=R.makeVisitor(w,'keira');a.trolley=true;a.delivers=id;
       R.makePath(a,site.x,site.y);
+      if(TROLLEY[id].helper && !w.expansionCrew) {
+        const h=w.deliveryHelper=R.makeVisitor(w,TROLLEY[id].helper);h.quiet=true;h.x+=8;h.y+=4;
+      }
       R.ringDoor(w);R.caption(w,w.memory.flags['keira-introduced']?TROLLEY[id].again:TROLLEY[id].first);
+    }
+    // A helper walks beside the dolly and leaves with it.
+    const h=w.deliveryHelper;
+    if(h && (!w.moment || w.moment.owner!==h)) {
+      h.animT+=dt;
+      if(!a || a.state==='leaving' || !open) {
+        if(exit(w,h,dt)){w.deliveryHelper=null;}
+      } else {
+        const at={x:a.x+22,y:a.y-10};
+        if(!h.goal || Math.hypot(h.goal.x-at.x,h.goal.y-at.y)>14){h.goal=at;R.makePath(h,at.x,at.y);}
+        if(h.path && h.path.length)R.walker(h,dt);
+        else {h.state='handoff';h.pose=a.state==='handoff'?'kneel':'stand';h.heading='';h.facing=-1;}
+      }
     }
     if(a && (!w.moment || w.moment.owner!==a)) {
       a.animT+=dt;

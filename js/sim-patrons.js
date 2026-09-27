@@ -122,6 +122,11 @@
       const studio = free.find(function (s) { return s.artist && cleanSeat(world, s); });
       if (studio) { patron.usualSeat = true; return studio; }
     }
+    // A regular with a scene at the piano sits at it when it is free.
+    if (patron.preferPiano) {
+      const bench = free.find(function (s) { return s.piano && cleanSeat(world, s); });
+      if (bench) return bench;
+    }
     free = free.filter(function (s) { return !s.piano && !s.artist; });
     if (!free.length) return null;
     // skip spots where an abandoned drink still waits for Lunafreya — a newcomer's
@@ -590,7 +595,8 @@
             }
           }
           if (p.seat.piano) {
-            p.pianoBursts = 1 + Math.floor(rnd(0, 3));
+            // (Saira waits with her hands in her lap for her scene.)
+            p.pianoBursts = p.preferPiano ? 0 : 1 + Math.floor(rnd(0, 3));
             p.pianoRestT = rnd(2, 6);
             p.reading = false;
             if (R.random() < 0.7) caption(world, p, p.name + ' settles at the piano.');
