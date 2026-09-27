@@ -26,8 +26,13 @@ module.exports = async function (t) {
     await page.click('#meet-gathering');
     await t.eval(() => {
       if (!__world.moment || !__world.moment.wide) throw Error('the afternoon did not open in a wide shot');
-      for (let n = 0; n < 400 && __world.moment.phase !== 'talk'; n++) { SIM.update(__world, .05); }
-      __world.moment.visible = 999; lifeTestFrame(performance.now());
+      // Lunafreya finishes what she is doing first (a candle round across a
+      // full room can take a while), then walks over: allow two minutes.
+      for (let n = 0; n < 2400 && __world.moment && __world.moment.phase !== 'talk'; n++) SIM.update(__world, .05);
+      const m = __world.moment;
+      if (!m || m.phase !== 'talk') throw Error('never reached Ida: ' + JSON.stringify(m && { phase: m.phase,
+        state: __world.barista.state, blocked: !!__world.barista.walkBlocked }));
+      m.visible = 999; lifeTestFrame(performance.now());
     });
   }
   async function next() {
@@ -86,7 +91,7 @@ module.exports = async function (t) {
   if (resumed !== heard) throw Error('resumed at ' + resumed + ', expected ' + heard);
   for (let i = 0; i < 40 && await t.eval(() => !!__world.moment && __world.moment.phase === 'talk'); i++) await next();
   await t.eval(() => {
-    for (let n = 0; n < 400 && __world.moment; n++) SIM.update(__world, .05);
+    for (let n = 0; n < 2400 && __world.moment; n++) SIM.update(__world, .05);
     const f = __world.memory.flags, m = __world.moment;
     if (!f['gathering-reading-done'] || !f['reading-afternoon-ida'] || m) throw Error('the afternoon did not finish: ' +
       JSON.stringify({ done: !!f['gathering-reading-done'], ida: !!f['reading-afternoon-ida'],
