@@ -117,7 +117,7 @@ slider controls all three layers without changing their visual behavior.
 | `ding()` | order ready at the pass | 1720 Hz bell + 2.7× partial, 0.75 s |
 | `grinder(dur)` | espresso prep | sawtooth ~55–63 Hz → lowpass 320, 26 Hz AM wobble + noise bandpass 850; 1.5 s |
 | `tamp()` | after grinding | 185 Hz knock + click |
-| `espresso(dur)` | shot pulling | noise bandpass sweeping 1600→850 Hz, slow attack + 52 Hz pump hum; 2.4 s |
+| `espresso(dur)` | shot pulling (orders, and the 2.2 s shot Lunafreya pulls for herself on a slow spell) | noise bandpass sweeping 1600→850 Hz, slow attack + 52 Hz pump hum; 2.4 s |
 | `steamWand(dur)` | milk steaming, including hot matcha | highpass-1900 noise with a randomized sputter envelope; 1.8 s |
 | `kettlePour(dur)` | tea and matcha concentrate | noise bandpass sweeping up 700→2100 Hz (cup filling) + 3–4 bubble blips |
 | `whisk(dur)` | both matcha preparations | hand-loose 14–24 ms noise ticks every 55–85 ms → bandpass 1.5–2.4 kHz (Q 2.5), per-tick peak 0.012–0.02 inside a 150 ms-in / 200 ms-out envelope, combined peak ≤0.028, no room send |
@@ -127,12 +127,12 @@ slider controls all three layers without changing their visual behavior.
 | `matchStrike()` | first stop of Lunafreya's candle round | 100 ms scratch around 1.8 kHz followed by a 200 ms high fizz, combined peak ~0.03 |
 | `candlePop()` | each candle stop | soft 90 ms airy filtered-noise fwip, peak 0.018 |
 | `fireCatch()` | a fresh log laid on the fire (Lunafreya or a fireside regular) | an 84→54 Hz settle thump + a soft low whoomph (lowpass-440 noise swelling to 0.05 over 0.2 s, ~1.1 s tail) + 5 fresh crackles scattered over ~0.7 s; on the fire bus |
-| `pageTurn()` | readers | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
+| `pageTurn()` | readers, including Lunafreya on her stool at the till | 160 ms noise sweep 1100→2400 Hz, gain 0.028 |
 | `cameraClick()` | Keira's one photograph of the café | two damped bandpassed ticks 60 ms apart (2.4/1.8 kHz), peak 0.012 |
 | `bookSlide()` | each book Lunafreya puts on the little wall shelves | 200 ms bandpassed paper/cloth whisper sweeping 1300→700 Hz (peak 0.018), ending in a 50 ms 210→170 Hz wooden tock (0.012) |
 | `needle()` | Gerda knitting (scarf arc) | soft wooden tick: 540–650 Hz tone under a 2.6 kHz lowpass (peak 0.013) + a fainter harmonic, with a half-chance second tap — quieter than the fire, on purpose |
 | `brush(jar?)` | Nora's short painting bouts | 90–170 ms filtered bristle hiss, peak 0.012–0.018, lowpass 1.5 kHz / bandpass 620–1040 Hz; rare palette-mixing calls may add a brush-jar clink at 0.014 |
-| `sip()` | sip animation peak | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |
+| `sip()` | sip animation peak (guests; Lunafreya's own coffee) | 130 ms highpass-2800 noise, gain 0.016 (barely there — correct) |
 | `swish()` | wiping/cleaning | 320 ms lowpass-950 noise bell curve |
 | `murmur(pitch)` | chatting patrons | triangle osc walking around the patron's 125–235 Hz voice pitch, 5.5 Hz vibrato, lowpass 480 — speech-shaped, wordless |
 | `meow()` | cat, rarely | sine sweep 620→890→520 Hz through bandpass 900 |

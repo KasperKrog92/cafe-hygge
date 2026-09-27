@@ -24,6 +24,12 @@
 
   /* ---------- barista ---------- */
 
+  // Quiet-moment habits registered by later scripts (sim-counter.js), each
+  // {id, states, offer(world, b) → started?, start(world, b), update(world, b, dt)}.
+  // Offered after the day's chores, before the counter fidgets; a habit owns
+  // its states until it hands Lunafreya back to 'idle'.
+  R.counterHabits = [];
+
   // steps worked at the espresso machine (back wall, above her standing line);
   // she faces away from the room for these. Everything else — the matcha bar
   // and the pastry case — sits on the front counter and she faces the room.
@@ -511,6 +517,11 @@
         if (b.stateT > 1.5) { b.shooed = false; b.state = 'idle'; b.idleT = rnd(5, 10); }
         break;
       }
+      default: {
+        // A quiet-moment habit (sim-counter.js) owns its own states.
+        const habit = R.counterHabits.find(function (h) { return h.states.indexOf(b.state) >= 0; });
+        if (habit) habit.update(world, b, dt);
+      }
     }
 
     // at the till she faces the room — and, across the counter, whoever
@@ -778,6 +789,10 @@
       else if (forced === 'candles') startCandleRound(world, b);
       else if (forced === 'fire') startFireTend(world, b);
       else if (forced === 'piano') startPiano(world, b);
+      else {
+        const habit = R.counterHabits.find(function (h) { return h.id === forced; });
+        if (habit) habit.start(world, b);
+      }
       return;
     }
     if (startTableClear(world, b)) return;
@@ -801,6 +816,8 @@
         world.t >= world.noraPianoNextT && R.random() < 0.25) {
       startPiano(world, b); return;
     }
+    // A slow spell: a book on her stool, her own coffee, chin in hand.
+    for (let i = 0; i < R.counterHabits.length; i++) if (R.counterHabits[i].offer(world, b)) return;
     if (b.emptyT > 20 && R.random() < 0.3) { startStretch(world, b); return; }
     if (SCENE.hasFurniture(world,'wall-menu') && b.chalkT <= 0 && R.random() < 0.35) { startChalk(b); return; }
     const r = R.random();

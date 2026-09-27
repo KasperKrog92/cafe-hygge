@@ -339,6 +339,10 @@ Known constraints, without inventing a complete future layout:
   for counter/kitchen growth, piano, art and terrace access; inspect their relevant
   plans before using space they may need. Unspecified dimensions remain decisions,
   not invented reservations with guessed coordinates.
+- Lunafreya's stool (`L.counterStool`) is not floor furniture: it lives under
+  the counter at the till and appears only as her seated body behind the slab.
+  It follows the till, so a later counter extension moves it with the service
+  position rather than reserving floor space.
 
 Only after this check should placement proceed to collision/path audits and
 rendered review. A zero-problem audit establishes current simulation clearance;
@@ -561,6 +565,17 @@ Lunafreya adds two quiet standing poses: `stretch` (both arms overhead with a
 2 px sway) and `reach` (one arm raised for board/candle care). Her held props
 also include a copper watering can (level while walking, tipped while
 pouring) and a cream taper with a two-tone flame once struck.
+
+Her slow spells at the counter add three more. **On her stool** she is the
+ordinary profile sitter at `L.counterStool` (712, 286), 8 px lower than
+standing; the counter hides the stool and her lap, and her book (slate
+`#5a7a8a`) or folded crossword (`#e8e0d0`, a 7 px grid, clue lines and a gold
+pencil) is held 3 px higher than a patron's (`p.stool`), so it clears the slab
+between the cups and the cash tin. **Her own coffee** is a cup (or the old
+shop mug: cream with one `#4a3222` band) held at the chest and lifted to her
+lips on an eased `armUp`. **Chin in hand** rests the near elbow on the slab
+line (y − 21) and the hand under her jaw. The mug, the crossword and her
+paperback also have hip/chest carries for the few steps to and from the till.
 
 The cat: ears are drawn as base + tip triangles with a pink inner ear on the
 facing side, and one ear flicks now and then (sine-gated on `animT`). Tails

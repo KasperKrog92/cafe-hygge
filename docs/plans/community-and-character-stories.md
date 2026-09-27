@@ -557,7 +557,7 @@ into simultaneous dialogue windows.
 | **Something for four listeners** | Saira develops a motif → Kasper offers a short passage → Nora makes a small program if she is known → Lunafreya chooses music, words or both → a few invited guests gather | New ordinary music/reading habits and a keepsake, without making the café louder or busier by default |
 | **A recipe with two handwritings** | Birgit's tasting → Lunafreya's preference → a recipe card → optional oven and autonomous baking → Tomas's bread story supplies a running joke | A real recipe variant and evidence of their friendship; no oven required for the personal arc |
 | **Come upstairs** | Lunafreya chooses to invite Calandra, a friend or a partner → objects already placed influence what they notice → she lets a guest make the tea → they settle somewhere modest | The apartment feels shared with her life downstairs; visits remain possible without cohabitation |
-| **A name people already use** | Several conversations collect what the place means → Lunafreya chooses an authored café name or keeps the current one → a small sign scene → neighbors begin using it | Sign and appropriate later references; Fleur de Lune remains a candidate, never an imposed name |
+| **A name people already use** | Several conversations collect what the place means → Lunafreya arrives at **Flourish** (owner decision, 27 September: flour and baking, and a place where people flourish) → a small sign scene → neighbors begin using it | The Café Flourish sign and appropriate later references |
 
 Not every listed character is required for a shared arc. Write a small core
 scene and optional contributions. Ida's involvement should enrich the shelf

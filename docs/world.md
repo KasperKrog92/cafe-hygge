@@ -383,7 +383,12 @@ contrast against the floor, with no backing rectangle.
   usual seat, a regular's weather- or recognition-aware arrival opener,
   falling asleep and finding the line again, cat
   movements and petting (including the cat's accidental piano plinks), Lunafreya
-  stretching/chalking/watering, her rare empty-night piano tune, a pianist
+  stretching/chalking/watering, her slow spells at the counter (sitting down
+  with a book, 40%, held while she reads; a rare page-turn glance at the door,
+  8%; the crossword, 40%, with a rare pencil-to-chin clue after Calandra's
+  letter, 15%; her own coffee or the old shop mug, 40%; chin in hand for the
+  rain, the fire or the room, 35%; marking her page when called, 30%), her
+  rare empty-night piano tune, a pianist
   settling at the bench / beginning a sparse burst, and the dusk/dawn
   candle ritual, weather changes, noon church bells, the evening kettle, lamp
   threshold moments, and occasional tip-jar coins. Cat-life

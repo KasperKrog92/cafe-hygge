@@ -125,6 +125,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `books` | Book-box purchase, morning carry, each stocking phase across a reload, service interruption, closing mid-box, browsing from the first handful, a real borrow and return, codec shelf agreement |
 | `bookshelf` | Wall-shelf purchase, delivery, partial-work reloads, closing mid-job and greetings |
 | `c0` | Modest/furnished availability, improvement subsets, service during work and installation |
+| `counter` | Lunafreya's slow spells: the stool and her book on a quiet afternoon (carried, opened, pages turned); standing for a guest before they reach the counter, for a conversation and at closing; nothing while work is pending; the crossword only after Calandra's letter; her own coffee and the old mug leaving and returning to its place (also when a guest comes); chin in hand; a whole day with clean audits |
 | `cat-animations` | Cat pose gallery, four-direction walking, deterministic mirrored/scarf rendering |
 | `cat-corner` | Cat home, bowl care and consumption, both room sizes, intro hug |
 | `dinner` | Apartment supper checkpoints, routes, once-per-evening completion |

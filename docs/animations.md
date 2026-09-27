@@ -82,6 +82,13 @@ follow their shafts), sketching, painting (brush meets canvas and tray),
 typing (arms drawn by the table from the laptop's keyboard anchor) and piano
 (fingertips on the keyboard).
 
+Lunafreya's slow spells reuse these. On her stool she sits through the normal
+posture easing with her book carried (`placeItem: 'book'`), so the first page
+opens as she settles; getting up closes it and she carries it back to the till.
+The crossword alternates writing with a pencil tapped at her chin
+(`thinking`, 1.2–2 s at a time). Her own coffee is sipped standing with the same
+eased `armUp` curve as a seated guest; chin in hand is an arm-only pose.
+
 ### The cat
 
 - Paws are distance-driven in all four directions; hops follow an arc with

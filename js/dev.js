@@ -35,7 +35,8 @@
      __dev.piano(on)   force/stop the corner-piano sound engine
      __dev.fire(level) read/set the hearth's live burn 0..1 (low → tend loop)
      __dev.send(n,x,y) path an entity through the real makePath
-     __dev.noraDo(name) force a Lunafreya ritual on her next idle task ('fire' too)
+     __dev.noraDo(name) force a Lunafreya ritual on her next idle task ('fire' too;
+                       slow spells: 'read', 'crossword', 'coffee', 'lean')
      __dev.catDo(name) force a cat ritual on the next simulation tick
      __dev.bowls(f,w)  set the cat's food and water bowl levels
      __dev.overlay(b)  toggle the layout overlay
@@ -287,7 +288,7 @@
   };
 
   D.noraDo = function (action) {
-    const allowed = ['stretch', 'chalk', 'water', 'candles', 'fire', 'piano'];
+    const allowed = ['stretch', 'chalk', 'water', 'candles', 'fire', 'piano', 'read', 'crossword', 'coffee', 'lean'];
     if (allowed.indexOf(action) < 0) {
       console.warn('[dev] unknown Lunafreya behavior "' + action + '"');
       return null;

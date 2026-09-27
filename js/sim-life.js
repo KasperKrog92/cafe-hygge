@@ -136,6 +136,7 @@
   function workSpot(id) { return PROJECTS[id].bookSource ? L.projects.books.work : L.projects[id].work; }
   function pickupSpot(id) { return (L.projects[id] && L.projects[id].pickup) || L.projects.pickup; }
   R.workSpot = workSpot; R.pickupSpot = pickupSpot;
+  R.projectPending = function (w) { return !!pending(w); };
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
   R.commitLife = commit;
   // The booked craftsperson has a private walking actor, never a customer,

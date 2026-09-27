@@ -763,8 +763,9 @@
   // The old shop mug, if Lunafreya brought it downstairs: on the back bar's
   // free end, beside the kettle (or past the plates on the full counter).
   function drawOldMug(g, world) {
-    if (!world.memory.flags['luna-mug-cafe'] || !SCENE.hasFurniture(world,'counter-equipment')) return;
-    const x = SCENE.fullCounter(world) ? 788 : 724, y = L.backBar.slabY;
+    if (!world.memory.flags['luna-mug-cafe'] || !SCENE.hasFurniture(world,'counter-equipment') ||
+        world.barista.mugOut) return;   // in her hand for a coffee of her own
+    const x = (SCENE.fullCounter(world) ? L.oldMug.full : L.oldMug.basic).x, y = L.backBar.slabY;
     px(g, x, y - 7, 5, 7, '#e8dfc9'); px(g, x, y - 5, 5, 2, '#4a3222');
     px(g, x + 5, y - 6, 2, 4, '#e8dfc9'); px(g, x + 1, y - 7, 3, 1, '#6b4429');
   }

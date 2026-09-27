@@ -357,6 +357,13 @@
     pickupSpot: { x: 744, y: 316 },
     returnSpot: { x: 792, y: 316 },  // where bussing patrons set their cup back
     baristaHome: { x: 706, y: 286 },
+    // Lunafreya's stool lives under the counter at the till; on a slow spell
+    // she pulls it out here and sits facing the room. The counter hides the
+    // stool and her lap; her book is held up over the clear stretch of slab
+    // between the cups and the cash tin (register on the full counter).
+    counterStool: { x: 712, y: 286 },
+    // The old shop mug's place on the back bar's free end, per counter.
+    oldMug: { basic: { x: 724 }, full: { x: 788 } },
     shop: { pastry: { x: 858, y: 286 }, switchSpot: { x: 54, y: 274 } },
     baristaExitX: 616,               // where the barista slips out from behind the counter
     noraCare: {

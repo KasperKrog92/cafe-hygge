@@ -512,8 +512,10 @@
   function drawSeatedHands(g, p, k) {
     const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
     if (p.reading || p.dozing) {
+      // On her stool behind the counter Lunafreya holds the book a little
+      // higher, so it clears the slab.
       const bx = x + facing * 10 - 9;
-      const by = y - 29 + (p.dozing ? 6 : 0);
+      const by = y - 29 + (p.dozing ? 6 : 0) - (p.stool ? 3 : 0);
       seatedArm(g, p, x + facing * 4, y - 28, x + facing * 11, y - 19,
         bx + 18, by + 5, true);
       if (!(p.pageTurn > 0) || p.dozing)
@@ -540,6 +542,32 @@
       px(g, bx + 10, by, 8, 1, shade(bookColor, 0.12));
       if (!(p.pageTurn > 0) || p.dozing) px(g, bx - 2, by + 3, 3, 4, c.skin);
       px(g, bx + 17, by + 3, 3, 4, c.skin);
+    } else if (p.crossword) {
+      // The newspaper folded to the crossword, held up by the far hand; the
+      // pencil hand writes in the grid, or rises to tap her chin (thinking).
+      const f = facing, nx = x + f * 11 - 9, ny = y - 29 - (p.stool ? 3 : 0);
+      seatedArm(g, p, x - f * 3, y - 28, x - f * 4, y - 18, nx + (f > 0 ? 1 : 16), ny + 6, true);
+      // Writing, the pencil arm comes up from below the fold, so the page
+      // stays readable with only the hand and pencil on it.
+      if (!p.thinking) limb(g, x + f * 4, y - 28, x + f * 8, y - 18, 5, c.top);
+      px(g, nx, ny, 18, 11, '#e8e0d0');
+      px(g, nx, ny, 17, 1, '#f5efdf');
+      const gx = f > 0 ? nx + 9 : nx + 1;                        // the grid, nearer the reader's pencil
+      px(g, gx, ny + 2, 7, 7, '#f5efdf');
+      [[0, 0], [2, 1], [4, 0], [1, 3], [5, 3], [3, 5], [0, 5], [6, 6]].forEach(function (d) {
+        px(g, gx + d[0], ny + 2 + d[1], 1, 1, '#3c414d');
+      });
+      const tx = f > 0 ? nx + 1 : nx + 9;                        // a column of clues
+      [2, 4, 6, 8].forEach(function (r) { px(g, tx, ny + r, 6, 1, '#8b8070'); });
+      if (p.thinking) {
+        const cx = x + f * 6, cy = y - 34;
+        seatedArm(g, p, x + f * 4, y - 28, x + f * 9, y - 22, cx, cy, false);
+        px(g, cx - f, cy - 6, 1, 6, '#c9a04a'); px(g, cx - f, cy - 7, 1, 1, '#3a2a1c');
+      } else {
+        const wx = gx + 3 + Math.round(Math.sin(p.animT * 6) * 2), wy = ny + 6;
+        px(g, wx - 1, wy, 4, 3, c.skin);
+        px(g, wx + f, wy - 5, 1, 5, '#c9a04a'); px(g, wx + f, wy, 1, 1, '#3a2a1c');
+      }
     } else if (p.painting) {
       const stroke = Math.floor(p.animT * 5) % 2;
       if (p.paintMixing) {
@@ -626,6 +654,12 @@
     }
   }
 
+  // Lunafreya working at the machine: an order's preparation, or the shot
+  // she pulls for herself on a slow spell (sim-counter.js).
+  function atStation(p) {
+    return p.kind === 'barista' && !!p.steps && (p.state === 'prepping' || (p.state === 'ownPull' && p.pulled));
+  }
+
   // Standing and walking, in profile, front or back view.
   function drawStanding(g, p, k) {
     const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
@@ -668,7 +702,7 @@
       px(g, x + 4, y - 12, 2, 8, shade(c.pants, -0.2));
       px(g, x - 10, y - 3, 18, 3, '#3a2a1c');
     }
-    const station = p.kind === 'barista' && p.state === 'prepping' && p.steps ? p.steps[p.stepIdx] : null;
+    const station = atStation(p) ? p.steps[p.stepIdx] : null;
     if (station && back && !p.noArm) drawStationBehind(g, p, x, y, c, station);
     // The body rides a pixel higher as the swinging foot passes the planted one.
     if (bob) { g.save(); g.translate(0, -bob); }
@@ -782,8 +816,28 @@
       px(g, x + 17 + hand, y - 54, 4, 5, c.skin);
       px(g, x - 13, y - 38, 4, 15, c.top);
       px(g, x - 13, y - 25, 4, 4, c.skin);
-    } else if (p.kind === 'barista' && p.state === 'prepping' && back) {
+    } else if (atStation(p) && back) {
       // drawStationBehind has drawn her working arms behind her back.
+    } else if (p.kind === 'barista' && p.leaning && !walk) {
+      // Chin in hand: the near elbow rests on the counter slab, the forearm
+      // rises to the jaw; the far arm hangs out of sight behind her.
+      const f = facing, ex = x + f * 7, ey = y - 21, hx = x + f * 5, hy = y - 41;
+      limb(g, x + f * 2, y - 37, ex, ey, 5, c.top);
+      limb(g, ex, ey, hx + f * 2, hy + 4, 4, c.top);
+      px(g, hx - 2, hy - 1, 5, 4, c.skin);
+    } else if (p.kind === 'barista' && p.state === 'ownSip' && !walk && (held === 'cup' || held === 'mug')) {
+      // Her own coffee: held at the chest, lifted to her lips on an eased
+      // armUp. The mug is the old shop mug (cream, one brown band).
+      const f = facing, up = p.armUp || 0;
+      const cx = Math.round(x + f * (15 - up * 4)), cy = Math.round(y - 29 - up * 14);
+      const ex = Math.round(x + f * (5 + up * 5)), ey = Math.round(y - 24 - up * 8);
+      limb(g, x + f * 2, y - 37, ex, ey, 5, c.top);
+      limb(g, ex, ey, cx - f * 5, cy + 2, 4, c.top);
+      px(g, cx - 4, cy - 4, 9, 9, held === 'mug' ? '#e8dfc9' : '#e8e0d0');
+      if (held === 'mug') px(g, cx - 4, cy - 2, 9, 2, '#4a3222');
+      else if (up < 0.5) px(g, cx - 3, cy - 4, 7, 2, '#6b4429');
+      px(g, cx - f * 7 - (f > 0 ? 0 : 1), cy - 2, 2, 4, held === 'mug' ? '#e8dfc9' : '#e8e0d0');   // handle toward her
+      px(g, cx - f * 6 - 2, cy, 4, 4, c.skin);
     } else if (p.kind === 'barista' && p.state === 'prepping') {
       const step = p.steps[p.stepIdx], t = p.stateT;
       const act = step.act;
@@ -903,6 +957,14 @@
           px(g, x + 8, y - 26, 10, 2, shade(p.bookColor || '#a94f3f', -0.2));
           px(g, x + 16, y - 25, 2, 6, '#f5efdf');          // page edges
           px(g, x + 10, y - 19, 4, 3, c.skin);             // fingers curled under
+        } else if (held === 'paper') {                     // the folded crossword
+          px(g, x + 8, y - 27, 9, 11, '#e8e0d0');
+          px(g, x + 9, y - 25, 7, 1, '#8b8070'); px(g, x + 9, y - 22, 5, 1, '#8b8070');
+          px(g, x + 10, y - 18, 4, 3, c.skin);
+        } else if (held === 'mug') {                       // the old shop mug
+          px(g, x + 8, y - 27, 9, 9, '#e8dfc9');
+          px(g, x + 8, y - 25, 9, 2, '#4a3222');
+          px(g, x + 10, y - 29, 4, 3, c.skin);
         }
       }
     } else if (held === 'cup' || held === 'glass' || held === 'plate' || held === 'cloth' || held === 'stack') {
@@ -959,6 +1021,18 @@
       if (p.taperLit) {
         px(g, tx - 1, y - 46, 2, 4, '#f5b942');
         px(g, tx - 1, y - 48, 2, 2, '#f8dc8a');
+      }
+    } else if (held === 'mug' || held === 'paper') {
+      // the old shop mug at the chest, or the crossword folded small
+      px(g, x + facing * 8 - (facing > 0 ? 0 : 3), y - 34, 5, 10, c.top);
+      const hx = x + facing * 13 - (facing > 0 ? 0 : 8);
+      if (held === 'mug') {
+        px(g, hx, y - 32, 9, 9, '#e8dfc9'); px(g, hx, y - 30, 9, 2, '#4a3222');
+        px(g, hx + (facing > 0 ? -3 : 8), y - 28, 4, 4, c.skin);
+      } else {
+        px(g, hx - 1, y - 30, 10, 12, '#e8e0d0');
+        px(g, hx, y - 28, 8, 1, '#8b8070'); px(g, hx, y - 25, 6, 1, '#8b8070');
+        px(g, hx + (facing > 0 ? -3 : 8), y - 24, 4, 4, c.skin);
       }
     } else if (held === 'book') {
       // borrowed book tucked under the arm

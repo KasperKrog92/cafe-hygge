@@ -43,6 +43,17 @@ Existing arrived/working/installed jobs never redeliver or replay construction.
 The visitor suite covers both modes, overlapping jobs, closing, later hellos,
 legacy saves and next morning; the UI runner checks actual page reloads.
 
+## Slow spells at the counter — shipped 27 September 2026
+
+The owner asked for something for Lunafreya to do when the café is slow. When
+nobody needs her she now pulls her stool out at the till and reads a book of
+her own (from the windowsill upstairs once it is unpacked), or, after
+Calandra's letter, does the crossword; she makes herself a small coffee, in the
+old shop mug if it lives downstairs; or rests her chin in her hand and listens
+to the rain. A guest in the queue, a conversation, approved work, the small
+chores and closing each get her up at once. No purchase and nothing saved; the
+stool lives under the counter and moves with the till if the counter grows.
+
 ## Unpacking the apartment (H1) — shipped 27 September 2026
 
 From the second evening, in both modes, Lunafreya empties one moving box after
@@ -165,9 +176,13 @@ households stay at their later boundaries.
   with a delivery person, moving equipment and an unpacking sequence.
 - Furniture and its contents can be separate purchases: deliver a bookshelf
   one day, buy books another day, then let her gradually fill it.
-- The protagonist is now **Lunafreya**, with **Nora** as the artist patron. **Fleur de Lune**
-  is a possible café name, still provisional. This document uses Lunafreya for
-  the proposed protagonist; the identity swap shipped on 7 September 2026.
+- The protagonist is now **Lunafreya**, with **Nora** as the artist patron. This
+  document uses Lunafreya for the protagonist; the identity swap shipped on
+  7 September 2026.
+- **The café's name (owner, 27 September 2026): Flourish — "Café Flourish".** A
+  play on flour and baking, and a place where people flourish and thrive, not
+  just survive. It replaces the provisional Fleur de Lune. The café stays
+  unnamed until the naming arc arrives there through lived experience.
 
 The concrete stages, pacing and rules below are recommendations to prototype.
 They should be revised after watching the first complete day-and-home loop.
@@ -540,7 +555,7 @@ daily retrieval/replacement can join the planned daily street-sign routine.
 - Prices, starting savings and how much progress a normal reading session funds.
 - The apartment's framing; C0's initial furniture is specified above.
 - Whether one new project per evening feels sufficient or overly restrictive.
-- Final café name (the owner/artist identity swap is complete).
+- How the naming arc arrives at Flourish, and the sign scene that follows.
 - Recipes, food portions and replenishment, counter layouts, oven routines and
   the order of kitchen upgrades; the working-day role and pay model for a helper.
 - Who might become a colleague, close friend, partner or temporary guest; the

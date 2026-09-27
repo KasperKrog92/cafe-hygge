@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Twenty-five IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Thirty IIFE scripts expose the production globals
 (`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 
@@ -32,6 +32,7 @@ js/sim-gerda.js         → extends SIM    (window-gated visits, pillow placemen
 js/sim-visitors.js      → extends SIM    (Keira/Tomas jobs and saved greetings)
 js/sim-home.js          → extends SIM    (saved first apartment tour, first planner, bedtime)
 js/sim-evenings.js      → extends SIM    (evening moments at home; home keepsake placement)
+js/sim-counter.js       → extends SIM    (Lunafreya's slow spells: stool and book, crossword, own coffee, chin in hand)
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
@@ -114,6 +115,15 @@ Shared loops never name a character. A character's own file registers:
 
 Holger's mandatory first hello still has explicit holds in spawning and
 `SIM.update`: it is the one tutorial exception, by design.
+
+Lunafreya's own quiet-moment habits use the same pattern.
+`SIM._.counterHabits` (created in sim-characters.js, filled by sim-counter.js)
+holds `{id, states, offer(world, b), start(world, b), update(world, b, dt)}`.
+The idle picker offers each habit after the day's chores and before the
+counter fidgets; `updateBarista` hands any state a habit owns to its `update`;
+`__dev.noraDo(id)` calls `start`. A habit must hand her back to `'idle'` as soon
+as someone needs her (queue, order, waiting cup, table to clear, pending work
+via `SIM._.projectPending`, a conversation or closing). Nothing it does is saved.
 
 ## Posture and motion
 
@@ -443,7 +453,7 @@ or console calls:
 | `__dev.regular(id)` / `__dev.doze()` | force a named regular's next arrival (`'holger'`, `'gerda'`, `'lunafreya'`, `'kasper'`, `'freya'`; defaults to `'holger'`) / put the first eligible seated reader to sleep |
 | `__dev.piano(on)` | force or stop the dt-driven corner-piano sound engine |
 | `__dev.send(name, x, y)` | path an entity through the real `makePath` (works while its state runs the walker; the cat is forced to walk) |
-| `__dev.noraDo(action)` | wake Lunafreya's idle picker and force `stretch`, `chalk`, `water`, `candles`, or `piano`; candle forcing clears the current flames so the full round is visible |
+| `__dev.noraDo(action)` | wake Lunafreya's idle picker and force `stretch`, `chalk`, `water`, `candles`, `piano`, or a slow-spell habit (`read`, `crossword`, `coffee`, `lean`); candle forcing clears the current flames so the full round is visible |
 | `__dev.catDo(action)` | reset the cat to a safe floor spot and force `eat`, `window`, `bookshelf`, `counter`, `topShelf`, `piano`, `lap`, `mote`, or `knead` on the next tick |
 | `__dev.bowls(food, water)` | clamp and set both bowl levels (one argument sets both), then wake Lunafreya's idle picker |
 | `__dev.overlay(on?)` | toggle the layout overlay: crop + content-safe bounds, lane, every `L` anchor, seats free/taken, queue/wait/bus/browse spots, occluder boxes, footprint boxes |

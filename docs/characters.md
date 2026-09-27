@@ -166,6 +166,27 @@ three-second hand action, preserving progress:
   60–120 s, then observes a 600–1200 s cooldown. A doorbell, queue, or order
   ends the phrase; she stands, returns behind the counter, and serves. The
   route is shared with `__dev.audit()`.
+- **A slow spell** (`js/sim-counter.js`, after the chores above and before the
+  fidgets below): only when nobody needs her — no queue, orders, cups waiting at
+  the pass, tables to clear, pending improvement work, conversation or closing.
+  Each is registered on `SIM._.counterHabits` and ends the moment one of those
+  appears (she gets up before a new guest reaches the counter):
+  - **Her stool and a book** (45% candidate, 45–110 s cooldown between
+    sessions): she carries her own slate-blue paperback 6 px to the stool at the
+    till (`L.counterStool`, 712, 286; the counter hides the stool), sits facing
+    the room and reads for 45–110 s, turning a page every 9–18 s. Once
+    Calandra's letter has been read (`home-calandra-done`), 35% of sessions are
+    the crossword instead: the paper folded small, a pencil writing, now and
+    then tapping her chin. The small chores (fire, candles, watering, bowls) also
+    get her up. She stands, carries the book back and tucks it away at the till.
+  - **A coffee of her own** (15% candidate, at most every 300–600 s): pulls a
+    2.2 s shot for herself at the machine, then drinks it at the till for
+    18–32 s, a sip every 4–7 s. If the old shop mug lives downstairs
+    (`luna-mug-cafe`) she first takes it from its place on the back bar and
+    returns it there afterward (`L.oldMug`); it is never on the bar and in her
+    hand at once. A guest arriving sends the cup straight back to the bar.
+  - **Chin in hand** (12% candidate): at the till, the near elbow on the slab
+    and her chin on her hand, for 8–16 s.
 - **Chalk the menu** (due every 600–1200 s): reaches up behind the counter for
   3 s; the cached board then remembers a different heart, curled cat,
   steaming cup, sprig, umbrella, or bamboo whisk. Rain weights the umbrella
