@@ -1469,7 +1469,10 @@
       if (!r.force && !onRhythm(world, spec)) return false;
       // one visit at a time per regular; never two of the same face
       if (world.patrons.some(function (p) { return p.regularId === spec.id; })) return false;
-      const due = r.force || gate.due(world) || (r.lastDay !== day && world.hour >= r.hour && world.hour < 23);
+      // A regular who could not get in skips the day rather than turning up
+      // at closing (by 20:30, an hour before), or sooner for a habit with an
+      // end (arrival.latest: Birgit's breakfast).
+      const due = r.force || gate.due(world) || (r.lastDay !== day && world.hour >= r.hour && world.hour < (spec.arrival.latest || 20.5));
       return due && !(firstDay && spec.id!=='holger' && !r.force);
     }).sort(function (a, b) {
       const ra = world.regulars[a.id], rb = world.regulars[b.id];

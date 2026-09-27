@@ -73,6 +73,18 @@
     px(g,l+3,t+7,5,1,'#d9d0bd');px(g,l+6,t+5,1,2,'#cdc4b1');
     px(g,l+5,t-1,1,2,'#d9738a');
   };
+  // Birgit's recipe card, centred on (x,y): an index card with a red top
+  // rule, two lines of brown handwriting, a crossed-out note in the margin
+  // and a thumbprint of flour; pinned on the kitchen wall, or leaning.
+  SCENE.drawRecipe = function(g,x,y,pinned) {
+    const l=x-5,t=y-4;
+    px(g,l+1,t+1,11,8,'rgba(20,12,8,.2)');
+    px(g,l,t,11,8,'#f5efdf');px(g,l,t+1,11,1,'#d9738a');
+    px(g,l+1,t+3,6,1,'#8a6142');px(g,l+1,t+5,4,1,'#8a6142');px(g,l+6,t+5,1,1,'#8a6142');
+    px(g,l+8,t+3,2,1,'#a94f3f');px(g,l+8,t+4,2,1,'#c9b28a');px(g,l+7,t+4,4,1,'#a94f3f');
+    px(g,l+2,t+6,2,1,'#fdf8ec');
+    if(pinned)px(g,x,t-1,1,2,'#c9a04a');
+  };
   // Whatever a regular brings in (a parcel set on the counter, a gift not
   // yet placed): Holger's box of books, Maud, Gerda's folded blanket,
   // Keira's photographs in their envelope, Tomas's empty frame.
@@ -81,6 +93,8 @@
     else if(kind==='blanket')foldedBlanket(g,w,x,y);
     else if(kind==='photo') {px(g,x-7,y-5,14,9,'#e8dfc9');px(g,x-7,y-5,14,1,'#f5efdf');px(g,x-6,y-4,12,3,'#d9d2c0');px(g,x-1,y-2,2,1,'#c9b28a');}
     else if(kind==='frame') {px(g,x-8,y-6,16,11,'#a5763f');px(g,x-6,y-4,12,7,'#e8dfc9');px(g,x-8,y-6,16,1,'#c9a477');}
+    else if(kind==='tastes') {px(g,x-5,y-8,10,10,'#efe6d2');px(g,x-5,y-8,10,2,'#d9ccb0');px(g,x-5,y-6,10,1,'#c9b28a');px(g,x+1,y-3,2,2,'#e3cfa7');}
+    else if(kind==='recipe') {px(g,x-6,y-3,12,5,'#f5efdf');px(g,x-6,y-3,12,1,'#d9738a');px(g,x-4,y-1,7,1,'#8a6142');px(g,x+2,y+1,2,1,'#a94f3f');}
     else if(kind==='score') {px(g,x-6,y-3,12,6,'#ece4d2');px(g,x-6,y-3,12,1,'#f5efdf');px(g,x-5,y-1,10,1,'#b8b0a0');px(g,x-5,y+1,10,1,'#b8b0a0');px(g,x-2,y-2,1,2,'#4a4f5a');px(g,x+2,y,1,2,'#4a4f5a');}
     else SCENE.drawBookBox(g,x,y,kind==='books'?'holger':kind);
   };
@@ -184,6 +198,8 @@
         // On the wall behind the till: drawn first, like the wall itself.
         if(id==='photo' && p.stage==='installed' && !w.memory.flags['keira-print-home'])
           draws.push({y:SCENE.L.wallY-1,draw:g=>SCENE.drawPhotos(g,a.spot.x,a.spot.y,jobs.frame.stage==='installed')});
+        if(id==='recipe' && p.stage==='installed' && !w.memory.flags['birgit-recipe-home'])
+          draws.push({y:SCENE.L.basic.counter.baseY+.7,draw:g=>SCENE.drawRecipe(g,a.spot.x,a.spot.y,false)});
         if(id==='score' && p.stage==='installed' && !w.memory.flags['saira-score-home'])
           draws.push({y:SCENE.L.wallY-1,draw:g=>SCENE.drawScore(g,a.spot.x,a.spot.y)});
       } else if (IMPROVEMENTS.projects[id].bookSource) {
@@ -384,6 +400,9 @@
     if(w.memory.flags['keira-print-home'] && jobs.photo.stage==='installed')
       SCENE.drawPhotos(g,H.photo.x,H.photo.y,jobs.frame.stage==='installed');
     if(w.memory.flags['saira-score-home'] && jobs.score.stage==='installed')SCENE.drawScore(g,H.score.x,H.score.y);
+    // On the kitchen wall: over its back wall, under whatever stands on the counter.
+    if(w.memory.flags['birgit-recipe-home'] && jobs.recipe.stage==='installed')
+      draws.push({y:H.kitchen.y+.05,draw:g=>SCENE.drawRecipe(g,H.recipe.x,H.recipe.y,true)});
     if(unpacked(w,'picture')) {
       // A small print of the old city's harbour, framed, above the desk.
       px(g,427,184,26,22,'#6e4a33');px(g,429,186,22,18,'#8fb5bf');

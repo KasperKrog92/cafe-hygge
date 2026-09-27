@@ -71,6 +71,8 @@
       p.storyChapter = null;
       const bond = w.memory.bonds[id];
       bond.warmth = (bond.warmth || 0) + 1;
+      // What they set on the counter has been handed over (or shared and eaten).
+      if (s.parcel) w.counterParcel = null;
       if (s.gift) {
         w.counterParcel = null;
         const job = w.memory.life.projects[s.gift];

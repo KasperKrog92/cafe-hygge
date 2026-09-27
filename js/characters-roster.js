@@ -1473,3 +1473,132 @@
     {id:'tune',speaker:'Lunafreya',text:"Mm, mm-mm… I can't remember how it goes after that. That's all right. Neither can she, yet.",sound:'lunaHum'}
   ]};
 })();
+
+/* Birgit, the baker two streets over (ensemble release 6, part one). She
+   comes for breakfast after her own morning's work and orders the café's
+   bun, professionally. Her hello is about being served somewhere; then
+   closing habits (Lunafreya may tell her that at the old shop she did
+   everybody else's last job); then tastes, what Lunafreya likes for herself
+   rather than for guests (a paper bag set on the counter as she orders);
+   then the handwritten recipe card (keepsake `recipe`): by the cake stand
+   for the day there is an oven, or on the kitchen wall upstairs. No oven is
+   needed for any of it. */
+(function () {
+  'use strict';
+  CAST.regulars.push({
+    id: 'birgit',
+    name: 'Birgit',
+    nameStyle: 'feminine',
+    colors: {
+      skin: '#f0c49a', hair: '#a5763f', top: '#b5654a', pants: '#4a3222',
+      scarf: '#e8dfc9', longHair: false, hairStyle: 2, beard: false
+    },
+    drink: 'cardamom bun',
+    traits: { wantsBook: false, ownBook: false, chatty: true, laptop: false, pianist: false },
+    murmurPitch: 190, speed: 54,
+    umbrella: '#a94f3f',
+    arrival: { from: 9.4, to: 10, latest: 12 },
+    stay: [200, 300],
+    seat: 'diningTable',
+    firstDay: 8,
+    rhythm: { every: 3, offset: 1 },
+    lines: {
+      arrival: ['Birgit comes in with flour still in the creases of her sleeves.'],
+      arrivalRain: ['Birgit comes in out of the rain and shakes her coat like a tea towel.'],
+      arrivalReturn: ['Birgit is back for breakfast, her own morning\'s work long done.',
+        {text:'Birgit comes in and asks, before anything else, whether Lunafreya has eaten.', flags:['birgit-tastes-done']}],
+      settle: ['Birgit sits down with the sigh of somebody who has been on her feet since four.'],
+      usualTaken: ['Her table is taken; Birgit takes another and reviews the room from it.'],
+      overheard: [
+        'Birgit tells the next table a story and gives the ending away first.',
+        'Birgit explains, firmly, what a bun should and should not do.',
+        'Birgit laughs at her own joke before she has quite finished telling it.'
+      ],
+      musing: [
+        'Birgit tears her bun in half and studies the crumb like a detective.',
+        {text:'Birgit eats her bun slowly, sitting down, as if it were a holiday.', flags:['birgit-served']},
+        {text:'Birgit says nothing at all about ovens, visibly.', flags:['birgit-no-shop']},
+        {text:'Birgit sniffs the cardamom and gives the bun a small, grudging nod.', flags:['luna-taste-cardamom']},
+        {text:'Birgit mentions the Saturday orange buns to the next table, casually, twice.', flags:['birgit-recipe-done','luna-taste-orange']}
+      ],
+      backstory: [
+        'Birgit has run the bakery two streets over for twenty-two years; she still tastes the first bun off every tray.',
+        'Birgit says the best part of her day is nine o\'clock, when somebody else makes the coffee.'
+      ]
+    }
+  });
+  CAST.voices.Birgit = {pitch:188,filter:760,pace:1.04};
+  CAST.introductions.birgit = {visits:2, lines:[
+    {id:'four',speaker:'Birgit',text:"Don't mind me. I've been up since four, and this is the first thing all day that somebody else has made."},
+    {id:'since',speaker:'Lunafreya',text:"Since four?"},
+    {id:'bakery',speaker:'Birgit',text:"The bakery two streets over. The one with the queue. I'm Birgit. You're the new café. People are talking about you. Well. Three people."},
+    {id:'three',speaker:'Lunafreya',text:"Lunafreya. Three people is more than I expected."},
+    {id:'bun',speaker:'Birgit',text:"I always order the competition's bun. Professional duty. Yours is honest. The cardamom's shy, but it's honest."},
+    {id:'story',speaker:'Birgit',text:"I'll tell you a story. The oven caught fire. Anyway, it was the winter the canal froze, and I'd just…"},
+    {id:'fire',speaker:'Lunafreya',text:"Wait. The oven caught fire?"},
+    {id:'ending',speaker:'Birgit',text:"I've done it again. I always give the ending away first. Nobody was hurt. The rye was a tragedy. Twenty-two years and I still can't tell a story."},
+    {id:'wipe',speaker:'Birgit',text:"This is what I like best, you know. Sitting somewhere I don't have to wipe anything."},
+    {id:'choice',speaker:'Lunafreya',replySpeaker:'Birgit',text:"Then…",choices:[
+      {text:"Then this can be your nine o'clock. Nobody here will ask you to wipe anything.",flag:'birgit-served',
+        reply:"My nine o'clock. Somebody else's coffee. You'd be amazed what that's worth."},
+      {text:"Then no shop talk. Not one word about ovens.",flag:'birgit-no-shop',
+        reply:"Not one word about ovens. You'll last a week. Nobody lasts longer than a week."}
+    ]},
+    {id:'cardamom',speaker:'Birgit',text:"I'll be back. I want to find out what's wrong with the cardamom."}
+  ]};
+  CAST.regularStories.birgit = [
+    {id:'closing', after:['birgit-introduced'], lines:[
+      {id:'ask',speaker:'Birgit',text:"Tell me something. What's the last thing you do before you lock up? Everybody's got one.",
+        alt:{'flag:birgit-no-shop':"I know. No shop talk. This isn't shop, it's habits. What's the last thing you do before you lock up?"}},
+      {id:'hers',speaker:'Birgit',text:"Mine's the ugliest bun on the tray. I eat it standing at the window, watching the street go home. Twenty-two years."},
+      {id:'standing',speaker:'Lunafreya',text:"Standing up?"},
+      {id:'rule',speaker:'Birgit',text:"Bakers don't sit down after four in the morning. Nobody made that rule. So. Yours?"},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Birgit',text:"Mine…",choices:[
+        {text:"I count the chairs. Then I count them again, in case one's gone somewhere.",flag:'luna-closing-chairs',
+          reply:"In case one's gone somewhere. Chairs don't go anywhere. I like it anyway."},
+        {text:"At the old shop I did everybody else's last job. I still walk the room as if somebody's forgotten something.",flag:'luna-closing-others',
+          reply:"Everybody else's last job. I know that one. You end up without a last job of your own."}
+      ]},
+      {id:'own',speaker:'Birgit',text:"Get a last thing that's only yours. The ugliest bun. A chair by the window. Something nobody needs you to do."},
+      {id:'mine',speaker:'Lunafreya',text:"Maybe a coffee. Sitting down, for once.",
+        alt:{'flag:luna-mug-cafe':"I think I've got one. The last coffee, from my old shop mug. Standing up, though.",
+          'flag:luna-mug-home':"I think I've got one, upstairs. Tea in my old shop mug, at the desk."}},
+      {id:'good',speaker:'Birgit',text:"There. A rule nobody made. Those are the only good ones."}
+    ]},
+    {id:'tastes', after:['birgit-closing-done'], parcel:'tastes', lines:[
+      {id:'bag',speaker:'Birgit',text:"That bag on your counter is from me. Two small things. Not for the café. For you. That's the whole point, so listen."},
+      {id:'two',speaker:'Birgit',text:"One's orange peel, bitter and bright. The other's cardamom, properly, with a bit of black pepper. Not shy."},
+      {id:'guests',speaker:'Lunafreya',text:"The guests would like the orange one, I think."},
+      {id:'you',speaker:'Birgit',text:"Not the guests. You. Everybody who runs a place forgets what they like. They only know what sells.",
+        alt:{'flag:luna-closing-others':"Not the guests. You. You did everybody else's last job for years. What do you like?"}},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Birgit',text:"I like…",choices:[
+        {text:"The orange. Bitter and bright. It tastes like waking up.",flag:'luna-taste-orange',
+          reply:"Like waking up. Good. I'll remember that. I remember everything anybody ever says about food."},
+        {text:"The cardamom. Properly. I like it when something isn't shy.",flag:'luna-taste-cardamom',
+          reply:"Not shy. I knew it. Your buns are shy because you're polite. You're not polite on the inside."}
+      ]},
+      {id:'sit',speaker:'Birgit',text:"Now eat the rest sitting down. I'll watch. It's the least I can do."},
+      {id:'good',speaker:'Lunafreya',text:"That's… really very good."},
+      {id:'know',speaker:'Birgit',text:"I know. Twenty-two years. I only wanted to check you could say so."}
+    ]},
+    {id:'recipe', after:['birgit-tastes-done'], gift:'recipe', lines:[
+      {id:'card',speaker:'Birgit',text:"Here. The recipe, written down properly for once. Don't show it to anybody at my bakery."},
+      {id:'title',speaker:'Birgit',text:"“Orange buns for Lunafreya. Bitter and bright. For waking up.”",
+        alt:{'flag:luna-taste-cardamom':"“Cardamom buns for Lunafreya. Not shy. Pepper, and don't argue.”"}},
+      {id:'margin',speaker:'Lunafreya',text:"Something's crossed out in the margin."},
+      {id:'crossed',speaker:'Birgit',text:"“Less sugar, she'll say it's too sweet.” Then I thought about it. No, she won't. She'll say it's good, and mean it."},
+      {id:'flour',speaker:'Birgit',text:"Flour first, always. Everything good starts with flour. The rest is patience and not opening the oven."},
+      {id:'oven',speaker:'Lunafreya',text:"I haven't got an oven."},
+      {id:'keep',speaker:'Birgit',text:"Recipes keep. That's the nice thing about them. It'll wait until you have one, and if you never do, it's still yours."},
+      {id:'saturday',speaker:'Birgit',text:"I'm going to bake them at mine on Saturdays. Next to the usual ones, not instead. People like their usual. So do I."},
+      {id:'choice',speaker:'Lunafreya',replySpeaker:'Birgit',text:"The card should go…",choices:[
+        {text:"…here, by the cake stand, for the day there's an oven.",flag:'birgit-recipe-cafe',
+          reply:"By the cake stand. Where it can look forward to something."},
+        {text:"…upstairs, on my kitchen wall. Somewhere I cook for myself.",flag:'birgit-recipe-home',
+          reply:"For yourself. Good. That was the whole point."}
+      ]},
+      {id:'queue',speaker:'Lunafreya',text:"I'll come for a Saturday one."},
+      {id:'ugliest',speaker:'Birgit',text:"You'll queue like everybody else. Then I'll give you the ugliest one. That's a compliment, from me."}
+    ]}
+  ];
+})();

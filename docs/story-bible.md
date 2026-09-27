@@ -175,6 +175,8 @@ also be allowed to encourage the regulars; kindness does not run only toward her
 | Why this side of the lake, told to Marcel | Shipped, Marcel's hello | `luna-lake-tuesday` (an ordinary Tuesday imagined by the water on the viewing day) or `luna-lake-later` |
 | Slow spells at the counter | Shipped (no dialogue) | On quiet afternoons she reads her own slate-blue paperback on a stool at the till (one of the books from the windowsill once unpacked). After Calandra's letter she sometimes does the crossword, finishing a clue by herself for once. With the mug downstairs she drinks a coffee from it standing up and counts the chairs without meaning to. Nothing is said aloud |
 | Sitting down when nobody needs anything, told to Saira | Shipped, Saira's eight bars | Asked only to listen, she reaches to wipe a clean table. `saira-listen-sit` (she isn't very good at sitting down when nobody needs anything; "Then sit badly. Everybody starts badly.") or `saira-listen-cloth` (it's easier to listen with something in her hands). That evening upstairs the week's receipts wait until morning (home moment `rest`) |
+| Her last thing before locking up, told to Birgit | Shipped, Birgit's closing habits | `luna-closing-chairs` (she counts the chairs, then again, in case one's gone somewhere) or `luna-closing-others` (at the old shop she did everybody else's last job, and still walks the room as if somebody's forgotten something). Either way Birgit tells her to get a last thing that's only hers; with the old mug downstairs it already is one. Only Birgit has heard this |
+| What she likes for herself, told to Birgit | Shipped, Birgit's tastes | `luna-taste-orange` (bitter and bright, "like waking up") or `luna-taste-cardamom` (properly, not shy). It titles Birgit's recipe card |
 | Naming the café | Planned | Find its name through lived experience. Saira left her score untitled because "this room hasn't told me its name yet". **Owner decision (27 September): it becomes Flourish, "Café Flourish"**, for flour and baking and for a place where people flourish rather than just get by. It replaces the provisional Fleur de Lune |
 
 The reading-corner answer makes no purchase, price commitment or upgrade gate.
@@ -432,6 +434,40 @@ composition; the invited first sharing; Lunafreya joining for a few notes or
 listening; a small music evening), her rehearsal meeting Antonia's quiet, and a
 possible romance centred on shared attention.
 
+## Birgit — breakfast in somebody else's place
+
+**Shipped 27 September.** Birgit (she/her; short light-brown curls, terracotta
+top, cream neckerchief) has run the bakery two streets over, the one with the
+queue, for twenty-two years. She comes in for breakfast after her own morning's
+work, every third day from the café's second week and never after noon, and
+always orders the competition's bun ("Yours is honest. The cardamom's shy, but
+it's honest."). She is sociable and decisive, and tells stories with the ending
+first (the oven caught fire, the winter the canal froze; nobody was hurt, the
+rye was a tragedy). The café is somewhere she is served; there is no rival
+business plot.
+
+Her **hello** (second visit): what she likes best is sitting somewhere she
+doesn't have to wipe anything. `birgit-served` (this can be her nine o'clock)
+or `birgit-no-shop` (not one word about ovens; "You'll last a week").
+**Closing habits** (a later visit): her last thing before locking up is the
+ugliest bun on the tray, eaten standing at the window; bakers don't sit down
+after four, a rule nobody made. Lunafreya's answer (above) is her third
+disclosure. **Tastes** (a later visit): a paper bag set on the counter as she
+orders, two small things for Lunafreya, not the café: orange peel, bitter and
+bright, or cardamom properly, with black pepper. "Everybody who runs a place
+forgets what they like. They only know what sells." She makes Lunafreya eat
+the rest sitting down. **The recipe** (a later visit): the handwritten card,
+"Orange buns for Lunafreya. Bitter and bright. For waking up." or "Cardamom
+buns for Lunafreya. Not shy. Pepper, and don't argue.", with "Less sugar,
+she'll say it's too sweet" crossed out in the margin ("No, she won't. She'll
+say it's good, and mean it."). **"Flour first, always. Everything good starts
+with flour."** Recipes keep until there is an oven, and if there never is, it
+is still hers. Birgit will bake them on Saturdays at her bakery, next to the
+usual ones, not instead. Lunafreya keeps the card by the cake stand
+(`birgit-recipe-cafe`) or on her kitchen wall (`birgit-recipe-home`).
+**Planned:** baking the recipe once there is an oven; advice on Tomas's bread,
+given only after he asks; reading Kasper's story without playing the critic.
+
 ## The wider ensemble — planned direction
 
 The longer arcs and relationship connections live in the
@@ -444,7 +480,7 @@ Use this table to distinguish identities from what the runtime currently contain
 | Tomas | Recurring builder; patient craft, daughter and an overcomplicated cupboard | Window repair, expanded hello, the cupboard report, the loaf (supper that night) and the frame from the window board are shipped; deeper family scenes remain planned |
 | Saira | Choir accompanist/teacher; her own quiet composition; possible romance | Shipped before any piano: hello, eight bars, the receipts left until morning, the handwritten score (see above); her piano scenes wait for the room expansion; the generic piano behavior is not her story |
 | Marcel | Painter across the lake; recognizes changing places and people | Shipped as a regular (see below); the `street-house` arc is intact and he is its distant figure. Later painting and his gift remain planned |
-| Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | New character; food preparation follows the menu milestone |
+| Birgit | Baker; shared tastes, a recipe and breakfast in someone else's place | Shipped: hello, closing habits, tastes and the recipe card (see above); baking it follows an oven and the menu milestone |
 | Elody | Gardener; shared allotment, cuttings and ordinary pleasure in growing things | Shipped: introduction and Maud, her geranium cutting (see below); sharing her plot and later scenes remain planned |
 | Ida | Librarian; welcoming book exchange and learning when to organize less | Shipped: introduction, the exchange preference and the reading afternoon she hosts (see below); the fuller exchange, Gerda's sign and her bookplates remain planned |
 | Ezra | Young adult student with imaginary bus maps; possible later colleague | New character; friendship precedes any future shared-work implementation |
@@ -556,7 +592,8 @@ speech or caricatures: Lunafreya retains the intro voice; Holger is lower,
 warmer and slightly slower. Gerda is gently lower and slower; Nora slightly
 brighter and quicker; Kasper lower and nearly the same pace; Freya softly muted.
 Keira is lightly brighter and quicker; Tomas lower and measured. Saira is a
-little bright and quick; her hummed eight bars are a soft gliding voice. Calandra's
+little bright and quick; her hummed eight bars are a soft gliding voice.
+Birgit is a touch lower and brisk. Calandra's
 letter reads brisk and bright (pace 0.92), as her sister hears it. Every named
 character has dialogue sounds through the same volume and mute controls.
 These profiles are ready for their authored conversations. Existing third-person

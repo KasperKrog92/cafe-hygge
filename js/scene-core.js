@@ -116,6 +116,9 @@
       // Saira's score, if it comes upstairs: pinned above the bed, clear of
       // the string of lights along the headboard.
       score: { x: 786, y: 192 },
+      // Birgit's recipe card, if it comes upstairs: the bare upper kitchen
+      // wall, left of the light and above the counter.
+      recipe: { x: 172, y: 394 },
       boxes: [{ x: 280, y: 270 }, { x: 308, y: 270 }, { x: 294, y: 248 },
         { x: 474, y: 280 }, { x: 503, y: 280 }, { x: 493, y: 258 }, { x: 776, y: 422 }],
       story: {
@@ -171,6 +174,9 @@
       // Saira's score is pinned right of the photographs' place, clear of the
       // back-bar shelves and the menu board; it waits on the counter first.
       score: {pickup:{x:664,y:286},parcel:{x:656,y:270},work:{x:774,y:274},spot:{x:784,y:196}},
+      // Birgit's recipe card leans at the counter's right end, just past the
+      // cake stand (and left of the fuller room's pastry case).
+      recipe: {pickup:{x:664,y:286},parcel:{x:656,y:270},work:{x:790,y:286},spot:{x:810,y:265}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},

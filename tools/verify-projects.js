@@ -69,12 +69,16 @@
     // A real entrant arrives while Lunafreya is working, then orders and sits.
     const guest=SIM._.makePatron(w,'Signe');guest.wantsBook=false;guest.ownBook=true;guest.outdoor=false;
     SIM._.enqueueArrival(w,guest,0,true);
+    w.barista.projectSession=-60;   // a long stretch of work: only a customer ends it
+    // Timed from the first customer (the guest or any other arrival) to reach
+    // the counter while she is at the work itself; she may first finish a
+    // stretch of work or clear a table on her own.
     let queuedAt=null,homeAt=null,progressAtQueue=null;
     until(w,()=>{
-      if(SIM.withWorld(w,()=>SIM._.customerAtCounter(w)) && queuedAt===null) { queuedAt=w.t;progressAtQueue=p.step*18+p.time; }
-      if(queuedAt!==null && (w.barista.state==='projectHome' || w.barista.state==='idle') && homeAt===null) homeAt=w.t;
-      return guest.state==='seated';
-    },240);
+      if(SIM.withWorld(w,()=>SIM._.customerAtCounter(w)) && queuedAt===null && w.barista.state==='projectWork') { queuedAt=w.t;progressAtQueue=p.step*18+p.time; }
+      if(queuedAt!==null && w.barista.state!=='projectWork' && homeAt===null) homeAt=w.t;
+      return guest.state==='seated' && (homeAt!==null || p.stage==='installed');
+    },600);
     check(queuedAt!==null,'guest never reached the counter');
     check(homeAt!==null && homeAt-queuedAt<=3.5,'order did not safely interrupt');
     check(p.step*18+p.time>=before,'work lost during order');

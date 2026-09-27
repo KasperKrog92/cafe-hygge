@@ -184,8 +184,17 @@ evening the receipts wait until morning. Then she brings the handwritten score,
 untitled because the room has not told her its name yet: pinned behind the
 counter, where Lunafreya sometimes hums it on a quiet spell, or above the bed.
 
+**Birgit, breakfast in somebody else's place — shipped 27 September 2026.**
+The baker two streets over comes in for breakfast after her own morning's work
+(every third day from day 8, only before noon) and orders the café's bun,
+professionally. Her scenes follow the owner's order: being served; closing
+habits (Lunafreya may tell her she did everybody else's last job at the old
+shop); tastes, a paper bag of two small things for Lunafreya herself; and the
+handwritten recipe card, "Everything good starts with flour", kept by the cake
+stand or on the kitchen wall. No oven is required.
+
 **Next, in order:**
-Birgit and the naming arc, which arrives at **Café Flourish** (owner decision). **The
+The naming arc, which arrives at **Café Flourish** (owner decision). **The
 piano waits for the room expansion (owner, 27 September 2026):** its place
 (`L.piano`) lies in the front strip that only the full room opens, so the
 expansion upgrade comes first and the piano after it, never squeezed into the

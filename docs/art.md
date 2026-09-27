@@ -405,6 +405,16 @@ and the menu board (placed from (774,274) behind the counter); upstairs on the
 wall above the bed at (786,192), clear of the headboard lights. On the counter
 it waits as a folded sheet with two stave lines.
 
+**Birgit** has short light-brown curls (style 2), a terracotta top `#b5654a`,
+brown trousers and a cream neckerchief `#e8dfc9`, flour-coloured on purpose.
+Her **paper bag** of two small tastes is a 10×10 folded white bag on the
+counter's free left end. **Her recipe card** (`SCENE.drawRecipe`) is an 11×8
+index card with a pink top rule, brown handwriting, a crossed-out red note in
+the margin and a floury thumbprint: leaning at the counter's right end at
+(810,265), past the cake stand and left of the fuller room's pastry case
+(placed from (790,286)); upstairs pinned on the bare upper kitchen wall at
+(172,394), left of the light.
+
 **Keepsakes.** Gerda's blanket is drawn by one helper (`SCENE.drawBlanket`):
 winter blue `#3d4a5c` with a gold dot grid (stars) or sage `#6b7a55` with
 light vertical reeds, a lit top edge and shaded bottom. Folded (18×7) it waits

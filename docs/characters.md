@@ -385,6 +385,7 @@ painting/sketching habit described below.
 | **Marcel** | ~17:00, even days from day 4, never while painting | cappuccino | window perch | window-gazing, chat | the painter across the lake |
 | **Ida** | ~15:00, every third day from day 5 | cinnamon latte, own book | dining table | reading, chat | the librarian on the corner |
 | **Elody** | ~12:00, odd days from day 6 | cardamom bun | dining table | chat, sky-watching | the gardener; brings Maud |
+| **Birgit** | ~09:30, every third day from day 8, never after noon | cardamom bun (the competition's, professionally) | dining table | chat | the baker two streets over; breakfast after her own morning's work |
 | **Saira** | ~11:00, every third day from day 7 | hot chocolate (off the small menu: whatever is on it) | dining table | chat, tapping | choir accompanist and piano teacher; writes eight bars of her own |
 
 Deliberate contrasts keep them from blurring together: morning versus dusk
@@ -794,6 +795,16 @@ bars, the score) ride the shared regular-story path; once her score is pinned
 behind the counter, Lunafreya's `hum` slow spell (sim-saira.js) takes her to it
 at most once a café day to hum the eight bars, facing the wall, and any
 customer or chore ends it.
+
+**Late arrivals.** A regular whose hour has come waits for a seat, but only
+until 20:30, an hour before closing; after that they skip the day (and, by the
+fair rotation, come first next time) rather than turning up as the chairs go
+up with a conversation that could no longer happen. `arrival.latest` sets an
+earlier limit for a habit with an end: **Birgit** comes for breakfast after her
+bakery's morning, so if the room has no seat for her before noon she skips the
+day rather than coming in for "breakfast" at dusk. Her tastes scene brings a paper
+bag that is set down on the counter as she orders (the shared parcel path); an
+ignored bag goes home with her, and it is eaten when the scene is done.
 
 ## Introductions and neighbour stories — shipped 27 September 2026
 

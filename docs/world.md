@@ -58,7 +58,9 @@ Only established furnished saves keep the seeded-room behavior. New cafés reloa
 without a crowd; an unfinished mandatory first hello restores Holger at the counter.
 
 Newer regulars keep a rhythm (Marcel even days from day 4, Ida every third day
-from day 5, Elody odd days from day 6, Saira every third day from day 7) and, whenever several regulars are due at
+from day 5, Elody odd days from day 6, Saira every third day from day 7,
+Birgit every third day from day 8 and only before noon; any regular who cannot
+get in by 20:30 skips the day) and, whenever several regulars are due at
 once, whoever has gone longest without a visit comes in first.
 
 New cafés begin with 90 coins, enough for the first two planner choices: a

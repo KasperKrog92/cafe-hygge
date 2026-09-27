@@ -77,6 +77,13 @@
       capability:'saira-score', homeFlag:'saira-score-home',
       doneLine:'Saira’s score is pinned up behind the counter, pencil ghosts and all.',
       homeLine:'Saira’s score goes up on the wall above the bed.' },
+    // Birgit's recipe card: tucked by the cake stand for the day there is an
+    // oven, or pinned on the kitchen wall upstairs. No oven is needed.
+    recipe: { price:0, gift:true, keepsake:true, destination:'cafe', delivery:'gift', title:"Birgit's recipe",
+      label:"Birgit's recipe", phases:['tuck the card by the cake stand'], phaseIds:['tuck'], duration:3,
+      capability:'birgit-recipe', homeFlag:'birgit-recipe-home',
+      doneLine:'Birgit’s recipe card leans by the cake stand, waiting for an oven.',
+      homeLine:'Birgit’s recipe card goes up on the kitchen wall.' },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],

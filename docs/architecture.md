@@ -823,6 +823,14 @@ a keepsake (`gift: 'score'`, capability `saira-score`, `homeFlag
 or installed upstairs at `L.home.score` when she first settles that evening.
 Her `listen` scene makes the evening moment `rest` ready (`after`).
 
+Birgit (v23) adds `arrival.latest` to the roster contract (`dueRegular`: a
+regular due today is no longer due after that hour; default 20.5, an hour
+before closing), a regular
+story with a non-gift `parcel` (`tastes`: the counter parcel is cleared when
+any parcel story completes), and the keepsake `recipe` (capability
+`birgit-recipe`, `homeFlag 'birgit-recipe-home'`; `L.projects.recipe`,
+`L.home.recipe`, drawn by `SCENE.drawRecipe`).
+
 Arrivals: `arrivalRoom(world, extra)` lets a familiar face (a due regular,
 `dueRegular`, or an off-duty neighbour, `SIM._.socialVisitorDue`) take a clean
 seat one guest past the popularity target, never on opening day; walk-ins
