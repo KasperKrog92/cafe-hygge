@@ -363,6 +363,18 @@ open/closed drapes and the later fireside chairs confirms both the wall
 silhouette and installation route. The large bookcase remains a later idea;
 this placement does not reserve or implement a new cat corner.
 
+**Books on the little shelves.** Spines are 3–5 px wide and 11–15 px tall, four
+to a board (a row never exceeds 17 px of the 18 px board), lower board first.
+Each source has its own six designs in `SCENE.bookDesigns` (the purchased box:
+red/gold, green, blue with a cream band, ochre, plum/gold, teal); a lit left
+edge, shaded right edge, optional bands and a cream label on wider spines. The
+open carton (20×12, same place and footprint as the shelf kit) shows its
+remaining spines. Lunafreya works from (352,252) on the hearth side: a side-on
+`boxCrouch` over the carton, then a standing side reach with the book upright
+at her fingertips. Readers stand at (304,256) on the window side, facing the
+wall, and reach along the spines only with free hands (a cup-holder just looks).
+Both spots keep the boards, the window perch and the firebox in view.
+
 Tall furniture that can fully hide a walker is declared once in
 `L.occluders` (artist easel, bookshelf, counter) — the layout overlay, `__dev.audit()`,
 and the sim all read that one list. Walk targets must never land inside an

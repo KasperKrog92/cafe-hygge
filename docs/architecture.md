@@ -91,7 +91,8 @@ order and meaning; reordering phases is also a save-shape change.
 furniture still supplies legacy furnished-room availability. Layout, work-site
 geometry, table seat installation, plant opening animation, contractor routes,
 interruptions and closing remain in their original owners. Keira's wall-shelf
-job uses the same purchase and saved-phase contract; book stocking is the next pass.
+job uses the same purchase and saved-phase contract, and so does book stocking
+(below).
 
 ## Registries for characters
 
@@ -678,7 +679,37 @@ with `furniture.bookshelf` retain their existing bookcase and books and migrate
 the new purchase as already installed, avoiding another charge or duplicate
 furniture. In modest saves, installed `projects.bookshelf` means empty wall
 shelves only. Legacy `furniture.bookshelf` continues to gate the old usable
-library and browsing. Purchased/gift book contents are a separate later pass.
+library and browsing.
+
+## Books on the wall shelves (v16)
+
+Contents are separate from the shelves. A **book project** is an ordinary
+improvement definition with `bookSource` (the spines it brings) and `shelves`
+(books added by each phase). `IMPROVEMENTS.shelf` fixes the capacity (12: four
+per board) and `IMPROVEMENTS.stocked(def, step)` counts a project's books for
+its completed phases. `life.shelf` lists every shelved book's source in the
+order it went up; a phase's books are appended in the same save as its step,
+and the codec rejects a shelf whose per-source count disagrees with its
+project. The first book project is `books` (25 coins, carry, `requires`
+installed `empty-bookshelf`, `showsWith: 'wall-shelves'`): open, three
+two-book handfuls, fold. It uses Lunafreya's ordinary interruptible project
+routine; three-second strokes, sessions and service pauses are unchanged.
+
+`SCENE.shelfBooks(world)` is the single layout: shelved books plus the working
+phase's books, which are `pending` until 6 s / 10 s into the phase
+(`SCENE.bookPlaceTimes`), so the fill, her reach target (`SIM.shelvingReach`)
+and the saved list agree. Slots fill the lower board first; each source keeps
+its own spine designs (`SCENE.bookDesigns`). Loans are transient: a borrower
+holds `shelfSlot` and that spine is hidden until they slide it back. Reload
+clears guests, so nothing about loans is saved.
+
+`SCENE.canBrowse(world)` gates every browse/fetch/return: the legacy library,
+or installed wall shelves with at least two books available.
+`SCENE.browseSpot(world)` returns the library spot or the wall spot
+(`L.projects.books.browse`, window side, facing the wall); Lunafreya shelves
+from `L.projects.books.work` on the hearth side, and the open box sits under
+the boards with a `book-worksite` footprint only while it exists. Later gift
+books add a project with their own `bookSource`; nothing else changes.
 
 
 ## Cat-corner checkpoint reconciliation — 8 September 2026

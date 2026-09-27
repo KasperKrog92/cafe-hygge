@@ -388,12 +388,13 @@
             break;
           }
           if (R.reserveTerrace(world, p)) break;
-          if (SCENE.hasFurniture(world,'bookshelf') && p.wantsBook && !p.ownBook) {
+          if (SCENE.canBrowse(world) && p.wantsBook && !p.ownBook) {
             // a borrower: browse the shelf before settling anywhere
+            const spot = SCENE.browseSpot(world);
             p.state = 'browse'; p.stateT = 0;
             p.browseDur = rnd(2.5, 5.5);
-            makePath(p, LB.browseSpot.x, LB.browseSpot.y);
-            if (R.random() < 0.5) caption(world, p, p.name + ' drifts over to the bookshelf.');
+            makePath(p, spot.x, spot.y);
+            if (R.random() < 0.5) caption(world, p, p.name + (spot.wall ? ' drifts over to the little shelves.' : ' drifts over to the bookshelf.'));
             break;
           }
           const seat = p.seat || freeSeat(world, p);
@@ -412,14 +413,14 @@
       case 'browse': {
         // standing at the shelf, scanning spines (stateT only runs on arrival)
         if (!walker(p, dt)) { p.stateT = 0; break; }
-        p.facing = 1;
+        p.facing = SCENE.browseSpot(world).facing;
         if (p.stateT > p.browseDur) {
           R.borrowBook(world, p);
           SND.pageTurn();
-          if (R.random() < 0.6) caption(world, p, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
+          if (R.random() < 0.6) caption(world, p, R.borrowLine(world, p));
           const seat = p.seat || freeSeat(world, p);
           if (!seat) {
-            p.hasShelfBook = false;
+            p.hasShelfBook = false; p.shelfSlot = null;
             caption(world, p, p.name + ' takes it to go.');
             leaveCafe(world, p);
           } else {
@@ -434,12 +435,12 @@
       case 'fetchBook': {
         // slipped away from their seat (still theirs) to borrow a book
         if (!walker(p, dt)) { p.stateT = 0; break; }
-        p.facing = 1;
+        p.facing = SCENE.browseSpot(world).facing;
         if (p.stateT > p.browseDur) {
           R.borrowBook(world, p);
           p.holding = 'book';
           SND.pageTurn();
-          if (R.random() < 0.5) caption(world, p, p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']));
+          if (R.random() < 0.5) caption(world, p, R.borrowLine(world, p));
           p.state = 'backToSeat'; p.stateT = 0;
           seatPath(p, p.seat);
         }
@@ -536,9 +537,9 @@
       case 'returnBook': {
         // a moment at the shelf to slide the book home, then on their way
         if (!walker(p, dt)) { p.stateT = 0; break; }
-        p.facing = 1;
+        p.facing = SCENE.browseSpot(world).facing;
         if (p.stateT > 1.1) {
-          p.hasShelfBook = false;
+          p.hasShelfBook = false; p.shelfSlot = null;
           SND.pageTurn();
           if (R.random() < 0.4) caption(world, p, p.name + ' slips the book back onto the shelf.');
           if (p.afterBook === 'return') {
@@ -977,15 +978,16 @@
     }
 
     // now and then the bookshelf calls (drink stays on the table, seat stays theirs)
-    if (SCENE.hasFurniture(world,'bookshelf') && !p.seat.piano && !p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
-        R.random() < dt * 0.01) {
+    if (SCENE.canBrowse(world) && !p.seat.piano && !p.reading && !p.holding && !p.laptopActive && p.sipPhase <= 0 && p.stay > 55 && p.seat.table >= 0 &&
+        R.random() < dt * (SCENE.hasFurniture(world,'bookshelf') ? 0.01 : 0.006)) {
+      const spot = SCENE.browseSpot(world);
       p.pose = 'stand';
       chairScrape(p, true);
       stepDown(p, p.seat);
       p.state = 'fetchBook'; p.stateT = 0;
       p.browseDur = rnd(2.5, 4.5);
-      pathFrom(p, p.seat, LB.browseSpot.x, LB.browseSpot.y);
-      if (R.random() < 0.5) caption(world, p, p.name + ' wanders over to the bookshelf.');
+      pathFrom(p, p.seat, spot.x, spot.y);
+      if (R.random() < 0.5) caption(world, p, p.name + (spot.wall ? ' wanders over to the little shelves.' : ' wanders over to the bookshelf.'));
       return;
     }
 
@@ -1065,7 +1067,7 @@
     if (p.hasShelfBook) {
       p.afterBook = bussing ? 'return' : 'exit';
       p.state = 'returnBook'; p.stateT = 0;
-      pathFrom(p, seat, LB.browseSpot.x, LB.browseSpot.y);
+      pathFrom(p, seat, SCENE.browseSpot(world).x, SCENE.browseSpot(world).y);
       return;
     }
     if (bussing) {

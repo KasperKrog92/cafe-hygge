@@ -2,7 +2,8 @@
 
 Implementation brief, revised 8 September 2026. **Pass 1 shipped with three small
 wall-mounted shelves in the patch left of the hearth, per owner direction.
-Passes 2 and 3 remain planned.** It follows the
+Pass 2 shipped 27 September (a 25-coin box of six books; see
+[architecture](../architecture.md#books-on-the-wall-shelves-v16)). Pass 3 remains planned.** It follows the
 [shipped second-day visitors](../progression-roadmap.md#second-day-visitors--shipped-8-september-2026). The owner largely accepted
 the [ensemble direction](community-and-character-stories.md). This brief makes
 its first release concrete; it does not authorize the whole release at once.
@@ -90,7 +91,12 @@ Deferred from this pass: book purchases and gifts, authored dialogue, home
 keepsake placement, reading-chair/lamp purchases, other character renames,
 generic visitor calendars and romance. Their absence must not block delivery.
 
-## Pass 2 — purchased books become usable
+## Pass 2 — purchased books become usable (shipped)
+
+Shipped shape: capacity 12 (four per board); the box holds six books, so
+Holger's six-book gift fits beside it in either order and no overflow case
+exists for the wall shelves. Lunafreya shelves from the hearth side; readers
+browse from the window side, so both can happen at once.
 
 Add a separate book-box purchase after the shelf is installed. Lunafreya carries
 or receives the box and shelves a handful at a time between service duties.

@@ -117,6 +117,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `animations` | Equal travel at 1/60 s and 0.25 s, planted shoes, attached legs, visible motion in eight sprite rows |
 | `arrivals` | Real-service occupancy at 4/6/8/16 seats and popularity stages; queue and capacity bounds |
 | `art` | Ten repeatable review images, occupancy fixtures, capture isolation and composition timing |
+| `books` | Book-box purchase, morning carry, each stocking phase across a reload, service interruption, closing mid-box, browsing from the first handful, a real borrow and return, codec shelf agreement |
 | `bookshelf` | Wall-shelf purchase, delivery, partial-work reloads, closing mid-job and greetings |
 | `c0` | Modest/furnished availability, improvement subsets, service during work and installation |
 | `cat-animations` | Cat pose gallery, four-direction walking, deterministic mirrored/scarf rendering |
@@ -156,7 +157,8 @@ A flow is `module.exports = async t => report` using `t.open`, `t.eval`,
   flushes, private-world isolation and purchase contracts.
 - `node tools/test-audio-settings.js`: audio preferences and routing.
 - `node tools/test-soak.js [hours] [layout:seed]`: seeded ordinary days with
-  real evening purchases in private worlds; fails on a stalled phase, unbounded
+  real evening purchases in private worlds (seed 84 starts with a generous
+  purse and buys every ordinary job, including shelves and books); fails on a stalled phase, unbounded
   population or unfinished work. CI runs the one-hour form.
 
 When a shared rule changes, search all suites for its old expectation. Keep

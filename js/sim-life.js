@@ -49,6 +49,28 @@
     b.state = 'projectHome'; b.pose = 'stand'; b.holding = null;
     b.path = [L.baristaHome];
   }
+  // Books go up from beside the shelves. She kneels to open and fold the
+  // box and to take each handful out, then stands to reach the wall.
+  function shelvingPose(b,d,p) {
+    b.heading = ''; b.facing = -1;
+    b.pose = !(d.shelves[p.step] > 0) || p.time < 2 ? 'boxCrouch' : 'stand';
+  }
+  // Where her hand is while shelving, for the renderer: the slot of the book
+  // it carries (or has just let go of) during each reach, else nothing.
+  SIM.shelvingReach = function (w, b) {
+    const d = b.state === 'projectWork' && PROJECTS[b.project];
+    if (!d || !d.bookSource || b.low > 0 || b.pose !== 'stand') return null;
+    const p = w.memory.life.projects[b.project], n = d.shelves[p.step] || 0;
+    for (let k = 0; k < n; k++) {
+      const start = 3 + 4 * k;
+      if (p.time < start || p.time >= start + 3.8) continue;
+      const slot = SCENE.shelfBooks(w)[w.memory.life.shelf.length + k];
+      if (!slot) return null;
+      return { x: slot.x + Math.floor(slot.w / 2), y: slot.y - Math.floor(slot.h / 2),
+        book: p.time < SCENE.bookPlaceTimes[k] ? slot : null };
+    }
+    return null;
+  };
   // Only a three-second hand action is atomic. Travel can turn back at once;
   // completed strokes/fastenings and the current partial stroke live in memory.
   R.updateProject = function (w, dt) {
@@ -71,20 +93,27 @@
       }
       p.stage = 'working'; b.holding = null; b.state = 'projectWork'; b.projectSession = 0; commit(w);
     }
-    b.pose = id === 'fireplace' ? 'kneel' : 'wipe'; b.heading = 'up'; b.facing = -1;
+    if (d.bookSource) shelvingPose(b,d,p);
+    else { b.pose = id === 'fireplace' ? 'kneel' : 'wipe'; b.heading = 'up'; b.facing = -1; }
     const before = p.time;
     // If a stroke ended on the previous frame, an arriving order wins now.
     if (busy(w) && before % 3 < 1e-8) { projectHome(w); return true; }
     p.time = Math.min(d.duration,p.time+dt); b.stateT = p.time;
     b.projectSession += dt;
     const boundary = Math.floor(p.time/3) > Math.floor(before/3);
+    if (d.bookSource && SCENE.bookPlaceTimes.some(t => before < t && p.time >= t && d.shelves[p.step] > SCENE.bookPlaceTimes.indexOf(t)))
+      R.sound.bookSlide();
     if (p.time >= d.duration) {
+      // A phase's books join the shelf in the same save as the step.
+      for (let n = 0; n < (d.shelves ? d.shelves[p.step] : 0); n++) w.memory.life.shelf.push(d.bookSource);
       p.time = 0; p.step++;
       if (p.step === d.phases.length) {
         p.stage = 'installed'; R.installProjects(w);
-        R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : id==='windowSeat' ? 'a little table beside the water; room for Gerda’s wool and a cup.' : 'the boards are gone; the first small fire catches.');
+        R.caption(w,id === 'table' ? 'another little place to settle, whenever you like.' : id==='windowSeat' ? 'a little table beside the water; room for Gerda’s wool and a cup.' :
+          d.bookSource ? (CAST.shelfLines[d.bookSource] || 'the box is empty; the little shelves look lived in.') : 'the boards are gone; the first small fire catches.');
         if (id === 'fireplace') R.addLog(w);
-      }
+      } else if (d.bookSource && d.shelves[p.step-1] && w.memory.life.shelf.length === d.shelves[p.step-1] && !d.shelves[p.step-2])
+        R.caption(w,'the first books stand on the little shelves.');
       commit(w);
     } else if (boundary) commit(w);
     if (p.stage === 'installed' || (boundary && (busy(w) || b.projectSession >= 9))) projectHome(w);

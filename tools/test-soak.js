@@ -37,6 +37,9 @@ const result = vm.runInContext(`(() => {
     // This unattended run needs automatic nights; new cafes default to game
     // mode, where waiting for the player's bedtime choice is intentional.
     SIM.setMode(w,'idle');
+    // Seed 84 books real evening purchases; a generous purse lets every
+    // ordinary catalogue job (shelves, then their books) run unattended.
+    if (seed === 84) w.memory.life.savings += 200;
     const startDays = w.memory.life.daysCompleted, startFunds = w.memory.life.savings;
     const startStage = Object.fromEntries(Object.entries(w.memory.arcs).map(([id,a]) => [id,a.stage]));
     const report = {layout:full?'furnished':'modest',seed,hours:soakHours,samples:0,
@@ -48,9 +51,11 @@ const result = vm.runInContext(`(() => {
       // evening would mistake legitimate unfinished work for a stalled job.
       if (seed === 84 && i < soakHours*3600*2 && w.shop.phase === 'home' && !w.memory.life.plannedTonight) {
         SIM.setMode(w,'game'); SIM.plan(w,true);
-        const next = ['window','table','plant','fireplace'].find(id =>
-          (id==='plant'?w.memory.life.plant:w.memory.life.projects[id]).stage === 'available');
-        if (next && (next==='plant'?SIM.buyPlant(w):SIM.buyProject(w,next))) report.purchases.push(next);
+        // Everything the evening allows, in order (the window/table pair together).
+        ['window','table','bookshelf','books','plant','fireplace'].forEach(id => {
+          if ((id==='plant'?w.memory.life.plant:w.memory.life.projects[id]).stage === 'available' && IMPROVEMENTS.canBuy(w,id) &&
+              (id==='plant'?SIM.buyPlant(w):SIM.buyProject(w,id))) report.purchases.push(id);
+        });
         SIM.setMode(w,'idle');
       }
       SIM.update(w,.25);

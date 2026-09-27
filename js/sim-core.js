@@ -370,7 +370,15 @@
   }
 
   function borrowBook(world, p) {
-    if (!SCENE.hasFurniture(world,'bookshelf')) return;
+    if (!SCENE.hasFurniture(world,'bookshelf')) {
+      // The little wall shelves lend one actual book; its gap stays until
+      // the reader slides it back.
+      const books = SCENE.shelfAvailable(world);
+      if (!books.length) return;
+      const b = pick(books);
+      p.shelfSlot = b.i; p.shelfSource = b.source; p.bookColor = b.col; p.hasShelfBook = true;
+      return;
+    }
     const slots = SCENE.bookLoans;
     const slot = slots.find(function (s) {
       return !world.patrons.some(function (other) {
@@ -379,6 +387,12 @@
     });
     p.bookColor = (slot || slots[1]).col;
     p.hasShelfBook = true;
+  }
+
+  function borrowLine(world, p) {
+    const pool = p.shelfSource && CAST.borrowLines[p.shelfSource];
+    if (pool && random() < 0.6) return p.name + ' ' + pick(pool);
+    return p.name + pick([' picks out a well-worn book.', ' finds a book with a promising spine.']);
   }
 
   // A name nobody in the café is using right now: two Idas at once reads as
@@ -763,7 +777,7 @@
      waits until the body has risen. A window sitter's hop onto the sill
      follows `lowAnchor` (floor → perch) with the same easing. A cup being
      set down (`placeItem`) reaches the table partway down. */
-  const LOW_POSES = { sit: 1, kneel: 1, catCare: 1 };
+  const LOW_POSES = { sit: 1, kneel: 1, catCare: 1, boxCrouch: 1 };
   const SIT_DOWN = 0.45, STAND_UP = 0.4;
   function settlePosture(world, e, dt) {
     const target = LOW_POSES[e.pose] ? 1 : 0;
@@ -1663,7 +1677,7 @@
     PATRON_NAMES: PATRON_NAMES, SEAT_PREFS: SEAT_PREFS,
     DAY_MS: DAY_MS,
     rnd: rnd, withArticle: withArticle, pick: pick, holdingFor: holdingFor, specLine: specLine,
-    makePatron: makePatron, borrowBook: borrowBook, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
+    makePatron: makePatron, borrowBook: borrowBook, borrowLine: borrowLine, caption: caption, captionRun: captionRun, updateCaptions: updateCaptions,
     captionAllowed: captionAllowed, pickCaption: pickCaption, captionFacts: captionFacts, captionWindow:captionWindow,
     arcDefs: arcDefs, reconcileNarrative: reconcileNarrative,
     arcStages: arcStages, arcRows: arcRows, arcBeat: arcBeat, arcFlag: arcFlag,

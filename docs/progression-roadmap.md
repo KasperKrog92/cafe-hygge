@@ -71,8 +71,10 @@ direction into one complete near-term experience, delivered in reviewable passes
    evening purchase, Keira's small kit and folding steps, saved installation
    of three short empty boards left of the hearth. Her identity and remembered
    greeting continue. No window is blocked; a large bookcase remains a later idea.
-2. **Books become usable — next pass.** Purchased books, gradual interruptible shelving,
-   visible contents and browsing only when usable books are present.
+2. **Books become usable — shipped 27 September.** A separate 25-coin box of six
+   secondhand books, carried in the next morning and shelved a handful at a
+   time between customers. The saved shelf list, visible spines and browsing
+   agree; readers borrow real books and slide them back.
 3. **The shelf acquires a history.** Keira's returning-visitor continuity, Holger's
    remembered offer and attended gift, and Lunafreya's first disclosure about
    her former bookshop/café work. Gift books share the established stocking path.

@@ -368,6 +368,10 @@
       t.push({ x: end.x, y: end.y, name: 'busSpot(table ' + i + ')' });
     });
     if (SCENE.hasFurniture(w,'bookshelf')) t.push({ x: L.library.browseSpot.x, y: L.library.browseSpot.y, name: 'browseSpot' });
+    if (SCENE.hasFurniture(w,'wall-shelves')) {
+      t.push({ x: L.projects.books.browse.x, y: L.projects.books.browse.y, name: 'wall browseSpot' });
+      t.push({ x: L.projects.books.work.x, y: L.projects.books.work.y, name: 'project books' });
+    }
     t.push({ x: L.doorSpot.x, y: L.doorSpot.y, name: 'doorSpot' });
     t.push({ x: L.umbrellaSpot.x, y: L.umbrellaSpot.y, name: 'umbrellaSpot' });
     t.push({ x: L.orderSpot.x, y: L.orderSpot.y, name: 'orderSpot' });

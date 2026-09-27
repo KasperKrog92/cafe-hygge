@@ -69,7 +69,69 @@
       px(g,s.x,y-2,s.w,3,'#96704c');px(g,s.x,y-2,s.w,1,'#b18d62');
       px(g,s.x,y+1,s.w,3,'#6e4a33');
     });
+    SCENE.shelfBooks(w).forEach(function(b){ if(!b.loaned && !b.pending) SCENE.drawShelfBook(g,b); });
   }
+
+  /* Books on the little wall shelves, source by source. Each source keeps
+     its own spines, so a book is recognisably the same one wherever it
+     sits; slots fill the lower board first, left to right. */
+  const BOOK_DESIGNS = SCENE.bookDesigns = {
+    box: [{w:4,h:14,col:'#a94f3f',band:'#c9a04a'},{w:3,h:12,col:'#4a7a5a'},{w:5,h:15,col:'#7a89a5',band:'#e8dfc9'},
+      {w:4,h:13,col:'#d9a05a'},{w:3,h:15,col:'#8a6a9a',band:'#c9a04a'},{w:4,h:12,col:'#5a7a8a'}]
+  };
+  SCENE.drawShelfBook = function (g, b) {
+    const top = b.y - b.h;
+    px(g, b.x, top, b.w, b.h, b.col);
+    px(g, b.x, top, 1, b.h, shade(b.col, 0.14));
+    px(g, b.x + b.w - 1, top, 1, b.h, shade(b.col, -0.22));
+    if (b.band) { px(g, b.x, top + 2, b.w, 1, b.band); px(g, b.x, b.y - 3, b.w, 1, b.band); }
+    if (b.worn) px(g, b.x + 1, top + 1, b.w - 2, 1, shade(b.col, 0.3));
+    if (b.w >= 4) px(g, b.x + 1, top + Math.floor(b.h / 2) - 1, b.w - 2, 2, 'rgba(240,232,213,.5)');
+  };
+  // Shelved books plus the current stocking phase's books. Those are
+  // `pending` until her hand leaves them there, 6 s and 10 s into the phase;
+  // their slots already exist, so she reaches for the right place.
+  SCENE.bookPlaceTimes = [6, 10];
+  SCENE.shelfBooks = function (w) {
+    const life = w.memory && w.memory.life;
+    if (!life || !life.shelf || life.furniture.bookshelf) return [];
+    const list = life.shelf.map(function (source) { return { source: source, pending: false }; });
+    IMPROVEMENTS.bookProjects().forEach(function (id) {
+      const d = IMPROVEMENTS.projects[id], p = life.projects[id];
+      if (p.stage !== 'working') return;
+      const n = d.shelves[p.step] || 0;
+      for (let k = 0; k < n; k++) list.push({ source: d.bookSource, pending: p.time < SCENE.bookPlaceTimes[k] });
+    });
+    const s = L.projects.bookshelf, per = IMPROVEMENTS.shelf.perRow, seen = {}, out = [];
+    const loans = {};
+    (w.patrons || []).forEach(function (p) { if (p.shelfSlot != null) loans[p.shelfSlot] = true; });
+    let x = s.x + 1, row = -1;
+    list.slice(0, IMPROVEMENTS.shelf.capacity).forEach(function (book, i) {
+      const n = seen[book.source] = (seen[book.source] || 0) + 1;
+      const design = (BOOK_DESIGNS[book.source] || BOOK_DESIGNS.box)[(n - 1) % 6];
+      if (Math.floor(i / per) !== row) { row = Math.floor(i / per); x = s.x + 1; }
+      const y = s.rows[s.rows.length - 1 - row] - 2;
+      out.push(Object.assign({ i: i, source: book.source, n: n - 1, x: Math.min(x, s.x + s.w - design.w), y: y,
+        loaned: !!loans[i], pending: book.pending }, design));
+      x += design.w;
+    });
+    return out;
+  };
+  // Books a reader could take down right now.
+  SCENE.shelfAvailable = function (w) {
+    return SCENE.shelfBooks(w).filter(function (b) { return !b.loaned && !b.pending; });
+  };
+  // Browsing follows what is actually there: the established library, or
+  // the little wall shelves once a couple of books stand on them.
+  SCENE.canBrowse = function (w) {
+    if (SCENE.hasFurniture(w, 'bookshelf')) return true;
+    return SCENE.hasFurniture(w, 'wall-shelves') && SCENE.shelfAvailable(w).length >= 2;
+  };
+  SCENE.browseSpot = function (w) {
+    if (SCENE.hasFurniture(w, 'bookshelf')) return { x: L.library.browseSpot.x, y: L.library.browseSpot.y, facing: 1 };
+    const s = L.projects.books.browse;
+    return { x: s.x, y: s.y, facing: 1, wall: true };
+  };
 
   function drawFloorLight(g, world) {
     const d = world.pal.daylight, lamp = SCENE.lampLevel(world);

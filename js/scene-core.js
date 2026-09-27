@@ -18,6 +18,10 @@
     if (!life || !life.furniture || !id) return true;
     if (id === 'shelf-worksite') return !life.furniture.bookshelf &&
       ['arrived','working'].indexOf(life.projects.bookshelf.stage)>=0;
+    if (id === 'wall-shelves') return !life.furniture.bookshelf && IMPROVEMENTS.installed(life,'empty-bookshelf');
+    // An opened box of books waits under the shelves while it is emptied.
+    if (id === 'book-worksite') return !life.furniture.bookshelf &&
+      IMPROVEMENTS.bookProjects().some(k => ['arrived','working'].indexOf(life.projects[k].stage)>=0);
     if (id === 'project-table') return IMPROVEMENTS.installed(life,'project-table');
     if (id === 'left-window-table') return life.furniture['window-seats'] || IMPROVEMENTS.installed(life,id);
     if (id === 'table-worksite') return ['scheduled','arrived','working','installed'].indexOf(life.projects.table.stage) >= 0;
@@ -28,7 +32,7 @@
   };
   SCENE.layoutKey = function (world) {
     const life = world && world.memory && world.memory.life;
-    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') + ':' + SCENE.mantelShelf(world) + ':' + SCENE.hasFurniture(world,'mantel-decor') : 'full';
+    return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'book-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') + ':' + SCENE.mantelShelf(world) + ':' + SCENE.hasFurniture(world,'mantel-decor') : 'full';
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
@@ -129,6 +133,11 @@
       // Three short boards; their future book envelope stays in this wall gap.
       bookshelf: {x:320,w:18,rows:[172,195,218],work:{x:328,y:252},
         kit:{x:328,y:248,w:20,h:12},stoolHeight:24},
+      // Books go up from beside the shelves, so the boards stay in view: the
+      // box sits in the kit's place below them. Lunafreya shelves from the
+      // hearth side; readers browse from the window side, so both can happen
+      // at once. Both clear the window perch and the firebox.
+      books: {work:{x:352,y:252},box:{x:328,y:248,w:20,h:12},browse:{x:304,y:256}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
       windowSeat: {work:{x:216,y:292}},
@@ -405,6 +414,9 @@
   L.footprints.push({name:'wall shelf kit',furniture:'shelf-worksite',
     x0:shelfKit.x-shelfKit.w/2,x1:shelfKit.x+shelfKit.w/2,
     y0:shelfKit.y-8,y1:shelfKit.y});
+  const bookBox=L.projects.books.box;
+  L.footprints.push({name:'box of books',furniture:'book-worksite',
+    x0:bookBox.x-bookBox.w/2,x1:bookBox.x+bookBox.w/2,y0:bookBox.y-8,y1:bookBox.y});
   L.footprints.push({ name: 'reserved table project', x0: projectTable.x - 34, x1: projectTable.x + 34,
     y0: projectTable.y - 8, y1: projectTable.y + 34, passable: true });
   [-1, 1].forEach(function (side) {

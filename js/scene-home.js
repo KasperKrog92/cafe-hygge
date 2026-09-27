@@ -10,6 +10,21 @@
     px(g,x-9,y-12,6,2,'#6e4a33');
     if(open) { px(g,x-19,y-26,12,4,'#c08a58'); px(g,x+6,y-26,14,4,'#c08a58'); px(g,x-7,y-22,13,4,'#5a3d28'); }
   }
+  // A small carton of books: closed and taped, or open with the remaining
+  // spines showing; flattened while she folds it away.
+  function bookBox(g,x,y,d,left,open,folding) {
+    ell(g,x,y,13,3,'rgba(20,12,8,.18)');
+    if(folding) { px(g,x-11,y-4,22,4,'#a77e51');px(g,x-11,y-4,22,1,'#c9a477');return; }
+    px(g,x-10,y-12,20,12,'#a77e51');px(g,x-10,y-12,20,3,'#c9a477');px(g,x+6,y-12,4,12,'#8a6142');
+    if(!open) { px(g,x-1,y-12,3,12,'#dfbd89');return; }
+    px(g,x-9,y-12,18,2,'#4a3222');
+    const designs=SCENE.bookDesigns[d.bookSource]||SCENE.bookDesigns.box;
+    for(let n=0;n<left;n++) {
+      const b=designs[(6-left+n)%designs.length];
+      px(g,x-8+n*3,y-15-(n%2),3,5,b.col);
+    }
+    px(g,x-12,y-14,4,2,'#c9a477');px(g,x+8,y-14,4,2,'#c9a477');
+  }
   SCENE.drawFirstPlant = function(g,x,y) {
     px(g,x-7,y-13,14,11,'#b5654a'); px(g,x-5,y-3,10,3,'#8f4a35');
     px(g,x-9,y-16,18,4,'#d39a70'); px(g,x-5,y-12,3,7,'#c98f73');
@@ -93,6 +108,19 @@
           else {px(g,t.x+9,t.base-21,5,18,'#8a6142');px(g,t.x+9,t.base-23,4,2,'#b08a64');}
           px(g,t.x+10,t.base-5,8,3,'#7a89a5');
         }});
+      } else if (IMPROVEMENTS.projects[id].bookSource) {
+        const d=IMPROVEMENTS.projects[id];
+        if(p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
+        if(p.stage==='scheduled') {
+          // Brought in with the morning; it waits inside the door.
+          const at=SCENE.L.projects.pickup;
+          draws.push({y:at.y,draw:g=>bookBox(g,at.x+20,at.y,d,0,false)});
+          return;
+        }
+        if(carried)return;
+        const k=SCENE.L.projects.books.box;
+        const left=IMPROVEMENTS.stocked(d,d.phases.length)-SCENE.shelfBooks(w).filter(b=>b.source===d.bookSource && !b.pending).length;
+        draws.push({y:k.y,draw:g=>bookBox(g,k.x,k.y,d,left,p.stage==='working' && p.step>0,p.step>=d.phases.length-1)});
       } else if (id==='bookshelf') {
         if(p.stage==='scheduled'||p.stage==='installed'||w.memory.life.furniture.bookshelf)return;
         const k=a.kit;

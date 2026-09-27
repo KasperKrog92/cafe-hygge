@@ -75,6 +75,17 @@ either mode; closing/reload retain fitted boards and partial work. The kit
 reserves only its visible floor space until packed. Empty shelves do not enable
 browsing. The first required window/table plan remains unchanged.
 
+Once the shelves are up, the planner offers **a box of books for the shelves**
+(25 coins). Lunafreya brings the box in the next morning, sets it under the
+boards and, between customers, crouches to take out a handful and reaches each
+book onto the wall: the lower board fills first, six secondhand books in all.
+Browsing starts as soon as two books stand on the shelves; a reader stands on
+the window side, runs a hand along the spines and takes one down, leaving a gap
+until it is slid back. Captions: “the first books stand on the little
+shelves.”, “the box is folded flat; six secondhand books wait on the little
+shelves.”, and for readers “… drifts over to the little shelves.”, “… wanders
+over to the little shelves.”, “… takes a book down from the little shelves.”
+
 Shelf captions use the ordinary quiet queue: first arrival, “Keira brings a
 little shelf kit and her folding steps”; familiar arrival, “Keira returns with
 a small bundle of shelves”; resumption, “Keira is back to finish the little

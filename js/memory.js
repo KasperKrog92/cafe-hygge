@@ -1,7 +1,7 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 15;
+  const KEY = 'cafe-hygge-save', VERSION = 16;
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -84,7 +84,7 @@
   }
   function freshLife() {
     return { mode: 'game', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0, openSeconds: 0,
-      plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), furniture: furnishings(false),
+      plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), shelf: [], furniture: furnishings(false),
       homeStory: freshHomeStory(false), homeDinner:{time:0,done:false}, firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
   }
   function freshHomeStory(complete) {
@@ -105,6 +105,18 @@
         requireShape(p.step === 0 && p.time === 0, 'invalid project arrival');
     });
   }
+  // Shelved books agree with their stocking projects, source by source.
+  function validateShelf(l) {
+    const S = IMPROVEMENTS.shelf, ids = IMPROVEMENTS.bookProjects();
+    const sources = ids.map(id => IMPROVEMENTS.projects[id].bookSource);
+    requireShape(Array.isArray(l.shelf) && l.shelf.length <= S.capacity &&
+      l.shelf.every(s => sources.indexOf(s) >= 0), 'invalid shelf');
+    ids.forEach(function (id) {
+      const d = IMPROVEMENTS.projects[id];
+      requireShape(l.shelf.filter(s => s === d.bookSource).length === IMPROVEMENTS.stocked(d, l.projects[id].step),
+        'shelf disagrees with ' + id);
+    });
+  }
   function validateLife(l) {
     const plant = IMPROVEMENTS.plant;
     requireShape(record(l), 'invalid life');
@@ -115,6 +127,7 @@
     requireShape(record(l.plant) && plant.stages.indexOf(l.plant.stage) >= 0 &&
       finite(l.plant.time) && l.plant.time >= 0 && l.plant.time <= plant.maxTime, 'invalid plant');
     validateProjects(l);
+    validateShelf(l);
     requireShape(integer(l.daysCompleted) && l.daysCompleted >= 0, 'invalid café days');
     requireShape(finite(l.openSeconds) && l.openSeconds >= 0 && l.openSeconds <= 11700, 'invalid café popularity time');
     requireShape(record(l.furniture), 'invalid furniture');

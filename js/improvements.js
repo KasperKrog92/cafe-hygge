@@ -19,6 +19,13 @@
       label:'Three little wall shelves', furniture:'bookshelf',
       phases:['unwrap the shelves','fit the lower shelf','fit the middle shelf','fit the upper shelf','pack the tools'],
       phaseIds:['unwrap','lower','middle','upper','tidy'], duration:12, capability:'empty-bookshelf' },
+    // Contents are separate from the shelves. `shelves` is how many books
+    // each phase puts on the wall (the shared stocking contract below).
+    books: { price:25, destination:'cafe', delivery:'carry', title:'a box of books',
+      label:'A box of books for the shelves', furniture:'bookshelf', showsWith:'wall-shelves', requires:['empty-bookshelf'],
+      phases:['open the box','shelve the first books','shelve a few more','shelve the last of them','fold the box flat'],
+      phaseIds:['open','first','second','last','fold'], duration:12, capability:'shelf-books',
+      bookSource:'box', shelves:[0,2,2,2,0] },
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
@@ -42,7 +49,7 @@
     duration:4, maxTime:8, capability:'first-plant' };
   I.all = Object.assign({}, I.projects, {plant:I.plant});
   // The order choices appear in the evening planner.
-  I.planOrder = ['window','table','windowSeat','bookshelf','plant','fireplace','mantel'];
+  I.planOrder = ['window','table','windowSeat','bookshelf','books','plant','fireplace','mantel'];
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];
@@ -55,6 +62,18 @@
     return result;
   };
   I.state = function (life, id) { return id === 'plant' ? life.plant : life.projects[id]; };
+  /* The little wall shelves' contents: one local contract for books, not a
+     general inventory. life.shelf lists each shelved book's source in the
+     order it was put up; a stocking project adds its phase's books when
+     the phase completes, so the list and project progress always agree.
+     Every source together fits the shelves exactly (4 per board). */
+  I.shelf = { capacity:12, perRow:4 };
+  I.bookProjects = function () { return Object.keys(I.projects).filter(id => I.projects[id].bookSource); };
+  I.stocked = function (d, step) {
+    let n = 0;
+    for (let i = 0; i < step; i++) n += d.shelves[i] || 0;
+    return n;
+  };
   I.installed = function (life, capability) {
     return I.ids.some(id => I.all[id].capability === capability && I.state(life,id).stage === 'installed');
   };

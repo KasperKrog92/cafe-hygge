@@ -1608,6 +1608,26 @@
 
   /* ---------- what to draw ---------- */
 
+  // A reader at the little wall shelves runs a hand along the spines, then
+  // over the one they choose; returning, they slide it back into its gap.
+  // Hands holding a cup just look.
+  function withShelfReach(world, p) {
+    if ((p.path && p.path.length) || p.low > 0 || p.holding || p.stateT < 0.3 ||
+        ['browse', 'fetchBook', 'returnBook'].indexOf(p.state) < 0) return p;
+    const spot = SCENE.browseSpot(world);
+    if (!spot.wall || Math.hypot(p.x - spot.x, p.y - spot.y) > 1) return p;
+    const books = SCENE.shelfBooks(world);
+    let b = null;
+    if (p.state === 'returnBook') b = books[p.shelfSlot];
+    else {
+      const free = books.filter(function (x) { return !x.loaned && !x.pending; });
+      if (free.length) b = free[(Math.floor(p.stateT / 1.3) + p.id) % free.length];
+    }
+    if (!b) return p;
+    return Object.assign({}, p, { reachTo: { x: b.x + Math.floor(b.w / 2), y: b.y - Math.floor(b.h / 2) - 2,
+      book: p.state === 'returnBook' && p.shelfSlot != null ? b : null } });
+  }
+
   SIM.entityDrawables = function (world) {
     const draws = [];
     SIM.visitorActors(world).filter(a=>!a.social).forEach(function(a) {
@@ -1676,7 +1696,7 @@
       if (p.outside) return;
       draws.push({ y: p.y, draw: function (g) { SCENE.drawPerson(g, world.moment && world.moment.owner===p ?
         Object.assign({},p,{pose:p.pose==='sit'?'sit':'stand',path:null,bubble:null},
-          world.moment.phase==='talk' && world.moment.owner===p ? {heading:'',facing:world.barista.x>p.x?1:-1} : {}) : p); } });
+          world.moment.phase==='talk' && world.moment.owner===p ? {heading:'',facing:world.barista.x>p.x?1:-1} : {}) : withShelfReach(world, p)); } });
       if(p.carryingPillows)draws.push({y:p.y+.1,draw:function(g){
         for(let n=0;n<p.carryingPillows;n++)SCENE.drawKnittedPillow(g,Math.round(p.x)+4,Math.round(p.y)-34+n*11,true);
       }});
@@ -1700,8 +1720,9 @@
       heldCat.x+=(L.catCorner.cushion.x-heldCat.x)*q;
       heldCat.y+=(L.catCorner.cushion.y-heldCat.y)*q;
       const gathering=world.shop.phase==='settling' && first.step===11 && intro.finale===0 && b.pose==='gather';
+      const reach=SIM.shelvingReach(world,b);
       const person=q>0 && world.shop.carryingCat ? Object.assign({},b,{catHand:heldCat})
-        : gathering ? Object.assign({},b,{catHand:world.cat}) : b;
+        : gathering ? Object.assign({},b,{catHand:world.cat}) : reach ? Object.assign({},b,{reachTo:reach}) : b;
       SCENE.drawPerson(g, world.moment && world.moment.phase==='talk' ? Object.assign({},b,{pose:'stand',path:null}) : person);
       if (world.shop && world.shop.carryingCat) {
         SCENE.drawCat(g, Object.assign({}, world.cat, heldCat, {

@@ -614,6 +614,13 @@
     }
   });
 
+  /* A book slid in beside its neighbours: a dry cloth-and-paper whisper
+     that ends in the smallest wooden tock as it meets the back of the shelf. */
+  SND.bookSlide = guard(function () {
+    hiss({ dur: 0.2, gain: 0.018, bp: 900, q: 0.6, sweep: [1300, 700], attack: 0.04, release: 0.08 });
+    tone(210, { gain: 0.012, dur: 0.05, sweepTo: 170, sweepDur: 0.04, delay: 0.18 });
+  });
+
   SND.softThump = guard(function () {
     tone(90, { gain: 0.03, dur: 0.12, sweepTo: 58, sweepDur: 0.1 });
     hiss({ dur: 0.045, gain: 0.012, lp: 480, attack: 0.002, release: 0.035 });

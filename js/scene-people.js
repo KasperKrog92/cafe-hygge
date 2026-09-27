@@ -401,6 +401,23 @@
     return;
   }
 
+  // Side-on crouch over the box of books below the wall shelves: a hand in
+  // the carton, lifting out the next handful (or folding the flaps).
+  function drawBoxCrouch(g, p, k) {
+    const { x, y, c, topD } = k, f = p.facing >= 0 ? 1 : -1;
+    const box = SCENE.L.projects.books.box;
+    const hx = box.x + (f < 0 ? 5 : -5), hy = box.y - 9 + Math.round(Math.sin(p.stateT * 3) * 2);
+    function mx(dx, w) { return f > 0 ? x + dx : x - dx - w; }
+    px(g, mx(-11, 20), y - 10, 20, 8, c.pants); px(g, mx(-14, 12), y - 4, 12, 4, '#3a2a1c');
+    px(g, mx(6, 7), y - 15, 7, 13, c.pants); px(g, mx(6, 11), y - 3, 11, 3, '#3a2a1c');
+    px(g, mx(-8, 19), y - 32, 19, 22, c.top); px(g, mx(-5, 15), y - 26, 15, 15, '#e8dfc9');
+    limb(g, x - 5 * f, y - 28, x + 6 * f, y - 16, 4, topD);
+    limb(g, x + 7 * f, y - 28, hx - 8 * f, hy + 2, 5, c.top);
+    limb(g, hx - 8 * f, hy + 2, hx, hy, 4, c.skin);
+    drawHead(g, x + 4 * f, y - 47, f, c, false);
+    px(g, hx - 1, hy - 1, 3, 3, c.skin);
+  }
+
   // Kneeling at hearth or crate work, seen from behind.
   function drawKneel(g, p, k) {
     const { x, y, facing, c, topD, breathe, blink, walk, front, back, S, cycle, pass } = k;
@@ -804,6 +821,15 @@
       px(g, x - 11, y - 50, 5, 14, c.top); px(g, x + 6, y - 50, 5, 14, c.top);
       px(g, x - 8, y - 59, 4, 11, c.skin); px(g, x + 4, y - 59, 4, 11, c.skin);
       px(g, x - 8, y - 62, 4, 4, c.skin); px(g, x + 4, y - 62, 4, 4, c.skin);
+    } else if (p.reachTo && !held) {
+      // A side-on reach to a point on the wall (a shelf slot), elbow first;
+      // a book being put up rides upright at the fingertips.
+      const r = p.reachTo, sx = x + facing * 3, sy = y - 38;
+      const ex = Math.round(sx + (r.x - sx) * 0.5 + facing * 2), ey = Math.round(sy + (r.y - sy) * 0.5);
+      limb(g, sx, sy, ex, ey, 5, c.top);
+      limb(g, ex, ey, r.x, r.y, 4, c.skin);
+      if (r.book) SCENE.drawShelfBook(g, Object.assign({}, r.book, { x: r.x - Math.floor(r.book.w / 2), y: r.y + 4 }));
+      px(g, r.x - 2, r.y - 1, 4, 4, c.skin);
     } else if (p.shelfWorkY != null && !held) {
       const s=SCENE.L.projects.bookshelf,sy=p.shelfWorkY;
       const turn=Math.round(Math.sin(p.stateT*7));
@@ -966,7 +992,7 @@
     }
   }
 
-  const POSES = { catCare: drawCatCare, kneel: drawKneel, pc: drawDeskSitter,
+  const POSES = { catCare: drawCatCare, kneel: drawKneel, boxCrouch: drawBoxCrouch, pc: drawDeskSitter,
     supperEat: drawDeskSitter, sit: drawSeated };
 
   SCENE.drawPerson = function (g, p) {

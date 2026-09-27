@@ -490,3 +490,17 @@
       ]}
   };
 })();
+
+/* The little wall shelves' books: narration for finished stocking and for a
+   reader taking one down, per source (see IMPROVEMENTS.shelf). */
+(function () {
+  'use strict';
+  CAST.shelfLines = {
+    box: 'the box is folded flat; six secondhand books wait on the little shelves.'
+  };
+  CAST.borrowLines = {
+    box: ['takes a book down from the little shelves.', 'tilts a spine out from the little shelves and keeps it.',
+      'reads the back of a secondhand book, then keeps it.']
+  };
+})();
+
