@@ -90,6 +90,14 @@ shelves.”, “the box is folded flat; six secondhand books wait on the little
 shelves.”, and for readers “… drifts over to the little shelves.”, “… wanders
 over to the little shelves.”, “… takes a book down from the little shelves.”
 
+Unpacking adds one home caption per box (“a picture from the old flat goes up
+above the desk.”, “a string of small lights along the headboard. That’s
+better.”, “her own books, finally, along the windowsill.”, “the kettle and two
+mugs find their way to the kitchen.”, “jumpers, folded, on top of the suitcase
+for now.”, “postcards from home, pinned up by the door.”, “the little rug from
+the old flat goes down by the bed.”) and, after the seventh, “the last box is
+folded flat. It looks as though somebody lives here now.”
+
 Keepsakes add: “Gerda’s blanket hangs over the chair nearest the fire, for
 whoever gets cold.” or, at home, “Gerda’s blanket goes over the foot of the
 bed.”; and, if the old shop mug went downstairs, at closing (60%): “Lunafreya

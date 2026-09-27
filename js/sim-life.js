@@ -435,6 +435,8 @@
     w.shop.phase = 'dawn'; w.shop.elapsed = 0; w.shop.fade = 1; w.shop.carryingCat = true;
     w.barista.x = L.doorSpot.x; w.barista.y = L.doorSpot.y;
     if (l.plant.stage === 'purchased') l.plant.stage = 'scheduled';
+    // An evening's unfinished box goes back on its stack until another evening.
+    l.homeUnpack.time = 0; w.homeUnpacking = null;
     Object.keys(PROJECTS).forEach(id => { if (l.projects[id].stage === 'purchased') l.projects[id].stage = 'scheduled'; });
     w.clockOffset += ((7.5-w.hour+24)%24)/24*R.DAY_SECONDS;
     R.updateClock(w,0); commit(w);

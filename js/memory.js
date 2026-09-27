@@ -1,7 +1,8 @@
 /* Café Hygge — pure save codec and an injectable browser persistence adapter. */
 (function () {
   'use strict';
-  const KEY = 'cafe-hygge-save', VERSION = 18;
+  const KEY = 'cafe-hygge-save', VERSION = 19;
+  const UNPACK_BOXES = 7;   // the apartment's moving boxes (SIM.unpackBoxes)
   const FURNITURE = ['table-window','table-hearth','table-front-left','table-front-right',
     'fireside','nook','window-seats','bookshelf','piano','studio','plants','terrace','hearth',
     'full-counter','rugs','drapes','open-windows','wall-menu','mantel-decor','entrance-screen',
@@ -85,7 +86,7 @@
   function freshLife() {
     return { mode: 'game', savings: 90, hour: 8.4, homeTime: 0, daysCompleted: 0, openSeconds: 0,
       plant: { stage: 'available', time: 0 }, projects: IMPROVEMENTS.freshProjects(), shelf: [], furniture: furnishings(false),
-      homeStory: freshHomeStory(false), homeDinner:{time:0,done:false}, firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
+      homeStory: freshHomeStory(false), homeDinner:{time:0,done:false}, homeUnpack:{boxes:0,time:0,tonight:false}, firstOpening:{step:0,time:0}, intro:freshIntro(false), room:'small', plannedTonight: false, checkpoint: null };
   }
   function freshHomeStory(complete) {
     return {step:complete?12:0,time:0,planned:complete,firstNight:!complete,sleepStep:-1,sleepTime:0,sleepFrom:null};
@@ -150,6 +151,9 @@
       finite(h.sleepTime) && h.sleepTime>=0 && h.sleepTime<=120 &&
       (h.sleepFrom===null || record(h.sleepFrom) && finite(h.sleepFrom.x) && finite(h.sleepFrom.y) &&
       h.sleepFrom.x>=128 && h.sleepFrom.x<=832 && h.sleepFrom.y>=266 && h.sleepFrom.y<=550), 'invalid home story');
+    const u = l.homeUnpack;
+    requireShape(record(u) && integer(u.boxes) && u.boxes>=0 && u.boxes<=UNPACK_BOXES &&
+      finite(u.time) && u.time>=0 && u.time<=240 && typeof u.tonight==='boolean', 'invalid home unpacking');
     const d = l.homeDinner;
     requireShape(record(d) && finite(d.time) && d.time>=0 && d.time<=180 &&
       typeof d.done==='boolean', 'invalid home dinner');
@@ -173,6 +177,7 @@
   const codec = createCodec(VERSION, {});
   MEMORY.freshHomeStory=freshHomeStory;
   MEMORY.VERSION = VERSION;
+  MEMORY.UNPACK_BOXES = UNPACK_BOXES;
   MEMORY.furnishings = furnishings;
   MEMORY.codec = codec;
   MEMORY.createCodec = createCodec;

@@ -317,6 +317,53 @@
     const b=w.barista,k=H.kitchen;
     return w.shop.phase==='home' && b.x>k.x && b.x<k.x+k.w && b.y>=k.y;
   };
+  // What the unpacked boxes brought: each appears once its box is done.
+  function unpackedBox(w,i) {
+    const U=SIM.unpackBoxes||[],n=w.memory.life.homeUnpack.boxes;
+    return U.slice(0,n).some(x=>x.box===i);
+  }
+  function unpacked(w,item) {
+    const U=SIM.unpackBoxes||[],n=w.memory.life.homeUnpack.boxes;
+    return U.slice(0,n).some(x=>x.item===item);
+  }
+  SCENE.homeUnpacked=unpacked;
+  function homeBelongings(g,draws,w) {
+    if(unpacked(w,'picture')) {
+      // A small print of the old city's harbour, framed, above the desk.
+      px(g,427,184,26,22,'#6e4a33');px(g,429,186,22,18,'#8fb5bf');
+      px(g,429,197,22,7,'#5a7a8a');px(g,433,192,5,6,'#c9a04a');px(g,440,190,4,8,'#b5654a');px(g,445,193,4,5,'#e3cfa7');
+      px(g,429,186,22,2,'#b5d0d6');
+    }
+    if(unpacked(w,'postcards')) {
+      [[243,194,'#e8dfc9','#7a89a5'],[253,200,'#f5efdf','#a94f3f'],[262,191,'#e3cfa7','#4a7a5a']].forEach(c=>{
+        px(g,c[0],c[1],9,7,c[2]);px(g,c[0]+1,c[1]+1,4,3,c[3]);px(g,c[0]+4,c[1]-1,1,1,'#a94f3f');
+      });
+    }
+    if(unpacked(w,'rug')) {
+      // Low floor decor: under furniture and people, like the café's rugs.
+      ell(g,700,392,46,12,'#8f4a35');ell(g,700,392,40,9,'#b5654a');ell(g,700,392,30,6,'#c98f73');
+      for(let x=660;x<742;x+=10)px(g,x,392,4,1,'#e3cfa7');
+    }
+    if(unpacked(w,'books')) {
+      // Her own books along the bedroom windowsill.
+      const win=H.window;
+      [[8,10,'#a94f3f'],[5,9,'#4a7a5a'],[6,11,'#3d4a5c'],[5,8,'#c9a04a'],[7,10,'#8a6a9a']].reduce((x,b)=>{
+        px(g,x,win.y+win.h-b[1],b[0],b[1],b[2]);px(g,x,win.y+win.h-b[1],1,b[1],SCENE._.shade(b[2],.15));return x+b[0];
+      },win.x+76);
+    }
+    if(unpacked(w,'jumpers'))draws.push({y:H.bag.y+.1,draw:g=>{
+      px(g,H.bag.x-11,H.bag.y-33,22,5,'#7a89a5');px(g,H.bag.x-11,H.bag.y-33,22,1,'#94a1b4');
+      px(g,H.bag.x-10,H.bag.y-38,20,5,'#c9a04a');px(g,H.bag.x-10,H.bag.y-38,20,1,'#d9b86a');
+    }});
+    if(unpacked(w,'kettle')) {
+      const c=H.kitchen.counter;
+      draws.push({y:c.y+.1,draw:g=>{
+        px(g,c.x+81,c.y-49,11,10,'#b8bfc7');px(g,c.x+82,c.y-51,9,2,'#d3d9de');px(g,c.x+84,c.y-53,5,2,'#3c414d');
+        px(g,c.x+92,c.y-47,3,3,'#b8bfc7');px(g,c.x+78,c.y-48,3,6,'#3c414d');
+        px(g,c.x+99,c.y-45,6,6,'#a94f3f');px(g,c.x+104,c.y-44,2,3,'#a94f3f');
+      }});
+    }
+  }
   function kitchenDrawables(draws,w) {
     const k=H.kitchen, c=k.counter, f=k.fridge;
     draws.push({y:c.y,draw:g=>{
@@ -546,7 +593,24 @@
       px(g,r.x,r.y+r.h-12,r.w,4,'#e8dfc9');
       px(g,r.x,r.y+r.h,r.w,4,'#6e4a33');
     }}));
-    H.boxes.forEach((b,i)=>draws.push({y:b.y,draw:g=>box(g,b.x,b.y,i===4 && story.step>=6)}));
+    // Moving boxes: unpacked ones are gone; tonight's is lifted down, opened
+    // and folded flat (SIM.unpackBoxes, life.homeUnpack).
+    const cur=w.homeUnpacking;
+    H.boxes.forEach((b,i)=>{
+      if(unpackedBox(w,i))return;
+      if(!cur || cur.box.box!==i) {draws.push({y:b.y,draw:g=>box(g,b.x,b.y,i===4 && story.step>=6)});return;}
+      if(cur.phase==='place' || cur.phase==='return')return;
+      const to=cur.box.lift?cur.box.lift.to:b,q=cur.phase==='lift'?cur.progress:1;
+      const at={x:Math.round(b.x+(to.x-b.x)*q),y:Math.round(b.y+(to.y-b.y)*q)};
+      draws.push({y:at.y,draw:g=>{
+        if(cur.phase!=='fold'){box(g,at.x,at.y,cur.phase==='open');return;}
+        const h=Math.max(3,Math.round(19*(1-cur.progress)));
+        ell(g,at.x,at.y+2,18,5,'rgba(20,12,8,.22)');
+        px(g,at.x-14-Math.round(cur.progress*4),at.y-h,28+Math.round(cur.progress*8),h,'#a8764a');
+        px(g,at.x-14-Math.round(cur.progress*4),at.y-h,28+Math.round(cur.progress*8),2,'#c08a58');
+      }});
+    });
+    homeBelongings(g,draws,w);
     if(story.step>=8 || story.step===7 && w.homeAction==='reach')draws.push({y:A.hanger.y,draw:g=>{
       const x=A.hanger.x,y=A.hanger.y, q=story.step===7?Math.min(1,w.homeActionTime/5):1;
       ell(g,x,y+2,17,4,'rgba(20,12,8,.22)');
@@ -617,6 +681,11 @@
       px(g,x+3,y-31,width-6,25,'#936747');
       px(g,x+7,y-28,width-14,2,'#a8764a');
       px(g,x-4,y-39,width+8,4,'#c08a58');
+      // The unpacked string of small lights along the headboard (glow below).
+      if(unpacked(w,'lights')) {
+        px(g,x-2,y-41,width+4,1,'#4a3222');
+        for(let k=0;k*9<width;k++)px(g,x+2+k*9,y-42+(k%2)*2,2,2,'#f5c66a');
+      }
       // Low timber rails, legs and a visibly thick, rounded mattress edge.
       px(g,x,y+4,width,b.h-6,'#825638');
       px(g,x+3,y+b.h-2,6,8,'#4a3222'); px(g,x+width-9,y+b.h-2,6,8,'#4a3222');
@@ -661,11 +730,31 @@
         mealPlate(g,x+side*20,y-28,w.homeMeal.stage===1?2:0);
       }
       if(story.step===7 && b.pose==='walk') {px(g,b.x-15,b.y-28,30,3,'#a8764a');px(g,b.x+8,b.y-39,3,28,'#825638');}
+      // Carrying tonight's unpacked things to their place.
+      const un=w.homeUnpacking;
+      if(un && un.carrying) {
+        const x=Math.round(b.x)+(b.heading?8:b.facing*9),y=Math.round(b.y)-24;
+        const col={picture:'#6e4a33',lights:'#4a3222',books:'#a94f3f',kettle:'#b8bfc7',jumpers:'#7a89a5',postcards:'#e8dfc9',rug:'#b5654a'}[un.box.item];
+        if(un.box.item==='rug'){px(g,x-10,y-2,20,5,col);px(g,x-10,y-2,20,1,'#c98f73');}
+        else {px(g,x-5,y-5,10,8,col);px(g,x-5,y-5,10,1,SCENE._.shade(col,.2));}
+        px(g,x-6,y+1,4,3,b.colors.skin);
+      }
       if((story.step===8 || story.step===9) && b.pose==='walk') {px(g,b.x-7,b.y-30,18,13,'#7f8d80');px(g,b.x-4,b.y-27,12,2,'#a2aa91');}
     }});
     draws.push({y:story.sleepStep>=3?H.bed.y+H.bed.h+.2:w.cat.y,draw:g=>SCENE.drawCat(g,w.cat)});
     draws.sort((a,b)=>a.y-b.y); draws.forEach(d=>d.draw(g));
     homeLighting(g,w);
+    if(unpacked(w,'lights')) {
+      // The little lights keep their warmth through the evening's shade.
+      const b=H.bed,lamp=Math.max(.35,w.pal.lamp);
+      g.save();
+      for(let k=0;k*9<b.w;k++){
+        const lx=b.x+3+k*9,ly=b.y-41+(k%2)*2;
+        g.globalAlpha=.18*lamp;px(g,lx-2,ly-2,5,5,'#f5c66a');
+        g.globalAlpha=.9;px(g,lx-1,ly-1,2,2,'#f8dc8a');
+      }
+      g.restore();
+    }
     // A waiting evening moment: its bubble over Lunafreya, above the lighting.
     if(!w.moment)SIM.invitations(w).forEach(inv=>{
       const a=inv.actor;SCENE.drawBubble(g,a.x,a.pose==='sit'?a.y+6:a.y,inv.icon);

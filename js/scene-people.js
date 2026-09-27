@@ -405,7 +405,7 @@
   // the carton, lifting out the next handful (or folding the flaps).
   function drawBoxCrouch(g, p, k) {
     const { x, y, c, topD } = k, f = p.facing >= 0 ? 1 : -1;
-    const box = SCENE.L.projects.books.box;
+    const box = p.boxAt || SCENE.L.projects.books.box;
     const hx = box.x + (f < 0 ? 5 : -5), hy = box.y - 9 + Math.round(Math.sin(p.stateT * 3) * 2);
     function mx(dx, w) { return f > 0 ? x + dx : x - dx - w; }
     px(g, mx(-11, 20), y - 10, 20, 8, c.pants); px(g, mx(-14, 12), y - 4, 12, 4, '#3a2a1c');

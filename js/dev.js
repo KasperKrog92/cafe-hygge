@@ -1107,6 +1107,7 @@
     });
 
     // the hard-won constants
+    if (SIM.unpackBoxes && SIM.unpackBoxes.length !== MEMORY.UNPACK_BOXES) problems.push('apartment boxes and the save disagree');
     if (L.baristaHome.y !== 286) problems.push('L.baristaHome.y = ' + L.baristaHome.y + ' (must be 286 — the counter swallows her below that; see AGENTS.md)');
     if (L.lane !== 368) problems.push('L.lane = ' + L.lane + ' (the walking lane is 368; see AGENTS.md)');
     if (!Array.isArray(L.occluders) || L.occluders.length < 2) problems.push('L.occluders missing or incomplete (expect at least bookshelf + counter)');

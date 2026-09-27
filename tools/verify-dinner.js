@@ -55,7 +55,7 @@
     if(mode==='game') {
       tick(w,240);check(w.shop.phase==='home' && w.memory.life.homeDinner.done && !w.homeMeal,'dinner repeated');
       check(SIM.goToSleep(w) && SIM.skipBedtime(w),'later bedtime failed');
-    } else {tick(w,80);check(w.shop.phase!=='home','idle did not resume automatic night');}
+    } else {tick(w,160);check(w.shop.phase!=='home','idle did not resume automatic night');}   // the circuit also waits for tonight's box
     SIM.withWorld(w,()=>SIM._.enterHome(w));
     check(!w.memory.life.homeDinner.done && w.memory.life.homeDinner.time===0,'next evening did not reset');
     results.push({mode,reloads,stages:[...seen]});

@@ -43,6 +43,20 @@ Existing arrived/working/installed jobs never redeliver or replay construction.
 The visitor suite covers both modes, overlapping jobs, closing, later hellos,
 legacy saves and next morning; the UI runner checks actual page reloads.
 
+## Unpacking the apartment (H1) — shipped 27 September 2026
+
+From the second evening, in both modes, Lunafreya empties one moving box after
+supper: she walks to it (lifting a stacked box down first), crouches to take
+things out, folds the box flat and carries its contents to their place, then
+returns to the desk. The evening's routine waits meanwhile; bedtime may
+interrupt, and the box simply waits for another evening. Seven evenings empty
+the room: a print of the old city's harbour above the desk, a string of small
+lights along the headboard (they glow at night), her own books on the
+windowsill, a kettle and a second mug in the kitchen, folded jumpers on the
+suitcase, postcards from home by the door, and a little rug by the bed. No
+purchase is involved. H2 comforts (bought rug, curtains, bedside table) remain
+later.
+
 ## Apartment supper — shipped 8 September
 
 Once each evening, Lunafreya visits the kitchen, whose light comes on as she
@@ -344,7 +358,7 @@ a particular milestone. Purchases, unpacking and remembered moments add to it.
 | State | Visible room | Autonomous evening life |
 | --- | --- | --- |
 | H0 — Just moved in | Bed, basic desk and chair, PC, reading light, suitcase, lots of moving boxes and one accessible book. Small kitchen and bathroom in the bottom left, with basic fixtures and an open dishes box. Sparse furnishings but comfortable, with clear walking routes. | Arrive, put away coat/bag, use PC, read on bed, wind down and sleep; the cat wanders and investigates boxes. The bathroom is used during the bedtime routine. |
-| H1 — Unpacking | Moving boxes gradually opened, emptied and folded away over several days; folded clothes, personal books and a mug find their places. | Short unpacking sessions mixed with evening activities; the cat explores the changing room and remaining boxes. |
+| H1 — Unpacking (shipped 27 September) | Moving boxes gradually opened, emptied and folded away over seven evenings: a harbour print, small lights, books, kettle, jumpers, postcards and a little rug find their places. | Short unpacking sessions mixed with evening activities; the cat explores the changing room and remaining boxes. |
 | H2 — Making it comfortable | Optional rug, curtains, bedside table and plant. | Arrange purchases, water plant and enjoy softer evening lighting. |
 | H3 — A place to linger | Small bookcase and reading chair, more books and a personal wall picture. | Choose between desk, bed and reading corner; occasionally rearrange books. |
 | H4 — A life here | Patron's note or drawing, a keepsake from a chosen story, cared-for plants and small signs of habit. | Pause by meaningful objects, read, use PC and continue ordinary life. No finished-home victory state. |

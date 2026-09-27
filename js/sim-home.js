@@ -88,6 +88,71 @@
       progress:arrived?Math.min(1,(v.time-v.arrive)/v.s.duration):0};
     return true;
   }
+  /* H1, unpacking: after supper on later evenings (both modes) she empties
+     one moving box, puts its contents in their place and folds the box flat.
+     The evening's routine waits meanwhile. `life.homeUnpack` saves how many
+     boxes are done, tonight's progress and whether tonight's box is done.
+     Stacked boxes are lifted down first. Order and anchors are authored. */
+  const lift=(b,to)=>({from:H.boxes[b],to:to});
+  const U=SIM.unpackBoxes=[
+    {box:5,lift:lift(5,{x:522,y:300}),stand:{x:544,y:302},face:-1,item:'picture',place:{x:440,y:284},placePose:'reach',up:true,
+      line:'a picture from the old flat goes up above the desk.'},
+    {box:4,stand:{x:525,y:300},face:-1,item:'lights',place:H.bedApproach,placePose:'reach',placeFace:1,
+      line:'a string of small lights along the headboard. That’s better.'},
+    {box:3,stand:{x:452,y:300},face:1,item:'books',place:A.window,placePose:'reach',up:true,
+      line:'her own books, finally, along the windowsill.'},
+    {box:2,lift:lift(2,{x:300,y:300}),stand:{x:278,y:302},face:1,item:'kettle',place:K.prep,placePose:'supperPrep',kitchen:true,
+      line:'the kettle and two mugs find their way to the kitchen.'},
+    {box:1,stand:{x:286,y:302},face:1,item:'jumpers',place:{x:238,y:312},placePose:'reach',placeFace:1,
+      line:'jumpers, folded, on top of the suitcase for now.'},
+    {box:0,stand:{x:302,y:300},face:-1,item:'postcards',place:{x:256,y:276},placePose:'reach',up:true,
+      line:'postcards from home, pinned up by the door.'},
+    {box:6,stand:{x:754,y:430},face:1,item:'rug',place:{x:680,y:392},placePose:'boxCrouch',placeFace:1,rugAt:{x:700,y:392},
+      line:'the little rug from the old flat goes down by the bed.'}
+  ];
+  SIM.homeUnpackActive=w=>{
+    const l=w.memory.life,u=l.homeUnpack;
+    return w.shop.phase==='home' && !SIM.homeSceneActive(w) && !SIM.homePlanRequired(w) && !l.homeStory.firstNight &&
+      l.homeDinner.done && !u.tonight && u.boxes<U.length && l.homeTime>=15 && !w.moment;
+  };
+  function unpackSteps(u) {
+    const b=U[u.boxes],steps=[];
+    if(b.lift)steps.push({at:b.stand,pose:'reach',face:b.face,duration:2,phase:'lift'});
+    steps.push({at:b.stand,pose:'boxCrouch',face:b.face,duration:8,phase:'open'});
+    steps.push({at:b.stand,pose:'boxCrouch',face:b.face,duration:3,phase:'fold'});
+    const back=b.kitchen?[K.prepLane].concat(kitchenOut):[lane(b.place),lane(H.deskSeat)];
+    steps.push({at:b.place,via:b.kitchen?[lane(b.stand),lane(A.kitchen),A.kitchen,K.door,K.lane,K.prepLane]:null,
+      pose:b.placePose,face:b.placeFace,up:b.up,duration:4,phase:'place',carry:true});
+    steps.push({at:H.deskSeat,via:back,pose:'pc',duration:0,phase:'return'});
+    return steps;
+  }
+  function unpackScene(w) {
+    const u=w.memory.life.homeUnpack,steps=unpackSteps(u);
+    let time=u.time;
+    for(let i=0;i<steps.length;i++) {
+      const s=steps[i],points=route(i?steps[i-1].at:H.deskSeat,s),arrive=routeTime(points);
+      if(time<arrive+s.duration)return {s,index:i,points,time,arrive,box:U[u.boxes]};
+      time-=arrive+s.duration;
+    }
+    return null;
+  }
+  function unpackPose(w) {
+    const v=unpackScene(w);w.homeUnpacking=null;
+    if(!v)return false;
+    const b=w.barista;
+    b.path=null;b.reading=b.dozing=false;b.pcSit=0;b.holding=null;b.state='idle';b.boxAt=null;
+    const arrived=travel(b,v.points,v.time),q=arrived?Math.min(1,(v.time-v.arrive)/Math.max(.01,v.s.duration)):0;
+    if(arrived) {
+      b.pose=v.s.pose;b.stateT=v.time-v.arrive;
+      b.heading=v.s.up?'up':'';b.facing=v.s.face||b.facing;
+      if(v.s.pose==='pc'){b.heading='up';b.facing=1;b.pcSit=1;}
+      const box=v.box.lift?v.box.lift.to:H.boxes[v.box.box];
+      if(v.s.phase==='open'||v.s.phase==='fold')b.boxAt={x:box.x,y:box.y-6};
+      if(v.s.phase==='place' && v.box.rugAt)b.boxAt=v.box.rugAt;
+    }
+    w.homeUnpacking={box:v.box,phase:v.s.phase,progress:q,carrying:v.s.carry && !arrived};
+    return true;
+  }
   // Sleep can interrupt supper from either side of the kitchen doorway.
   // Leave through its clear aisle before joining the ordinary bathroom route.
   function leaveRoom(from) {
@@ -174,12 +239,14 @@
     if(SIM.homeSceneActive(w))pose(w);
     if(SIM.homePlanRequired(w)) {w.plannerOpen=true;R.homePose(w);}
     if(SIM.homeDinnerActive(w))dinnerPose(w);
+    else if(SIM.homeUnpackActive(w))unpackPose(w);
   };
   const oldEnter=R.enterHome;
   R.enterHome=function(w) {
     if(w.shop.phase==='home')return;
     oldEnter(w);
     w.memory.life.homeDinner={time:0,done:false};w.homeMeal=null;
+    const u=w.memory.life.homeUnpack;u.tonight=false;u.time=0;w.homeUnpacking=null;
     R.commitLife(w);
     if(SIM.homeTourActive(w)) {w.activeCaption=null;w.captionQueue=[];pose(w);R.commitLife(w);}
   };
@@ -227,6 +294,21 @@
       if(!dinnerPose(w)) {
         w.memory.life.homeDinner.done=true;
         w.memory.life.homeTime=15;R.homePose(w);R.commitLife(w);
+      }
+      return;
+    }
+    if(SIM.homeUnpackActive(w)) {
+      const u=w.memory.life.homeUnpack,before=unpackScene(w);
+      u.time=Math.min(240,u.time+dt);
+      w.barista.animT+=dt;w.cat.animT+=dt;
+      if(!unpackPose(w)) {
+        R.caption(w,U[u.boxes].line,{place:'home'});
+        u.boxes++;u.tonight=true;u.time=0;w.homeUnpacking=null;
+        if(u.boxes===U.length)R.caption(w,'the last box is folded flat. It looks as though somebody lives here now.',{place:'home'});
+        w.memory.life.homeTime=15;R.homePose(w);R.commitLife(w);
+      } else if(before && before.index!==unpackScene(w).index) {
+        if(before.s.phase==='open')R.sound.swish();
+        R.commitLife(w);
       }
       return;
     }

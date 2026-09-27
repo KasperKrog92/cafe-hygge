@@ -363,6 +363,13 @@ open/closed drapes and the later fireside chairs confirms both the wall
 silhouette and installation route. The large bookcase remains a later idea;
 this placement does not reserve or implement a new cat corner.
 
+**Unpacked belongings (apartment).** A framed harbour print (26×22) above the
+desk's right, three postcards by the door, a woven rug ellipse by the bed
+(under people), five spines on the bedroom sill right of Maud's place, folded
+jumpers (blue, ochre) on the suitcase, a kettle on the hob's right ring with a
+second red mug, and warm bulbs every 9 px along the headboard rail with a small
+glow drawn after the home lighting. Folding flattens the carton in place.
+
 **Marcel, Ida and Elody** reuse the person renderer with fixed colors: Marcel
 skin `#b57a4a`, short dark hair, beard, painter's cream top `#d8c9ad`, slate
 trousers (the same cream and cap tones as the far-bank figure); Ida auburn bun,

@@ -677,6 +677,19 @@ arms, and `hasFurniture(capability)` for any installed improvement capability.
 The `cutting` keepsake (Maud) sits at `L.projects.cutting.spot` or on the
 bedroom sill. `MEMORY.VERSION` 18.
 
+## Unpacking (v19)
+
+`life.homeUnpack = {boxes, time, tonight}` (`MEMORY.UNPACK_BOXES` = 7, checked
+against `SIM.unpackBoxes` by the audit). `sim-home.js` authors the order, box
+index, lift target, stand, item and placement anchor for each box and builds
+tonight's steps (lift → open → fold → place → return) like supper, with the
+same `route`/`travel` timeline. `SIM.homeUnpackActive` runs after supper on
+non-tutorial evenings in both modes and pauses `homeTime`; `restoreLife`
+re-poses a reload; `enterHome` and `startMorning` clear tonight's partial time.
+`w.homeUnpacking` is the transient view for the renderer (current box, phase,
+progress, carrying). `SCENE.homeUnpacked(world, item)` gates each belonging.
+`drawBoxCrouch` reads `p.boxAt` so the crouch serves any box.
+
 ## Evening moments and keepsakes (v17)
 
 `SIM.beginHomeMoment(world, lines, prefix, finish)` (sim-moments.js) is the
