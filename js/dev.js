@@ -53,7 +53,10 @@
                        fresh modest café past its first setup and greeting
      __dev.greetHolger(w)  play the mandatory first hello in a private world
      __dev.ship() / boat() / birds() / plane()   force waterfront traffic
-     __dev.audit()     invariant sweep; returns (and warns) violations */
+     __dev.audit()     invariant sweep; returns (and warns) violations
+
+   Getting to later stages (?day=n, __dev.play, bookmarks, the stages panel)
+   lives in js/dev-stages.js. */
 (function () {
   'use strict';
 

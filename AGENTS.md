@@ -120,6 +120,13 @@ the old names. Settled names are in [story-bible.md](docs/story-bible.md).
 - **Temporary apartment shortcut:** **apartment (dev)** in the control bar, or
   `__dev.home()`, runs the real closing into a game-mode home that waits for
   **go to sleep**.
+- **Later stages without waiting:** **stages (dev)** in the `?dev` control bar
+  opens any morning of a quick autoplayed playthrough (each day lists what
+  happened in it), skips to the next morning, keeps bookmarks and calls
+  regulars in. `?dev&day=12` boots the morning of café day 12 (1 = a new
+  café) and then keeps playing from there. `__dev.play(o)` runs the
+  autoplayer in a private world (the `stages` suite plays the whole story with
+  it, so a new beat that can get stuck fails there). See `js/dev-stages.js`.
 - **Dev harness** (`js/dev.js`, inert until invoked): the authoritative list of
   URL flags and console calls is the comment at the top of that file. The ones
   used most: `?dev&hour=20`, `?dev&overlay`, `?dev&audit`,
@@ -145,7 +152,7 @@ the old names. Settled names are in [story-bible.md](docs/story-bible.md).
   retired `archive/idle-2026-09-06` and `archive/game-2026-09-06` tags are
   reference material; do not resume the separate game engine or merge it.
 
-## Architecture (33 scripts, deliberate order)
+## Architecture (34 scripts, deliberate order)
 
 | File | Global | Role |
 | --- | --- | --- |
@@ -181,13 +188,14 @@ the old names. Settled names are in [story-bible.md](docs/story-bible.md).
 | `js/sim-expansion.js` | `SIM` | The room expansion: Tomas and his daughter take the partition down over two café days (their crew, saved phases, the propped door); finishing sets the saved room to `'full'`. |
 | `js/sim-saira.js` | `SIM` | Saira's score once it is pinned behind the counter: on a quiet spell, at most once a café day, Lunafreya steps over and hums its eight bars. |
 | `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing, fast-forward, scenario forcing, fixtures, overlay, `shot`, `film`, invariant audit. Inert unless invoked. |
+| `js/dev-stages.js` | `__dev` | Getting to any point of the game: the autoplayer (`__dev.play`), a cached playthrough of every café morning (`?day=n`, `__dev.day`), skip to the next morning, bookmarks, and the **stages (dev)** panel. Inert unless invoked. |
 | `js/main.js` | — | Boot, rAF loop, present pass, UI controls; builds the planner and invitation buttons from the registries. |
 
 Load order matters: improvements → audio → scene-core → scene-waterfront →
 scene-bg → scene-furniture → scene-people → scene-fx → scene-home → scene-intro →
 characters-roster → memory → sim-core → sim-waterfront → sim-patrons → sim-shop →
 sim-characters → sim-life → sim-intro → sim-moments → sim-holger → sim-regulars →
-sim-marcel → sim-gerda → sim-visitors → sim-home → sim-evenings → sim-gathering → sim-counter → sim-saira → sim-expansion → dev → main. Scene-core creates `SCENE` and the renderer siblings
+sim-marcel → sim-gerda → sim-visitors → sim-home → sim-evenings → sim-gathering → sim-counter → sim-saira → sim-expansion → dev → dev-stages → main. Scene-core creates `SCENE` and the renderer siblings
 extend it; `CAST` is pure data; `MEMORY` loads the save; the nineteen sim scripts
 build `SIM` (sim-core first); dev consumes the `SIM._` contract; main reads all.
 

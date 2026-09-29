@@ -37,6 +37,7 @@ js/sim-counter.js       → extends SIM    (Lunafreya's slow spells: stool and b
 js/sim-saira.js         → extends SIM    (Saira's score behind the counter: Lunafreya's once-a-day hum)
 js/sim-expansion.js     → extends SIM    (the room expansion: the partition crew, saved phases, room 'full')
 js/dev.js               → window.__dev   (dev harness; inert unless ?dev/console)
+js/dev-stages.js        → extends __dev  (autoplayer, playthrough mornings, bookmarks, stages panel)
 js/main.js              → (none)         (boot, loop, UI; orchestrates the others)
 ```
 
@@ -480,6 +481,26 @@ or console calls:
 | `__dev.film({world, target, start, pre, frames, fps, follow})` | motion filmstrip (PNG data URL) of one entity in a private world run at game speed, from a start condition with optional frames before it; never ticks `__world` ([animations.md](animations.md)) |
 | `__dev.furnishedWorld(o)` / `__dev.modestWorld(o)` / `__dev.greetHolger(w)` | private simulation fixtures: the fully furnished room, a fresh modest café past setup and the mandatory hello, or that hello played in a given world |
 | `__dev.audit()` | invariant sweep; warns and returns violations (bounds, whole pixels, walk targets vs. `L.occluders`, journeys vs. `L.footprints` — umbrella, Lunafreya and cat routes included — seat↔table wiring, anchors, barista y=286 / lane 368, plus live-world checks for seats, pairs, umbrellas, sleeper, queue, props, bowls/candles, and spawn cap) |
+
+**Stages (`js/dev-stages.js`).** The autoplayer plays the real game in a
+private world through the same entry points the page's buttons use: it
+advances intro and home dialogue, starts every waiting invitation and answers
+it (first, last or seeded-random answers), taps pending arc beats, buys every
+improvement on offer (free, so the café keeps its takings), lets each regular
+whose `firstDay` has come visit daily, lets the evening's supper and unpacking
+happen and then goes to sleep. Each café morning (the first `open` after
+opening) is snapshotted as an ordinary encoded save, with what happened that
+day. A playthrough ends four days after the story stops moving (no new flags,
+no work under way, no started arc still growing) and is cached in
+`localStorage` (`cafe-hygge-dev-timeline`) under a signature of the save
+version and the `CAST`/`IMPROVEMENTS` data, so content changes replay it; a
+partial one (from `?day`) is extended from its last morning. Opening a morning
+or a bookmark (`cafe-hygge-dev-bookmarks`) keeps the replaced café
+(`cafe-hygge-dev-previous`), imports the save, marks persistence read-only and
+reloads, like Settings' import. Skipping to the next morning plays the rest of
+the day with no conversations or purchases except the required first ones.
+`?day=n` replaces the save as the shipped boot creates its world, then drops
+the parameter from the URL.
 
 Three contracts support it: `SIM._` (the private seam shared by the sim
 siblings and consumed by dev.js; other app code must not touch it — includes

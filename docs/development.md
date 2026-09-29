@@ -154,6 +154,7 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `saira` | Saira on her rhythm from day 7, tapping whole phrases softly and stopping within a bar for a nearby reader (a caption notices); her hello on the second visit with the dentist line following the actual drink; her eight bars hummed once as their line begins and the cat's key, a mid-scene reload resuming; that evening's receipts left until morning (the cloth recalled, Lunafreya humming); the score recalling the room's sound and the cloth, pinned behind the counter and hummed there once a day, or pinned above the bed upstairs and kept after a reload; one scene per visit, idle hides them |
 | `second-visits` | Holger's fire story by a working or cold hearth and then, on a later visit, Aksel; Kasper's endings (recalling the reading afternoon and his three good lines) with a mid-scene reload resuming; Nora's three portrait answers; Antonia's bench remembered at home that night, and a second asking that ends kindly; one scene per visit, idle hides them, musings remember |
 | `ship` | Sailing ship movement, window visits, seat reservations, closing |
+| `stages` | The autoplayer plays a new café through the whole shipped story (every hello, the full room, the piano, the name, every box) without getting stuck; every morning is a clean save that runs an hour with clean audits; skipping to the next morning plays no story and buys nothing; last answers play through; the playthrough is cached, reused and extended |
 | `visitors` | Keira and Tomas: jobs, separate greetings, customer visits, both modes |
 | `waterfront` | Terrace orders, weather returns, cleanup and closing |
 
@@ -167,7 +168,9 @@ A flow is `module.exports = async t => report` using `t.open`, `t.eval`,
 `t.page` (Playwright), `t.reload`, `t.viewport`, `t.shot` and `t.init`; see
 `tools/run-suites.js` and `tools/ui/first-hello.js`. `ui:gathering` walks the
 reading afternoon through its real button, checks each bubble sits over its
-speaker, reloads mid-scene and resumes it on Ida's next visit.
+speaker, reloads mid-scene and resumes it on Ida's next visit. `ui:stages`
+opens `?day=3` once, bookmarks, skips to the next morning and opens a
+bookmark and a new café through the stages panel.
 
 ### Node checks
 
@@ -213,6 +216,15 @@ so `__dev.study()` remains a detached render fixture.
 - `?dev` boots past the splash; audio still needs a real click. The full
   console API is documented at the top of `js/dev.js`.
 - With `?dev`, the gold coin adds 100 to the saved balance.
+- **stages (dev)** (with `?dev`) gets to any point of the game: open any
+  morning of a quick playthrough (built once per content change, a few seconds
+  per ten days; each day lists what happened in it, so pick the day before
+  the scene or upgrade you want to try), skip to the next morning without
+  playing stories, bookmark the current café, or call a regular in. Opening
+  one replaces the save; the café it replaced stays in the list. `?dev&day=n`
+  does the same from the URL (1 = a new café). Console: `__dev.play`,
+  `__dev.day`, `__dev.nextMorning`, `__dev.bookmark` (top of
+  `js/dev-stages.js`).
 - **apartment (dev)** in the control bar (or `__dev.home()`) runs the real
   closing into a waiting game-mode apartment; **go to sleep** returns.
 - **skip unpacking (dev)** completes the first-morning setup immediately.
