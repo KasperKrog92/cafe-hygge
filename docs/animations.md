@@ -22,6 +22,12 @@ is reviewed in motion through filmstrips.
   one. Arms counter-swing with the same cycle.
 - Four views: profile (`facing` ±1), front (`heading` 'down') and back
   (`heading` 'up'). Heading follows the dominant travel direction.
+- A profile arm joins the visible lateral shoulder below the ear. Its hand
+  swings around that side plane and returns there when standing; it does not
+  move to the chest edge at a stop. The far arm is occluded by the torso.
+  Shirts, scarf tails and apron panels turn with the same body view; front
+  pockets become a narrow edge in profile and straps/ties from behind.
+  Stationary profile legs overlap instead of retaining a front-facing stance.
 
 ### Posture: sitting, kneeling, getting up
 
@@ -81,6 +87,13 @@ Reading (page turns with a lifted leaf and following hand), sipping (eased
 follow their shafts), sketching, painting (brush meets canvas and tray),
 typing (arms drawn by the table from the laptop's keyboard anchor) and piano
 (fingertips on the keyboard).
+
+Seated bodies use the same profile garments and lateral shoulder as standing
+bodies. Activity arms keep the existing hand targets; the far limb is clipped
+behind the shirt even when a table must draw the typing hands afterward.
+The standing-to-seated handoff keeps its established prop trajectory as the
+body lowers, so changing the sleeve attachment cannot move the cup's contact
+point. Neutral sitting leaves the near arm hanging at the side.
 
 Lunafreya's slow spells reuse these. On her stool she sits through the normal
 posture easing with her book carried (`placeItem: 'book'`), so the first page

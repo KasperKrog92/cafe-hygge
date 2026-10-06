@@ -254,8 +254,9 @@ The café keeps CH=60, the existing layout, and the same warm palette:
   and low-contrast geometric motifs, with quiet centres. All surface texture
   uses `h2()` and is cached in the static background, never regenerated at random.
 - Incident window light and oval reading-lamp pools draw below the furniture
-  and its contact shadows. The existing lighting pass still tints and blooms
-  the whole scene. See world.md for the time/weather response.
+  and its contact shadows. A shared local light map warms nearby surfaces,
+  people and books while retaining their dark seams and contact shadows;
+  compact blooms mark the light sources. See world.md for the time/weather response.
 
 ## Layout map (`SCENE.L` in `js/scene-core.js` — the single source of truth)
 
@@ -579,9 +580,13 @@ palm under plate, hands on book covers). Hair comes in **five styles** —
 0 classic cap, 1 side-part fringe, 2 curly, 3 bun, 4 Lunafreya's large wrapped
 bun with face-framing strands — plus the long-hair back fall (suppressed by
 either bun); cap gets a `shade()` shine streak. Clothing:
-shoulder light + centre fold + hem on tops, creases on trousers, scarf knot
-with hanging tail and fringe, and Lunafreya's apron has neck straps, waistband,
-pocket and a tie bow at the back. Options per character: scarf, long hair,
+shoulder light and hem on tops, a front fold or back shoulder yoke, creases on
+trousers, and a scarf knot with hanging tail and fringe. Profile shirts show a
+narrower side plane with the near sleeve below the ear, overlapping trouser
+legs and the far arm hidden by the torso. Apron bibs and pockets face forward:
+a narrow front edge in profile, a full panel from the front, straps and ties
+from behind. Lunafreya and Nora share this garment projection in standing and
+seated poses. Options per character: scarf, long hair,
 `hairStyle`, `beard`, apron (Lunafreya), `holding` (`cup`/`glass`/`plate`/`cloth`),
 `armUp` 0–1 (sip animation lifts the cup toward the face), `reading` (open
 book replaces held items while seated), `typing` (forearms alternate toward
@@ -684,20 +689,33 @@ Scarves follow the vertical neck and bowing stretch as well as mirrored poses.
 
 ## Lighting & effects
 
-See world.md for the lighting pass. When adding art, remember: warm glows are
-*additive* and cheap — a new lamp needs a `glow()` call in `drawLighting`
-scaled by `pal.lamp`. Table and mantel candles are the exception: their visible
-flame and additive glow share the same 0–1 live state, blooming when Lunafreya
-lights them and fading after dawn; each keeps its slow phase-offset flicker.
+See world.md for the lighting pass. Café night lighting uses an opaque,
+cached illumination map: cool ambient shade, then warm pools over the fixed
+places reached by the lamps and fire. Multiplying the scene by this map lights
+faces, books and furniture together without lifting dark seams into a foggy
+halo. The nook lamps reach the reading places, the pendants reach the worktop,
+and firelight reaches the fireside chairs. Pools stay anchored to the room;
+they never follow a patron. Their intensity fades with daylight, and the
+existing daytime palette and hearth bloom remain.
+
+A new lamp needs both a surface-light pool and a restrained source `glow()`
+in `drawLighting`, scaled by `SCENE.lampLevel(world)` and its furniture gate.
+The map caches illumination only, with small intensity steps; it never captures
+sprites or changes simulation state. Open window rectangles retain their
+existing exterior tint, so indoor pools cannot wash over the distant town.
+Table and mantel candles use their own 0–1 live flame state for their pool and
+bloom, rising when Lunafreya lights them and fading after dawn; each keeps
+its phase-offset source flicker. Mantel light also requires the mantel decor.
 The **fire** is the other such live-state prop: its flame heights
-(`drawFireDynamic`), spark rate, glow-pool radius/alpha, and crackle audio all
+(`drawFireDynamic`), spark rate, surface-light intensity, source bloom, and crackle audio all
 scale off `world.fire.level`, so the whole hearth dims to embers together and
 climbs together when a log goes on — but the coal bed and glow never reach zero
 (the ember floor). See the hearth burn cycle in world.md.
 Speech bubbles/captions draw after lighting on purpose.
 Open laptops are the single cool exception: a 22-pixel shallow keyboard deck,
 a straight upright side-view screen hinged at its inner edge, blue-grey text glints,
-and a faint radius-18 glow scaled by darkness. The screen faces its sitter;
+and a faint local blue pool with a compact source bloom, scaled by darkness.
+Hidden or closed laptop props emit no light. The screen faces its sitter;
 `SCENE.laptopGeometry` shares keyboard and screen anchors with hands and light.
 The keyboard sits near the table edge. Working arms draw with the tabletop
 after the props, while bodies retain their seated baseline behind the table.

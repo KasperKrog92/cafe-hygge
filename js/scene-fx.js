@@ -9,85 +9,133 @@
 
   /* ================= LIGHTING & ATMOSPHERE ================= */
 
+  // The map contains illumination only, so moving people, books and contact
+  // shadows receive the same local light without baking any sprites into it.
+  const cafeLight = { key: null, canvas: null };
+
+  function lightPool(g, p) {
+    g.save(); g.translate(p.x, p.y); g.scale(p.rx, p.ry);
+    const light = g.createRadialGradient(0, 0, 0, 0, 0, 1);
+    light.addColorStop(0, 'rgba(' + p.color + ',' + p.a + ')');
+    light.addColorStop(0.32, 'rgba(' + p.color + ',' + (p.a * 0.86) + ')');
+    light.addColorStop(1, 'rgba(' + p.color + ',0)');
+    g.fillStyle = light; g.fillRect(-1, -1, 2, 2); g.restore();
+  }
+
   SCENE.drawLighting = function (g, world) {
-    const pal = world.pal, t = world.t;
-
-    // day/night colour wash
+    const pal = world.pal, t = world.t, d = pal.daylight, dark = 1 - d;
     const nightC = [112, 120, 172], dayC = [255, 250, 242];
-    const d = pal.daylight;
-    const tint = [
-      Math.round(lerp(nightC[0], dayC[0], d)),
-      Math.round(lerp(nightC[1], dayC[1], d)),
-      Math.round(lerp(nightC[2], dayC[2], d))
-    ];
-    g.globalCompositeOperation = 'multiply';
-    g.fillStyle = 'rgb(' + tint.join(',') + ')';
-    g.fillRect(0, 0, W, H);
-
-    // warm pools of light
-    g.globalCompositeOperation = 'lighter';
+    const tint = nightC.map(function (c, i) { return Math.round(lerp(c, dayC[i], d)); });
     const lampA = SCENE.lampLevel(world), power = world.shop ? world.shop.lights : 1;
-    L.pendants.filter((p,i)=>i===0||SCENE.pendantsLit(world)).forEach(function (lp) {
-      // Shade contains the source: modest bloom below its rim, with the
-      // useful light directly beneath it on the counter, not across the wall.
-      g.save();
-      g.beginPath();
-      g.rect(lp.x - 48, lp.y + 2, 96, 60);
-      g.clip();
-      glow(g, lp.x, lp.y + 4, 48, 255, 190, 100, 0.18 * lampA);
-      g.restore();
-      glow(g, lp.x, L.counter.slabY - 16, 112, 255, 190, 100, 0.26 * lampA);
+    const warm = '255,226,188', fireColor = '255,208,155', pools = [];
+    function pool(x, y, rx, ry, a, color) {
+      // Tiny intensity steps bound cache churn during the slow day/candle fade.
+      a = Math.round(a * dark * 128) / 128;
+      if (a > 0) pools.push({ x: x, y: y, rx: rx, ry: ry, a: a, color: color || warm });
+    }
+    const pendants = L.pendants.filter(function (p, i) { return i === 0 || SCENE.pendantsLit(world); });
+    pendants.forEach(function (lp) {
+      pool(lp.x, L.counter.slabY - 30, 132, 100, 0.92 * lampA);
     });
-    SCENE.activeGeometry(world,L.library.lamps).forEach(function (lp) {
-      glow(g, lp.x, lp.y - 58, 64, 255, 190, 100, (0.04 + 0.3 * pal.lamp) * power);
+    SCENE.activeGeometry(world, L.library.lamps).forEach(function (lp) {
+      const i = L.library.lamps.indexOf(lp), chair = L.library.chairs[i];
+      // Light falls from the fixed lamp toward its reading place; it never
+      // follows a sitter. The broad lower pool reaches book, hands and fabric.
+      pool(Math.round((lp.x + chair.x) / 2), lp.y - 28, 108, 84, 0.94 * lampA);
     });
-    if (SCENE.hasFurniture(world,'piano')) glow(g, L.piano.lamp.x, L.piano.lamp.y, 22, 255, 190, 100, (0.03 + 0.28 * pal.lamp) * power);
-    // the studio floor lamp pools over the easel so the canvas stays readable after dark
-    if (SCENE.hasFurniture(world,'studio')) glow(g, L.artist.lamp.x + 8, L.artist.lamp.y - 56, 64, 255, 190, 100, (0.04 + 0.3 * pal.lamp) * power);
-    // fire: its warm pool grows and brightens with the live burn, and shrinks
-    // to a small ember glow when low — but never goes fully dark
+    if (SCENE.hasFurniture(world, 'piano'))
+      pool(L.piano.lamp.x + 14, L.piano.lamp.y + 23, 58, 62, 0.86 * lampA);
+    if (SCENE.hasFurniture(world, 'studio'))
+      pool(Math.round((L.artist.lamp.x + L.artist.easel.x) / 2), L.artist.lamp.y - 36, 92, 78, 0.9 * lampA);
     const fireLvl = world.fire ? world.fire.level : 1;
-    const flick = SCENE.hearthWork(world) ? 0 : (0.06 + 0.16 * fireLvl) + (0.04 + 0.05 * fireLvl) * Math.sin(t * 8.7) + 0.03 * fireLvl * Math.sin(t * 23.3);
-    glow(g, 388, 204, 52 + 40 * fireLvl, 255, 140, 50, flick);
-    glow(g, 388, 212, 24 + 16 * fireLvl, 255, 190, 90, flick * 0.8);
-    // candle pools bloom only after Lunafreya has lit their visible flames
-    const mantel = world.candles ? world.candles.mantel : 0;
-    glow(g, 385, 118, 20, 255, 200, 110, mantel * (0.1 + 0.06 * Math.sin(t * 11)));
-    // window poseur tables carry no candle: cups only, cushions nearby
-    world.tables.forEach(function (tb, i) {
+    const fireOn = !SCENE.hearthWork(world);
+    const fireX = L.fire.boxX + L.fire.boxW / 2, fireY = L.fire.boxBot - 20;
+    if (fireOn) {
+      pool(fireX, fireY, 82, 76, 0.92 * (0.16 + 0.84 * fireLvl), fireColor);
+      pool(fireX, L.fire.boxBot + 43, 174, 90, 0.9 * (0.1 + 0.9 * fireLvl), fireColor);
+    }
+    const mantel = SCENE.hasFurniture(world, 'mantel-decor') && world.candles ? world.candles.mantel : 0;
+    pool(fireX - 3, 128, 40, 38, 0.5 * mantel, fireColor);
+    world.tables.forEach(function (tb) {
       if (tb.tall || tb.piano) return;
-      // the reading chair's little lamp: a small warm pool over the chair
-      if (SCENE.readingLamp(world, tb)) glow(g, tb.x - 1, tb.y - 26, 44, 255, 190, 100, (0.03 + 0.26 * pal.lamp) * power);
-      const a = tb.candle * (0.07 + 0.07 * (1 - d) + 0.025 * Math.sin(t * 9 + i * 2.1));
-      glow(g, tb.x + (tb.small ? 7 : 0), tb.y - 14, 34, 255, 195, 105, a);
+      if (SCENE.readingLamp(world, tb)) pool(tb.x - 12, tb.y - 24, 76, 65, 0.9 * lampA);
+      pool(tb.x + (tb.small ? 7 : 0), tb.y - 14, 46, 40, 0.5 * tb.candle, fireColor);
       tb.items.forEach(function (it) {
-        if (it.kind === 'laptop' && it.open) {
+        if (it.kind === 'laptop' && it.open && !it.hidden) {
           const laptop = SCENE.laptopGeometry(tb.x, tb.y, it.side);
-          glow(g, laptop.screenX, laptop.screenY, 18, 120, 155, 215, 0.055 * (1 - d));
+          pool(laptop.screenX, laptop.screenY, 22, 22, 0.2, '176,205,240');
         }
       });
     });
-    // Same moving source and weather attenuation as the floor projections.
+    const openings = [L.win, L.win2].filter(function (w) { return SCENE.windowOpen(world, w); });
+    const key = tint.join(',') + ':' + JSON.stringify(pools) + ':' + openings.map(function (w) { return w.x; }).join(',');
+    if (cafeLight.key !== key) {
+      if (!cafeLight.canvas) {
+        cafeLight.canvas = document.createElement('canvas');
+        cafeLight.canvas.width = W; cafeLight.canvas.height = H;
+      }
+      const m = cafeLight.canvas.getContext('2d');
+      m.fillStyle = 'rgb(' + tint.join(',') + ')'; m.fillRect(0, 0, W, H);
+      pools.forEach(function (p) { lightPool(m, p); });
+      // Indoor lamps do not wash over the distant town. Keep its existing
+      // time-of-day treatment, including while curtains cover the opening.
+      m.fillStyle = 'rgb(' + tint.join(',') + ')';
+      openings.forEach(function (w) { m.fillRect(w.x, w.y, w.w, w.h); });
+      cafeLight.key = key;
+    }
+    g.save();
+    g.globalCompositeOperation = 'multiply'; g.drawImage(cafeLight.canvas, 0, 0);
+
+    // Compact blooms identify luminous sources; the multiply map above lights
+    // surfaces without raising every dark seam into an amber veil.
+    g.globalCompositeOperation = 'lighter';
+    pendants.forEach(function (lp) {
+      g.save(); g.beginPath(); g.rect(lp.x - 32, lp.y + 2, 64, 36); g.clip();
+      glow(g, lp.x, lp.y + 4, 28, 255, 190, 100, 0.14 * lampA); g.restore();
+    });
+    SCENE.activeGeometry(world, L.library.lamps).forEach(function (lp) {
+      glow(g, lp.x, lp.y - 58, 27, 255, 200, 125, (0.025 + 0.15 * pal.lamp) * power);
+    });
+    if (SCENE.hasFurniture(world, 'piano'))
+      glow(g, L.piano.lamp.x, L.piano.lamp.y, 15, 255, 200, 125, (0.02 + 0.12 * pal.lamp) * power);
+    if (SCENE.hasFurniture(world, 'studio'))
+      glow(g, L.artist.lamp.x + 1, L.artist.lamp.y - 58, 27, 255, 200, 125, (0.025 + 0.15 * pal.lamp) * power);
+    const flick = fireOn ? (0.06 + 0.1 * fireLvl) + 0.025 * fireLvl * Math.sin(t * 8.7) + 0.01 * fireLvl * Math.sin(t * 23.3) : 0;
+    const dayFire = fireOn ? ((0.06 + 0.16 * fireLvl) + (0.04 + 0.05 * fireLvl) * Math.sin(t * 8.7) + 0.03 * fireLvl * Math.sin(t * 23.3)) * d : 0;
+    glow(g, fireX, fireY - 4, 52 + 40 * fireLvl, 255, 140, 50, dayFire);
+    glow(g, fireX, fireY + 4, 24 + 16 * fireLvl, 255, 190, 90, dayFire * 0.8);
+    glow(g, fireX, fireY, 26 + 20 * fireLvl, 255, 155, 65, flick * dark);
+    glow(g, fireX - 3, 128, 14, 255, 200, 110, mantel * (0.07 + 0.03 * Math.sin(t * 11)));
+    world.tables.forEach(function (tb, i) {
+      if (tb.tall || tb.piano) return;
+      if (SCENE.readingLamp(world, tb))
+        glow(g, tb.x - 1, tb.y - 26, 18, 255, 200, 125, (0.02 + 0.13 * pal.lamp) * power);
+      glow(g, tb.x + (tb.small ? 7 : 0), tb.y - 14, 18, 255, 195, 105,
+        tb.candle * (0.045 + 0.035 * dark + 0.015 * Math.sin(t * 9 + i * 2.1)));
+      tb.items.forEach(function (it) {
+        if (it.kind === 'laptop' && it.open && !it.hidden) {
+          const laptop = SCENE.laptopGeometry(tb.x, tb.y, it.side);
+          glow(g, laptop.screenX, laptop.screenY, 14, 120, 155, 215, 0.035 * dark);
+        }
+      });
+    });
     [L.win, L.win2].forEach(function (w, i) {
       const beam = SCENE.windowLight(world, w);
       glow(g, w.x + w.w / 2 + beam.shift / 2, L.wallY + beam.depth / 3,
         130, 255, 235, 195, 0.065 * beam.strength * (1 - (world.shop ? world.shop.curtains[i] : 0)));
     });
-    // A storm flash is a cool reflection below the windows, visible mostly
-    // after dark; it never becomes a full-screen strobe.
-    const flashA = (world.flash || 0) * (1 - d) * 0.08;
+    const flashA = (world.flash || 0) * dark * 0.08;
     glow(g, L.win.x + L.win.w / 2, 238, 112, 176, 205, 255, flashA);
     glow(g, L.win2.x + L.win2.w / 2, 238, 112, 176, 205, 255, flashA);
 
     // vignette (centred on the 16:9 crop; deepens a touch after dark)
     g.globalCompositeOperation = 'source-over';
-    const vA = 0.34 + 0.12 * (1 - d);
+    const vA = 0.34 + 0.12 * dark;
     const v = g.createRadialGradient(W / 2, 286, 240, W / 2, 306, 620);
     v.addColorStop(0, 'rgba(16,10,6,0)');
     v.addColorStop(0.6, 'rgba(16,10,6,' + (vA * 0.35).toFixed(3) + ')');
     v.addColorStop(1, 'rgba(16,10,6,' + vA.toFixed(3) + ')');
-    g.fillStyle = v;
-    g.fillRect(0, 0, W, H);
+    g.fillStyle = v; g.fillRect(0, 0, W, H); g.restore();
   };
 
   function glow(g, x, y, r, cr, cg, cb, a) {

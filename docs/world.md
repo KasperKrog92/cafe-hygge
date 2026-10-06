@@ -183,7 +183,7 @@ All in the `js/sim-*.js` files (state) and the `js/scene-*.js` renderer files (a
 | 22–24 | deep night | 0.00 | 1.00 |
 
 - `daylight` scales the multiply-tint over the whole scene and patron spawn
-  rates; `lamp` scales the electric warm glows (hanging lamps, the two
+  rates; `lamp` scales the electric warm surface pools and source blooms (hanging lamps, the two
   nook reading lamps, the reading chair's table lamp by the fire, the studio floor lamp by the easel, and the little brass
   piano lamp) and the star/moon alpha. Candle light has its own
   per-flame state, tended by Lunafreya.
@@ -196,7 +196,7 @@ The renderer's `drawFloorLight` in scene-bg.js projects two gently widening
 window panes onto the floor. Daylight controls intensity, rain softens it, and
 the hour shifts the projection. Oval floor pools under the reading/studio lamps
 follow `pal.lamp`. These draw **before** depth-sorted furniture and its contact
-shadows; the existing scene-wide tint/glow pass still follows the objects.
+shadows; the shared local light map and source blooms follow the objects.
 A cached shadow at the wall/floor junction adds depth. These are visual cues,
 with no new timers, simulation state or sound triggers.
 
@@ -308,24 +308,30 @@ renderer clips it behind the glass, weather, mullions and curtains.
 
 Applied after all sprites, in `SCENE.drawLighting`:
 
-1. **Multiply tint** over the full canvas: night `rgb(112,120,172)` →
-   day `rgb(255,250,242)`, lerped by `daylight`.
-2. **Additive glows** (`lighter` composite): two counter pendants, each with
-   a compact bloom below its shade and a pool directly beneath it on the bar
-   (machine + pass, pastry case). Both use `L.pendants` and fade with `pal.lamp`;
-   there are no ceiling-light halos across the windows. Also lit are the
-   two reading lamps in the nook, the reading chair's small table lamp by the
-   fire (only when bought as the reading chair), and the studio floor lamp
-   beside the easel;
-   the piano lamp's tight pool over the score,
-   keys, and bench; the fireplace (never out — its glow pool grows and
-   brightens with the live burn `world.fire.level` and shrinks to a small
-   flickering ember glow when low); a candle jar on every dining and nook side
-   table plus the mantel pair (each glow scaled by its live 0–1 flame state;
-   window poseur tables carry no candle, cups only); a soft daylight pool
-   below each window; and one deliberately tiny cool-blue radius-18 pool for
-   each open laptop, scaled by `1 − daylight`. Storm lightning briefly adds a
-   faint cool reflection below both windows, also scaled by darkness.
+1. **Local multiply light map**: the ambient color lerps from night
+   `rgb(112,120,172)` to day `rgb(255,250,242)`. Warm illumination pools blend
+   into that map over the fixed places reached by each source, then the whole
+   scene is multiplied once. Faces, books, upholstery and contact shadows
+   therefore share the same illumination and retain surface contrast. Nook
+   lamps reach their reading chairs; pendants reach the counter worktop;
+   studio and piano lamps reach canvas, score and sitter. The bought reading
+   chair retains its separate small lamp. Electric pools follow `pal.lamp`
+   and shop power, and all surface pools fade out with daylight. Active
+   furniture, working-hearth and live candle gates also apply. The cache stores
+   only illumination, keyed by ambient color, source geometry, small intensity
+   steps and open windows; moving sprites never enter it. Window openings keep
+   their existing exterior tint rather than receiving indoor light.
+2. **Compact additive source blooms** (`lighter` composite) identify lamp
+   shades, flames and laptop screens without a broad haze over nearby objects.
+   Pendant blooms remain clipped below the shade rim. Firelight reaches both
+   fireside chairs and follows `world.fire.level`; its compact night bloom
+   flickers while the existing broader daytime bloom remains. The ember floor
+   keeps it gently lit when low, and hearth work removes its light. Table and
+   mantel candles follow their live 0–1 flame state (mantel decor must be
+   present); window poseur tables carry no candle. Visible open laptops have a
+   deliberately faint cool-blue local pool and small bloom. Daylight pools
+   below the windows and faint storm reflections retain their existing
+   time/weather response.
 3. **Vignette**: radial darkening toward the edges, always.
 
 Speech bubbles and captions draw **after** this pass so they stay readable at

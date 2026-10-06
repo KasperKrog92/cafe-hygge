@@ -71,12 +71,16 @@ behavior is dt-driven state machines in `js/sim-patrons.js` and
 `js/sim-characters.js`, with opening/closing in `js/sim-shop.js`; all drawing is
 `SCENE.drawPerson` / `SCENE.drawCat` in `js/scene-people.js`.
 
-The September 2026 material pass adds derived skin/jaw shading and profile
-noses, shoulder and sweater side tones, visible page markings and shaped cat
-haunch/fur highlights. Character size, roster colours, pose selection and
-behavior are preserved. `__dev.poses()` renders the actual roster across both
-profiles, front/back and seated reading for future visual review (see
-[art-workflow.md](art-workflow.md)).
+People keep the CH=60 ruler and roster colours. Their shirts and aprons turn
+with the body: a narrow side plane and overlapping trouser legs in profile,
+a full bib and pocket from the front, and a shoulder yoke with apron ties
+from behind. This also applies to Nora's paint-flecked apron. The visible arm
+hangs from the lateral shoulder below the ear; the torso hides the far arm.
+Seated clothing uses the same projection, including Lunafreya's apron, while
+hands keep their existing book, cup, keyboard and work targets. Skin/jaw
+shading, profile noses and shaped cat haunch/fur highlights remain shared.
+`__dev.poses()` renders the actual roster across both profiles, front/back and
+seated reading for visual review (see [art-workflow.md](art-workflow.md)).
 
 ---
 
