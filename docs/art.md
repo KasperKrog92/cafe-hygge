@@ -205,7 +205,7 @@ architecture textures, retuned atmosphere and real typography.
 | --- | --- |
 | Upper wall | `#e3cfa7` |
 | Wainscot / window sill | `#6e4a33` (lines `#5f402c`) |
-| Floor planks | `#9c6b43` (seams `#7d5334`) |
+| Floor planks | `#9c6b43` (seams `#7d5334` at restrained opacity) |
 | Counter front / dark wood | `#6b4529`, `#5a3d28`, `#4a3222` |
 | Counter slab / light wood | `#a8764a` (edge `#c08a58`) |
 | Brick (fireplace) | `#7d4437` + variants `#86493c` `#744033` `#8a4d3d` (mortar `#5f3229`) |
@@ -224,7 +224,7 @@ architecture textures, retuned atmosphere and real typography.
 
 Time-of-day sky colors live in the `DAYKEYS` table (see world.md).
 
-## Material and volume pass (September 2026)
+## Materials and volume
 
 The fixed comparison loop is documented in [art-workflow.md](art-workflow.md).
 The café keeps CH=60, the existing layout, and the same warm palette:
@@ -241,8 +241,16 @@ The café keeps CH=60, the existing layout, and the same warm palette:
   bookshelf has a visible crown plane, lit stiles, shelf recesses and rounded
   book-spine shading. The piano lid shows depth within its existing silhouette.
   The counter slab casts a short shadow onto its bevelled plank face.
-  Shelf ceramics have rim and side shading; chrome and pastry-case glass use
-  narrow reflections and recessed side tones instead of uniformly flat fills.
+  The till has a raised display, a foreshortened key deck and a recessed drawer.
+  The pastry case has a stepped top plane, a shaded right return and restrained
+  glass reflections; its two shelves still empty and refill with service.
+- Shelf, table and held crockery share the `ceramic()` material helper in
+  scene-core: stepped rims and feet, shaded sides and a recessed drink surface.
+  Each caller keeps its existing size, handle direction and hand/surface anchors.
+  The old shop mug retains its brown band; hot matcha keeps its wider bowl.
+  Iced drinks share `drinkGlass()` rim, reflection and base treatment across
+  carrying, sipping and table poses. Shelf plates have separate rims and
+  undersides, the teapot has an open handle, and jars show lid and side depth.
 - Skin uses derived temple/jaw shadows, cheek highlights and a small profile
   nose. Sweaters have shaded sides and lit shoulders. Seated readers show the
   colored outside covers and spine fold, with a thin top page edge. Turning
@@ -250,9 +258,11 @@ The café keeps CH=60, the existing layout, and the same warm palette:
   Borrowed books retain their gold, red or blue shelf color while carried and
   read; the matching shelf spine stays absent until returned. Own books default
   to warm red. Cat resting/walking silhouettes gain haunch and fur highlights.
-- Floorboard tones follow staggered joints. Rugs have sparse border stitches
-  and low-contrast geometric motifs, with quiet centres. All surface texture
-  uses `h2()` and is cached in the static background, never regenerated at random.
+- Floorboard tones follow staggered joints, with subdued seams, grain and knots
+  so open floor stays quiet. The main rug has a muted red field, a narrow binding
+  and sparse border stitches; the smaller rugs retain low-contrast geometric
+  motifs. All surface texture uses `h2()` and is cached in the static background,
+  never regenerated at random.
 - Incident window light and oval reading-lamp pools draw below the furniture
   and its contact shadows. A shared local light map warms nearby surfaces,
   people and books while retaining their dark seams and contact shadows;

@@ -419,12 +419,12 @@
       if (cup) {
         const kind = p.drink && p.drink.kind;
         if (kind === 'glass') {
-          px(g, hx - 4, hy - 7, 8, 13, 'rgba(200,220,230,0.7)'); px(g, hx - 3, hy - 1, 6, 6, '#8a9a4a');
+          R.drinkGlass(g, hx - 4, hy - 7);
         } else if (kind === 'plate') {
           px(g, hx - 7, hy + 2, 15, 4, '#e8e0d0'); px(g, hx - 4, hy - 3, 10, 5, '#c98f4a');
         } else {
-          px(g, hx - 5, hy - 6, 10, 11, kind === 'matcha' ? '#e8e0d0' : '#e8e0d0');
-          px(g, hx - 3, hy - 6, 6, 2, kind === 'matcha' ? '#8a9a4a' : '#6b4429');
+          R.ceramic(g, hx - 5, hy - 6, { w: 10, h: 11,
+            drink: kind === 'matcha' ? '#8a9a4a' : '#6b4429' });
         }
       }
       px(g, hx - f * (cup ? 8 : 4) - 2, hy - 1, 4, 4, c.skin);
@@ -669,19 +669,14 @@
         hx + (facing > 0 ? -4 : 5), hy + 6, false);
       if (vessel === 'glass') {
         px(g, hx - 1, hy - 4, 2, 7, '#d9738a');
-        px(g, hx - 3, hy, 8, 13, 'rgba(200,220,230,0.7)');
-        px(g, hx - 2, hy + 5, 6, 7, '#8a9a4a');
-        px(g, hx - 2, hy + 2, 6, 3, '#e8dfc9');
-        px(g, hx - 1, hy + 7, 2, 2, 'rgba(255,255,255,0.5)');
-        px(g, hx + 2, hy + 9, 2, 2, 'rgba(255,255,255,0.5)');
+        R.drinkGlass(g, hx - 3, hy);
         px(g, hx + (facing > 0 ? -5 : 4), hy + 6, 3, 4, c.skin);
       } else if (vessel === 'matcha') {
-        px(g, hx - 4, hy + 2, 12, 9, '#e8e0d0');
-        px(g, hx - 2, hy + 2, 8, 2, '#8a9a4a');
+        R.ceramic(g, hx - 4, hy + 2, { w: 12, h: 9, drink: '#8a9a4a' });
         px(g, hx + (facing > 0 ? -6 : 7), hy + 5, 3, 4, c.skin);
       } else {
-        px(g, hx - 3, hy, 10, 10, '#e8e0d0');
-        px(g, hx + (facing > 0 ? 7 : -6), hy + 3, 3, 4, '#e8e0d0');
+        R.ceramic(g, hx - 3, hy, { drink: '#6b4429',
+          handle: { x: facing > 0 ? 10 : -3, y: 3, w: 3, h: 4 } });
         px(g, hx + (facing > 0 ? -5 : 6), hy + 4, 3, 4, c.skin);  // hand on the cup
       }
     } else if (p.knitting) {
@@ -855,10 +850,10 @@
       const ex = Math.round(x + f * (5 + up * 5)), ey = Math.round(y - 24 - up * 8);
       limb(g, x - f * 2, y - 37, ex, ey, 5, c.top);
       limb(g, ex, ey, cx - f * 5, cy + 2, 4, c.top);
-      px(g, cx - 4, cy - 4, 9, 9, held === 'mug' ? '#e8dfc9' : '#e8e0d0');
-      if (held === 'mug') px(g, cx - 4, cy - 2, 9, 2, '#4a3222');
-      else if (up < 0.5) px(g, cx - 3, cy - 4, 7, 2, '#6b4429');
-      px(g, cx - f * 7 - (f > 0 ? 0 : 1), cy - 2, 2, 4, held === 'mug' ? '#e8dfc9' : '#e8e0d0');   // handle toward her
+      R.ceramic(g, cx - 4, cy - 4, { w: 9, h: 9,
+        color: held === 'mug' ? '#e8dfc9' : '#e8e0d0', drink: '#6b4429',
+        band: held === 'mug' ? '#4a3222' : null,
+        handle: { x: f > 0 ? -3 : 10, y: 2, w: 2, h: 4 } });
       px(g, cx - f * 6 - 2, cy, 4, 4, c.skin);
     } else if (p.kind === 'barista' && p.state === 'prepping') {
       const step = p.steps[p.stepIdx], t = p.stateT;
@@ -938,17 +933,13 @@
         const vessel = heldDrinkKind(p);
         if (held === 'glass') {
           px(g, x + 12, y - 33, 2, 6, '#d9738a');
-          px(g, x + 9, y - 29, 8, 13, 'rgba(200,220,230,0.7)');
-          px(g, x + 10, y - 23, 6, 7, '#8a9a4a');
-          px(g, x + 10, y - 26, 6, 3, '#e8dfc9');
-          px(g, x + 11, y - 21, 2, 2, 'rgba(255,255,255,0.5)');
+          R.drinkGlass(g, x + 9, y - 29);
           px(g, x + 9, y - 30, 4, 3, c.skin);
         } else if (held === 'cup' && vessel === 'matcha') {
-          px(g, x + 7, y - 26, 12, 9, '#e8e0d0');
-          px(g, x + 9, y - 26, 8, 2, '#8a9a4a');
+          R.ceramic(g, x + 7, y - 26, { w: 12, h: 9, drink: '#8a9a4a' });
           px(g, x + 10, y - 28, 4, 3, c.skin);
         } else if (held === 'cup') {
-          px(g, x + 8, y - 27, 10, 10, '#e8e0d0');
+          R.ceramic(g, x + 8, y - 27, { drink: '#6b4429' });
           px(g, x + 10, y - 29, 4, 3, c.skin);
         } else if (held === 'plate') {
           px(g, x + 6, y - 25, 15, 5, '#e8e0d0');
@@ -956,8 +947,7 @@
           px(g, x + 10, y - 21, 5, 3, c.skin);             // palm under the plate
         } else if (held === 'stack') {                     // bussed empties
           px(g, x + 6, y - 25, 15, 5, '#e8e0d0');          // saucer at the bottom
-          px(g, x + 8, y - 34, 10, 9, '#e8e0d0');          // cup riding on top
-          px(g, x + 8, y - 26, 10, 1, '#c9b28a');          // seam between the two
+          R.ceramic(g, x + 8, y - 34, { h: 9 });           // cup riding on top
           px(g, x + 10, y - 21, 5, 3, c.skin);             // palm under the stack
         } else if (held === 'cloth') {
           px(g, x + 8, y - 25, 10, 7, '#7a89a5');
@@ -987,8 +977,8 @@
           px(g, x - 15, y - 50, 32, 3, '#d9d0bd'); px(g, x - 14, y - 47, 32, 3, '#c9c0aa');
           px(g, x + 11, y - 46, 4, 4, c.skin);
         } else if (held === 'mug') {                       // the old shop mug
-          px(g, x + 8, y - 27, 9, 9, '#e8dfc9');
-          px(g, x + 8, y - 25, 9, 2, '#4a3222');
+          R.ceramic(g, x + 8, y - 27, { w: 9, h: 9, color: '#e8dfc9',
+            drink: '#6b4429', band: '#4a3222' });
           px(g, x + 10, y - 29, 4, 3, c.skin);
         }
       }
@@ -998,18 +988,14 @@
       const vessel = heldDrinkKind(p);
       if (held === 'glass') {
         px(g, hx + 6, y - 37, 2, 8, '#d9738a');
-        px(g, hx + 1, y - 34, 8, 13, 'rgba(200,220,230,0.7)');
-        px(g, hx + 2, y - 29, 6, 7, '#8a9a4a');
-        px(g, hx + 2, y - 32, 6, 3, '#e8dfc9');
-        px(g, hx + 3, y - 27, 2, 2, 'rgba(255,255,255,0.5)');
+        R.drinkGlass(g, hx + 1, y - 34);
         px(g, hx + (facing > 0 ? -2 : 8), y - 28, 4, 4, c.skin);
       } else if (held === 'cup' && vessel === 'matcha') {
-        px(g, hx - 1, y - 31, 12, 9, '#e8e0d0');
-        px(g, hx + 1, y - 31, 8, 2, '#8a9a4a');
+        R.ceramic(g, hx - 1, y - 31, { w: 12, h: 9, drink: '#8a9a4a' });
         px(g, hx + (facing > 0 ? -3 : 10), y - 28, 4, 4, c.skin);
       } else if (held === 'cup') {
-        px(g, hx, y - 32, 10, 10, '#e8e0d0');
-        px(g, hx + (facing > 0 ? 10 : -3), y - 29, 3, 5, '#e8e0d0');
+        R.ceramic(g, hx, y - 32, { drink: '#6b4429',
+          handle: { x: facing > 0 ? 10 : -3, y: 3, w: 3, h: 5 } });
         px(g, hx + (facing > 0 ? -3 : 9), y - 28, 4, 4, c.skin);
       } else if (held === 'plate') {
         px(g, hx - 3, y - 26, 15, 5, '#e8e0d0');
@@ -1017,8 +1003,7 @@
         px(g, hx + 3, y - 21, 5, 3, c.skin);               // palm under the plate
       } else if (held === 'stack') {                       // bussed empties
         px(g, hx - 3, y - 26, 15, 5, '#e8e0d0');           // saucer at the bottom
-        px(g, hx, y - 35, 10, 9, '#e8e0d0');               // cup riding on top
-        px(g, hx, y - 27, 10, 1, '#c9b28a');               // seam between the two
+        R.ceramic(g, hx, y - 35, { h: 9 });                // cup riding on top
         px(g, hx + 3, y - 21, 5, 3, c.skin);               // palm under the stack
       } else {
         px(g, hx, y - 26, 10, 7, '#7a89a5');
@@ -1052,7 +1037,8 @@
       sideSleeve(g, p, k, x + facing * 12, held === 'paper' ? y - 22 : y - 26);
       const hx = x + facing * 13 - (facing > 0 ? 0 : 8);
       if (held === 'mug') {
-        px(g, hx, y - 32, 9, 9, '#e8dfc9'); px(g, hx, y - 30, 9, 2, '#4a3222');
+        R.ceramic(g, hx, y - 32, { w: 9, h: 9, color: '#e8dfc9',
+          drink: '#6b4429', band: '#4a3222' });
         px(g, hx + (facing > 0 ? -3 : 8), y - 28, 4, 4, c.skin);
       } else {
         px(g, hx - 1, y - 30, 10, 12, '#e8e0d0');

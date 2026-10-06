@@ -245,37 +245,42 @@
     // is deterministic and baked once into the background cache.
     for (let row = 0, y = L.wallY; y < H; y += 32, row++) {
       for (let x = -112 + (row % 2) * 40; x < W; x += 112) {
-        px(g, x + 2, y, 110, 28, R.shade('#9c6b43', (h2(x, y) - 0.5) * 0.09));
-        px(g, x + 5, y + 2, 102, 2, 'rgba(232,201,153,0.075)');
+        px(g, x + 2, y, 110, 28, shade('#9c6b43', (h2(x, y) - 0.5) * 0.07));
+        px(g, x + 5, y + 2, 102, 2, 'rgba(232,201,153,0.045)');
       }
     }
-    for (let y = L.wallY + 28; y < H; y += 32) px(g, 0, y, W, 2, '#7d5334');
+    for (let y = L.wallY + 28; y < H; y += 32) px(g, 0, y, W, 2, 'rgba(125,83,52,0.45)');
     for (let y = L.wallY + 28, r = 0; y < H; y += 32, r++) {
-      for (let x = (r % 2) * 40; x < W; x += 112) px(g, x, y - 16, 2, 14, 'rgba(125,83,52,0.55)');
+      for (let x = (r % 2) * 40; x < W; x += 112) px(g, x, y - 16, 2, 14, 'rgba(125,83,52,0.3)');
     }
     for (let by = L.wallY + 2; by < H; by += 32) {
       for (let x = 0; x < W; x += 16) {
         const n = h2(x, by);
         if (n < 0.18) {
-          px(g, x + ((n * 50) | 0) % 8, by + 6 + ((n * 90) | 0) % 16, 10 + ((n * 160) | 0) % 14, 2, 'rgba(125,83,52,0.35)');
+          px(g, x + ((n * 50) | 0) % 8, by + 6 + ((n * 90) | 0) % 16, 10 + ((n * 160) | 0) % 14, 2, 'rgba(125,83,52,0.2)');
         } else if (n > 0.985) {
           const ky = by + 10 + ((n * 700) | 0) % 8;
-          px(g, x, ky, 6, 4, '#7d5334');          // knot
-          px(g, x + 2, ky + 1, 2, 2, '#5f402c');
+          px(g, x, ky, 6, 4, 'rgba(125,83,52,0.45)'); // worn knot
+          px(g, x + 2, ky + 1, 2, 2, 'rgba(95,64,44,0.4)');
         }
       }
     }
 
     // rugs (the big rug reaches up under the walking lane to break the bare stripe)
-    if(SCENE.hasFurniture(world,'rugs')) ell(g, 390, 450, 168, 74, '#a34d3b');
-    if(SCENE.hasFurniture(world,'rugs')) ell(g, 390, 450, 148, 62, '#b25c46');
-    if(SCENE.hasFurniture(world,'rugs')) ell(g, 390, 450, 118, 46, '#a34d3b');
+    if (SCENE.hasFurniture(world, 'rugs')) {
+      // A worn red field and narrow binding let readers lead the room.
+      // Its established footprint stays exactly the same.
+      ell(g, 390, 450, 168, 74, shade('#a34d3b', -0.08));
+      ell(g, 390, 450, 164, 71, '#a34d3b');
+      g.save(); g.globalAlpha = 0.3;
+      ell(g, 390, 450, 164, 71, '#8f5a3a'); g.restore();
+    }
     if(SCENE.hasFurniture(world,'rugs')) ell(g, 388, 290, 50, 16, '#8f5a3a');
     if(SCENE.hasFurniture(world,'rugs')) ell(g, 388, 290, 40, 11, '#a0693f');
     // reading nook rug under the wing chairs
     if (SCENE.hasFurniture(world,'nook')) ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#8f5a3a');
     if (SCENE.hasFurniture(world,'nook')) ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx - 14, L.library.rug.ry - 7, '#a0693f');
-    if(SCENE.hasFurniture(world,'rugs')) rugWeave(g, 390, 450, 168, 74, '#c9a04a');
+    if(SCENE.hasFurniture(world,'rugs')) rugWeave(g, 390, 450, 168, 74, '#c9b28a', true);
     if (SCENE.hasFurniture(world,'nook')) rugWeave(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#c9b28a');
 
     if(world.memory.life.furniture['mantel-decor']) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
@@ -287,13 +292,13 @@
 
   /* Sparse stitches in an elliptical border; the centre stays quiet behind
      readers. Pixel clusters, not high-frequency noise or animated texture. */
-  function rugWeave(g, cx, cy, rx, ry, thread) {
+  function rugWeave(g, cx, cy, rx, ry, thread, quiet) {
     g.save();
     for (let y = -ry + 4; y < ry; y += 6) {
       for (let x = -rx + 4; x < rx; x += 8) {
         const r = x * x / (rx * rx) + y * y / (ry * ry);
-        if (r > 0.91 || r < 0.65) continue;
-        g.globalAlpha = 0.12 + h2(x, y) * 0.1;
+        if (r > 0.91 || r < (quiet ? 0.84 : 0.65)) continue;
+        g.globalAlpha = quiet ? 0.07 + h2(x, y) * 0.07 : 0.12 + h2(x, y) * 0.1;
         px(g, cx + x, cy + y, 4, 2, thread);
       }
     }
@@ -302,7 +307,7 @@
     junction.addColorStop(1, 'rgba(20,12,8,0)');
     g.fillStyle = junction; g.fillRect(0, L.wallY, W, 18);
     g.globalAlpha = 0.16;
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; !quiet && i < 24; i++) {
       const a = i * Math.PI * 2 / 24;
       const x = Math.round(cx + Math.cos(a) * (rx - 24));
       const y = Math.round(cy + Math.sin(a) * (ry - 11));
@@ -906,22 +911,44 @@
     // high perch (at least 32 px of uninterrupted board).
     const cupCols = ['#d9d2c0', '#a94f3f', '#4a7a5a', '#d9a05a', '#7a89a5'];
     for (let i = 0; i < 5; i++) {
-      px(g, 648 + i * 18, 92, 10, 12, cupCols[i]);
-      px(g, 658 + i * 18, 96, 2, 4, cupCols[i]);
-      px(g, 648 + i * 18, 92, 10, 2, shade(cupCols[i], 0.2));
-      px(g, 648 + i * 18, 94, 2, 7, shade(cupCols[i], 0.12));
-      px(g, 654 + i * 18, 95, 4, 9, shade(cupCols[i], -0.13));
+      R.ceramic(g, 648 + i * 18, 92, { w: 10, h: 12, color: cupCols[i],
+        handle: { x: 10, y: 4, w: 2, h: 4 } });
     }
-    // shelf 2: teapot, plates, jars, the displaced books, and one mug
-    px(g, 648, 134, 22, 14, '#e8e0d0'); px(g, 670, 138, 6, 4, '#e8e0d0'); px(g, 656, 130, 6, 4, '#e8e0d0');
-    px(g, 650, 134, 3, 10, shade('#e8e0d0', 0.12));
-    px(g, 664, 140, 6, 8, '#d9d2c0');
-    px(g, 651, 146, 16, 2, '#c9c2b0');
-    px(g, 692, 140, 18, 8, '#c9c2b0'); px(g, 694, 136, 14, 2, '#b5aa92'); px(g, 694, 144, 14, 2, '#b5aa92');
+    // shelf 2: one ceramic group (teapot and nested plates), then pantry jars.
+    // Stepped shoulders, the open handle and darker foot separate the pale
+    // teapot from plaster, within the original 28 by 18 pixel envelope.
+    px(g, 648, 136, 6, 8, '#d9d2c0');
+    px(g, 650, 138, 2, 4, '#e3cfa7');
+    px(g, 652, 136, 18, 10, '#e8e0d0');
+    px(g, 654, 134, 14, 2, '#e8e0d0');
+    px(g, 654, 146, 14, 2, '#c9c2b0');
+    px(g, 654, 136, 4, 8, shade('#e8e0d0', 0.12));
+    px(g, 665, 136, 5, 10, shade('#e8e0d0', -0.15));
+    px(g, 670, 138, 6, 4, '#d9d2c0');
+    px(g, 674, 136, 2, 4, '#e8e0d0');
+    px(g, 654, 132, 14, 2, '#c9c2b0');
+    px(g, 656, 132, 10, 2, '#e8e0d0');
+    px(g, 660, 130, 4, 2, '#d9d2c0');
+    // Each plate has a lit rim over a shaded underside; the three overlap
+    // as a stack instead of reading as a disconnected pale rectangle.
+    [146, 142, 138].forEach(function (y) {
+      ell(g, 701, y, 9, 2, '#b5aa92');
+      px(g, 694, y - 2, 14, 2, '#e8e0d0');
+      px(g, 696, y - 2, 10, 2, '#d9d2c0');
+    });
     px(g, 724, 132, 12, 16, '#d9973f'); px(g, 726, 128, 8, 4, '#8a611e');
+    px(g, 724, 134, 2, 12, shade('#d9973f', 0.15));
+    px(g, 732, 134, 4, 14, shade('#d9973f', -0.17));
+    px(g, 726, 128, 8, 2, shade('#8a611e', 0.2));
+    px(g, 726, 146, 8, 2, shade('#d9973f', -0.2));
     px(g, 744, 136, 12, 12, '#a5763f'); px(g, 746, 132, 8, 4, '#6e4a26');
+    px(g, 744, 138, 2, 8, shade('#a5763f', 0.15));
+    px(g, 752, 138, 4, 10, shade('#a5763f', -0.17));
+    px(g, 746, 132, 8, 2, shade('#6e4a26', 0.2));
+    px(g, 746, 146, 8, 2, shade('#a5763f', -0.2));
     px(g, 760, 128, 6, 20, '#8a4a3a'); px(g, 768, 132, 6, 16, '#4a5a7a');
-    px(g, 780, 136, 10, 12, '#4a7a5a');
+    R.ceramic(g, 780, 136, { w: 8, h: 12, color: '#4a7a5a',
+      handle: { x: 8, y: 4, w: 2, h: 4 } });
   }
 
   function drawHangingLamp(g, lp, world) {

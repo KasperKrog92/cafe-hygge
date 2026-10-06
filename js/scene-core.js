@@ -747,10 +747,59 @@
   SCENE.startedModest = function (life) { return !life.furniture['full-counter']; };
   SCENE.pendantsLit = function (world) { return SCENE.hasFurniture(world, 'full-counter'); };
 
+  // The same ceramic material on a shelf, in a hand or resting on a saucer.
+  // Coordinates and dimensions belong to the caller: this never moves a grip
+  // or a surface contact. Handles use offsets within their existing envelope.
+  function ceramic(g, x, y, o) {
+    o = o || {};
+    const w = o.w || 10, h = o.h || 10, c = o.color || '#e8e0d0';
+    const hi = shade(c, 0.1), lo = shade(c, -0.17), handle = o.handle;
+    if (handle) {
+      const hx = x + handle.x, hy = y + handle.y;
+      px(g, hx, hy, handle.w, handle.h, lo);
+      px(g, hx, hy, handle.w, 2, c);
+      px(g, hx, hy + handle.h - 2, handle.w, 2, c);
+      if (handle.w >= 3 && handle.h >= 5)
+        px(g, hx + (handle.x < 0 ? handle.w - 2 : 0), hy + 2, 2, 2, shade(c, -0.38));
+    }
+    if (w < 8 || h < 8) {
+      px(g, x, y, w, h, c);
+      px(g, x, y, 2, h, hi); px(g, x + w - 2, y + 2, 2, h - 2, lo);
+      px(g, x + 1, y, w - 2, 2, o.drink || shade(c, -0.28));
+      if (o.band) px(g, x, y + 2, w, 2, o.band);
+      return;
+    }
+    // Stepped lip and foot give the body a round section without smoothing.
+    px(g, x, y + 2, w, Math.max(2, h - 4), c);
+    px(g, x + 2, y, w - 4, 2, hi);
+    px(g, x + 2, y + h - 2, w - 4, 2, lo);
+    px(g, x, y + 2, 2, Math.max(2, h - 4), hi);
+    px(g, x + w - 2, y + 2, 2, Math.max(2, h - 4), lo);
+    px(g, x + 2, y + 2, w - 4, 2, o.drink || shade(c, -0.28));
+    px(g, x + 2, y + 4, w - 4, 2, hi);
+    if (o.band) px(g, x, y + Math.min(5, h - 4), w, 2, o.band);
+  }
+  // Glass shares rim, side reflection and base thickness across all poses.
+  // The straw remains at its caller's established position.
+  function drinkGlass(g, x, y, fill) {
+    fill = fill == null ? 1 : Math.max(0, Math.min(1, fill));
+    px(g, x, y, 8, 13, 'rgba(200,220,230,0.7)');
+    const bodyH = Math.max(1, Math.round(8 * fill));
+    px(g, x + 1, y + 12 - bodyH, 6, bodyH, '#8a9a4a');
+    if (fill > 0.55) px(g, x + 1, y + 2, 6, 3, '#e8dfc9');
+    if (fill > 0.75) {
+      px(g, x + 2, y + 6, 2, 2, 'rgba(255,255,255,0.45)');
+      px(g, x + 5, y + 8, 2, 2, 'rgba(255,255,255,0.4)');
+    }
+    px(g, x, y, 8, 2, 'rgba(232,240,244,0.72)');
+    px(g, x, y + 3, 2, 7, 'rgba(232,240,244,0.25)');
+    px(g, x + 2, y + 11, 6, 2, 'rgba(184,191,199,0.5)');
+  }
+
   /* Private renderer contract shared by the scene siblings. */
   SCENE._ = {
     W: W, H: H, L: L,
     px: px, ell: ell, lerp: lerp, shade: shade, h2: h2, keys: keys,
-    drawTinyPlant: drawTinyPlant, leaf: leaf
+    drawTinyPlant: drawTinyPlant, leaf: leaf, ceramic: ceramic, drinkGlass: drinkGlass
   };
 })();

@@ -745,22 +745,12 @@
 
   function drawMatchaCup(g, x, top) {
     ell(g, x + 5, top + 11, 10, 3, '#d9d2c0');
-    px(g, x - 1, top + 1, 12, 10, '#e8e0d0');
-    px(g, x + 1, top + 1, 8, 2, '#8a9a4a');
+    R.ceramic(g, x - 1, top + 1, { w: 12, h: 10, drink: '#8a9a4a' });
   }
 
   function drawIcedMatcha(g, x, top, fill) {
-    fill = fill == null ? 1 : Math.max(0, Math.min(1, fill));
     px(g, x + 8, top - 5, 2, 9, '#d9738a');
-    px(g, x + 1, top, 8, 13, 'rgba(200,220,230,0.7)');
-    const bodyH = Math.max(1, Math.round(8 * fill));
-    px(g, x + 2, top + 12 - bodyH, 6, bodyH, '#8a9a4a');
-    if (fill > 0.55) px(g, x + 2, top + 2, 6, 3, '#e8dfc9');
-    if (fill > 0.75) {
-      px(g, x + 3, top + 6, 2, 2, 'rgba(255,255,255,0.5)');
-      px(g, x + 6, top + 8, 2, 2, 'rgba(255,255,255,0.5)');
-    }
-    px(g, x + 1, top, 8, 2, 'rgba(255,255,255,0.5)');
+    R.drinkGlass(g, x + 1, top, fill);
   }
 
   function drawTableItem(g, cx, cy, it, reach) {
@@ -800,9 +790,9 @@
     } else {
       ell(g, ix + 5, cy, 10, 3, 'rgba(20,12,8,0.18)');       // contact shadow
       ell(g, ix + 5, cy - 2, 9, 3, '#e8e0d0');   // saucer
-      px(g, ix, cy - 14, 10, 12, it.kind === 'teacup' ? '#d9d2c0' : '#e8e0d0');
-      px(g, ix + 10, cy - 11, 3, 5, '#e8e0d0');   // handle
-      px(g, ix + 2, cy - 14, 6, 2, '#6b4429');    // the drink
+      R.ceramic(g, ix, cy - 14, { w: 10, h: 12,
+        color: it.kind === 'teacup' ? '#d9d2c0' : '#e8e0d0', drink: '#6b4429',
+        handle: { x: 10, y: 3, w: 3, h: 5 } });
     }
   }
 
@@ -869,8 +859,8 @@
     if (!world.memory.flags['luna-mug-cafe'] || !SCENE.hasFurniture(world,'counter-equipment') ||
         world.barista.mugOut) return;   // in her hand for a coffee of her own
     const x = (SCENE.fullCounter(world) ? L.oldMug.full : L.oldMug.basic).x, y = L.backBar.slabY;
-    px(g, x, y - 7, 5, 7, '#e8dfc9'); px(g, x, y - 5, 5, 2, '#4a3222');
-    px(g, x + 5, y - 6, 2, 4, '#e8dfc9'); px(g, x + 1, y - 7, 3, 1, '#6b4429');
+    R.ceramic(g, x, y - 7, { w: 5, h: 7, color: '#e8dfc9', drink: '#6b4429',
+      band: '#4a3222', handle: { x: 5, y: 1, w: 2, h: 4 } });
   }
   // Gerda's blanket, left downstairs: folded over the rail of the chair
   // nearest the fire, one end hanging toward the room.
@@ -894,7 +884,7 @@
     px(g,x,y-30,30,30,'#8a919c');px(g,x+2,y-28,26,16,'#b8bfc7');
     px(g,x+3,y-26,24,2,'#d9d2c0');px(g,x+5,y-9,19,7,'#3c414d');
     px(g,x+12,y-13,5,7,'#3c414d');px(g,x+14,y-11,12,2,'#4a3222');
-    px(g,x+10,y-6,8,5,'#e8dfc9');px(g,x+4,y-23,3,3,'#657568');
+    R.ceramic(g,x+10,y-6,{w:8,h:5,color:'#e8dfc9'});px(g,x+4,y-23,3,3,'#657568');
     px(g,x+23,y-23,3,3,world.brew.active?'#d9a33c':'#64706d');
     px(g,x+30,y-16,2,13,'#8a919c');px(g,x+28,y-3,7,2,'#d9d2c0');
     const G=B.grinder;
@@ -917,7 +907,8 @@
     px(g,C.x-6,C.frontY-3,C.w+10,3,'#7d5334');
     if(SCENE.hasFurniture(world,'counter-equipment')) {
       // Three cups and a little cash tin, no register or wall menu.
-      for(let i=0;i<3;i++) {px(g,C.x+24+i*10,C.slabY-7,7,7,'#e8dfc9');px(g,C.x+31+i*10,C.slabY-5,2,3,'#c9b28a');}
+      for(let i=0;i<3;i++) R.ceramic(g,C.x+24+i*10,C.slabY-7,
+        {w:7,h:7,color:'#e8dfc9',handle:{x:7,y:2,w:2,h:3}});
       px(g,C.x+100,C.slabY-7,18,7,'#4d6052');px(g,C.x+100,C.slabY-9,18,3,'#64706d');
     }
     if(SCENE.hasFurniture(world,'cake-stand')) {
@@ -955,19 +946,41 @@
     px(g, C.x + 150, C.slabY + 8, 70, 2, 'rgba(125,83,52,0.3)');
     px(g, C.x + 60, C.slabY + 10, 50, 2, 'rgba(125,83,52,0.25)');
     px(g, C.x - 8, C.frontY - 3, C.w + 8, 3, '#7d5334');
-    // register
-    px(g, 748, 242, 30, 22, '#3c414d');
+    // Register: raised display, a foreshortened key deck, and the drawer's
+    // recessed face. The complete form stays inside the original envelope.
+    px(g, 748, 261, 30, 3, 'rgba(20,12,8,0.24)');
+    px(g, 748, 250, 30, 14, '#3c414d');
+    px(g, 774, 244, 4, 18, '#2a2e38');
     px(g, 750, 238, 26, 6, '#2a2e38');
-    px(g, 752, 248, 22, 8, '#8a919c');
+    px(g, 752, 238, 22, 2, '#687080');
+    px(g, 754, 240, 16, 2, '#8a919c');
+    px(g, 750, 244, 24, 4, '#687080');
+    px(g, 748, 248, 26, 6, '#8a919c');
+    [0,1,2,3].forEach(function(i){px(g,751+i*5,248,3,2,'#3c414d');});
+    px(g, 751, 251, 12, 2, '#3c414d'); px(g, 768, 251, 4, 2, '#64706d');
+    px(g, 750, 255, 24, 7, '#687080');
+    px(g, 752, 256, 20, 2, '#8a919c');
+    px(g, 757, 259, 10, 2, '#2a2e38');
     // tip jar
     px(g, 794, 250, 12, 14, 'rgba(200,220,230,0.7)');
     px(g, 796, 258, 8, 4, '#d9a33c');
     px(g, 794, 248, 12, 2, '#8a919c');
     // pastry case (hero prop: deliberately a notch above strict scale)
-    px(g, 820, 224, 76, 40, 'rgba(210,225,235,0.35)');
-    g.strokeStyle = '#8a919c'; g.lineWidth = 2;
-    g.strokeRect(821, 225, 74, 38);
-    px(g, 820, 244, 76, 2, '#8a919c');
+    px(g, 820, 261, 76, 3, 'rgba(20,12,8,0.24)');
+    px(g, 822, 230, 68, 32, 'rgba(210,225,235,0.16)');
+    // Stepped top and right return show actual depth, not a shine stripe
+    // across a flat front. All glass and frames retain x820..896/y224..264.
+    for(let row=0;row<6;row+=2)px(g,826-row,224+row,70,2,'rgba(210,225,235,0.34)');
+    px(g, 826, 224, 70, 2, '#b8bfc7');
+    px(g, 820, 230, 70, 2, '#8a919c');
+    px(g, 820, 230, 2, 32, '#8a919c');
+    px(g, 888, 230, 2, 32, '#8a919c');
+    px(g, 890, 230, 6, 32, 'rgba(60,65,77,0.23)');
+    px(g, 894, 224, 2, 38, '#8a919c');
+    for(let row=0;row<6;row+=2)px(g,890+row,228-row,2,4,'#8a919c');
+    px(g, 822, 243, 66, 2, 'rgba(232,240,244,0.2)');
+    px(g, 820, 245, 70, 2, '#687080');
+    px(g, 820, 261, 70, 3, '#687080');
     if (!world.shop || world.shop.stocked) {
     // top shelf: croissant, cinnamon swirl, danish — each on doily paper
     px(g, 826, 241, 16, 2, 'rgba(232,224,208,0.5)');
@@ -988,12 +1001,10 @@
     px(g, 862, 257, 13, 2, '#c98f4a'); px(g, 862, 260, 13, 2, '#c98f4a');
     }
     // glass shine
-    px(g, 822, 226, 72, 3, 'rgba(232,240,244,0.25)');     // glass top plane
-    px(g, 888, 229, 6, 32, 'rgba(60,65,77,0.14)');        // recessed side
-    px(g, 824, 230, 2, 12, 'rgba(255,255,255,0.22)');
-    px(g, 826, 230, 6, 2, 'rgba(255,255,255,0.18)');
-    px(g, 856, 227, 2, 14, 'rgba(255,255,255,0.12)');
-    px(g, 860, 227, 2, 10, 'rgba(255,255,255,0.10)');
+    px(g, 828, 226, 58, 2, 'rgba(232,240,244,0.23)');
+    px(g, 824, 233, 2, 9, 'rgba(255,255,255,0.2)');
+    px(g, 826, 233, 6, 2, 'rgba(255,255,255,0.17)');
+    px(g, 880, 250, 2, 8, 'rgba(255,255,255,0.12)');
     // the tiny shelf plant migrated beside the pastry case when the cat
     // claimed the right end of the top shelf.
     drawTinyPlant(g, L.counterPlant.x, L.counterPlant.y);
@@ -1014,9 +1025,8 @@
         drawIcedMatcha(g, c.x, c.y - 3);
       } else {
         ell(g, c.x + 5, c.y + 10, 9, 3, '#d9d2c0');
-        px(g, c.x, c.y, 10, 11, '#e8e0d0');
-        px(g, c.x + 10, c.y + 2, 3, 5, '#e8e0d0');
-        px(g, c.x + 2, c.y, 6, 2, '#6b4429');
+        R.ceramic(g, c.x, c.y, { w: 10, h: 11, drink: '#6b4429',
+          handle: { x: 10, y: 2, w: 3, h: 5 } });
       }
     });
   }
