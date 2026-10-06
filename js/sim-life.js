@@ -4,6 +4,25 @@
   const R = SIM._, L = SCENE.L, H = L.home;
   const PLANT = SIM.plantProject = IMPROVEMENTS.plant;
   const PROJECTS = SIM.projects = IMPROVEMENTS.projects;
+  // A fresh, fully furnished ambient session. No browser store, remembered
+  // choices or story rewards are copied from the player's game.
+  SIM.createIdle = function (options) {
+    const o = options || {}, state = MEMORY.codec.fresh(), l = state.life;
+    l.mode = 'idle'; l.room = 'full'; l.furniture = MEMORY.furnishings(true);
+    l.firstOpening = {step:12,time:0}; l.intro.complete = true;
+    l.intro.finale = 8; l.intro.sign = 'outside';
+    l.homeStory = MEMORY.freshHomeStory(true);
+    l.homeUnpack.boxes = MEMORY.UNPACK_BOXES;
+    l.daysCompleted = 15; l.openSeconds = 11700; l.hour = 12;
+    // The repaired window is a capability independent of the room furniture.
+    ['window','bookshelf','windowSeat','mantel'].forEach(function (id) {
+      l.projects[id] = {stage:'installed',step:PROJECTS[id].phaseIds.length,time:0};
+    });
+    state.flags['gerda-window-legacy'] = true;
+    state.flags['fireplace-unlocked'] = true;
+    return SIM.create({ambient:true, memory:MEMORY.createStore({state:state}),
+      random:o.random || Math.random, sound:o.sound});
+  };
   function busy(w) { return w.moment || w.barista.orders.length || R.customerAtCounter(w) || R.needsTableClear(w) || w.shop.phase !== 'open'; }
   function pending(w) {
     // Finish the job already laid out before opening another kit.
@@ -372,7 +391,7 @@
     if (w.shop.task && w.shop.task.kind === 'cat') w.shop.task.called = false;
   };
   SIM.setMode = function (w, mode) {
-    if (mode !== 'idle' && mode !== 'game') return false;
+    if (w.ambient || mode !== 'idle' && mode !== 'game') return false;
     w.memory.life.mode = mode;
     if (mode === 'idle') w.plannerOpen = false;
     commit(w); return true;

@@ -1,5 +1,14 @@
 # Art — pixel style guide & layout map
 
+## Startup choice
+
+The entry screen presents two large keyboard-accessible buttons: gold **Play
+the game** and dark warm-brown **Enjoy an idle café**, with short descriptions
+of saved story play and unsaved ambience. It uses the existing cream/gold
+palette and serif type. The idle café uses the existing fully furnished room
+and placements; it hides savings and game-only settings. Controls still fade
+when the mouse rests.
+
 ## First-morning speech and handmade sign
 
 Rear-facing kneeling work draws hands and tools before the torso and sleeves.

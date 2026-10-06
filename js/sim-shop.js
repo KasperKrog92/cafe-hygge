@@ -68,6 +68,7 @@
     }
 
     function updateShop(world, dt) {
+      if (world.ambient) return false;
       const s = world.shop, b = world.barista, cat = world.cat;
       if (!s) return false;
       if (s.phase === 'open') {

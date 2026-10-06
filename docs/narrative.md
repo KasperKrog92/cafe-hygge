@@ -1,6 +1,10 @@
 # Narrative — the design contract for the story layer
 
-> **Shared life (6 September 2026):** chosen plants, table assembly and hearth cleaning finish their practical
+> **Scope:** this contract covers the saved game, including its **Let the game
+> run quietly** setting (`life.mode: 'idle'`). The separate **Enjoy an idle café**
+> startup session has no narrative progression, invitations, tutorials or saves.
+>
+> **Shared game life:** chosen plants, table assembly and hearth cleaning finish their practical
 > work autonomously in either mode. This is not a personal story payoff.
 > Story invitations remain saved until chosen in game mode; idle hides their
 > controls without consuming them. Both modes share the same progress and home.

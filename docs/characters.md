@@ -1,5 +1,9 @@
 # Characters
 
+The startup idle café uses these same people and their ordinary café habits,
+with no story invitations, deliveries or apartment transitions. Saved stories
+and home routines below belong to the game, including its quiet-play setting.
+
 ## The first apartment evening
 
 `sim-life.js` sends the existing Lunafreya and cat to the sparse apartment after
@@ -13,7 +17,7 @@ and bed, with a side approach onto the bed. The cat investigates boxes and
 rests beside her. Arrival at the door happens once. Game mode loops only the indoor desk,
 reading and resting routine until the player chooses **go to sleep**, with or
 without open evening thoughts. Lunafreya and the cat join matching positions at the loop
-boundary, without replaying arrival or jumping across the room. Idle mode finishes the routine
+boundary, without replaying arrival or jumping across the room. The game's quiet-play setting finishes the routine
 automatically. Sleep advances directly to the short dawn transition and café entrance.
 
 In the morning the original carried-cat entrance and bowl routine run first.

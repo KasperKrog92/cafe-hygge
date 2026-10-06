@@ -78,6 +78,7 @@ module.exports = async function (t) {
   const secondErrors = [];
   second.on('pageerror', e => secondErrors.push(String(e.stack || e)));
   await second.goto(new URL('/?life-test', page.url()).href);
+  await second.click('#enter');
   await second.waitForFunction(() => document.getElementById('enter').disabled, null, { timeout: 5000, polling: 100 });
   await second.evaluate(() => {
     if (window.__world) throw Error('second writer');

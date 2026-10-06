@@ -39,8 +39,13 @@ for the full design ethos.
   [narrative.md](docs/narrative.md) owns choices, attendance and lasting effects.
   Acceptance of the larger plan does not mean its cast or systems should be
   built in one task.
-- **The one mandatory moment:** Holger's first introduction on a new café's
-  first day waits at the counter (softly pulsing) until opened, in both modes,
+- **Startup:** choose the saved game or an unsaved, fully furnished idle café.
+  Idle uses the current renderer and simulation, stays open through day/night,
+  and has no tutorials, story events or persistence (including sound changes).
+  It never owns the game's browser lock. The game's existing quiet-play setting
+  remains separate (`life.mode`); it still saves progress.
+- **The one mandatory moment:** Holger's first introduction on a new game's
+  first day waits at the counter (softly pulsing) until opened, including quiet play,
   and holds service time until it is complete. This tutorial exception does not
   make any later story beat mandatory.
 

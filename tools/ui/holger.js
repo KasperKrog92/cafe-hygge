@@ -16,7 +16,7 @@ module.exports = async function (t) {
   }
   await t.init('life-browser-init.js');
   await t.open('/?life-test');
-  await page.getByRole('button', { name: 'step inside' }).click();
+  await t.enter();
   await t.eval(() => {
     const w = __world; SIM.skipIntro(w); for (let n = 0; n < 8000 && w.shop.phase === 'settling'; n++) SIM.update(w, .25);
     for (let n = 0; n < 1000 && !SIM.holgerAvailable(w); n++) SIM.update(w, .1);
@@ -42,7 +42,7 @@ module.exports = async function (t) {
     MEMORY.saveNow();
   });
   await t.reload();
-  await page.getByRole('button', { name: 'step inside' }).click();
+  await t.enter();
   await t.eval(() => {
     const w = __world; window.uiNow = performance.now(); lifeTestFrame(uiNow);
     document.getElementById('meet-holger').click();
@@ -66,7 +66,7 @@ module.exports = async function (t) {
   // An established café: accept the real invitation during a real drink.
   await t.eval(() => { Object.assign(__world.memory, __dev.furnishedWorld().memory); MEMORY.saveNow(); });
   await t.reload();
-  await page.getByRole('button', { name: 'step inside' }).click();
+  await t.enter();
   await t.eval(() => {
     const w = __world; w.spawnT = 1e9; w.barista.idleT = 999;
     const p = SIM._.makePatron(w, 'Signe'); p.wantsBook = false; p.ownBook = true; p.outdoor = false;

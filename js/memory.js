@@ -15,7 +15,7 @@
   const MEMORY = (window.MEMORY = {});
   // Waiting browser tabs may receive hidden/pagehide before they own a world.
   // Their exit listeners must not flush an old snapshot over the active save.
-  MEMORY.readOnly = !!navigator.locks;
+  MEMORY.readOnly = true; // startup and ambient tabs never write the game save
   const own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
   function record(o) {
     return !!o && typeof o === 'object' &&

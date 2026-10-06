@@ -1,7 +1,8 @@
 # Overview — what Café Hygge is
 
-> **Scope:** the café shares one persistent life across idle/game presentations,
-> with autonomous café/home routines and improvements. The
+> **Scope:** startup offers the saved game and a separate unsaved idle café.
+> The game has autonomous café/home routines and improvements; idle opens the
+> fully furnished room for uninterrupted ambience. Both use the same engine. The
 > [progression roadmap](progression-roadmap.md) distinguishes shipped and future
 > behavior. The owner largely accepted the [community story direction](plans/community-and-character-stories.md);
 > its larger ensemble and arcs remain planned. [The story bible](story-bible.md)
@@ -11,7 +12,7 @@
 Café Hygge is a **soft narrative game that is also a companion app**. It can sit
 in the corner of a screen while its owner reads a physical book — a warm room,
 small lives unfolding, soft sounds, lovely at a glance and whole when left
-unattended after its one-time tutorials. For anyone who gets invested, it slowly becomes something more: a
+unattended immediately in idle, or after the game's one-time tutorials. For anyone who gets invested, it slowly becomes something more: a
 café whose regulars you come to know, whose small projects and friendships move
 forward on their own time, and who now and then turn to you with something to
 share. The Danish word *hygge* — the art of cozy contentment — is still the
@@ -24,19 +25,20 @@ would.
 
 ## Two ways to hold it
 
-Café Hygge can be enjoyed at two depths within its shared idle/game life:
+Café Hygge offers two choices whenever the page opens:
 
-- **As a companion.** After the first-morning/home tutorials, leave it in the
-  corner. Ordinary life in idle presentation is complete on its own; personal
-  story invitations keep waiting and absence carries no penalty.
-- **As a soft narrative.** Get invested and the café rewards attention: the
+- **Enjoy an idle café.** Enter a fully furnished, always-open room with
+  customers, Lunafreya, the cat, weather and sound. No tutorials, story events,
+  evening planning or saving. Your game stays exactly where you left it.
+- **Play the game.** Continue your saved café, or begin a new one. The café rewards attention: the
   regulars have habits, then histories; small projects and friendships advance
   quietly in the background as the café's own days pass; and when something is
   finally ready to happen, it waits for you to be there for it.
 
-The whole design rests on reconciling those two — progression a companion user
-never trips over, and an invested user never misses. The mechanism that makes
-that possible has its own home: the **[narrative design contract](narrative.md)**.
+Within the game, **Let the game run quietly** hides optional story invitations
+and lets later evenings pass automatically while progress still saves. The
+**[narrative design contract](narrative.md)** keeps every payoff waiting for you.
+Settings also offers **choose another mode**, returning to the startup choice.
 
 ## Design principles
 

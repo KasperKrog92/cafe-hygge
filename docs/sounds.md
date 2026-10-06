@@ -62,7 +62,9 @@ Bell-like sounds (door bell, ding, clinks, music notes) take a room send.
 Separate sfx/music delay returns pass through their channel faders, so even
 ringing echoes follow volume and mute without leaking into another channel.
 
-Preferences save automatically under `cafe-hygge-audio`. Existing volume,
+In the game, preferences save automatically under `cafe-hygge-audio`. The
+startup idle café reads those preferences but keeps any adjustments only for
+that visit (`SND.sessionOnly`); it does not write them back. Existing volume,
 mute and rain/fire/music off preferences are preserved; missing channel levels
 default to 100%. Invalid types fall back to defaults and numeric levels clamp
 to 0–1. Adjusting formerly disabled fire/music re-enables that channel at the chosen level.

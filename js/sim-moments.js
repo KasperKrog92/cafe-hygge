@@ -11,7 +11,7 @@
       (p.state==='ordering' || p.state==='seated')) || null;
   };
   SIM.beginMoment=function(w,lines,owner,finish) {
-    if(w.moment || w.shop.phase!=='open')return false;
+    if(w.ambient || w.moment || w.shop.phase!=='open')return false;
     w.moment={lines:lines,index:0,owner:owner,finish:finish,phase:'waiting',visible:0,clock:0,syllable:0};
     if(w.barista.state==='idle' && !startApproach(w)){w.moment=null;return false;}
     w.activeCaption=null; w.captionQueue=[];

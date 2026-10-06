@@ -1,16 +1,13 @@
 /* The normal (non-dev) entry: setup waits behind the splash, the real
-   'step inside' click starts audio, then one cappuccino order runs in real
+   game choice starts audio, then one cappuccino order runs in real
    time (the point of this check) through steam, payment and a seated guest.
    Ends with a night audit and capture. */
 module.exports = async function (t) {
-  await t.open('/');
+  await t.page.goto(t.base + '/');
   await t.eval(() => {
-    const w = __world;
-    if (w.firstEntryReady || w.memory.life.firstOpening.step !== 0) throw Error('setup started behind splash');
-    const before = JSON.stringify(w.memory); SIM.update(w, 60);
-    if (before !== JSON.stringify(w.memory)) throw Error('splash advanced setup');
+    if (window.__world || !MEMORY.readOnly || localStorage.getItem('cafe-hygge-save')) throw Error('game started before a choice');
   });
-  await t.page.getByRole('button', { name: 'step inside' }).click();
+  await t.enter();
   await t.eval(() => {
     if (!SND.ready()) throw Error('audio not initialized');
     if (!__world.firstEntryReady) throw Error('entry did not release setup');

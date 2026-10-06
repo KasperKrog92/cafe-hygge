@@ -1,4 +1,20 @@
-# One life, two ways to spend time with it
+# The saved game and the idle café
+
+## Startup choice — shipped
+
+Every normal page visit offers **Play the game** and **Enjoy an idle café**.
+The game resumes its saved café or begins at C0/H0. Idle opens the full,
+furnished room immediately, populated and serving: no tutorials, character
+stories, construction, planning, closing or apartment transitions. Light,
+weather, ordinary patron activities, Lunafreya, the cat and audio keep running.
+The idle session saves nothing, including changes to sound preferences; it
+neither changes nor advances the game and can run alongside a game tab.
+Settings returns to the chooser with **choose another mode**.
+
+The game's existing **Let the game run quietly** setting still changes its
+saved presentation in place (`life.mode: 'idle'`), preserving all progression.
+References below to both saved presentations concern that setting, not the
+separate idle startup session. Later improvements remain future work.
 
 Direction recorded 6 September 2026, with shipped updates through 7 September.
 Shared home life, the plant/table/hearth jobs, C0, the identity swap, first
@@ -260,12 +276,13 @@ households stay at their later boundaries.
 
 ## Direction from the owner
 
-- Game and idle share the same café, apartment, relationships and saved progress.
-  Switching modes changes the available interaction, never the world's history.
-- New cafés start in game mode (8 September). Settings contains an **Idle mode**
-  checkbox; turning it off returns to game mode. The choice saves with café
-  progress and survives reloads, including existing idle saves. The ordinary
-  control bar no longer contains a mode switch. Starting over uses game mode.
+- Startup separates the saved game from an unsaved, fully furnished idle café.
+  Idle never borrows the player's apartment, relationships or progress.
+- New games start in the attended presentation. Settings contains **Let the
+  game run quietly**; its choice saves with game progress and survives reloads.
+  Turning it off restores optional invitations and explicit later bedtimes.
+  Starting over uses the attended presentation. The rest of this progression
+  roadmap describes the saved game and its quiet-play setting.
 - The protagonist remains autonomous: brewing, serving, tidying, relaxing and
   doing improvement work without movement controls or individual work commands.
 - After closing, follow her home. She reads, uses her PC and spends a quiet
@@ -296,16 +313,17 @@ sign, menu and counter growth, hiring help, possible shared-home stories, many
 moving boxes and the cat at home. Possible relationship outcomes remain open
 story ideas rather than a prescribed ending.
 
-## One save and one autonomous routine
+## One engine, separate sessions
 
 | Surface | What the player sees and can do |
 | --- | --- |
-| Idle | The current saved place and ordinary life, including chosen work, deliveries and evenings at home. Planning controls and story invitations stay unobtrusive or hidden. |
-| Game | The same live scene and routines, with access to conversations and an evening plan. The player chooses direction; Lunafreya carries it out. |
+| Idle café | A fully furnished café, always open with ordinary activity and sound. No story events or saving. |
+| Game | The saved café and home, with conversations, improvements and an evening plan. The player chooses direction; Lunafreya carries it out. Quiet play can hide optional invitations and let later evenings pass. |
 
-Switch in place without reloading, resetting the clock, duplicating money or
-changing what is installed. There is no separate completed idle café. A person
-who never buys anything still has a pleasant, functioning place indefinitely.
+Choosing another startup mode returns through the entry screen. Idle is always
+a fresh furnished session; the game resumes its save. The game's quiet-play
+checkbox switches in place without changing its clock, money or furnishings.
+A game in which nobody buys anything remains a pleasant, functioning place.
 
 **Evening rule (updated 7 September 2026):** the first home arrival is an
 attended, saved sequence in both modes. Lunafreya sets down the cat, talks about
@@ -633,15 +651,15 @@ direction. A large catalogue or a redesigned whole café would hide that test.
   footprints in the layout contract. Art, collision, seating and activity
   availability must read the same installed state.
 - Extend `MEMORY` with versioned migrations for savings, owned improvements,
-  partial jobs, day/home phase and the evening plan. Both modes use that state.
+  partial jobs, day/home phase and the evening plan. Both saved game presentations use that state;
+  the startup idle café uses private memory with no storage adapter.
   Save important transitions atomically and flush on exit. Settings export/import
   now provides manual backups and transfer before substantial long-term play.
 - Preserve current users' developed cafés, story marks and relationships by
   migrating them to equivalent owned furnishings. Starting small must be an
   explicit new-life choice, never an update that strips an existing save.
-- A fresh save begins at C0/H0; changing mode never creates a fresh
-  save. Before release, handle simultaneous tabs so two views cannot duplicate
-  earnings or overwrite each other's job progress.
+- A fresh game save begins at C0/H0. The idle startup choice never creates or
+  replaces a save. Game tabs acquire the single-writer lock; idle tabs do not.
 - Test long unattended runs, mid-action saves, interruptions, worker exits,
   purchases, migrations and each available furniture arrangement. Continue
   the existing audit and browser cleanup workflow. No runtime tests are needed

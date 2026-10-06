@@ -7,7 +7,7 @@ module.exports = async function (t) {
   const page = t.page;
   await t.init('life-browser-init.js');
   await t.open('/?life-test');
-  await page.getByRole('button', { name: 'step inside' }).click();
+  await t.enter();
   await t.eval(async () => {
     window.uiNow = performance.now();
     const w = __world; SIM.update(w, .25); lifeTestFrame(uiNow);

@@ -27,7 +27,7 @@ module.exports = async function (t) {
       window.dinnerNow = performance.now(); lifeTestFrame(dinnerNow);
       return { time: w.memory.life.homeDinner.time, pose: w.barista.pose, lit: SCENE.homeKitchenLit(w) };
     }, raw);
-    await page.getByRole('button', { name: 'step inside' }).click();
+    await t.enter();
     // life-browser-init.js stubs requestAnimationFrame, so poll on a timer:
     // Playwright's default 'raf' polling would never re-check (and would
     // replace window.lifeTestFrame with its own callback).

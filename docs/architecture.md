@@ -194,11 +194,23 @@ The first planner reopens until both window and table are selected. Later
 planner openness is presentation-only. Mode switching never changes world
 identity, time, progress or ownership. Game mode exposes pending invitations.
 
-On supported desktop browsers, `main.js` acquires the origin's Web Lock
+The normal startup chooser creates no world and keeps `MEMORY.readOnly` true.
+**Play the game** starts the saved life. **Enjoy an idle café** calls
+`SIM.createIdle({sound:SND})` in sim-life.js: full furnishings, a repaired window,
+private `MEMORY.createStore` without storage, and runtime `world.ambient: true`.
+This flag is not saved and does not change the save schema. Ambient sessions
+skip shop closing, arc growth, story arrival hooks and invitations. Ordinary
+service, autonomous activities, weather and the day/night clock keep running.
+`life.mode` still controls the saved game's quiet-play presentation; it cannot
+turn an ambient world into a game. `SND.sessionOnly` makes idle sound adjustments
+temporary. Game-only settings, savings and planning controls are hidden.
+
+On supported desktop browsers, after the game choice `main.js` acquires the origin's Web Lock
 `cafe-hygge-life` before creating a production world. A second tab waits without
 simulation or writes (including exit/hidden flushes); pagehide releases ownership
 after the final save, and back/forward restores reacquire it. The waiting tab reloads the
-latest memory before boot. Plain file/older-browser environments without Web
+latest memory before boot. Choosing idle while waiting aborts that queued lock
+request; idle never owns a game lock. Plain file/older-browser environments without Web
 Locks retain single-view boot compatibility; concurrent writers there are not
 supported. The `cafe-ready` event runs dev URL setup after asynchronous ownership
 acquisition. Private worlds never acquire a browser lock.

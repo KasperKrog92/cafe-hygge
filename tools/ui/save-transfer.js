@@ -51,7 +51,7 @@ module.exports = async function (t) {
     MEMORY.save();
   });
   await Promise.all([page.waitForURL(url => !url.search), page.click('#confirm-import')]);
-  await page.waitForFunction('!!window.__world && !location.search');
+  await page.waitForFunction('!!window.MEMORY && !location.search');
   await t.eval(() => {
     if (MEMORY.state.life.savings !== 173 || !MEMORY.state.flags.transferTest || MEMORY.state.life.projects.table.time !== 4.5 ||
         MEMORY.state.bonds.holger.warmth !== 3) throw Error('import lost history');

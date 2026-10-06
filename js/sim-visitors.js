@@ -159,6 +159,7 @@
   // belong to the ordinary customer lifecycle, including service and closing.
   // The neighbour who would drop in off duty now, or null (no side effects).
   R.socialVisitorDue=function(w) {
+    if(w.ambient)return null;
     const day=w.memory.life.daysCompleted;
     w.visitorDays=w.visitorDays||{};
     if(w.moment || w.shop.phase!=='open' || day<1)return null;

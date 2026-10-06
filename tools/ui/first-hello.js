@@ -3,7 +3,7 @@
 module.exports = async function (t) {
   await t.open('/');
   await t.eval(() => { if (__world.memory.life.firstOpening.step !== 0) throw Error('stale save'); });
-  await t.page.getByRole('button', { name: 'step inside' }).click();
+  await t.enter();
   await t.eval(() => {
     const w = __world; SIM.skipUnpacking(w);
     for (let n = 0; n < 8000 && w.shop.phase === 'settling'; n++) SIM.update(w, .25);

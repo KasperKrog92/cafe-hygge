@@ -33,6 +33,7 @@
   };
 
   SND.save = function () {
+    if (SND.sessionOnly) return;
     try { localStorage.setItem('cafe-hygge-audio', JSON.stringify(S)); } catch (e) {}
   };
 

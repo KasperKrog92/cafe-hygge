@@ -1,5 +1,10 @@
 # World systems — time, weather, light, events
 
+The startup idle café stays open around the clock. The full furnished room,
+customers, Lunafreya, cat, weather and day/night lighting keep going without
+story events, home transitions or persistence. The lifecycle below applies to
+the saved game, including its quiet-play setting.
+
 ## Closing time and the next morning
 
 At 21:30, new arrivals stop. Lunafreya wishes the remaining guests a good night from the counter,

@@ -59,7 +59,7 @@ module.exports = async function (t) {
     if (document.querySelector('#reset-error').hidden || MEMORY.state.life.savings !== 123) throw Error('failed reset lost live save');
   });
   await Promise.all([page.waitForURL(url => !url.search), page.click('#confirm-reset')]);
-  await page.waitForFunction('!!window.__world && !location.search');
+  await page.waitForFunction('!!window.MEMORY && !location.search');
   await t.eval(() => {
     if (MEMORY.state.life.savings !== 90 || MEMORY.state.life.plant.stage !== 'available' || MEMORY.state.flags.settingsTest) throw Error('old progress survived');
     if (SND.settings.cafeVolume !== .36) throw Error('reset erased audio preferences');
@@ -67,6 +67,7 @@ module.exports = async function (t) {
     if (document.querySelector('#overlay').classList.contains('gone')) throw Error('fresh entry missing');
   });
   await page.click('#enter');
+  await page.waitForFunction('!!window.__world');
   await t.eval(() => { if (!SND.ready()) throw Error('fresh audio unavailable'); });
   await t.open('/?dev');
   await t.eval(() => {

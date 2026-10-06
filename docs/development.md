@@ -164,13 +164,19 @@ Page-level checks through real buttons, keyboard, reloads and viewports
 (including 1440×900 and 1600×900 captures). They cover what in-page suites
 cannot: the splash and audio entry, the planner, invitations and conversation
 buttons, Settings, save export/import and exact progress across real reloads.
-A flow is `module.exports = async t => report` using `t.open`, `t.eval`,
+A flow is `module.exports = async t => report` using `t.open`, `t.enter`, `t.eval`,
 `t.page` (Playwright), `t.reload`, `t.viewport`, `t.shot` and `t.init`; see
 `tools/run-suites.js` and `tools/ui/first-hello.js`. `ui:gathering` walks the
 reading afternoon through its real button, checks each bubble sits over its
 speaker, reloads mid-scene and resumes it on Ida's next visit. `ui:stages`
 opens `?day=3` once, bookmarks, skips to the next morning and opens a
 bookmark and a new café through the stages panel.
+
+`t.open` and `t.reload` choose the game on ordinary pages; dev URLs keep their
+automatic game boot. Entry checks use `t.page.goto(t.base + '/')` to inspect
+the chooser before selecting. `ui:idle` checks fresh and saved-game isolation,
+temporary sound settings, two complete day/night cycles with audits, simultaneous
+game/idle tabs and switching to idle while waiting for the game lock.
 
 ### Node checks
 

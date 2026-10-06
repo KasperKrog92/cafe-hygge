@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  function start() {
+  function start(world, enterImmediately) {
   /* ---------- canvases ----------
      Everything renders into an offscreen 960×600 master canvas; the visible
      canvas shows the current room's extent (small café or full room),
@@ -19,9 +19,10 @@
   const out = canvas.getContext('2d');
   const stage = document.getElementById('stage');
 
-  const world = SIM.create();
-  world.firstEntryReady = new URLSearchParams(location.search).has('dev') || (world.memory.life.firstOpening.step===12 && !SIM.homeSceneActive(world));
+  world.firstEntryReady = enterImmediately || new URLSearchParams(location.search).has('dev') || (world.memory.life.firstOpening.step===12 && !SIM.homeSceneActive(world));
   window.__world = world; // handy for tinkering in the console
+  stage.classList.toggle('ambient-session', world.ambient);
+  if (world.ambient) document.querySelector('.sound-footer span').textContent = 'Sound changes last for this visit.';
 
   /* ---------- viewport manager ----------
      Cover-fit: each room has croppable overscan (full-room height 540–600,
@@ -94,7 +95,7 @@
   if (new URLSearchParams(location.search).has('dev')) {
     addMoney.disabled = false;
     addMoney.addEventListener('click', function (e) {
-      if (MEMORY.readOnly || restarting) return;
+      if (world.ambient || MEMORY.readOnly || restarting) return;
       world.memory.life.savings += 100;
       world.context.memory.save();
       if (e.detail) addMoney.blur();
@@ -225,7 +226,7 @@
     btnPlan.hidden=world.shop.phase!=='home' || homeScene || l.mode!=='game' && !l.homeStory.firstNight;
     btnSleep.hidden=btnPlan.hidden;btnSleep.disabled=homeScene || required;
     document.getElementById('close-plan').hidden=required;
-    btnHome.hidden = world.shop.phase === 'home' || world.shop.phase==='settling';
+    btnHome.hidden = world.ambient || world.shop.phase === 'home' || world.shop.phase==='settling';
     if (!world.plannerOpen && planner.open) planner.close();
     if (!world.plannerOpen) return;
     function refreshChoice(button, stage, price, id) {
@@ -314,7 +315,7 @@
     document.getElementById('import-save').focus();
   }
   document.getElementById('export-save').addEventListener('click', function () {
-    if (restarting || MEMORY.readOnly) return;
+    if (world.ambient || restarting || MEMORY.readOnly) return;
     try {
       SIM._.saveLife(world, 0);
       const blob = new Blob([MEMORY.exportText()], {type:'application/json'});
@@ -326,6 +327,7 @@
     } catch (e) { saveStatus.textContent = 'The save copy could not be created. Your café is still here. Please try again.'; }
   });
   document.getElementById('import-save').addEventListener('click', function () {
+    if (world.ambient) return;
     saveFile.value = ''; saveFile.click();
   });
   saveFile.addEventListener('change', async function () {
@@ -363,17 +365,10 @@
     try { sessionStorage.setItem('cafe-hygge-imported', 'yes'); } catch (e) { /* optional feedback */ }
     location.replace(location.pathname);
   });
-  try {
-    if (sessionStorage.getItem('cafe-hygge-imported')) {
-      sessionStorage.removeItem('cafe-hygge-imported');
-      document.querySelector('.overlay-card .sub').textContent = 'your saved café is ready — welcome back';
-      saveStatus.textContent = 'Your save was imported successfully.';
-    }
-  } catch (e) { /* Saving does not depend on session storage. */ }
   btnSettings.addEventListener('click', function () {
     restoreBurstMute(); refreshButtons();
     settingsMain.hidden = false; resetConfirmation.hidden = true; importConfirmation.hidden = true;
-    if (MEMORY.status.writeError) saveStatus.textContent = 'Your browser could not save recent progress. Export a copy to keep your café.';
+    if (!world.ambient && MEMORY.status.writeError) saveStatus.textContent = 'Your browser could not save recent progress. Export a copy to keep your café.';
     settings.showModal();
     world.introModal=true;SND.stopDialogue();
   });
@@ -404,7 +399,7 @@
   document.getElementById('start-over').addEventListener('click', function () { showResetConfirmation(true); });
   document.getElementById('cancel-reset').addEventListener('click', function () { showResetConfirmation(false); });
   document.getElementById('confirm-reset').addEventListener('click', function () {
-    if (restarting) return;
+    if (world.ambient || restarting) return;
     const previous = MEMORY.state;
     MEMORY.reset();
     if (MEMORY.status.writeError) {
@@ -420,15 +415,18 @@
   });
   refreshButtons();
 
-  document.getElementById('enter').addEventListener('click', function () {
+  function enterCafe() {
     world.firstEntryReady=true;
     SND.init();
     overlay.classList.add('gone');
+    overlay.inert = true;
     controls.classList.remove('hidden');
     refreshButtons();
     pokeControls();
-    this.blur();
-  });
+    canvas.focus();
+  }
+  document.getElementById('enter').addEventListener('click', enterCafe);
+  document.getElementById('choose-mode').addEventListener('click', function () { location.replace(location.pathname); });
 
   btnMute.addEventListener('click', function () {
     restoreBurstMute();
@@ -462,7 +460,7 @@
     controls.classList.remove('faded');
     if (overlay.classList.contains('gone')) {
       refreshLife();
-      savings.classList.add('visible');
+      if (!world.ambient) savings.classList.add('visible');
     }
     clearTimeout(fadeTimer);
     fadeTimer = setTimeout(function () {
@@ -601,8 +599,15 @@
     }
     if (!document.hidden) advance(performance.now());
   });
+  if (enterImmediately) enterCafe();
   }
-  function ready() { start(); window.dispatchEvent(new Event('cafe-ready')); }
+  let started = false, waiting = false, pendingLock = null;
+  function ready(mode, entered) {
+    started = true;
+    SND.sessionOnly = mode === 'idle';
+    start(mode === 'idle' ? SIM.createIdle({sound:SND}) : SIM.create(), entered);
+    window.dispatchEvent(new Event('cafe-ready'));
+  }
   function holdOwnership() {
     return new Promise(function(release) {
       window.addEventListener('pagehide', function () { MEMORY.readOnly = true; release(); }, {once:true});
@@ -611,17 +616,40 @@
   window.addEventListener('pageshow', function(e) {
     if (e.persisted) location.reload(); // reacquire and re-read after back/forward cache
   });
-  if (navigator.locks) {
+  const gameButton = document.getElementById('enter');
+  function chooseGame(entered) {
+    if (started || waiting) return;
+    waiting = true;
+    if (entered) SND.init(); // keep audio initialization inside the real click
+    function ownGame() {
+      if (started) return;
+      MEMORY.readOnly = false; MEMORY.load(); gameButton.disabled = false;
+      ready('game', entered);
+      return holdOwnership();
+    }
+    if (!navigator.locks) { ownGame(); return; }
     navigator.locks.request('cafe-hygge-life', {ifAvailable:true}, function(lock) {
-      if (lock) { MEMORY.readOnly = false; MEMORY.load(); ready(); return holdOwnership(); }
-      document.querySelector('.overlay-card .sub').textContent = 'the café is open in another tab; this window will join when it closes';
+      if (started) return;
+      if (lock) return ownGame();
+      document.getElementById('entry-status').textContent = 'Your game is open in another tab. It will open here when that tab closes, or you can enjoy an idle café now.';
       document.getElementById('overlay').classList.remove('gone');
-      document.getElementById('enter').disabled = true;
-      return navigator.locks.request('cafe-hygge-life', function() {
-        MEMORY.readOnly = false; MEMORY.load(); document.getElementById('enter').disabled = false;
-        document.querySelector('.overlay-card .sub').textContent = 'a tiny café that putters along while you read'; ready();
-        return holdOwnership();
-      });
-    });
-  } else ready(); // file:// and older browsers retain the dependency-free boot.
+      gameButton.disabled = true;
+      pendingLock = new AbortController();
+      return navigator.locks.request('cafe-hygge-life', {signal:pendingLock.signal}, ownGame);
+    }).catch(function (error) { if (error.name !== 'AbortError') throw error; });
+  }
+  gameButton.addEventListener('click', function () { chooseGame(true); });
+  document.getElementById('enter-idle').addEventListener('click', function () {
+    if (started) return;
+    if (pendingLock) pendingLock.abort();
+    ready('idle', true);
+  });
+  try {
+    if (sessionStorage.getItem('cafe-hygge-imported')) {
+      sessionStorage.removeItem('cafe-hygge-imported');
+      document.querySelector('.overlay-card .sub').textContent = 'your saved café is ready — welcome back';
+    }
+  } catch (e) { /* Saving does not depend on session storage. */ }
+  const params = new URLSearchParams(location.search);
+  if (params.has('dev') || params.has('morning') || params.has('night') || params.has('hour')) chooseGame(false);
 })();

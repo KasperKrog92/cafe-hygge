@@ -5,7 +5,7 @@
 const { resize } = require('./lib/capture.js');
 module.exports = async function (t) {
   const page = t.page;
-  const enter = () => page.getByRole('button', { name: 'step inside' }).click();
+  const enter = () => t.enter();
   await t.init('life-browser-init.js');
   await t.open('/?life-test');
   await enter();
@@ -72,10 +72,12 @@ module.exports = async function (t) {
   if (stages.length < 5) throw Error('expected five bedtime stages, saw ' + stages.join(','));
   for (const stage of stages) {
     await t.eval(raw => { MEMORY.state = MEMORY.codec.decode(raw).state; MEMORY.saveNow(); }, saves[stage]);
-    await t.open('/?life-test');
+    await page.goto(t.base + '/?life-test');
     await t.eval(() => {
-      const before = JSON.stringify(__world.memory.life.homeStory); SIM.update(__world, 10);
-      if (before !== JSON.stringify(__world.memory.life.homeStory)) throw Error('scene ran under entry overlay');
+      if (window.__world || !MEMORY.readOnly) throw Error('scene started before choosing the game');
+      const before = localStorage.getItem('cafe-hygge-save');
+      MEMORY.saveNow();
+      if (before !== localStorage.getItem('cafe-hygge-save')) throw Error('entry screen changed bedtime');
     });
     await enter();
     await page.waitForFunction("getComputedStyle(document.getElementById('overlay')).opacity === '0'", null, { polling: 100 });

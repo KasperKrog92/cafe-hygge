@@ -125,11 +125,12 @@
     const o = options || {};
     const context = options ? { memory: o.memory || MEMORY.createStore(),
       random: o.random || SIM.seededRandom(1), sound: o.sound || silentSound(), nextId: 1 } : productionContext;
-    return withContext(context, function () { return createWorld(context); });
+    return withContext(context, function () { return createWorld(context, !!o.ambient); });
   };
 
-  function createWorld(context) {
+  function createWorld(context, ambient) {
     const world = {
+      ambient: ambient,       // an unsaved, always-open café; never a story presentation
       narrSaveT: 0,
       t: 0,
       clockOffset: 0, // skip the sleeping hours without aging simulation timers or stories
@@ -1104,6 +1105,7 @@
     world.clockHour = world.hour;
 
     const day = dayIndex(world);
+    if (world.ambient) world.memory.life.daysCompleted = 15 + day;
     if (world.kettle.day !== day) {
       world.kettle.day = day;
       world.kettle.hour = rnd(19, 21.5);
@@ -1501,7 +1503,7 @@
       enqueueArrival(world, p, 0, true);
       r.lastDay = day; r.force = false;
       const info = noteRegularVisit(world, spec);
-      gate.arrive(world, p);
+      if (!world.ambient) gate.arrive(world, p);
       caption(world, gate.arrivalLine(world) || regularArrivalLine(world, spec, info, p),{actor:p});
       arrived=true;
     });
@@ -1659,6 +1661,7 @@
      (the invitation-waits rule, docs/narrative.md §1). */
   function advanceArcs(world, days) {
     const out = { moved: false, readied: false };
+    if (world.ambient) return out;
     const mem = world.memory;
     if (!mem || !(days > 0)) return out;
     const regularIds = {};
@@ -1744,6 +1747,7 @@
   SIM.addInvitation = function (source) { INVITATIONS.push(source); };
   SIM.invitations = function (world) {
     const out = [];
+    if (world.ambient) return out;
     INVITATIONS.forEach(function (src) {
       src.actors(world).forEach(function (actor) {
         out.push({ key: src.key(actor), actor: actor, pulse: !!(src.pulse && src.pulse(world, actor)),

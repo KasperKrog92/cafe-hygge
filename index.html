@@ -41,7 +41,11 @@
     <div class="overlay-card">
       <h1>Café Hygge</h1>
       <p class="sub">a tiny café that putters along while you read</p>
-      <button id="enter">☕&nbsp; step inside</button>
+      <div class="entry-choices">
+        <button id="enter" type="button"><span>Play the game</span><small>Grow your café, get to know the regulars.<br>Your story is saved as you go.</small></button>
+        <button id="enter-idle" type="button"><span>Enjoy an idle café</span><small>A fully furnished café, quietly alive.<br>No stories to attend to. Nothing saved.</small></button>
+      </div>
+      <p id="entry-status" role="status" aria-live="polite"></p>
       <p class="hint">sound on — rain, espresso &amp; a crackling fire await</p>
     </div>
   </div>
@@ -57,7 +61,7 @@
       <button id="close-settings" aria-label="Close settings" autofocus>✕</button>
     </header>
     <div id="settings-main">
-      <label class="weather-setting" for="setting-idle"><span>Idle mode <small>leave stories for later and let ordinary evenings pass automatically</small></span><input id="setting-idle" type="checkbox"></label>
+      <label class="weather-setting game-setting" for="setting-idle"><span>Let the game run quietly <small>leave stories for later and let ordinary evenings pass automatically; your progress still saves</small></span><input id="setting-idle" type="checkbox"></label>
       <p class="settings-intro">A little louder, a little softer. Just as you like it.</p>
       <div class="master-row"><label for="setting-volume">Master volume</label><button id="setting-mute" aria-pressed="false">mute all</button></div>
       <div class="slider-row"><input id="setting-volume" data-sound="volume" type="range" min="0" max="100" step="1"><output for="setting-volume"></output></div>
@@ -84,6 +88,7 @@
         <p id="save-status" role="status" aria-live="polite"></p>
       </section>
       <section class="progress-settings" aria-labelledby="progress-title"><div><h3 id="progress-title">A fresh beginning</h3><p>Erase your progress and open a new café.</p></div><button id="start-over">start over…</button></section>
+      <div class="mode-return"><button id="choose-mode" type="button">choose another mode</button></div>
     </div>
     <section id="import-confirmation" hidden aria-labelledby="import-title">
       <h3 id="import-title">Open this saved café?</h3>

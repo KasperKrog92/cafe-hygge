@@ -74,8 +74,23 @@ async function runInPage(page, base, name, out) {
 
 async function runUi(page, base, name, out) {
   const flow = require(path.join(__dirname, 'ui', name.slice(3) + '.js'));
+  async function enter() {
+    await page.waitForFunction('document.readyState === "complete"', null, {polling:100});
+    if (await page.evaluate(() => !window.__world)) await page.click('#enter');
+    else if (await page.evaluate(() => !document.getElementById('overlay').classList.contains('gone'))) await page.click('#enter');
+    else if (await page.evaluate(() => !SND.ready())) await page.click('#cafe');
+    await page.waitForFunction('!!window.__world', null, {timeout:30000,polling:100});
+  }
+  async function ready() {
+    await page.waitForFunction('document.readyState === "complete"', null, {polling:100});
+    const dev = await page.evaluate(() => /[?&](dev|hour|morning|night)(=|&|$)/.test(location.search));
+    if (!dev) await enter();
+    await page.waitForFunction('!!window.__world', null, {timeout:30000,polling:100});
+  }
   const t = {
     page: page,
+    base: base,
+    enter: enter,
     // A script that runs before every page load in this flow (e.g. tools/life-browser-init.js).
     init: function (file) { return page.context().addInitScript({ path: path.join(__dirname, file) }); },
     // Open a page of this checkout and wait for the world (path may carry a query).
@@ -83,11 +98,11 @@ async function runUi(page, base, name, out) {
     // Playwright's default frame-based polling would wait on forever.
     open: async function (p) {
       await page.goto(base + (p || '/'));
-      await page.waitForFunction('!!window.__world', null, { timeout: 30000, polling: 100 });
+      await ready();
     },
     reload: async function () {
       await page.reload();
-      await page.waitForFunction('!!window.__world', null, { timeout: 30000, polling: 100 });
+      await ready();
     },
     eval: function (fn, arg) { return page.evaluate(fn, arg); },
     // Resize, then wait for the page's own resize handler (main.js refits and
