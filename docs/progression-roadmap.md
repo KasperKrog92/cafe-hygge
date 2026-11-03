@@ -275,6 +275,15 @@ first and then the cloth, and from that evening Lunafreya draws them at closing
 and opens them in the morning. A repaired window also gives the cat its sill and
 the sun's patch on the floor.
 
+**The front tables and the rugs — shipped.** Once the room is open, two 60-coin
+choices put tables back on the new floor, in the fuller room's own places
+(`L.tables[2]` and `[3]`): Keira brings a kit, its floor is reserved from that
+morning, and Lunafreya assembles it between guests as she did the first. A
+50-coin choice brings two rolled rugs, which she kneels to unroll from the
+middle outward, the hearth's first and then the big one; the cat then has the
+big rug as one of its places. (A choice of its own for the rugs may later come
+before the room opens, if the hearth rug alone is wanted sooner.)
+
 **Next, by judgement** (the 27 September hand-off's remaining candidates):
 Nora's portrait itself (`lunafreya-portrait-*`), Calandra's visit ("when you
 say"), Ezra, Elody sharing her plot, Tomas's daughter's hello, a small music

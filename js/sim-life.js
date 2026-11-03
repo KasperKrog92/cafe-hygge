@@ -60,6 +60,8 @@
         items:[], candle:0, candleTarget:0, furniture:'piano' });
       w.seats.push({ x:P.bench.x, y:P.bench.y, facing:-1, via:P.via, table:index, side:0, armchair:false, piano:true, taken:false, furniture:'piano' });
     }
+    // The front tables are the fuller room's own (a reload finds them at creation).
+    [2,3].forEach(i => { if (SCENE.hasFurniture(w,L.tables[i].furniture)) installFirstTable(w,i); });
     if (w.memory.life.projects.table.stage !== 'installed' || w.tables.some(t => t.project === 'table')) return;
     const t = L.projects.table, index = w.tables.length;
     w.tables.push({ x:t.x, y:t.y, tag:t.tag, project:'table', furniture:'project-table', items:[], candle:0, candleTarget:0 });
@@ -132,6 +134,7 @@
       p.stage = 'working'; b.holding = null; b.state = 'projectWork'; b.projectSession = 0; commit(w);
     }
     if (d.bookSource) shelvingPose(b,d,p);
+    else if (d.kneels) { b.pose = 'kneel'; b.heading = ''; b.facing = 1; }
     else if (d.keepsake) { b.pose = 'reach'; b.heading = ''; b.facing = 1; }
     else if (d.carry) { b.pose = 'kneel'; b.heading = ''; b.facing = -1; }
     else if (d.workFacing) { b.pose = p.step === d.phases.length - 1 ? 'reach' : 'wipe'; b.heading = ''; b.facing = d.workFacing; }
@@ -144,7 +147,9 @@
     const boundary = Math.floor(p.time/3) > Math.floor(before/3);
     if (d.bookSource && SCENE.bookPlaceTimes.some(t => before < t && p.time >= t && d.shelves[p.step] > SCENE.bookPlaceTimes.indexOf(t)))
       R.sound.bookSlide();
+    let moves = false;
     if (p.time >= d.duration) {
+      moves = !!L.projects[id].works;
       // A phase's books join the shelf in the same save as the step.
       for (let n = 0; n < (d.shelves ? d.shelves[p.step] : 0); n++) w.memory.life.shelf.push(d.bookSource);
       p.time = 0; p.step++;
@@ -159,7 +164,7 @@
         R.caption(w,'the first books stand on the little shelves.');
       commit(w);
     } else if (boundary) commit(w);
-    if (p.stage === 'installed' || (boundary && (busy(w) || b.projectSession >= 9))) projectHome(w);
+    if (p.stage === 'installed' || moves || (boundary && (busy(w) || b.projectSession >= 9))) projectHome(w);
     return true;
   };
   R.startProject = function (w) {
@@ -168,12 +173,16 @@
     const p = w.memory.life.projects[id];
     b.project = id; b.state = 'projectOut'; b.pose = 'stand'; b.holding = null;
     const d = PROJECTS[id];
-    b.path = [p.stage === 'scheduled' || d.carry && p.stage === 'arrived' ? pickupSpot(id) : workSpot(id)];
+    b.path = [p.stage === 'scheduled' || d.carry && p.stage === 'arrived' ? pickupSpot(id) : workSpot(id,w)];
     return true;
   };
   // Every box of books is opened at the one place under the wall shelves; a
   // project may name where its scheduled parcel waits (a gift on the counter).
-  function workSpot(id) { return PROJECTS[id].bookSource ? L.projects.books.work : L.projects[id].work; }
+  function workSpot(id,w) {
+    if (PROJECTS[id].bookSource) return L.projects.books.work;
+    const a = L.projects[id];
+    return a.works && w ? a.works[Math.min(w.memory.life.projects[id].step, a.works.length-1)] : a.work;
+  }
   function pickupSpot(id) { return (L.projects[id] && L.projects[id].pickup) || L.projects.pickup; }
   R.workSpot = workSpot; R.pickupSpot = pickupSpot;
   R.projectPending = function (w) { return !!pending(w); };

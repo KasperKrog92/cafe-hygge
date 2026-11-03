@@ -136,7 +136,25 @@
     table: { price:60, destination:'cafe', delivery:'keira', title:'table and chairs',
       label:'A table for two', tutorial:true,
       phases:['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'],
-      phaseIds:['unpack','legs','top','chairs','wipe','position'], duration:18, capability:'project-table', pair:'window' },
+      phaseIds:['unpack','legs','top','chairs','wipe','position'], duration:18, capability:'project-table', pair:'window', tableKit:true },
+    // The front of the opened floor (L.tables[2] and [3], the fuller room's own
+    // places): one kit each, Keira's trolley and Lunafreya's usual assembly.
+    tableLeft: { price:60, destination:'cafe', delivery:'keira', title:'a table at the front, on the left',
+      label:'A table at the front, on the left', furniture:'table-front-left', showsWith:'expanded-room', requires:['expanded-room'],
+      phases:['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'],
+      phaseIds:['unpack','legs','top','chairs','wipe','position'], duration:18, capability:'table-front-left', tableKit:true,
+      doneLine:'a table where the partition used to stand; somebody will find it.' },
+    tableRight: { price:60, destination:'cafe', delivery:'keira', title:'a table at the front, on the right',
+      label:'A table at the front, on the right', furniture:'table-front-right', showsWith:'expanded-room', requires:['expanded-room'],
+      phases:['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'],
+      phaseIds:['unpack','legs','top','chairs','wipe','position'], duration:18, capability:'table-front-right', tableKit:true,
+      doneLine:'another table at the front. The new floor is starting to look like the old one.' },
+    // The two rugs, unrolled by Lunafreya from the middle outward between guests:
+    // the small one at the hearth, then the big one across the middle of the room.
+    rugs: { price:50, destination:'cafe', delivery:'keira', title:'two rugs',
+      label:'Two rugs for the floor', furniture:'rugs', showsWith:'expanded-room', requires:['expanded-room'],
+      phases:['unroll the hearth rug','unroll the big rug'], phaseIds:['hearth','big'], duration:12, capability:'rugs', kneels:true,
+      doneLine:'the big rug is down. The room has gone a little quieter underfoot.' },
     fireplace: { price:30, destination:'cafe', delivery:'carry', title:'reopen the fireplace',
       label:'Reopen the fireplace', unlockFlag:'fireplace-unlocked',
       phases:['remove the boards','sweep the firebox','clear the flue','lay the first fire'],
@@ -154,7 +172,7 @@
     duration:4, maxTime:8, capability:'first-plant' };
   I.all = Object.assign({}, I.projects, {plant:I.plant});
   // The order choices appear in the evening planner.
-  I.planOrder = ['window','table','windowSeat','window2','drapes','bookshelf','books','readingChair','plant','fireplace','mantel','expansion','piano'];
+  I.planOrder = ['window','table','windowSeat','window2','drapes','bookshelf','books','readingChair','plant','fireplace','mantel','expansion','piano','tableLeft','tableRight','rugs'];
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];

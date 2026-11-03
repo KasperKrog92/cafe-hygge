@@ -93,6 +93,12 @@
       again:'Keira is back, steering a table kit through the door.',down:'the kit is set down, ready for a quiet moment.'},
     readingChair:{site:()=>L.projects.readingChair.drop,first:'Keira wheels in something large, wrapped in blankets.',
       again:'Keira is back, wheeling in something large and wrapped in blankets.',down:'a wing chair, still in its blankets, waits by the fire.'},
+    tableLeft:{site:()=>L.projects.tableLeft.work,first:'Keira brings another table kit through, to the front of the room.',
+      again:'Keira steers another table kit past the guests, to the front of the room.',down:'a kit waits on the new floor, ready for a quiet moment.'},
+    tableRight:{site:()=>L.projects.tableRight.work,first:'Keira brings another table kit through, to the front of the room.',
+      again:'Keira steers one more table kit past the guests, to the front of the room.',down:'a kit waits on the new floor, ready for a quiet moment.'},
+    rugs:{site:()=>L.projects.rugs.drop,first:'Keira comes in with two rolled rugs balanced on her trolley.',
+      again:'Keira comes in with two rolled rugs balanced on her trolley.',down:'two rolled rugs lie by the hearth, smelling faintly of somebody’s attic.'},
     // An upright is two people's work: Tomas walks beside the dolly.
     piano:{site:()=>L.projects.piano.drop,helper:'tomas',first:'Keira and Tomas wheel an upright piano in on a dolly, wrapped in blankets.',
       again:'Keira and Tomas wheel an upright piano in on a dolly, wrapped in blankets.',down:'the upright is tipped gently into its corner, still in its blankets.'}

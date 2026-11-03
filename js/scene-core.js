@@ -13,6 +13,7 @@
   SCENE.lampLevel = function (world) { return world.pal.lamp * (world.shop ? world.shop.lights : 1); };
   // Stable owned furniture IDs. Projects remain the single source of truth
   // for their installed effects; no second copy of job completion is saved.
+  const FRONT_SITE = ['scheduled','arrived','working','installed'];
   SCENE.hasFurniture = function (world, id) {
     const life = world && world.memory && world.memory.life;
     if (!life || !life.furniture || !id) return true;
@@ -22,6 +23,9 @@
     // An opened box of books waits under the shelves while it is emptied.
     if (id === 'book-worksite') return !life.furniture.bookshelf &&
       IMPROVEMENTS.bookProjects().some(k => ['arrived','working'].indexOf(life.projects[k].stage)>=0);
+    // A kit at the front of the room holds the finished set's floor from the morning it comes.
+    if (id === 'table-front-left-site') return life.furniture['table-front-left'] || FRONT_SITE.indexOf(life.projects.tableLeft.stage) >= 0;
+    if (id === 'table-front-right-site') return life.furniture['table-front-right'] || FRONT_SITE.indexOf(life.projects.tableRight.stage) >= 0;
     if (id === 'project-table') return IMPROVEMENTS.installed(life,'project-table');
     if (id === 'left-window-table') return life.furniture['window-seats'] || IMPROVEMENTS.installed(life,id);
     if (id === 'table-worksite') return ['scheduled','arrived','working','installed'].indexOf(life.projects.table.stage) >= 0;
@@ -44,11 +48,18 @@
     const life = world && world.memory && world.memory.life;
     return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'book-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') + ':' + SCENE.mantelShelf(world) + ':' + SCENE.hasFurniture(world,'mantel-decor') +
       ':' + SCENE.hasFurniture(world,'fireside-left') + ':' + SCENE.hasFurniture(world,'chair-worksite') +
+      ':' + SCENE.hasFurniture(world,'table-front-left-site') + ':' + SCENE.hasFurniture(world,'table-front-right-site') + ':' + SCENE.rugStage(world) +
       ':' + SCENE.hasFurniture(world,'cafe-sign') + ':' + SCENE.hasFurniture(world,'piano') + ':' + SCENE.hasFurniture(world,'piano-worksite') : 'full';
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
       IMPROVEMENTS.installed(world.memory.life, w.x===SCENE.L.win.x ? 'left-window' : 'right-window');
+  };
+  // How many rugs lie flat (0, 1 the hearth's, 2 both).
+  SCENE.rugStage = function(world) {
+    if(SCENE.hasFurniture(world,'rugs'))return 2;
+    const p=world.memory.life.projects.rugs;
+    return p.stage==='working'?p.step:0;
   };
   // How far one window's curtains are: 0 none, 1 the rail, 2 hung. Tomas does
   // the left window, then the right, within the phases of one saved job.
@@ -210,6 +221,12 @@
       window2: {work: {x:530,y:254}},
       // One ladder stance beside each window, clear of the little sill tables
       // and of the perches' floor spots. The ladder brings his hands to the rail.
+      // Each front table's kit, set down and assembled just in front of its place.
+      tableLeft: {x:260,y:520,work:{x:260,y:558},tag:''},
+      tableRight: {x:548,y:524,work:{x:548,y:562},tag:''},
+      // Keira sets the rolled rugs down on the lane side of the hearth; each is
+      // unrolled from where it will lie, clear of the tables' seats.
+      rugs: {drop:{x:390,y:352},roll:{x:390,y:338},work:{x:388,y:322},works:[{x:388,y:322},{x:388,y:486}]},
       drapes: {works:[{x:246,y:256},{x:556,y:256}],ladderHeight:124},
       windowSeat: {work:{x:216,y:292}},
       table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
@@ -574,7 +591,7 @@
   L.plants.forEach(a => { a.furniture = 'plants'; });
   L.occluders.concat(L.footprints).forEach(function (box) {
     const n = box.name, table = n.match(/(?:^table |\(table )(\d+)/);
-    if (table) box.furniture = L.tables[+table[1]].furniture;
+    if (table) box.furniture = L.tables[+table[1]].furniture + (+table[1] >= 2 ? '-site' : '');
     else if (/^reserved/.test(n)) box.furniture = 'table-worksite';
     else if (/^wing chair/.test(n)) box.furniture = n === 'wing chair 0' ? 'fireside-left' : n === 'wing chair 1' ? 'fireside' : 'nook';
     else if (/^fireside table/.test(n)) box.furniture = n === 'fireside table 0' ? 'fireside-left' : 'fireside';

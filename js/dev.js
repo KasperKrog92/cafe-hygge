@@ -1126,7 +1126,7 @@
     if(w.tables.filter(t=>t.project==='table').length!==(installedTable?1:0) ||
         w.seats.filter(s=>s.project==='table').length!==(installedTable?2:0)) problems.push('project table installation/seating mismatch');
     if(w.barista.state==='projectWork') {
-      const id=w.barista.project, job=jobs[id], site=job && SIM._.workSpot(id);
+      const id=w.barista.project, job=jobs[id], site=job && SIM._.workSpot(id,w);
       if(!job || job.stage!=='working' || !site ||
           w.barista.x!==site.x || w.barista.y!==site.y) problems.push('project work away from its reserved anchor');
     }

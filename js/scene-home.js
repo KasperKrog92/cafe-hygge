@@ -249,7 +249,12 @@
           draws.push({y:A.y+12,draw:g=>SCENE.wingChair.front(g,A)});
           draws.push({y:A.y+16,draw:g=>{px(g,A.x-38,A.y+6,18,6,'#7a89a5');px(g,A.x-38,A.y+6,18,1,'#94a1b4');px(g,A.x-38,A.y+9,18,1,'#6a7890');}});
         }
-      } else if (id==='table') {
+      } else if (id==='rugs') {
+        if(p.stage==='installed')return;
+        if(p.stage==='arrived'||p.stage==='working'&&p.step===0) draws.push({y:a.roll.y,draw:g=>SCENE.drawRolledRugs(g,a.roll,p.stage==='arrived'?2:1)});
+        // Floor art: under every piece of furniture and every person.
+        if(p.stage==='working') draws.push({y:SCENE.L.wallY+1,draw:g=>SCENE.drawRugUnrolling(g,p.step,Math.min(1,p.time/IMPROVEMENTS.projects.rugs.duration))});
+      } else if (IMPROVEMENTS.projects[id].tableKit) {
         if(p.stage==='installed') return; // normal furniture renderer + real seats
         draws.push({y:a.y+32,draw:g=>{
           const x=a.x,y=a.y;

@@ -267,20 +267,13 @@
     }
 
     // rugs (the big rug reaches up under the walking lane to break the bare stripe)
-    if (SCENE.hasFurniture(world, 'rugs')) {
-      // A worn red field and narrow binding let readers lead the room.
-      // Its established footprint stays exactly the same.
-      ell(g, 390, 450, 168, 74, shade('#a34d3b', -0.08));
-      ell(g, 390, 450, 164, 71, '#a34d3b');
-      g.save(); g.globalAlpha = 0.3;
-      ell(g, 390, 450, 164, 71, '#8f5a3a'); g.restore();
-    }
-    if(SCENE.hasFurniture(world,'rugs')) ell(g, 388, 290, 50, 16, '#8f5a3a');
-    if(SCENE.hasFurniture(world,'rugs')) ell(g, 388, 290, 40, 11, '#a0693f');
+    const rugs=SCENE.rugStage(world);
+    if (rugs>=2) drawBigRug(g);
+    if (rugs>=1) drawHearthRug(g);
     // reading nook rug under the wing chairs
     if (SCENE.hasFurniture(world,'nook')) ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#8f5a3a');
     if (SCENE.hasFurniture(world,'nook')) ell(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx - 14, L.library.rug.ry - 7, '#a0693f');
-    if(SCENE.hasFurniture(world,'rugs')) rugWeave(g, 390, 450, 168, 74, '#c9b28a', true);
+    if(rugs>=2) rugWeave(g, 390, 450, 168, 74, '#c9b28a', true);
     if (SCENE.hasFurniture(world,'nook')) rugWeave(g, L.library.rug.x, L.library.rug.y, L.library.rug.rx, L.library.rug.ry, '#c9b28a');
 
     if(world.memory.life.furniture['mantel-decor']) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
@@ -289,6 +282,45 @@
     if(SCENE.fullCounter(world)) drawShelves(g);
     if (SCENE.hasFurniture(world,'hearth')) drawFirewood(g);
   }
+
+  // A worn red field and narrow binding let readers lead the room.
+  function drawBigRug(g) {
+    ell(g, 390, 450, 168, 74, shade('#a34d3b', -0.08));
+    ell(g, 390, 450, 164, 71, '#a34d3b');
+    g.save(); g.globalAlpha = 0.3;
+    ell(g, 390, 450, 164, 71, '#8f5a3a'); g.restore();
+  }
+  function drawHearthRug(g) {
+    ell(g, 388, 290, 50, 16, '#8f5a3a');
+    ell(g, 388, 290, 40, 11, '#a0693f');
+  }
+  // One rug on its way down, opened outward from the middle: flat floor art
+  // between two shrinking rolls. q is 0 (all rolled) to 1 (flat).
+  SCENE.drawRugUnrolling = function (g, which, q) {
+    const cx = which ? 390 : 388, cy = which ? 450 : 290, rx = which ? 168 : 50, ry = which ? 74 : 16;
+    const half = Math.max(3, Math.round(rx * q));
+    g.save(); g.beginPath(); g.rect(cx - half, cy - ry - 1, half * 2, ry * 2 + 2); g.clip();
+    if (which) drawBigRug(g); else drawHearthRug(g);
+    g.restore();
+    const edge = Math.sqrt(Math.max(0.04, 1 - q * q)), h = Math.round(ry * edge), r = Math.max(2, Math.round((which ? 7 : 4) * (1.2 - q)));
+    [-1, 1].forEach(function (s) {
+      const x = cx + s * half - r;
+      px(g, x, cy - h - 2, r * 2, h * 2 + 2, which ? '#a34d3b' : '#a0693f');
+      px(g, x, cy - h - 2, r * 2, 2, which ? shade('#a34d3b', 0.14) : '#b57c50');
+      px(g, x + r * 2 - 1, cy - h, 1, h * 2, 'rgba(20,12,8,.28)');
+    });
+  };
+  // Both rolled rugs lying where Keira set them down (or the big one, later).
+  SCENE.drawRolledRugs = function (g, at, count) {
+    for (let i = 0; i < count; i++) {
+      const y = at.y - i * 7, w = i ? 44 : 64, c = i ? '#a0693f' : '#a34d3b';
+      px(g, at.x - w / 2, y - 7, w, 8, c);
+      px(g, at.x - w / 2, y - 7, w, 2, shade(c, 0.14));
+      px(g, at.x - w / 2, y - 1, w, 1, 'rgba(20,12,8,.3)');
+      px(g, at.x + w / 2 - 3, y - 7, 3, 8, shade(c, -0.2));
+      px(g, at.x - 8, y - 7, 2, 8, '#c9b28a'); px(g, at.x + 6, y - 7, 2, 8, '#c9b28a');
+    }
+  };
 
   /* Sparse stitches in an elliptical border; the centre stays quiet behind
      readers. Pixel clusters, not high-frequency noise or animated texture. */

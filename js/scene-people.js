@@ -878,7 +878,7 @@
         px(g, x + 3, y - 29, 9, 7, '#b8bfc7');
         px(g, x + 2, y - 29, 3, 2, '#d3d9de');
       }
-    } else if (p.state === 'projectWork' && p.project === 'table') {
+    } else if (p.state === 'projectWork' && IMPROVEMENTS.all[p.project].tableKit) {
       const turn = Math.round(Math.sin(p.stateT*6)*3);
       px(g,x-13,y-37,5,10,c.top); px(g,x+8,y-37,5,10,c.top);
       limb(g,x-10,y-28,x-5,y-42,4,c.skin); limb(g,x+10,y-28,x+5,y-42,4,c.skin);

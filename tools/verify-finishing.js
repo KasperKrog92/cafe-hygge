@@ -105,5 +105,48 @@
   until(w,()=>w.memory.life.projects.window2.stage==='installed','resumes next morning');
   checks.push('a job left at closing resumes the next morning');
 
+  /* ---------- the front tables ---------- */
+  function opened(ids){
+    const o=fresh(ids);const l=o.memory.life;done(l,'expansion');l.room='full';R.installProjects(o);return o;
+  }
+  const room={x:0,y:36,w:960,h:540,scale:1};
+  w=fresh(['window']);
+  ['tableLeft','tableRight','rugs'].forEach(id=>check(!IMPROVEMENTS.offered(w,id),id+' offered in the small room'));
+  ['tableLeft','tableRight','rugs'].forEach(id=>check(!IMPROVEMENTS.offered(furnished,id),id+' offered in a furnished room'));
+  w=opened(['window']);
+  [['tableLeft',2],['tableRight',3]].forEach(function(pair){
+    const id=pair[0],T=L.tables[pair[1]],tables=w.tables.length,seats=w.seats.length;
+    check(IMPROVEMENTS.offered(w,id),id+' not offered in the opened room');
+    w=buyAndWake(w,id);
+    until(w,()=>w.deliveryVisitor&&w.deliveryVisitor.delivers===id,id+': Keira comes');
+    until(w,()=>w.memory.life.projects[id].stage==='arrived',id+': kit set down');
+    check(w.tables.length===tables&&w.seats.length===seats,id+': usable before it is built');
+    until(w,()=>w.memory.life.projects[id].step===3,id+': half built');
+    snap(w,id+'-assembly',room);
+    w=eachPhaseReloads(w,id);
+    check(w.tables.filter(t=>t.furniture===T.furniture).length===1&&w.seats.filter(s=>s.furniture===T.furniture).length===2,id+': table or seats missing or doubled');
+    const again=restore(w);
+    check(again.tables.filter(t=>t.furniture===T.furniture).length===1&&again.seats.filter(s=>s.furniture===T.furniture).length===2,id+': doubled on reload');
+    audit(w,id+' installed');
+  });
+  checks.push('front tables: only in the opened room, Keira delivers, assembly saves each phase, two seats each after the last, once');
+
+  /* ---------- the rugs ---------- */
+  check(IMPROVEMENTS.offered(w,'rugs'),'rugs not offered in the opened room');
+  check(SCENE.rugStage(w)===0&&!SCENE.catSpotAvailable(w,'bigRug'),'a rug before it was bought');
+  w=buyAndWake(w,'rugs');
+  until(w,()=>w.memory.life.projects.rugs.stage==='arrived','rugs set down');
+  snap(w,'rugs-delivered',room);
+  until(w,()=>{const p=w.memory.life.projects.rugs;return p.stage==='working'&&p.step===0&&p.time>=6;},'hearth rug unrolling');
+  snap(w,'rugs-hearth',room);
+  until(w,()=>{const p=w.memory.life.projects.rugs;return p.step===1&&p.time>=6;},'big rug unrolling');
+  check(SCENE.rugStage(w)===1,'the hearth rug should be flat while the big one unrolls');
+  snap(w,'rugs-big',room);
+  w=eachPhaseReloads(w,'rugs');
+  check(SCENE.rugStage(w)===2&&SCENE.catSpotAvailable(w,'bigRug'),'rugs not down');
+  until(w,()=>w.barista.state!=='projectHome','she goes back to the counter');
+  snap(w,'rugs-done',room);
+  checks.push('rugs: rolled by the hearth, unrolled one at a time from where they lie, then the cat has the big one');
+
   return {checks};
 })()
