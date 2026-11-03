@@ -53,6 +53,13 @@
         items:[], candle:0, candleTarget:0, furniture:'fireside-left' });
       w.seats.push({ x:A.x + 6 * A.dir, y:A.y, facing:A.dir, table:index, side:0, armchair:true, taken:false, furniture:'fireside-left' });
     }
+    // The second chair: the right fireside chair and its side table.
+    if (SCENE.hasFurniture(w,'fireside') && !w.tables.some(t => t.furniture === 'fireside')) {
+      const st = L.fireTables[1], A = L.armchairs[1], index = w.tables.length;
+      w.tables.push({ x:st.x, y:st.y, tag:'by the fire', small:true, fireside:true, busVia:st.busVia,
+        items:[], candle:0, candleTarget:0, furniture:'fireside' });
+      w.seats.push({ x:A.x + 6 * A.dir, y:A.y, facing:A.dir, table:index, side:0, armchair:true, taken:false, furniture:'fireside' });
+    }
     // The bought piano: its lid (a drink's place) and the bench join the room.
     if (SCENE.hasFurniture(w,'piano') && !w.tables.some(t => t.piano)) {
       const P = L.piano, index = w.tables.length;
@@ -135,6 +142,7 @@
     }
     if (d.bookSource) shelvingPose(b,d,p);
     else if (d.kneels) { b.pose = 'kneel'; b.heading = ''; b.facing = 1; }
+    else if (d.reaches) { b.pose = 'reach'; b.heading = 'up'; b.facing = 1; }
     else if (d.keepsake) { b.pose = 'reach'; b.heading = ''; b.facing = 1; }
     else if (d.carry) { b.pose = 'kneel'; b.heading = ''; b.facing = -1; }
     else if (d.workFacing) { b.pose = p.step === d.phases.length - 1 ? 'reach' : 'wipe'; b.heading = ''; b.facing = d.workFacing; }
@@ -189,7 +197,7 @@
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
   R.commitLife = commit;
   // Tomas's jobs, one at a time, in this order.
-  const TOMAS_JOBS=['window','window2','drapes','mantel'];
+  const TOMAS_JOBS=['window','window2','drapes','mantel','crockery'];
   // The booked craftsperson has a private walking actor, never a customer,
   // order or seat. Durable progress uses the same project checkpoint as kits.
   R.updateWindowWorker = function(w,dt) {

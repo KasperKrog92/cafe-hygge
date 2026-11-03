@@ -38,6 +38,9 @@
     if (id === 'piano-worksite') return !life.furniture.piano && ['arrived','working'].indexOf(life.projects.piano.stage) >= 0;
     // The left fireside chair (and its side table) alone: the reading chair.
     if (id === 'fireside-left') return !!life.furniture.fireside || IMPROVEMENTS.installed(life,'reading-chair');
+    if (id === 'fireside') return !!life.furniture.fireside || IMPROVEMENTS.installed(life,'fireside-right');
+    if (id === 'second-chair-worksite') return !life.furniture.fireside &&
+      ['arrived','working'].indexOf(life.projects.secondChair.stage) >= 0;
     if (id === 'chair-worksite') return !life.furniture.fireside &&
       ['arrived','working'].indexOf(life.projects.readingChair.stage) >= 0;
     // Any other improvement capability (a keepsake's, say) is its installation.
@@ -48,6 +51,8 @@
     const life = world && world.memory && world.memory.life;
     return life ? life.room + ':' + JSON.stringify(life.furniture) + ':' + SCENE.hasFurniture(world,'table-worksite') + ':' + SCENE.hasFurniture(world,'shelf-worksite') + ':' + SCENE.hasFurniture(world,'book-worksite') + ':' + SCENE.hasFurniture(world,'hearth') + ':' + SCENE.hasFurniture(world,'left-window-table') + ':' + SCENE.mantelShelf(world) + ':' + SCENE.hasFurniture(world,'mantel-decor') +
       ':' + SCENE.hasFurniture(world,'fireside-left') + ':' + SCENE.hasFurniture(world,'chair-worksite') +
+      ':' + SCENE.hasFurniture(world,'wall-menu') + ':' + SCENE.hasFurniture(world,'back-shelves') +
+      ':' + SCENE.hasFurniture(world,'fireside') + ':' + SCENE.hasFurniture(world,'second-chair-worksite') +
       ':' + SCENE.hasFurniture(world,'table-front-left-site') + ':' + SCENE.hasFurniture(world,'table-front-right-site') + ':' + SCENE.rugStage(world) +
       ':' + SCENE.hasFurniture(world,'cafe-sign') + ':' + SCENE.hasFurniture(world,'piano') + ':' + SCENE.hasFurniture(world,'piano-worksite') : 'full';
   };
@@ -221,6 +226,12 @@
       window2: {work: {x:530,y:254}},
       // One ladder stance beside each window, clear of the little sill tables
       // and of the perches' floor spots. The ladder brings his hands to the rail.
+      // The board goes up from the wall past the counter's end; Keira leaves it
+      // on the floor just in front of there. Tomas's ladder for the shelves stands
+      // at that open end, clear of the short counter and its occluder.
+      menuBoard: {drop:{x:866,y:304},work:{x:866,y:238},lean:{x:880,y:240}},
+      crockery: {work:{x:826,y:256},ladderHeight:100},
+      secondChair: {drop:{x:478,y:334},work:{x:478,y:334}},
       // Each front table's kit, set down and assembled just in front of its place.
       tableLeft: {x:260,y:520,work:{x:260,y:558},tag:''},
       tableRight: {x:548,y:524,work:{x:548,y:562},tag:''},
@@ -523,6 +534,9 @@
   const readingChair = L.armchairs[0];
   L.footprints.push({ name: 'reading chair worksite', furniture: 'chair-worksite', seat: true,
     x0: readingChair.x - 32, x1: readingChair.x + 32, y0: readingChair.y - 16, y1: readingChair.y + 14 });
+  const secondChair = L.armchairs[1];
+  L.footprints.push({ name: 'second chair worksite', furniture: 'second-chair-worksite', seat: true,
+    x0: secondChair.x - 32, x1: secondChair.x + 32, y0: secondChair.y - 16, y1: secondChair.y + 14 });
   L.footprints.push({ name: 'reserved table project', x0: projectTable.x - 34, x1: projectTable.x + 34,
     y0: projectTable.y - 8, y1: projectTable.y + 34, passable: true });
   [-1, 1].forEach(function (side) {

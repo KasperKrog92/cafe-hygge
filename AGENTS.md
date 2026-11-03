@@ -213,7 +213,8 @@ Full detail: [docs/architecture.md](docs/architecture.md).
   tenant's partition comes down over two café days) opens the full room; its size
   is saved separately as `life.room`. The view pulls back to the full framing as
   soon as the work starts (`SCENE.presentation`), while floor bounds stay small
-  until it is done. The apartment always uses full framing.
+  until it is done. The apartment always uses full framing. It opens floor only;
+  separate improvements then furnish it from the fuller room's established places.
 - **The master canvas is 960×600 (16:10)**; everything renders there in
   master coordinates. A 16:9 window shows the 960×540 crop (rows 36–576);
   other aspects get a variable crop (visible height 540–600, width 936–960 —

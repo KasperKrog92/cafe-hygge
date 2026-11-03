@@ -284,6 +284,22 @@ middle outward, the hearth's first and then the big one; the cat then has the
 big rug as one of its places. (A choice of its own for the rugs may later come
 before the room opens, if the hearth rug alone is wanted sooner.)
 
+**The chalkboard, crockery shelves and second chair — shipped.** In the opened
+room, 30 coins brings a chalkboard to the wall the partition hid (`L.menu`).
+Keira leans it there; Lunafreya hangs it and chalks up what the counter actually
+serves (KAFFE, TE, BOLLER until a fuller counter exists), titled MENU until the
+café has its name, and doodles on it from then on. 30 coins brings Tomas with
+two boards for above the back bar, fitted from his ladder at the counter's open
+end, then the cups, teapot and jars; the shelves do not change the menu. Once
+the reading chair is in, 45 coins brings its opposite: the right fireside wing
+chair and side table, wrapped and then unwrapped like the first.
+
+**Still to settle for this room (owner's call):** where a larger bookcase and
+its reading nook stand, and how they relate to the three wall shelves and the
+books already on them; whether Nora's easel corner becomes a purchase or part of
+her portrait story; the right window's little table and sill seats; the entrance
+screen and floor plants. The counter's own growth stays with the K stages.
+
 **Next, by judgement** (the 27 September hand-off's remaining candidates):
 Nora's portrait itself (`lunafreya-portrait-*`), Calandra's visit ("when you
 say"), Ezra, Elody sharing her plot, Tomas's daughter's hello, a small music

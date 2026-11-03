@@ -231,11 +231,34 @@
             px(g,k.x-8,k.y-5,9,2,'#b8bfc7');px(g,k.x-8,k.y-5,3,3,'#6e4a33');
           }
         }});
-      } else if (id==='readingChair') {
+      } else if (id==='menuBoard') {
+        if(p.stage==='arrived'||p.stage==='working'&&p.step===0&&p.time<6) draws.push({y:a.lean.y,draw:g=>SCENE.drawLeaningMenu(g,a.lean)});
+        if(p.stage==='working'&&(p.step>0||p.time>=6)) draws.push({y:SCENE.L.wallY-1,draw:g=>SCENE.drawBlankMenu(g,w)});
+      } else if (id==='crockery') {
+        if(p.stage!=='working')return;
+        const upper=p.step>0||p.time>=8,lower=p.step>1||p.step===1&&p.time>=8;
+        draws.push({y:SCENE.L.wallY-1,draw:g=>{if(upper)SCENE.drawBareShelf(g,104);if(lower)SCENE.drawBareShelf(g,148);}});
+      } else if (id==='readingChair'||id==='secondChair') {
         // Set down in grey moving blankets, then unwrapped where it will stay;
         // once installed the fireside renderer draws it with its side table.
         if(p.stage!=='arrived' && p.stage!=='working') return;
-        const A=SCENE.L.armchairs[0];
+        const A=SCENE.L.armchairs[id==='secondChair'?1:0];
+        if(id==='secondChair') {
+          if(p.stage==='arrived' || p.step===0) draws.push({y:A.y+12,draw:g=>{
+            ell(g,A.x,A.y+4,30,7,'rgba(20,12,8,.2)');
+            px(g,A.x+6,A.y-48,18,50,'#7a89a5');px(g,A.x-24,A.y-24,48,26,'#7a89a5');
+            px(g,A.x+6,A.y-48,18,3,'#94a1b4');px(g,A.x-24,A.y-24,48,3,'#94a1b4');
+            px(g,A.x-24,A.y-30,10,8,'#6a7890');
+            px(g,A.x+5,A.y-38,20,2,'#4b5260');px(g,A.x-25,A.y-10,50,2,'#4b5260');
+            if(p.stage==='working')px(g,A.x-20,A.y-26,14,5,'#94a1b4');
+          }});
+          else {
+            draws.push({y:A.y-4,draw:g=>SCENE.wingChair.back(g,A)});
+            draws.push({y:A.y+12,draw:g=>SCENE.wingChair.front(g,A)});
+            draws.push({y:A.y+16,draw:g=>{px(g,A.x+20,A.y+6,18,6,'#7a89a5');px(g,A.x+20,A.y+6,18,1,'#94a1b4');px(g,A.x+20,A.y+9,18,1,'#6a7890');}});
+          }
+          return;
+        }
         if(p.stage==='arrived' || p.step===0) draws.push({y:A.y+12,draw:g=>{
           ell(g,A.x,A.y+4,30,7,'rgba(20,12,8,.2)');
           px(g,A.x-24,A.y-48,18,50,'#7a89a5');px(g,A.x-24,A.y-24,48,26,'#7a89a5');

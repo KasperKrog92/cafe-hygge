@@ -935,7 +935,10 @@ The first repair opens `L.win` only. The right pane stays boarded, including
 its floor projection and ambient window glow, until its own later repair
 (`L.projects.window2.work`, same phases and drawing). Curtains follow from
 `SCENE.curtainStage`: the rail, then the cloth, one window at a time from
-Tomas's ladder (`L.projects.drapes`). Saved work first reveals the upper
+Tomas's ladder (`L.projects.drapes`). The front tables, rugs, chalkboard, back-bar
+shelves and second fireside chair use the fuller room's established coordinates;
+in a game, footprints at `L.tables[2]` and `[3]` activate through `-site` ids from
+the kit's delivery morning. Saved work first reveals the upper
 view, then the rest of the glass; completion restores the existing full frame,
 reflection and sill drawing. The worker uses the 60 px character ruler, a muted
 blue work shirt, a small handled toolbox and the shared kneel/reach animations.

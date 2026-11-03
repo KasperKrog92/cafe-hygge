@@ -148,5 +148,49 @@
   snap(w,'rugs-done',room);
   checks.push('rugs: rolled by the hearth, unrolled one at a time from where they lie, then the cat has the big one');
 
+  /* ---------- the chalkboard ---------- */
+  ['menuBoard','crockery','secondChair'].forEach(id=>check(!IMPROVEMENTS.offered(furnished,id),id+' offered in a furnished room'));
+  check(!IMPROVEMENTS.offered(fresh(['window']),'menuBoard'),'chalkboard offered behind the partition');
+  check(IMPROVEMENTS.offered(w,'menuBoard'),'chalkboard not offered in the opened room');
+  w=buyAndWake(w,'menuBoard');
+  until(w,()=>w.memory.life.projects.menuBoard.stage==='arrived','board set down');
+  snap(w,'board-delivered',room);
+  until(w,()=>{const p=w.memory.life.projects.menuBoard;return p.stage==='working'&&p.step===1&&p.time>=3;},'board hung');
+  snap(w,'board-blank',room);
+  w=eachPhaseReloads(w,'menuBoard');
+  check(SCENE.hasFurniture(w,'wall-menu'),'no board');
+  // She can go and doodle on it from the short counter, and come back.
+  w.barista.forcedTask='chalk';
+  until(w,()=>w.barista.state==='chalkWalk','walks to the board',1200);
+  for(let t=0;t<60;t+=.25){SIM.update(w,.25);audit(w,'chalk walk');}
+  snap(w,'board-done',room);
+  checks.push('chalkboard: past the partition only, leaning then blank then chalked, and she can reach it to doodle');
+
+  /* ---------- the crockery shelves ---------- */
+  check(IMPROVEMENTS.offered(w,'crockery'),'shelves not offered in the opened room');
+  w=buyAndWake(w,'crockery');
+  until(w,()=>{const p=w.memory.life.projects.crockery;return p.stage==='working'&&p.step===1&&p.time>=9&&w.windowWorker&&w.windowWorker.mantelLift===L.projects.crockery.ladderHeight;},'upper shelf up');
+  snap(w,'shelves-bare',{x:600,y:60,w:300,h:260,scale:2});
+  w=eachPhaseReloads(w,'crockery');
+  check(SCENE.hasFurniture(w,'back-shelves')&&!SCENE.fullCounter(w),'shelves changed the menu or never came');
+  until(w,()=>!w.windowWorker,'Tomas leaves');
+  snap(w,'shelves-done',{x:600,y:60,w:300,h:260,scale:2});
+  checks.push('crockery shelves: Tomas fits two boards then sets them out; the menu stays what the counter serves');
+
+  /* ---------- the second chair ---------- */
+  done(w.memory.life,'bookshelf');done(w.memory.life,'readingChair');R.installProjects(w);
+  check(IMPROVEMENTS.offered(w,'secondChair'),'second chair not offered after the first');
+  const chairs=w.seats.filter(s=>s.armchair).length;
+  w=buyAndWake(w,'secondChair');
+  until(w,()=>w.memory.life.projects.secondChair.stage==='arrived','chair set down');
+  check(w.seats.filter(s=>s.armchair).length===chairs,'a seat before it is unwrapped');
+  snap(w,'chair-wrapped',{x:240,y:190,w:300,h:170,scale:2});
+  w=eachPhaseReloads(w,'secondChair');
+  check(w.seats.filter(s=>s.armchair).length===chairs+1&&w.tables.filter(t=>t.furniture==='fireside').length===1,'second chair seat or table');
+  const reread=restore(w);
+  check(reread.tables.filter(t=>t.furniture==='fireside').length===1&&reread.seats.filter(s=>s.furniture==='fireside').length===1,'doubled on reload');
+  snap(w,'chair-done',{x:240,y:190,w:300,h:170,scale:2});
+  checks.push('second chair: after the first, wrapped then unwrapped, one seat and side table, once');
+
   return {checks};
 })()

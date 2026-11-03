@@ -149,6 +149,25 @@
       phases:['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'],
       phaseIds:['unpack','legs','top','chairs','wipe','position'], duration:18, capability:'table-front-right', tableKit:true,
       doneLine:'another table at the front. The new floor is starting to look like the old one.' },
+    // The chalkboard on the wall the partition used to hide, past the counter.
+    // Keira brings it; Lunafreya hangs it and chalks up what the counter serves.
+    menuBoard: { price:30, destination:'cafe', delivery:'keira', title:'a chalkboard menu',
+      label:'A chalkboard for the menu', furniture:'wall-menu', showsWith:'expanded-room', requires:['expanded-room'],
+      phases:['hang the board','chalk up the menu'], phaseIds:['hang','chalk'], duration:9, capability:'wall-menu', reaches:true,
+      doneLine:'a chalkboard by the counter. She draws something small in the corner, for nobody in particular.' },
+    // Two shelves above the back bar. Tomas fits the boards from his ladder at
+    // the counter's open end and sets out the cups, plates and jars.
+    crockery: { price:30, destination:'cafe', delivery:'contractor', title:'shelves for the crockery',
+      label:'Shelves above the back bar', furniture:'full-counter', showsWith:'expanded-room', requires:['expanded-room'],
+      phases:['fit the upper shelf','fit the lower shelf','set out the crockery'], phaseIds:['upper','lower','set'],
+      duration:12, capability:'back-shelves', allReach:true,
+      arriveLine:'Tomas brings two boards, his ladder and a box that clinks when he sets it down.',
+      doneLine:'cups, a teapot and some jars, up where they can be seen. It looks as though somebody means to stay.' },
+    // The other chair by the fire, opposite Holger's, once there is a first.
+    secondChair: { price:45, destination:'cafe', delivery:'keira', title:'a second chair by the fire',
+      label:'A second chair by the fire', furniture:'fireside', showsWith:'fireside-left', requires:['reading-chair'],
+      phases:['unwrap the chair','turn it to the fire','set its side table'], phaseIds:['unwrap','turn','table'],
+      duration:12, capability:'fireside-right', doneLine:'a second chair by the fire, so the first one has somebody to disagree with.' },
     // The two rugs, unrolled by Lunafreya from the middle outward between guests:
     // the small one at the hearth, then the big one across the middle of the room.
     rugs: { price:50, destination:'cafe', delivery:'keira', title:'two rugs',
@@ -172,7 +191,7 @@
     duration:4, maxTime:8, capability:'first-plant' };
   I.all = Object.assign({}, I.projects, {plant:I.plant});
   // The order choices appear in the evening planner.
-  I.planOrder = ['window','table','windowSeat','window2','drapes','bookshelf','books','readingChair','plant','fireplace','mantel','expansion','piano','tableLeft','tableRight','rugs'];
+  I.planOrder = ['window','table','windowSeat','window2','drapes','bookshelf','books','readingChair','plant','fireplace','mantel','expansion','piano','tableLeft','tableRight','rugs','menuBoard','crockery','secondChair'];
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];

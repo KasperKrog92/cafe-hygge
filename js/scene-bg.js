@@ -278,8 +278,8 @@
 
     if(world.memory.life.furniture['mantel-decor']) drawWallFrame(g, L.wallFrame.x, L.wallFrame.y);
     drawFireplaceStatic(g,world);
-    if(SCENE.hasFurniture(world,'wall-menu')) drawMenuBoard(g, SCENE.hasFurniture(world,'cafe-sign'));
-    if(SCENE.fullCounter(world)) drawShelves(g);
+    if(SCENE.hasFurniture(world,'wall-menu')) drawMenuBoard(g, SCENE.hasFurniture(world,'cafe-sign'), world);
+    if(SCENE.fullCounter(world) || SCENE.hasFurniture(world,'back-shelves')) drawShelves(g);
     if (SCENE.hasFurniture(world,'hearth')) drawFirewood(g);
   }
 
@@ -861,8 +861,10 @@
   }
 
   /* ---------- menu board, shelves, lamps ---------- */
-  function drawMenuBoard(g, named) {
-    const m = L.menu;
+  // Only what the counter actually serves; a cafe still finding its name
+  // just says MENU. (blank: hung, not yet chalked.)
+  function drawMenuBoard(g, named, world, blank) {
+    const m = L.menu, full = SCENE.fullCounter(world), plain = !named && !full;
     // A substantial oak frame sits off the wall, with recessed slate inside.
     px(g, m.x + 3, m.y + 4, m.w, m.h + 2, 'rgba(30,18,10,0.22)');
     px(g, m.x, m.y, m.w, m.h, '#5a3d28');
@@ -875,14 +877,16 @@
     // The title and four rows have separate margins; even the widest doodle
     // fits beside the prices without touching the frame or the lettering.
     // Titled with the café's own name once it has one.
-    SCENE.chalkText(g, m.x + (named ? 29 : 23), m.y + 15, named ? 'FLOURISH' : 'CAFÉ HYGGE', '#e8dfc9');
+    if (!blank) {
+    SCENE.chalkText(g, m.x + (named ? 29 : plain ? 42 : 23), m.y + 15, named ? 'FLOURISH' : plain ? 'MENU' : 'CAFÉ HYGGE', '#e8dfc9');
     px(g, m.x + 16, m.y + 28, m.w - 32, 2, 'rgba(232,223,201,0.35)');
-    ['KAFFE', 'MATCHA', 'KAKAO', 'BOLLER'].forEach(function (label, i) {
+    (full ? ['KAFFE', 'MATCHA', 'KAKAO', 'BOLLER'] : ['KAFFE', 'TE', 'BOLLER']).forEach(function (label, i) {
       const y = m.y + 36 + i * 15;
       SCENE.chalkText(g, m.x + 16, y, label, 'rgba(220,214,196,0.82)');
       px(g, m.x + 78, y + 5, 10, 2, 'rgba(220,214,196,0.6)');
     });
     drawMenuDoodle(g, m.x + 94, m.y + 61, menuDoodle);
+    }
     // Projecting chalk tray: bright top, dark front, chalk and a little eraser.
     px(g, m.x - 3, m.y + m.h - 2, m.w + 6, 4, '#8a6142');
     px(g, m.x - 3, m.y + m.h + 2, m.w + 6, 3, '#5a3d28');
@@ -891,6 +895,27 @@
     px(g, m.x + m.w - 26, m.y + m.h - 6, 14, 4, '#6e4a33');
     px(g, m.x + m.w - 26, m.y + m.h - 6, 14, 2, '#9c6b43');
   }
+
+  SCENE.drawBlankMenu = function (g, world) { drawMenuBoard(g, false, world, true); };
+  // The board before it goes up, leaning on the wall on its long edge.
+  SCENE.drawLeaningMenu = function (g, at) {
+    px(g, at.x - 30, at.y - 42, 58, 44, '#5a3d28');
+    px(g, at.x - 30, at.y - 42, 58, 2, '#9c6b43');
+    px(g, at.x - 26, at.y - 38, 50, 36, '#2c3038');
+    px(g, at.x + 28, at.y - 40, 3, 42, 'rgba(30,18,10,0.25)');
+  };
+  // A shelf board fitted, before the crockery goes on (y as in drawShelves).
+  SCENE.drawBareShelf = function (g, y) {
+    px(g, 636, y, 164, 8, '#7d5334');
+    px(g, 636, y, 164, 2, '#9c6b43');
+    px(g, 636, y + 6, 164, 2, '#5f402c');
+    px(g, 638, y + 8, 162, 2, 'rgba(30,18,10,0.16)');
+    [644, 788].forEach(function (x) {
+      px(g, x, y + 8, 3, 12, '#5f402c');
+      px(g, x + 3, y + 8, 5, 3, '#6e4a33');
+      px(g, x + 3, y + 11, 3, 3, '#6e4a33');
+    });
+  };
 
   function drawMenuDoodle(g, x, y, id) {
     const c = 'rgba(220,214,196,0.7)';

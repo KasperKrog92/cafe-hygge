@@ -99,6 +99,10 @@
       again:'Keira steers one more table kit past the guests, to the front of the room.',down:'a kit waits on the new floor, ready for a quiet moment.'},
     rugs:{site:()=>L.projects.rugs.drop,first:'Keira comes in with two rolled rugs balanced on her trolley.',
       again:'Keira comes in with two rolled rugs balanced on her trolley.',down:'two rolled rugs lie by the hearth, smelling faintly of somebody’s attic.'},
+    menuBoard:{site:()=>L.projects.menuBoard.drop,first:'Keira wheels in something flat and framed, and leans it by the far wall.',
+      again:'Keira wheels in something flat and framed, and leans it by the far wall.',down:'a blank chalkboard waits against the wall for a quiet moment.'},
+    secondChair:{site:()=>L.projects.secondChair.drop,first:'Keira wheels in another large thing wrapped in blankets.',
+      again:'Keira wheels in another large thing wrapped in blankets. The first one looks up.',down:'a second wing chair waits in its blankets, across the hearth from the first.'},
     // An upright is two people's work: Tomas walks beside the dolly.
     piano:{site:()=>L.projects.piano.drop,helper:'tomas',first:'Keira and Tomas wheel an upright piano in on a dolly, wrapped in blankets.',
       again:'Keira and Tomas wheel an upright piano in on a dolly, wrapped in blankets.',down:'the upright is tipped gently into its corner, still in its blankets.'}
@@ -174,7 +178,7 @@
     return ['keira','tomas'].find(function(id,n) {
       const job=w.memory.life.projects[id==='keira'?'table':'window'];
       if(id==='keira' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.bookshelf.stage)>=0)return false;
-      if(id==='tomas' && ['window2','drapes','mantel'].some(j=>['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects[j].stage)>=0))return false;
+      if(id==='tomas' && ['window2','drapes','mantel','crockery'].some(j=>['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects[j].stage)>=0))return false;
       return !(w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
         ['purchased','scheduled','arrived','working'].indexOf(job.stage)>=0 ||
         SIM.visitorActors(w).some(a=>a.visitorId===id));

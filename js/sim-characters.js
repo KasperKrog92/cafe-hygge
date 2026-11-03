@@ -1718,7 +1718,7 @@
             g.fillStyle='#7a89a5';g.fillRect(x-12,y-46,25,41);
             g.fillStyle='#94a1b4';g.fillRect(x-12,y-46,25,3);
             g.fillStyle='#4b5260';g.fillRect(x-13,y-36,27,2);g.fillRect(x-13,y-18,27,2);
-          } else if(!a.trolleyEmpty && a.delivers==='readingChair') {
+          } else if(!a.trolleyEmpty && (a.delivers==='readingChair'||a.delivers==='secondChair')) {
             // A wing chair on its back in grey moving blankets, strapped on.
             g.fillStyle='#7a89a5';g.fillRect(x-9,y-40,19,35);g.fillRect(x-12,y-34,25,12);
             g.fillStyle='#94a1b4';g.fillRect(x-9,y-40,19,3);g.fillRect(x-12,y-34,25,2);
