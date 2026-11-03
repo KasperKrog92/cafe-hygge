@@ -622,7 +622,8 @@ The booked worker enters the following open café with a toolbox, walks to
 `L.projects.window.work`, protects the sill, removes boards, repairs the frame,
 and cleans the glass in four 18-second phases. Boards disappear in stages.
 Only the left view, its sunlight and its ship-watching spot become available;
-the right window remains boarded. The worker leaves when finished or at closing.
+the right window stays boarded until its own later repair (the same phases,
+`L.projects.window2.work`). The worker leaves when finished or at closing.
 Partial work survives nights, reloads and mode changes, independently of
 Lunafreya’s table assembly. Captions mark the arrival and the clear lake view;
 existing door sounds and the normal caption limiter apply.

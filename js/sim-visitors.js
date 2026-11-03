@@ -24,6 +24,8 @@
       lines.find(line=>line.id==='name').text="I'm Tomas. I've brought the mantel shelf. Shall we give those candles somewhere to stand?";
       lines.find(line=>line.id==='precise').text="A shelf needs to look as though it's always belonged there. That's the part I like.";
     }
+    if(a.project==='window2')
+      lines.find(line=>line.id==='name').text="Tomas. Here for the other window. Same boards, same nails, same idea.";
     if(a.social || a.shelfDelivery) {
       if(a.social)lines.find(line=>line.id==='name').text=CAST.visitors[id].later;
       else lines.find(line=>line.id==='name').text="The little shelves are here. I'm Keira. Is this a good place to set them down?";
@@ -166,7 +168,7 @@
     return ['keira','tomas'].find(function(id,n) {
       const job=w.memory.life.projects[id==='keira'?'table':'window'];
       if(id==='keira' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.bookshelf.stage)>=0)return false;
-      if(id==='tomas' && ['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects.mantel.stage)>=0)return false;
+      if(id==='tomas' && ['window2','drapes','mantel'].some(j=>['purchased','scheduled','arrived','working'].indexOf(w.memory.life.projects[j].stage)>=0))return false;
       return !(w.hour<10+n || w.hour>=19 || w.visitorDays[id]===day ||
         ['purchased','scheduled','arrived','working'].indexOf(job.stage)>=0 ||
         SIM.visitorActors(w).some(a=>a.visitorId===id));

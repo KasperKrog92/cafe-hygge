@@ -179,24 +179,27 @@
   R.projectPending = function (w) { return !!pending(w); };
   function commit(w) { saveLife(w, 0); w.context.memory.saveNow(); }
   R.commitLife = commit;
+  // Tomas's jobs, one at a time, in this order.
+  const TOMAS_JOBS=['window','window2','drapes','mantel'];
   // The booked craftsperson has a private walking actor, never a customer,
   // order or seat. Durable progress uses the same project checkpoint as kits.
   R.updateWindowWorker = function(w,dt) {
     let a=w.windowWorker;
     const pending=id=>['scheduled','arrived','working'].indexOf(w.memory.life.projects[id].stage)>=0;
-    const id=a && a.project || (pending('window')?'window':'mantel');
-    const p=w.memory.life.projects[id],site=L.projects[id].work,d=PROJECTS[id];
+    const id=a && a.project || TOMAS_JOBS.find(pending) || 'mantel';
+    const p=w.memory.life.projects[id],spot=L.projects[id],d=PROJECTS[id];
+    const site=spot.works?spot.works[Math.min(p.step,spot.works.length-1)]:spot.work;
     if(w.moment && (!a || w.moment.owner===a)){if(a)a.animT+=dt;return;}
     if(w.shop.phase==='home') { w.windowWorker=null;return; }
     if(!a) {
       // Tomas is one person: the partition crew goes first.
-      if(w.shop.phase!=='open' || ['scheduled','arrived','working'].indexOf(p.stage)<0 || w.expansionCrew)return;
+      if(w.shop.phase!=='open' || ['scheduled','arrived','working'].indexOf(p.stage)<0 || w.expansionCrew || w.deliveryHelper)return;
       a=w.windowWorker=R.makeVisitor(w,'tomas');
       a.project=id;
       a.x=p.stage==='working'?site.x:L.doorSpot.x;a.y=p.stage==='working'?site.y:L.doorSpot.y;
       a.pose='stand';a.holding=null;a.bubble=null;a.state='arriving';
       R.makePath(a,site.x,site.y);
-      if(p.stage==='scheduled') {p.stage='arrived';R.ringDoor(w);R.caption(w,id==='window'?'Tomas arrives to look after the left window.':'Tomas brings a mantel shelf and a carefully packed box.');commit(w);}
+      if(p.stage==='scheduled') {p.stage='arrived';R.ringDoor(w);R.caption(w,d.arriveLine);commit(w);}
     }
     a.animT+=dt;
     if(w.shop.phase!=='open' || p.stage==='installed') {
@@ -206,15 +209,20 @@
       return;
     }
     if(a.path && a.path.length) {R.walker(a,dt);return;}
-    a.state='working';a.pose=p.step===0?'kneel':'reach';a.heading='up';a.facing=1;
-    if(id==='mantel') {
-      const target=p.step>0?L.projects.mantel.ladderHeight:0,current=a.mantelLift||0;
+    // The next phase is at another place: down the ladder first, then across.
+    if(Math.hypot(a.x-site.x,a.y-site.y)>1) {
+      if(a.mantelLift>0){a.state='descending';a.pose='stand';a.mantelLift=Math.max(0,a.mantelLift-dt*20);return;}
+      a.state='arriving';a.pose='stand';R.makePath(a,site.x,site.y);return;
+    }
+    a.state='working';a.pose=p.step===0&&!d.allReach?'kneel':'reach';a.heading='up';a.facing=1;
+    if(spot.ladderHeight) {
+      const target=p.step>0||d.allReach?spot.ladderHeight:0,current=a.mantelLift||0;
       if(current!==target){a.pose='stand';a.mantelLift=Math.min(target,current+dt*20);return;}
     }
     p.stage='working';const before=p.time;p.time=Math.min(d.duration,p.time+dt);a.stateT=p.time;
     if(p.time>=d.duration) {
       p.time=0;p.step++;
-      if(p.step===d.phases.length) {p.stage='installed';R.caption(w,id==='window'?'the left window is clear; the lake comes into view.':'a little shelf, a clock, and room for the candlelight.');}
+      if(p.step===d.phases.length) {p.stage='installed';R.caption(w,d.doneLine);}
       commit(w);
     } else if(Math.floor(before/3)!==Math.floor(p.time/3))commit(w);
   };

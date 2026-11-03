@@ -37,8 +37,8 @@
     if (id === 'chair-worksite') return !life.furniture.fireside &&
       ['arrived','working'].indexOf(life.projects.readingChair.stage) >= 0;
     // Any other improvement capability (a keepsake's, say) is its installation.
-    if (IMPROVEMENTS.ids.some(k => IMPROVEMENTS.all[k].capability === id)) return IMPROVEMENTS.installed(life,id);
-    return life.furniture[id] === true;
+    if (life.furniture[id] === true) return true;
+    return IMPROVEMENTS.ids.some(k => IMPROVEMENTS.all[k].capability === id) && IMPROVEMENTS.installed(life,id);
   };
   SCENE.layoutKey = function (world) {
     const life = world && world.memory && world.memory.life;
@@ -48,7 +48,16 @@
   };
   SCENE.windowOpen = function(world,w) {
     return SCENE.hasFurniture(world,'open-windows') ||
-      w.x===SCENE.L.win.x && IMPROVEMENTS.installed(world.memory.life,'left-window');
+      IMPROVEMENTS.installed(world.memory.life, w.x===SCENE.L.win.x ? 'left-window' : 'right-window');
+  };
+  // How far one window's curtains are: 0 none, 1 the rail, 2 hung. Tomas does
+  // the left window, then the right, within the phases of one saved job.
+  SCENE.curtainStage = function(world,index) {
+    if(SCENE.hasFurniture(world,'drapes'))return 2;
+    const p=world.memory.life.projects.drapes;
+    if(p.stage!=='working' || p.step<index)return 0;
+    if(p.step>index)return 2;
+    return p.time>=12?2:p.time>=6?1:0;
   };
   // Room extent is independent of furnishing ownership: a later expansion
   // exposes more usable floor without changing the size of the pixel art.
@@ -196,6 +205,12 @@
       piano: {drop:{x:62,y:550},work:{x:74,y:542}},
       pickup: { x: 54, y: 300 },
       window: {work: {x:210,y:254}},
+      // The right pane, from the middle of the sill: well left of the cat's
+      // corner (x 602+), whose bed and bowls stay where they are.
+      window2: {work: {x:530,y:254}},
+      // One ladder stance beside each window, clear of the little sill tables
+      // and of the perches' floor spots. The ladder brings his hands to the rail.
+      drapes: {works:[{x:246,y:256},{x:556,y:256}],ladderHeight:124},
       windowSeat: {work:{x:216,y:292}},
       table: { x: 568, y: 450, work: { x: 568, y: 496 }, tag: 'at the new table' },
       fireplace: { x: 390, y: 246, work: { x: 390, y: 274 } },
@@ -576,7 +591,10 @@
     else if (n === 'umbrella stand') box.furniture = 'entrance';
   });
   SCENE.catSpotAvailable = function (world, id) {
-    if (/^(window|topShelf|counter)/.test(id) && !SCENE.fullCounter(world)) return false;
+    // The sills and the sun's patch on the floor come with a repaired window.
+    if (id === 'window1' || id === 'windowFloor') return SCENE.windowOpen(world,L.win);
+    if (id === 'window2') return SCENE.windowOpen(world,L.win2);
+    if (/^(topShelf|counter)/.test(id) && !SCENE.fullCounter(world)) return false;
     if (/^bookshelf/.test(id)) return SCENE.hasFurniture(world,'bookshelf') && SCENE.hasFurniture(world,'nook');
     if (/^piano/.test(id)) return SCENE.hasFurniture(world,'piano');
     if (id === 'armchair') return SCENE.hasFurniture(world,'fireside-left');

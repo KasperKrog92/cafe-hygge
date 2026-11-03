@@ -258,6 +258,23 @@ place's forecast; afterwards he comes along on every third visit. Kasper
 finishes chapter seven, asks before keeping her way of looking at the door, and
 has her read its last paragraph, which leans the way she said endings should.
 
+## Finishing the room — in progress, November 2026
+
+A complete playthrough ran out of things to buy on about day 11, with the room
+still well behind the idle café: one window boarded for good and an expansion
+that opened floor nothing could fill. These improvements bring the saved café
+up to the room the idle café has always shown, using the fuller room's
+established positions and art, each as its own evening choice with a visible
+job. Each is hidden in a room that already has the piece.
+
+**The right window and curtains — shipped.** Once the left window is repaired,
+40 coins brings Tomas back for the right one: the same four saved phases, from
+the middle of the sill, with the cat's corner left where it is. With both open,
+35 coins buys curtains: he goes up his ladder beside each window in turn, rail
+first and then the cloth, and from that evening Lunafreya draws them at closing
+and opens them in the morning. A repaired window also gives the cat its sill and
+the sun's patch on the floor.
+
 **Next, by judgement** (the 27 September hand-off's remaining candidates):
 Nora's portrait itself (`lunafreya-portrait-*`), Calandra's visit ("when you
 say"), Ezra, Elody sharing her plot, Tomas's daughter's hello, a small music

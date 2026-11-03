@@ -323,8 +323,8 @@
   function drawBoardedWindow(g,w,world) {
     px(g,w.x-8,w.y-8,w.w+16,w.h+16,'#5a3d28');
     px(g,w.x,w.y,w.w,w.h,'#292821');
-    const p=world.memory.life.projects.window;
-    const step=w.x===L.win.x && p.stage==='working' ? p.step : 0;
+    const p=world.memory.life.projects[w.x===L.win.x?'window':'window2'];
+    const step=p.stage==='working' ? p.step : 0;
     if(step>=2) {
       g.save();g.beginPath();g.rect(w.x,w.y,w.w,w.h);g.clip();SCENE.drawWaterfront(g,world);g.restore();
     }
@@ -388,7 +388,8 @@
     px(g, w.x, w.y + w.h / 2 - 2, w.w, 2, '#6e4a33');
     // Small brass casement catch on the central stile.
     px(g, w.x + w.w / 2 + 2, w.y + w.h / 2 + 8, 3, 8, '#c9a04a');
-    if(SCENE.hasFurniture(world,'drapes')) drawCurtains(g, w, world.shop ? world.shop.curtains[alt] : 0);
+    const hung=SCENE.curtainStage(world,alt);
+    if(hung) drawCurtains(g, w, world.shop ? world.shop.curtains[alt] : 0, hung<2);
     // deep sill: lit top, front face, shadow underneath
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 8, '#6e4a33');
     px(g, w.x - 14, w.y + w.h + 8, w.w + 28, 2, '#8a6142');
@@ -421,12 +422,13 @@
 
   /* Sill-length tied-back drapes frame the weather without crowding the little
      window seats. Their stepped hems keep the folds crisp at native scale. */
-  function drawCurtains(g, w, closed) {
+  function drawCurtains(g, w, closed, railOnly) {
     const rodY = w.y - 13;
     px(g, w.x - 13, rodY, w.w + 26, 3, '#4a3020');
     px(g, w.x - 13, rodY, w.w + 26, 1, '#7a5234');
     px(g, w.x - 16, rodY - 1, 3, 5, '#5a3d28');
     px(g, w.x + w.w + 13, rodY - 1, 3, 5, '#5a3d28');
+    if (railOnly) return;
 
     drawCurtainPanel(g, w.x - 6, w.y - 7, 1);
     drawCurtainPanel(g, w.x + w.w + 6, w.y - 7, -1);

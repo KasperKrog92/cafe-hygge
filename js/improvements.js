@@ -114,7 +114,25 @@
     window: { price:30, destination:'cafe', delivery:'contractor', title:'repair the left window',
       label:'Repair the left window', tutorial:true,
       phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
-      phaseIds:['protect','unboard','repair','clean'], duration:18, capability:'left-window', pair:'table' },
+      phaseIds:['protect','unboard','repair','clean'], duration:18, capability:'left-window', pair:'table',
+      arriveLine:'Tomas arrives to look after the left window.',
+      doneLine:'the left window is clear; the lake comes into view.' },
+    // The other window, once the first has shown what it is worth. Tomas again,
+    // the same four phases; the cat's corner below the sill is left alone.
+    window2: { price:40, destination:'cafe', delivery:'contractor', title:'repair the right window',
+      label:'Repair the right window', furniture:'open-windows', showsWith:'left-window', requires:['left-window'],
+      phases:['protect the sill','remove the boards','repair the frame','clean the glass'],
+      phaseIds:['protect','unboard','repair','clean'], duration:18, capability:'right-window',
+      arriveLine:'Tomas is back, for the other window this time.',
+      doneLine:'the right window is clear, and the lake goes on further than it looked.' },
+    // Curtains for both windows, once both are open. Tomas on his ladder, one
+    // window a phase: the rail goes up first, then the cloth.
+    drapes: { price:35, destination:'cafe', delivery:'contractor', title:'curtains for both windows',
+      label:'Curtains for both windows', furniture:'drapes', showsWith:'right-window', requires:['left-window','right-window'],
+      phases:['hang the left curtains','hang the right curtains'],
+      phaseIds:['left','right'], duration:18, capability:'drapes', allReach:true,
+      arriveLine:'Tomas carries in his ladder, two rails and an armful of red cloth.',
+      doneLine:'red curtains at both windows, tied back for now. Someone will draw them tonight.' },
     table: { price:60, destination:'cafe', delivery:'keira', title:'table and chairs',
       label:'A table for two', tutorial:true,
       phases:['unpack the kit','lay out the legs','fit the tabletop','assemble the chairs','wipe the wood','position the set'],
@@ -126,7 +144,9 @@
     mantel: { price:40, destination:'cafe', delivery:'contractor', title:'mantel shelf and decorations',
       label:'Mantel shelf and decorations', furniture:'mantel-decor', showsWith:'hearth',
       phases:['prepare the supports','fit the mantel shelf','set out the clock, candles and plant'],
-      phaseIds:['supports','shelf','decorate'], duration:18, capability:'mantel-decor', requires:['hearth'] }
+      phaseIds:['supports','shelf','decorate'], duration:18, capability:'mantel-decor', requires:['hearth'],
+      arriveLine:'Tomas brings a mantel shelf and a carefully packed box.',
+      doneLine:'a little shelf, a clock, and room for the candlelight.' }
   };
   I.plant = { price:30, destination:'cafe', delivery:'carry', label:'A plant by the window',
     phases:['scheduled','carry','unpack','place','installed'],
@@ -134,7 +154,7 @@
     duration:4, maxTime:8, capability:'first-plant' };
   I.all = Object.assign({}, I.projects, {plant:I.plant});
   // The order choices appear in the evening planner.
-  I.planOrder = ['window','table','windowSeat','bookshelf','books','readingChair','plant','fireplace','mantel','expansion','piano'];
+  I.planOrder = ['window','table','windowSeat','window2','drapes','bookshelf','books','readingChair','plant','fireplace','mantel','expansion','piano'];
   I.ids = Object.keys(I.all);
   I.ids.forEach(function (id) {
     const d = I.all[id];

@@ -931,8 +931,11 @@ Conversation framing uses a gentle maximum 1.3× zoom (reduced from 1.9×), keep
 
 ## First left-window repair — 7 September 2026
 
-The first repair opens `L.win` only. The right pane remains boarded, including
-its floor projection and ambient window glow. Saved work first reveals the upper
+The first repair opens `L.win` only. The right pane stays boarded, including
+its floor projection and ambient window glow, until its own later repair
+(`L.projects.window2.work`, same phases and drawing). Curtains follow from
+`SCENE.curtainStage`: the rail, then the cloth, one window at a time from
+Tomas's ladder (`L.projects.drapes`). Saved work first reveals the upper
 view, then the rest of the glass; completion restores the existing full frame,
 reflection and sill drawing. The worker uses the 60 px character ruler, a muted
 blue work shirt, a small handled toolbox and the shared kneel/reach animations.
