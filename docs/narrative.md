@@ -2,7 +2,12 @@
 
 > **Scope:** this contract covers the saved game, including its **Let the game
 > run quietly** setting (`life.mode: 'idle'`). The separate **Enjoy an idle café**
-> startup session has no narrative progression, invitations, tutorials or saves.
+> startup session has no tutorials, conversations or game progression, but it
+> runs the ambient arc layer (since 12 November 2026): arcs that need no
+> starting moment (`after` flags) advance there on the same café clock, their
+> ready beats wait as the same tappable invitations, and their state persists
+> in the idle café's own save (`cafe-hygge-idle`), entirely apart from the
+> game's. An arc begun only by a game conversation never starts there.
 >
 > **Shared game life:** chosen plants, table assembly and hearth cleaning finish their practical
 > work autonomously in either mode. This is not a personal story payoff.

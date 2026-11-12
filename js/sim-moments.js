@@ -10,8 +10,10 @@
     return w.patrons.find(p => p.regularId==='holger' && !p.outside &&
       (p.state==='ordering' || p.state==='seated')) || null;
   };
-  SIM.beginMoment=function(w,lines,owner,finish) {
-    if(w.ambient || w.moment || w.shop.phase!=='open')return false;
+  // Only a tapped arc beat (playBeat) passes ambientBeat: the startup idle
+  // café plays those, while every other conversation stays a game story.
+  SIM.beginMoment=function(w,lines,owner,finish,ambientBeat) {
+    if(w.ambient && !ambientBeat || w.moment || w.shop.phase!=='open')return false;
     w.moment={lines:lines,index:0,owner:owner,finish:finish,phase:'waiting',visible:0,clock:0,syllable:0};
     if(w.barista.state==='idle' && !startApproach(w)){w.moment=null;return false;}
     w.activeCaption=null; w.captionQueue=[];

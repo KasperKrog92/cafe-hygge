@@ -196,14 +196,22 @@ identity, time, progress or ownership. Game mode exposes pending invitations.
 
 The normal startup chooser creates no world and keeps `MEMORY.readOnly` true.
 **Play the game** starts the saved life. **Enjoy an idle café** calls
-`SIM.createIdle({sound:SND})` in sim-life.js: full furnishings, a repaired window,
-private `MEMORY.createStore` without storage, and runtime `world.ambient: true`.
-This flag is not saved and does not change the save schema. Ambient sessions
-skip shop closing, arc growth, story arrival hooks and invitations. Ordinary
-service, autonomous activities, weather and the day/night clock keep running.
-`life.mode` still controls the saved game's quiet-play presentation; it cannot
-turn an ambient world into a game. `SND.sessionOnly` makes idle sound adjustments
-temporary. Game-only settings, savings and planning controls are hidden.
+`SIM.createIdle({sound:SND, store})` in sim-life.js: full furnishings, a
+repaired window, and runtime `world.ambient: true`. The first idle tab takes
+the `cafe-hygge-idle` web lock and passes `MEMORY.createIdleStore()` — the
+same codec and fresh-fallback under its own `cafe-hygge-idle` key, flushed on
+pagehide/hidden — so ambient arcs, bonds and flags carry across idle visits;
+without the lock (or a supplied store) the session is private in-memory state
+as before. The game-shaped `life` inside is synthetic and re-forced at every
+boot. The ambient flag is not saved and does not change the save schema.
+Ambient sessions skip shop closing, story arrival hooks, attended hellos and
+every other conversation, but they advance arcs (`advanceArcs`) and play
+tapped arc beats — `SIM.beginMoment` admits only a beat (its `ambientBeat`
+argument) in an ambient world. Ordinary service, autonomous activities,
+weather and the day/night clock keep running. `life.mode` still controls the
+saved game's quiet-play presentation; it cannot turn an ambient world into a
+game. `SND.sessionOnly` makes idle sound adjustments temporary. Game-only
+settings, savings and planning controls are hidden.
 
 On supported desktop browsers, after the game choice `main.js` acquires the origin's Web Lock
 `cafe-hygge-life` before creating a production world. A second tab waits without

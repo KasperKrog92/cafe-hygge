@@ -1659,9 +1659,11 @@
      whole days. An arc is active while its stage is short of its last and no
      beat is already waiting — a ready beat stops growth until it is chosen
      (the invitation-waits rule, docs/narrative.md §1). */
+  // Ambient (startup idle) worlds advance arcs too — their progress lives in
+  // the idle café's own store. An arc whose `after` flags are only ever set
+  // by game stories simply never starts there.
   function advanceArcs(world, days) {
     const out = { moved: false, readied: false };
-    if (world.ambient) return out;
     const mem = world.memory;
     if (!mem || !(days > 0)) return out;
     const regularIds = {};

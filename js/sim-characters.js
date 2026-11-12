@@ -1481,7 +1481,7 @@
     }
     if (!attended) {
       SIM.beginMoment(world, lines.map(text => ({speaker:'a quiet moment',text:text})), owner,
-        function () { SIM.withWorld(world, function () { playBeat(world, arc, owner, true); }); });
+        function () { SIM.withWorld(world, function () { playBeat(world, arc, owner, true); }); }, true);
       return;
     }
     if (owner) owner.bubble = { icon: 'heart', until: world.t + 3.4 };
@@ -1508,7 +1508,9 @@
     if (!world.memory) return null;
     const invitation = SIM.invitationAt(world, x, y);
     if (invitation) return invitation.start() ? { id: invitation.key } : null;
-    if (world.memory.life.mode !== 'game') return null;   // story beats wait in game mode only
+    // Story beats play in game mode and in the startup idle café; the game's
+    // quiet-play setting (life.mode 'idle', not ambient) still hides them.
+    if (!world.ambient && world.memory.life.mode !== 'game') return null;
     const arcs = (CAST && CAST.arcs) || [];
     for (let i = 0; i < arcs.length; i++) {
       const arc = arcs[i];
@@ -1735,7 +1737,7 @@
     // A pending beat raises a soft, persistent invitation over its seated owner
     // (docs/narrative.md §2) — it waits across sessions and never expires. It
     // takes the owner's bubble slot so it never fights their ambient chatter.
-    const invited = world.memory.life.mode === 'game' ? pendingInvites(world) : {};
+    const invited = world.ambient || world.memory.life.mode === 'game' ? pendingInvites(world) : {};
     const pulsing = {};
     SIM.invitations(world).forEach(function (inv) {
       const a = inv.actor;
@@ -1798,7 +1800,7 @@
       draws.push({ y: cat.y, draw: function (g) { SCENE.drawCat(g, cat); } });
       if (cat.bubble) bubbles.push({ x: cat.x, y: cat.y + 34, icon: cat.bubble.icon });
     }
-    (world.memory.life.mode === 'game' ? anchoredInvites(world) : []).forEach(function (b) { bubbles.push(b); });
+    (world.ambient || world.memory.life.mode === 'game' ? anchoredInvites(world) : []).forEach(function (b) { bubbles.push(b); });
     return { draws: draws, bubbles: world.moment ? [] : bubbles };
   };
 

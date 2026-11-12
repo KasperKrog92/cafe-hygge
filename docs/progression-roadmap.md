@@ -4,12 +4,20 @@
 
 Every normal page visit offers **Play the game** and **Enjoy an idle café**.
 The game resumes its saved café or begins at C0/H0. Idle opens the full,
-furnished room immediately, populated and serving: no tutorials, character
-stories, construction, planning, closing or apartment transitions. Light,
-weather, ordinary patron activities, Lunafreya, the cat and audio keep running.
-The idle session saves nothing, including changes to sound preferences; it
-neither changes nor advances the game and can run alongside a game tab.
-Settings returns to the chooser with **choose another mode**.
+furnished room immediately, populated and serving: no tutorials, conversations,
+construction, planning, closing or apartment transitions. Light, weather,
+ordinary patron activities, Lunafreya, the cat and audio keep running. Since
+12 November 2026 the ambient story arcs (Gerda's scarf, Nora's paintings, the
+street painter) advance there on the café clock, wait as tappable beats, and
+persist in the idle café's own save (`cafe-hygge-idle`, owned by the first
+idle tab; later idle tabs run unsaved). Sound-preference changes still last
+only for the visit; the session neither changes nor advances the game and can
+run alongside a game tab. Settings returns to the chooser with **choose
+another mode**.
+
+**Current focus (12 November 2026):** the saved game rests while the idle café
+is polished; the queued passes live in
+[plans/idle-improvement-passes.md](plans/idle-improvement-passes.md).
 
 The game's existing **Let the game run quietly** setting still changes its
 saved presentation in place (`life.mode: 'idle'`), preserving all progression.
@@ -359,7 +367,7 @@ story ideas rather than a prescribed ending.
 
 | Surface | What the player sees and can do |
 | --- | --- |
-| Idle café | A fully furnished café, always open with ordinary activity and sound. No story events or saving. |
+| Idle café | A fully furnished café, always open with ordinary activity and sound. Its ambient arcs knit, paint and repaint patiently, waiting as invitations in its own small save; nothing else is planned, bought or saved. |
 | Game | The saved café and home, with conversations, improvements and an evening plan. The player chooses direction; Lunafreya carries it out. Quiet play can hide optional invitations and let later evenings pass. |
 
 Choosing another startup mode returns through the entry screen. Idle is always
@@ -694,7 +702,9 @@ direction. A large catalogue or a redesigned whole café would hide that test.
   availability must read the same installed state.
 - Extend `MEMORY` with versioned migrations for savings, owned improvements,
   partial jobs, day/home phase and the evening plan. Both saved game presentations use that state;
-  the startup idle café uses private memory with no storage adapter.
+  the startup idle café keeps its own small save (`MEMORY.createIdleStore`,
+  key `cafe-hygge-idle`) in the idle tab that owns the idle web lock, and
+  any further idle tab uses private memory with no storage adapter.
   Save important transitions atomically and flush on exit. Settings export/import
   now provides manual backups and transfer before substantial long-term play.
 - Preserve current users' developed cafés, story marks and relationships by

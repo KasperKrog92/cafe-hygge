@@ -275,4 +275,33 @@
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) browser.saveNow();
   });
+
+  // The startup idle café's own little save: the same codec under its own
+  // key, so its ambient arcs, bonds and flags carry across idle sessions
+  // while the game save, its KEY and its tab lock stay untouched. main.js
+  // creates one only for the idle tab that owns the idle web lock; any other
+  // idle tab stays an unsaved session exactly as before. The game-shaped
+  // `life` inside is synthetic and re-forced by SIM.createIdle at boot.
+  MEMORY.IDLE_KEY = 'cafe-hygge-idle';
+  MEMORY.createIdleStore = function () {
+    let writable = true;
+    const store = MEMORY.createStore({
+      canWrite: function () { return writable; },
+      now: function () { return Date.now(); },
+      storage: {
+        getItem: function () { return localStorage.getItem(MEMORY.IDLE_KEY); },
+        setItem: function (key, value) { if (writable) localStorage.setItem(MEMORY.IDLE_KEY, value); },
+        removeItem: function () { if (writable) localStorage.removeItem(MEMORY.IDLE_KEY); }
+      },
+      persist: function () {
+        if (navigator.storage && navigator.storage.persist) return navigator.storage.persist();
+        return false;
+      }
+    });
+    window.addEventListener('pagehide', function () { store.saveNow(); writable = false; });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) store.saveNow();
+    });
+    return store;
+  };
 })();

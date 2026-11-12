@@ -602,10 +602,10 @@
   if (enterImmediately) enterCafe();
   }
   let started = false, waiting = false, pendingLock = null;
-  function ready(mode, entered) {
+  function ready(mode, entered, idleStore) {
     started = true;
     SND.sessionOnly = mode === 'idle';
-    start(mode === 'idle' ? SIM.createIdle({sound:SND}) : SIM.create(), entered);
+    start(mode === 'idle' ? SIM.createIdle({sound:SND, store:idleStore}) : SIM.create(), entered);
     window.dispatchEvent(new Event('cafe-ready'));
   }
   function holdOwnership() {
@@ -639,11 +639,21 @@
     }).catch(function (error) { if (error.name !== 'AbortError') throw error; });
   }
   gameButton.addEventListener('click', function () { chooseGame(true); });
-  document.getElementById('enter-idle').addEventListener('click', function () {
+  // The first idle tab owns the idle café's little save (its own key and web
+  // lock, nothing shared with the game); any further idle tab runs the same
+  // unsaved session as before, so two tabs never fight over one scarf.
+  function chooseIdle(entered) {
     if (started) return;
     if (pendingLock) pendingLock.abort();
-    ready('idle', true);
-  });
+    if (!navigator.locks) { ready('idle', entered, MEMORY.createIdleStore()); return; }
+    navigator.locks.request('cafe-hygge-idle', {ifAvailable:true}, function (lock) {
+      if (started) return;
+      if (!lock) { ready('idle', entered); return; }
+      ready('idle', entered, MEMORY.createIdleStore());
+      return holdOwnership();
+    }).catch(function (error) { if (error.name !== 'AbortError') throw error; });
+  }
+  document.getElementById('enter-idle').addEventListener('click', function () { chooseIdle(true); });
   try {
     if (sessionStorage.getItem('cafe-hygge-imported')) {
       sessionStorage.removeItem('cafe-hygge-imported');
@@ -651,6 +661,6 @@
     }
   } catch (e) { /* Saving does not depend on session storage. */ }
   const params = new URLSearchParams(location.search);
-  if (params.has('idle')) ready('idle', false);
+  if (params.has('idle')) chooseIdle(false);
   else if (params.has('dev') || params.has('morning') || params.has('night') || params.has('hour')) chooseGame(false);
 })();

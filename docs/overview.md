@@ -28,8 +28,11 @@ would.
 Café Hygge offers two choices whenever the page opens:
 
 - **Enjoy an idle café.** Enter a fully furnished, always-open room with
-  customers, Lunafreya, the cat, weather and sound. No tutorials, story events,
-  evening planning or saving. Your game stays exactly where you left it.
+  customers, Lunafreya, the cat, weather and sound. No tutorials, conversations
+  or evening planning — but the room's own quiet stories (Gerda's scarf, Nora's
+  paintings, the painter across the water) advance patiently, wait as soft
+  invitations, and are remembered in the idle café's own little save. Your
+  game stays exactly where you left it.
 - **Play the game.** Continue your saved café, or begin a new one. The café rewards attention: the
   regulars have habits, then histories; small projects and friendships advance
   quietly in the background as the café's own days pass; and when something is

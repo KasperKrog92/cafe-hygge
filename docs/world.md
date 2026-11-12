@@ -2,8 +2,9 @@
 
 The startup idle café stays open around the clock. The full furnished room,
 customers, Lunafreya, cat, weather and day/night lighting keep going without
-story events, home transitions or persistence. The lifecycle below applies to
-the saved game, including its quiet-play setting.
+home transitions or conversations; its ambient story arcs advance and persist
+under the idle café's own save (see narrative.md). The lifecycle below applies
+to the saved game, including its quiet-play setting.
 
 ## Closing time and the next morning
 

@@ -4,10 +4,14 @@
   const R = SIM._, L = SCENE.L, H = L.home;
   const PLANT = SIM.plantProject = IMPROVEMENTS.plant;
   const PROJECTS = SIM.projects = IMPROVEMENTS.projects;
-  // A fresh, fully furnished ambient session. No browser store, remembered
-  // choices or story rewards are copied from the player's game.
+  // A fully furnished ambient session. Nothing is copied from the player's
+  // game; an optional idle store (MEMORY.createIdleStore) carries the idle
+  // café's own arcs, bonds and flags between visits, and the game-shaped
+  // life below is synthetic either way and re-forced at every boot.
   SIM.createIdle = function (options) {
-    const o = options || {}, state = MEMORY.codec.fresh(), l = state.life;
+    const o = options || {};
+    const store = o.store || MEMORY.createStore({state: MEMORY.codec.fresh()});
+    const state = store.state, l = state.life;
     l.mode = 'idle'; l.room = 'full'; l.furniture = MEMORY.furnishings(true);
     l.firstOpening = {step:12,time:0}; l.intro.complete = true;
     l.intro.finale = 8; l.intro.sign = 'outside';
@@ -20,7 +24,7 @@
     });
     state.flags['gerda-window-legacy'] = true;
     state.flags['fireplace-unlocked'] = true;
-    return SIM.create({ambient:true, memory:MEMORY.createStore({state:state}),
+    return SIM.create({ambient:true, memory:store,
       random:o.random || Math.random, sound:o.sound});
   };
   function busy(w) { return w.moment || w.barista.orders.length || R.customerAtCounter(w) || R.needsTableClear(w) || w.shop.phase !== 'open'; }
