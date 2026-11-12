@@ -1,12 +1,14 @@
 /* Café Hygge — dev harness. Agent/debug tooling behind `window.__dev`.
    Inert in normal use: nothing here runs unless the URL carries ?dev
-   (or ?hour= / ?overlay), the apartment dev button is clicked, or the console
-   calls __dev.*. Loads after the sim siblings (whose SIM._ debug contract it consumes)
+   (or ?idle / ?hour= / ?overlay), the apartment dev button is clicked, or the
+   console calls __dev.*. Loads after the sim siblings (whose SIM._ debug contract it consumes)
    before main.js (whose boot it decorates).
 
    URL params:
      ?dev          boot straight into the scene (overlay dismissed; audio
                    stays uninitialized until the first real click)
+     ?idle         boot straight into the startup idle café (the unsaved
+                   ambient session; combines with ?dev / ?hour= / ?overlay)
      ?morning      07:30, Lunafreya arriving with the cat to reopen an empty café
      ?night        21:30, evening closing with the boot's seated guests
      ?hour=20      start the clock at 20:00 (works with or without ?dev)
@@ -1450,7 +1452,7 @@
   // ?dev — straight into the scene: overlay dismissed, audio untouched until
   // a real click (autoplay policy). The click reuses main.js's own enter
   // handler so init + controls behave exactly as the normal path.
-  if (params.has('dev') || morning || night) {
+  if (params.has('dev') || params.has('idle') || morning || night) {
     document.getElementById('overlay').classList.add('gone');
     document.addEventListener('click', function () {
       document.getElementById('enter').click();

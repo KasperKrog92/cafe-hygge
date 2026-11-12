@@ -221,6 +221,8 @@ so `__dev.study()` remains a detached render fixture.
 
 - `?dev` boots past the splash; audio still needs a real click. The full
   console API is documented at the top of `js/dev.js`.
+- `?idle` boots straight into the startup idle café (the unsaved ambient
+  session) the same way; combine as `?dev&idle` or with `?hour=` / `?overlay`.
 - With `?dev`, the gold coin adds 100 to the saved balance.
 - **stages (dev)** (with `?dev`) gets to any point of the game: open any
   morning of a quick playthrough (built once per content change, a few seconds

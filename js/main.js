@@ -651,5 +651,6 @@
     }
   } catch (e) { /* Saving does not depend on session storage. */ }
   const params = new URLSearchParams(location.search);
-  if (params.has('dev') || params.has('morning') || params.has('night') || params.has('hour')) chooseGame(false);
+  if (params.has('idle')) ready('idle', false);
+  else if (params.has('dev') || params.has('morning') || params.has('night') || params.has('hour')) chooseGame(false);
 })();
