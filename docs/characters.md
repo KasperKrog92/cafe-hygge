@@ -431,7 +431,10 @@ strangers, `seedRegular` seats **Holger** in his fireside armchair at boot,
 reading, and marks his schedule done-for-today so `updateRegulars` never brings
 a second Holger the same café day. It is set-dressing — no arrival caption, no
 bond bump (recognition accrues on the arrivals the reader actually watches). If
-his armchair is somehow taken at boot the seed is skipped gracefully.
+his armchair is somehow taken at boot the seed is skipped gracefully. The idle
+café seeds every regular whose hour has already come instead, each in their
+usual seat and part-way through the visit (see
+[world.md](world.md#popularity-and-occupancy--shipped-8-september-2026)).
 
 **Tending the fire.** Holger carries the `tendsFire` trait: an old sailor's
 habit of keeping the fire he sits by fed. While seated in a fireside armchair,

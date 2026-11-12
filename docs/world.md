@@ -619,6 +619,35 @@ time to serve and tidy while the room fills with settled readers. Closing still
 uses its existing last-cup departures. Fullness is a target the café returns to,
 with a natural opening ramp and brief gaps during departures, service and cleanup.
 
+**The idle café boots already lived-in.** It has no opening to ramp from, so
+`SIM.createIdle` seeds the room (`seedRoom` in sim-core.js) once its boot hour
+is final (noon, or a dev `?idle&hour=`), as the room it would be had it been
+running all day. The fully furnished room has sixteen customer seats and a
+target of fifteen; the seed leaves it one to three guests short, so the door
+still brings someone in within the first half minute, without a rush.
+
+- **Regulars keep their hours.** A regular whose rolled arrival hour has passed
+  today sits in their usual seat, that far into their visit (the same linger
+  floor as above), and is marked done for the day; one whose visit would
+  already be over is marked done without a seat. Anyone not due yet (every
+  regular at 09:00, Antonia at noon) comes through the door as usual. Rhythms
+  and visit gates apply. Hours before the first habit of the day seed walk-ins
+  only.
+- **Walk-ins are part-way through ordinary stays** on randomly chosen free
+  seats (never the piano bench or easel stool): one or two about to leave, one
+  or two who have only just sat down (the only cups that still steam), the
+  rest spread evenly across a visit with at least a minute and a half left.
+  Sip and page clocks start out of step. Readers who brought a book are
+  reading; laptops are open at dining tables.
+- **Sometimes one more is at the counter** (about six boots in ten), first in
+  line and about to order. There is never a longer queue at boot.
+- **In rain**, three walk-ins in four and the regulars who carry one have an
+  umbrella in the stand.
+
+It is set dressing, like the saved game's own boot seeds: no arrival captions,
+door bells or bond changes. The saved game still boots with three settled
+strangers and Holger.
+
 The booked worker enters the following open café with a toolbox, walks to
 `L.projects.window.work`, protects the sill, removes boards, repairs the frame,
 and cleans the glass in four 18-second phases. Boards disappear in stages.

@@ -203,7 +203,10 @@ same codec and fresh-fallback under its own `cafe-hygge-idle` key, flushed on
 pagehide/hidden — so ambient arcs, bonds and flags carry across idle visits;
 without the lock (or a supplied store) the session is private in-memory state
 as before. The game-shaped `life` inside is synthetic and re-forced at every
-boot. The ambient flag is not saved and does not change the save schema.
+boot. After `SIM.create` returns (so a dev `?hour=` is already applied),
+`createIdle` calls `SIM._.seedRoom(world)` to fill the room for that hour;
+`createWorld` skips the game's own boot seeds when ambient (world.md,
+occupancy). The ambient flag is not saved and does not change the save schema.
 Ambient sessions skip shop closing, story arrival hooks, attended hellos and
 every other conversation, but they advance arcs (`advanceArcs`) and play
 tapped arc beats — `SIM.beginMoment` admits only a beat (its `ambientBeat`

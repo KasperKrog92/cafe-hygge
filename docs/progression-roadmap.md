@@ -10,7 +10,8 @@ ordinary patron activities, Lunafreya, the cat and audio keep running. Since
 12 November 2026 the ambient story arcs (Gerda's scarf, Nora's paintings, the
 street painter) advance there on the café clock, wait as tappable beats, and
 persist in the idle café's own save (`cafe-hygge-idle`, owned by the first
-idle tab; later idle tabs run unsaved). Sound-preference changes still last
+idle tab; later idle tabs run unsaved). It opens onto a room already in use
+for its boot hour (see world.md, occupancy). Sound-preference changes still last
 only for the visit; the session neither changes nor advances the game and can
 run alongside a game tab. Settings returns to the chooser with **choose
 another mode**.

@@ -142,6 +142,8 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 | `holger` | Conversation travel, speech, choices and persistence |
 | `home` | Apartment tutorial and bedtime journeys with save round trips |
 | `hours` | Empty/busy closing, late queued service, perches, reopening, natural nights, pending story |
+| `idle-arcs` | The idle café advances the ambient arcs, holds a readied beat for the tap, plays and saves it under its own key; no hellos, moments or mode switch; quiet play unchanged |
+| `idle-boot` | The idle café boots near its occupancy target at 3/9/12/16/20: regulars only after their hour, in their usual seats, once a day; varied stays with leavers and fresh cups; at most one guest at the counter; no rush at the door; the game's boot seeds unchanged |
 | `intro` | First-morning dialogue lines and where they are said, pause/skip/reveal, finished work in place while she talks, door and sign continuity, the first-day clock, finale and restoration |
 | `invitations` | Accepting during real work; the room keeps living; held clocks; cancellation |
 | `life` | Nights in both modes, plant stages, reloads, identity and duplicate prevention |

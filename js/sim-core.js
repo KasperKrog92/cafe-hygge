@@ -274,7 +274,8 @@
 
     // a few patrons are already settled in
     // (seat 10 = the first nook chair, 12 = the first window perch)
-    if(world.memory.life.firstOpening.step===12 && !SCENE.startedModest(world.memory.life)) {
+    // (the idle café seeds its own room once its boot hour is known: seedRoom)
+    if(!ambient && world.memory.life.firstOpening.step===12 && !SCENE.startedModest(world.memory.life)) {
       seedPatron(world, 1); seedPatron(world, 10); seedPatron(world, 12);
     }
 
@@ -296,7 +297,7 @@
       enqueueArrival(world,p,0,false);p.x=L.orderSpot.x;p.y=L.orderSpot.y;
       p.path=null;p.state='ordering';p.stateT=0;p.facing=1;p.heading='up';
       world.regulars.holger.lastDay=dayIndex(world);
-    } else if (holger && world.memory.life.firstOpening.step===12 && !SCENE.startedModest(world.memory.life))
+    } else if (!ambient && holger && world.memory.life.firstOpening.step===12 && !SCENE.startedModest(world.memory.life))
       seedRegular(world, holger, !world.memory.flags['holger-introduced'] && !world.memory.life.furniture.fireside ? world.seats.find(s => !s.taken) : null);
 
     if (SIM._.restoreLife) SIM._.restoreLife(world);
@@ -329,6 +330,79 @@
       if (seat.nook) borrowBook(world, p);
     }
     world.patrons.push(p);
+    return p;
+  }
+
+  /* The idle café opens onto a room already in use: the first glance is the
+     room it would be had it been running all morning (docs/world.md). Called
+     by SIM.createIdle once the boot hour is final. Regulars whose hour has
+     come today sit in their usual places part-way through their visit; the
+     ones not due yet come through the door as usual. Walk-ins fill the room
+     to a guest or three short of the occupancy target, each some way into a
+     normal stay: one or two about to leave, one or two only just sat down
+     (their cups still steam), sips and pages out of step. Set dressing only:
+     no captions, bonds or bells, exactly like seedPatron/seedRegular. */
+  function seedRoom(world) {
+    if (world.shop.phase !== 'open' || world.patrons.length) return;
+    const day = dayIndex(world), perHour = DAY_SECONDS / 24, wet = world.rain > 0.4;
+    // the same floor a guest who walked in gets on sitting down (sim-patrons toSeat)
+    const linger = function () {
+      return (180 + arrivalTarget(world) * 25 + 360 * world.memory.life.openSeconds / 11700) * rnd(0.9, 1.1);
+    };
+    const park = function (p, color) {
+      if (!wet || !color) return;
+      p.umbrella = { color: color }; p.umbrellaParked = true;
+      world.umbrellaStand.push({ owner: p.id, color: color });
+    };
+    const settle = function (p, total, elapsed) {
+      p.stay = total - elapsed;
+      p.sipT = rnd(2, 22); p.pageT = rnd(2, 16);
+      const cup = p.seat.table >= 0 && world.tables[p.seat.table].items.find(function (it) {
+        return it.owner === p.id && it.kind !== 'laptop';
+      });
+      if (cup && cup.hot) cup.hot = Math.max(0, 45 - elapsed);   // only a fresh cup steams
+    };
+
+    CAST.regulars.forEach(function (spec) {
+      const r = world.regulars[spec.id];
+      if (!r || !regularGate(spec.id).mayVisit(world) || !onRhythm(world, spec)) return;
+      if (r.day !== day) { r.day = day; r.hour = rnd(spec.arrival.from, spec.arrival.to); }
+      const elapsed = (world.hour - r.hour) * perHour;
+      if (elapsed < 0) return;                          // not in yet today
+      const total = Math.max(rnd(spec.stay[0], spec.stay[1]), linger());
+      if (elapsed > total - 20) { r.lastDay = day; return; }   // been and gone
+      const p = seedRegular(world, spec);
+      if (p) { settle(p, total, elapsed); park(p, spec.umbrella); }
+    });
+
+    const target = arrivalTarget(world);
+    const atCounter = random() < 0.6 ? 1 : 0;
+    const want = target - 1 - Math.floor(rnd(0, 3)) - atCounter;
+    const free = [];
+    world.seats.forEach(function (s, i) { if (!s.taken && !s.piano && !s.artist) free.push(i); });
+    for (let i = free.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1)), t = free[i]; free[i] = free[j]; free[j] = t;
+    }
+    const leaving = 1 + Math.floor(rnd(0, 2)), fresh = leaving + 1 + Math.floor(rnd(0, 2));
+    for (let n = 0; free.length && arrivalPopulation(world) < want; n++) {
+      const p = seedPatron(world, free.pop());
+      const total = Math.max(rnd(100, 260), linger());
+      if (n < leaving) settle(p, total, total - rnd(20, 70));
+      else if (n < fresh) settle(p, total, rnd(5, 30));
+      else settle(p, total, Math.min(total - 90, total * random()));
+      if (p.wantsBook && p.ownBook && !p.laptopActive) p.reading = true;
+      park(p, random() < 0.75 ? pick(UMBRELLAS) : null);
+    }
+    // sometimes one more is at the counter, about to order
+    if (atCounter && arrivalRoom(world) >= 1) {
+      const p = applyArrivalTraits(world, makePatron(world)), carried = p.umbrella, slot = queueSlot(0);
+      p.umbrella = null;
+      enqueueArrival(world, p, 0, false);
+      park(p, carried && carried.color);
+      p.x = slot.x; p.y = slot.y; p.path = null;
+      p.state = 'queueing'; p.stateT = 0; p.doorCloseT = 0; p.facing = 1; p.heading = 'up';
+    }
+    world.spawnT = rnd(14, 30);   // the door stays shut for the first few breaths
   }
 
   /* Seed a roster regular already in their usual seat at boot (Phase 3). Builds
@@ -1792,7 +1866,7 @@
     snapCandles: snapCandles, updateCandles: updateCandles,
     updateFire: updateFire, addLog: addLog,
     arrivalTarget: arrivalTarget, arrivalRoom: arrivalRoom, arrivalPopulation: arrivalPopulation, dueRegular: dueRegular, expectedGuests: expectedGuests,
-    updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot,
+    updateSpawning: updateSpawning, queueSlot: queueSlot, waitSpot: waitSpot, seedRoom: bindWorld(seedRoom),
     spawnSteam: spawnSteam, updateParticles: updateParticles
   };
 

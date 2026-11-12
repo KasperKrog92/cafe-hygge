@@ -4,34 +4,15 @@ The owner's direction (12 November 2026): the saved game is on hold; sessions
 focus on the **startup idle café**. No game parts belong in it (no planner,
 economy, purchases, home, tutorials or conversations), but ambient progression
 belongs there — shipped the same day as pass 1 (the ambient arcs now advance,
-wait as tappable beats and persist under `cafe-hygge-idle`).
+wait as tappable beats and persist under `cafe-hygge-idle`). Pass 2 (the idle
+café boots into a lived-in room for its hour) shipped the same day too; its
+rules live in world.md's occupancy section.
 
 These are the remaining passes from the 12 November audit, in recommended
 order. Each is a session-sized brief: build it on the idle café first
 (`?idle`, `?dev&idle`), keep the saved game working untouched, and finish with
 the full checks and the matching doc update. Nothing here is committed scope;
 the owner picks what sounds lovely next and may reorder freely.
-
-## Pass 2 — First glance: idle boots into a believable room
-
-**Problem:** idle seeds three patrons plus Holger, so the first minutes read
-half-asleep at noon while the occupancy ramp catches up; the first glance is
-the whole pitch of the idle café.
-
-**Scope:** at `SIM.createIdle` boot, seed near the occupancy target for the
-boot hour — six-to-eight settled guests spread across nook, window, fireside
-and front tables, mid-drink or reading (varied `stay` remaining, some cups
-part-finished, one or two due for departure soon), plus a short queue at most.
-Reuse `seedPatron`/`seedRegular`; no new mechanisms. Respect regulars'
-schedules (don't seat an evening regular at 09:00) and never seed into
-reserved or story-held seats.
-
-**Checks:** a `?idle&hour=` sweep (9, 12, 16, 20) shows a believably lived-in
-room in the first frame; `__dev.audit()` 0; the ui:idle two-day run still sees
-24 hours and 15+ distinct guests; no seeded guest walks to an invisible
-target. Update world.md (occupancy note) in the same change.
-
-**Effort:** small (one session).
 
 ## Pass 3 — ASMR foley (synthesized, quiet)
 
@@ -82,7 +63,8 @@ Night already carries the room; midday is the weak mood.
 ## Pass 5 — Realism rhythm (the day has a shape)
 
 **Scope:** arrivals currently track the occupancy target with no time-of-day
-shape. Add a gentle hourly curve on the arrival budget (a morning swell, a
+shape (measured in pass 2: the idle room holds about fifteen of sixteen seats
+around the clock, 03:00 included, and the boot seed matches that). Add a gentle hourly curve on the arrival budget (a morning swell, a
 lunch peak, an afternoon lull, settled evening readers) that never starves the
 room below a cozy floor and never queues pressure. Then one or two of the
 roadmap's small lives: the visiting dog by the door (the cat has opinions, one

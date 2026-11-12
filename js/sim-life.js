@@ -24,8 +24,11 @@
     });
     state.flags['gerda-window-legacy'] = true;
     state.flags['fireplace-unlocked'] = true;
-    return SIM.create({ambient:true, memory:store,
+    const w = SIM.create({ambient:true, memory:store,
       random:o.random || Math.random, sound:o.sound});
+    // After create, so a dev ?hour= boot seeds the room for that hour.
+    R.seedRoom(w);
+    return w;
   };
   function busy(w) { return w.moment || w.barista.orders.length || R.customerAtCounter(w) || R.needsTableClear(w) || w.shop.phase !== 'open'; }
   function pending(w) {
