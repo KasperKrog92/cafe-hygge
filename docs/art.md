@@ -50,14 +50,14 @@ door opening; while both are out the old one stands in front of it. The chalk
 menu's title reads CAFÉ FLOURISH once the café is named, chalked on a 7 px
 advance instead of 8 so the whole name fits the slate.
 
-**The idle café's open door** (`SCENE.drawDoorStreet`, scene-waterfront.js)
-shows the same street as the windows rather than the game porch's plain sky and
-step: the waterfront is painted over the door's span, so the far quay, water,
+**The open door** (`SCENE.drawDoorStreet`, scene-waterfront.js), in the game
+and the idle café alike, shows the same street as the windows: the waterfront is painted over the door's span, so the far quay, water,
 railing and pavement carry on to the left with their joints and posts in phase,
 and one extra far house (x 30, sage) stands where only the door can see it.
 Below the pavement the near paving runs down to a stone step, and outside
-patrons on the terrace pass across it. Marcel's sign stands out on the
-pavement, not on the step: centred in the doorway at the terrace's depth
+patrons on the terrace pass across it. In the game the first-day walk outside,
+the old NEW CAFE sign and Marcel's sign stand on that near paving by the step.
+In the idle café Marcel's sign stands out on the pavement instead: centred in the doorway at the terrace's depth
 (`terraceY + 2`), drawn by `SCENE.drawFlourishSignFar`, a 34×19 board on short
 legs with CAFÉ and FLOURISH in one-pixel letters and a short gold swash, so it
 reads at a distance without the blur of scaling the full sign down. The idle
