@@ -878,7 +878,9 @@
     // fits beside the prices without touching the frame or the lettering.
     // Titled with the café's own name once it has one.
     if (!blank) {
-    SCENE.chalkText(g, m.x + (named ? 29 : plain ? 42 : 23), m.y + 15, named ? 'FLOURISH' : plain ? 'MENU' : 'CAFÉ HYGGE', '#e8dfc9');
+    // CAFÉ FLOURISH is chalked a little tighter so the whole name fits the slate.
+    if (named) SCENE.chalkText(g, m.x + 13, m.y + 15, 'CAFÉ FLOURISH', '#e8dfc9', 7);
+    else SCENE.chalkText(g, m.x + (plain ? 42 : 23), m.y + 15, plain ? 'MENU' : 'CAFÉ HYGGE', '#e8dfc9');
     px(g, m.x + 16, m.y + 28, m.w - 32, 2, 'rgba(232,223,201,0.35)');
     (full ? ['KAFFE', 'MATCHA', 'KAKAO', 'BOLLER'] : ['KAFFE', 'TE', 'BOLLER']).forEach(function (label, i) {
       const y = m.y + 36 + i * 15;

@@ -52,9 +52,14 @@
     const i=w.memory.life.intro||{};
     const d=L.door;
     g.save();g.beginPath();g.rect(d.x,d.y,d.w,d.h);g.clip();
-    px(g,d.x,d.y,d.w,d.h,w.pal.skyBot);
-    px(g,d.x,d.y+65,d.w,d.h-65,'#969080');
-    px(g,d.x,d.y+88,d.w,2,'#777666');
+    // The idle café opens onto the real street from the windows; the game's
+    // porch keeps its plain sky and step for the first-day walk outside.
+    if(w.ambient)S.drawDoorStreet(g,w,d);
+    else {
+      px(g,d.x,d.y,d.w,d.h,w.pal.skyBot);
+      px(g,d.x,d.y+65,d.w,d.h-65,'#969080');
+      px(g,d.x,d.y+88,d.w,2,'#777666');
+    }
     // Once Marcel has set the new sign out it stands behind the old one,
     // until Lunafreya takes the old one in.
     const job=w.memory.life.projects.cafeSign,out=job.stage!=='available',b=w.barista;

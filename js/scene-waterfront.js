@@ -12,8 +12,14 @@
     [387, 109, 34, '#c9b28a'], [426, 115, 26, '#b5654a'],
     [455, 112, 34, '#c9a04a'], [492, 103, 36, '#b88a62'],
     [531, 114, 27, '#a8b8aa'], [561, 108, 28, '#b5654a'],
-    [592, 115, 34, '#c9b28a'], [629, 110, 34, '#718b91']
+    [592, 115, 34, '#c9b28a'], [629, 110, 34, '#718b91'],
+    [30, 113, 44, '#a8b8aa']   // left of both panes: seen only through the open door
   ];
+  // The span being painted: both panes by default; the open door paints the
+  // same street a little further along (drawDoorStreet). Repeating joints,
+  // posts and ticks keep their phase from F.x0, so the street stays one piece.
+  const V = { a: F.x0, b: F.x1 };
+  function from(step, off) { return F.x0 + off - Math.ceil((F.x0 + off - V.a) / step) * step; }
   function clamp(n) { return Math.max(0, Math.min(1, n)); }
   function tone(c, world) { return shade(c, -Math.round((1 - world.daylight) * 6) / 10); }
 
@@ -36,7 +42,7 @@
     const t = world.t, pal = world.pal;
     const grad = g.createLinearGradient(0, F.skyY, 0, F.bankY);
     grad.addColorStop(0, pal.skyTop); grad.addColorStop(1, pal.skyBot);
-    g.fillStyle = grad; g.fillRect(F.x0, F.skyY, F.x1 - F.x0, F.bankY - F.skyY);
+    g.fillStyle = grad; g.fillRect(V.a, F.skyY, V.b - V.a, F.bankY - F.skyY);
     const night = clamp((0.52 - world.daylight) / 0.52) * (1 - world.rain * 0.9);
     if (night > 0) {
       for (let i = 0; i < 30; i++) {
@@ -145,9 +151,9 @@
       }
       px(g, x + width / 2 - 2, bottom - 7, 5, 7, tone('#5a4a40', world));
     });
-    px(g, F.x0, F.bankY - 2, F.x1 - F.x0, 4, tone('#c9b28a', world));
-    px(g, F.x0, F.bankY + 2, F.x1 - F.x0, 5, tone('#7c7770', world));
-    for (let x = F.x0; x < F.x1; x += 16) px(g, x, F.bankY + 3, 2, 3, tone('#60777e', world));
+    px(g, V.a, F.bankY - 2, V.b - V.a, 4, tone('#c9b28a', world));
+    px(g, V.a, F.bankY + 2, V.b - V.a, 5, tone('#7c7770', world));
+    for (let x = from(16, 0); x < V.b; x += 16) px(g, x, F.bankY + 3, 2, 3, tone('#60777e', world));
     // The worker and ladder now stand on the FAR quay, above the water.
     if (!ps.done) {
       const f = F.house, top = Math.min(f.y + 20, f.y + Math.round(ps.amount * 22));
@@ -212,7 +218,7 @@
   }
 
   function water(g, world) {
-    px(g, F.x0, F.waterY, F.x1 - F.x0, F.nearY - F.waterY, tone('#79a5ad', world));
+    px(g, V.a, F.waterY, V.b - V.a, F.nearY - F.waterY, tone('#79a5ad', world));
     houses.forEach(function (h, i) {
       g.globalAlpha = 0.17;
       for (let y = F.waterY; y < F.nearY - 2; y += 4) {
@@ -300,18 +306,33 @@
     if (b.outside) person(g, b, b.exteriorX, F.terraceY);
   };
 
+  // The idle café's open door: the same quay, water and far houses as the
+  // windows, carried on to the left, then the near pavement down to the step.
+  S.drawDoorStreet = function (g, world, d) {
+    V.a = d.x; V.b = d.x + d.w;
+    try { S.drawWaterfront(g, world); } finally { V.a = F.x0; V.b = F.x1; }
+    const near = F.nearY + 33, stone = tone('#a99b85', world);
+    px(g, d.x, near, d.w, d.y + d.h - near, shade(stone, 0.05));
+    for (let y = near + 2; y < d.y + d.h - 6; y += 7) {
+      px(g, d.x, y, d.w, 1, 'rgba(61,57,52,0.1)');
+      for (let x = d.x + (y % 2) * 8 + 3; x < d.x + d.w; x += 18) px(g, x, y + 1, 1, 6, 'rgba(61,57,52,0.12)');
+    }
+    px(g, d.x, d.y + d.h - 6, d.w, 6, tone('#8f8778', world));
+    px(g, d.x, d.y + d.h - 6, d.w, 1, tone('#c9bfa8', world));
+    S.drawTerrace(g, world);
+  };
   S.drawWaterfront = function (g, world) {
     sky(g, world); town(g, world); water(g, world);
-    px(g, F.x0, F.nearY, F.x1 - F.x0, 3, tone('#e3cfa7', world));
-    px(g, F.x0, F.nearY + 3, F.x1 - F.x0, 30, tone('#a99b85', world));
+    px(g, V.a, F.nearY, V.b - V.a, 3, tone('#e3cfa7', world));
+    px(g, V.a, F.nearY + 3, V.b - V.a, 30, tone('#a99b85', world));
     for (let row = 0; row < 5; row++) {
       const y = F.nearY + 5 + row * 6;
-      px(g, F.x0, y, F.x1 - F.x0, 1, 'rgba(61,57,52,0.1)');
-      for (let x = F.x0 + row % 2 * 10; x < F.x1; x += 24) px(g, x, y, 1, 5, 'rgba(61,57,52,0.12)');
+      px(g, V.a, y, V.b - V.a, 1, 'rgba(61,57,52,0.1)');
+      for (let x = from(24, row % 2 * 10); x < V.b; x += 24) px(g, x, y, 1, 5, 'rgba(61,57,52,0.12)');
     }
     // Low waterside railing; figures walk in front, cups sit nearer the glass.
-    px(g, F.x0, F.nearY - 6, F.x1 - F.x0, 2, tone('#60777e', world));
-    for (let x = F.x0 + 9; x < F.x1; x += 38) px(g, x, F.nearY - 7, 2, 11, tone('#60777e', world));
+    px(g, V.a, F.nearY - 6, V.b - V.a, 2, tone('#60777e', world));
+    for (let x = from(38, 9); x < V.b; x += 38) px(g, x, F.nearY - 7, 2, 11, tone('#60777e', world));
     F.lamps.forEach(function (p) {
       px(g, p.x, p.y - 27, 2, 29, tone('#3c414d', world));
       px(g, p.x - 4, p.y - 28, 10, 2, tone('#3c414d', world));

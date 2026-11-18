@@ -22,6 +22,10 @@
     ['window','bookshelf','windowSeat','mantel'].forEach(function (id) {
       l.projects[id] = {stage:'installed',step:PROJECTS[id].phaseIds.length,time:0};
     });
+    // The idle café already has its name: Marcel's sign stands outside the
+    // door and the chalkboard is titled Café Flourish.
+    l.projects.cafeSign = {stage:'installed',step:PROJECTS.cafeSign.phaseIds.length,time:0};
+    state.flags['cafe-named'] = true;
     state.flags['gerda-window-legacy'] = true;
     state.flags['fireplace-unlocked'] = true;
     const w = SIM.create({ambient:true, memory:store,

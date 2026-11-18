@@ -730,7 +730,8 @@
     'É': '######|######|##....|##....|#####.|#####.|##....|##....|######|######',
     ' ': '......|......|......|......|......|......|......|......|......|......'
   };
-  SCENE.chalkText = function (g, x, y, str, c) {
+  SCENE.chalkText = function (g, x, y, str, c, advance) {
+    const step = advance || 8;
     let cx = x, ci = 0;
     for (const ch of str.toUpperCase()) {
       const rows = (CHALK[ch] || CHALK[' ']).split('|');
@@ -741,10 +742,10 @@
           if (rows[r][col] === '#') px(g, cx + col, y + jy + r, 1, 1, c);
         }
       }
-      cx += 8;
+      cx += step;
       ci++;
     }
-    return cx - x - 2;
+    return cx - x - (step - 6);
   };
 
   function leaf(g, x, y, dir, col) {

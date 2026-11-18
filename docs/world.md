@@ -625,6 +625,8 @@ is final (noon, or a dev `?idle&hour=`), as the room it would be had it been
 running all day. The fully furnished room has sixteen customer seats and a
 target of fifteen; the seed leaves it one to three guests short, so the door
 still brings someone in within the first half minute, without a rush.
+It is also already Café Flourish: Marcel's sign stands outside the open door,
+which looks onto the real street, and the chalkboard carries the name.
 
 - **Regulars keep their hours.** A regular whose rolled arrival hour has passed
   today sits in their usual seat, that far into their visit (the same linger
