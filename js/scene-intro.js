@@ -34,6 +34,21 @@
       x+=(set[c][0].length+1)*cw;
     });
   }
+  // The same sign seen out on the idle street, further from the door: a
+  // smaller board lettered in single pixels so it stays crisp (scaling the
+  // full sign down smears FLOURISH's one-pixel strokes). x is its middle.
+  S.drawFlourishSignFar=function(g,x,y,plain) {
+    g.save();g.translate(Math.round(x),Math.round(y));
+    px(g,-13,-5,2,5,'#4a3222');px(g,11,-5,2,5,'#4a3222');
+    px(g,-17,-24,34,19,'#3f5a44');px(g,-16,-23,32,17,'#4a7a5a');
+    px(g,-16,-23,32,1,'#6b9a5f');px(g,-16,-7,32,1,'#35493a');
+    word(g,'CAFE',-7,-20,letters,1,1,'#f5e8cb');px(g,6,-22,1,1,'#f5e8cb');   // É
+    word(g,'FLOURISH',-15,-14,narrow,1,1,'#f5e8cb');
+    if(!plain) {
+      px(g,-9,-8,18,1,'#c9a04a');px(g,-11,-9,2,1,'#c9a04a');px(g,9,-9,2,1,'#c9a04a');
+    }
+    g.restore();
+  };
   S.drawFlourishSign=function(g,x,y,plain) {
     g.save();g.translate(Math.round(x),Math.round(y));
     px(g,-18,-6,4,9,'#4a3222');px(g,14,-6,4,9,'#4a3222');
@@ -64,7 +79,10 @@
     // until Lunafreya takes the old one in.
     const job=w.memory.life.projects.cafeSign,out=job.stage!=='available',b=w.barista;
     const taken=job.stage==='working'||job.stage==='installed'||job.stage==='arrived'&&b.project==='cafeSign'&&b.holding==='sign';
-    if(out)S.drawFlourishSign(g,L.intro.porchSign.x-11,L.intro.porchSign.y,!!w.memory.flags['sign-plain']);
+    // On the idle street it stands out on the pavement, at the terrace's
+    // distance and scale, rather than on the step.
+    if(out&&w.ambient)S.drawFlourishSignFar(g,d.x+d.w/2,L.waterfront.terraceY+2,!!w.memory.flags['sign-plain']);
+    else if(out)S.drawFlourishSign(g,L.intro.porchSign.x-11,L.intro.porchSign.y,!!w.memory.flags['sign-plain']);
     if(i.sign==='outside'&&!taken)S.drawNewSign(g,L.intro.porchSign.x+(out?4:0),L.intro.porchSign.y+(out?2:0),.72);
     if(w.barista.introOutside) {
       // She walks out over the sill (the door clip hides her feet), turns to

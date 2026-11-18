@@ -56,8 +56,12 @@ step: the waterfront is painted over the door's span, so the far quay, water,
 railing and pavement carry on to the left with their joints and posts in phase,
 and one extra far house (x 30, sage) stands where only the door can see it.
 Below the pavement the near paving runs down to a stone step, and outside
-patrons on the terrace pass across it. Marcel's sign stands on that step, since
-the idle café is already named (`cafeSign` installed, `cafe-named` set).
+patrons on the terrace pass across it. Marcel's sign stands out on the
+pavement, not on the step: centred in the doorway at the terrace's depth
+(`terraceY + 2`), drawn by `SCENE.drawFlourishSignFar`, a 34×19 board on short
+legs with CAFÉ and FLOURISH in one-pixel letters and a short gold swash, so it
+reads at a distance without the blur of scaling the full sign down. The idle
+café is already named (`cafeSign` installed, `cafe-named` set).
 
 The “NEW CAFE” sign uses two uneven scrap boards, nail marks and hand-painted
 3×5 letters (a wider W). `L.intro` owns its storage, pickup and porch anchors;
