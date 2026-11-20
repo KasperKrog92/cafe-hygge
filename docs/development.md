@@ -116,53 +116,57 @@ Evaluated on a `?dev` page against private worlds (`SIM.create({...})`,
 
 | Suite | What it establishes |
 | --- | --- |
-| `ambience` | Narration follows real progress: window, curtains, shelves, fire, repeat suppression, caption lifetime |
-| `animation-journeys` | Real care, cat and seven order-preparation journeys complete with rendering and clean audits |
-| `animations` | Equal travel at 1/60 s and 0.25 s, planted shoes, attached legs, visible motion in eight sprite rows |
-| `arrivals` | Real-service occupancy at 4/6/8/16 seats and popularity stages; queue and capacity bounds |
-| `art` | Ten repeatable review images, occupancy fixtures, capture isolation and composition timing |
-| `familiar-faces` | Antonia's display rename; Nora/Kasper/Antonia introductions from their authored visit (idle hides them; leave/reload resume; both answers; once; flagged musings); Keira's second cup on a later visit with the photograph and remembered arrival; Tomas's cupboard only after his promised news; regulars' morning habit and the target+1 bound |
-| `unpacking` | No unpacking on the tutorial evening; supper then one box through each phase; one box an evening; reload mid-box; bedtime interrupting without loss; idle evenings unpack and still end; seven evenings place every belonging |
-| `old-friends` | Aksel comes in with Holger and they sit at one table before the scene opens (idle hides it), recalling the fire; the forecast answer kept; afterwards he comes along on some later visits; after a walk the walk is told first, then Aksel comes; with no table for two Holger comes alone and nothing is decided; Kasper's paragraph recalls three good lines and leans open or quiet, and both answers about the door are kept |
-| `piano` | Not offered in the small room or beside the fuller room's piano; Saira's church-hall mention before buying; 120 coins; Keira and Tomas (quiet, no hello) wheel it in and leave; the bundle, the bare upright and the finished set with lid and bench; Saira waits at the bench without playing, tunes it and plays her eight bars (both sounds heard as their lines begin), gentle kept, then plays a little; four hands with the duet heard; Lunafreya's quiet-night playing opening with the tune; audits throughout |
-| `expansion` | Not offered to a full room; 150 coins charged once in the small room; the view small until the crew arrives, then full while the floor stays small; the daughter never offers a hello; six phases with a frame each; guests and crew never behind the partition; audits every café minute; closing sends the crew home mid-job, a reload keeps the phase and the pulled-back view; finished within two café days; after a reload the room is full, the new floor reachable and no table or seat added |
-| `naming` | Elody's words (the room and Gerda's yellow, or Maud upstairs; both answers) and no naming evening before Birgit's flour; the evening recalling Saira's untitled score and Marcel; Marcel's sign scenes (the fishmonger, a flourish or plain letters); the old and new signs on the doorstep; the door opening as she takes the old sign, a reload mid-carry resuming, the old sign slid under the counter and `cafe-named`; the chalk menu's title; the neighbours' lines, Keira and Saira using the name; Calandra's letter addressed to Café Flourish; the plain sign in the small room |
-| `neighbourhood` | No Marcel before the window is clear; his visits on even days from day 4 and never while he could be painting; the ladder stands empty and the facade's invitation waits while he sits inside; his hello names the facade as it is and saves why-this-side-of-the-lake across a reload; fair rotation; Ida on her rhythm with a shelf-aware hello and both exchange answers; Elody's hello on her second visit, Maud brought later, taken home if ignored, placed on the counter or the sill |
-| `keepsakes` | Calandra's letter on the third evening (idle hides it; the evening holds; reload resumes; choice; letter on the desk); the old mug after Holger's handover, desk or café with its closing habit; Gerda's blanket not before the scarf or the question, asked on a later visit, knitted in the chosen pattern, presented by her scene, draped downstairs or laid on the bed after a reload |
-| `holger-books` | Holger's offer after later visits (both first answers, idle hides it), leave/reload/choice resumption, promise waiting for shelves, box on the counter, ignored box going home and returning, handover with the disclosure choice, both orders with the bought box, kept books, library gift |
-| `books` | Book-box purchase, morning carry, each stocking phase across a reload, service interruption, closing mid-box, browsing from the first handful, a real borrow and return, codec shelf agreement |
-| `bookshelf` | Wall-shelf purchase, delivery, partial-work reloads, closing mid-job and greetings |
-| `c0` | Modest/furnished availability, improvement subsets, service during work and installation |
-| `counter` | Lunafreya's slow spells: the stool and her book on a quiet afternoon (carried, opened, pages turned); standing for a guest before they reach the counter, for a conversation and at closing; nothing while work is pending; the crossword only after Calandra's letter; her own coffee and the old mug leaving and returning to its place (also when a guest comes); chin in hand; a whole day with clean audits |
-| `cat-animations` | Cat pose gallery, four-direction walking, deterministic mirrored/scarf rendering |
-| `cat-corner` | Cat home, bowl care and consumption, both room sizes, intro hug |
+| `ambience` | Narration follows real progress; repeat suppression and caption lifetime |
+| `animation-journeys` | Care, cat and seven order-preparation journeys complete with clean audits |
+| `animations` | Equal travel at 1/60 s and 0.25 s, planted shoes, attached legs, visible motion |
+| `arrivals` | Occupancy at 4/6/8/16 seats and popularity stages; queue and capacity bounds |
+| `art` | Ten repeatable review images, occupancy fixtures, capture isolation |
+| `birgit` | Her rhythm, hello, closing habits, the tastes bag and the recipe card |
+| `books` | Book-box purchase, stocking phases across reloads, browsing, borrow and return |
+| `bookshelf` | Wall-shelf purchase, delivery, partial-work reloads, closing mid-job |
+| `c0` | Modest/furnished availability, improvement subsets, service during work |
+| `cat-animations` | Cat pose gallery, four-direction walking, deterministic rendering |
+| `cat-corner` | Cat home, bowl care, both room sizes, intro hug |
+| `counter` | Lunafreya's slow spells: stool and book, crossword, own coffee, chin in hand |
 | `dinner` | Apartment supper checkpoints, routes, once-per-evening completion |
-| `first-days` | First-day pacing, mandatory greeting, paired first purchases, window repair checkpoints |
+| `expansion` | The room expansion: charge, view and floor bounds, six phases, reloads |
+| `familiar-faces` | Nora/Kasper/Antonia introductions, Keira's second cup, Tomas's cupboard |
+| `finishing` | Finishing the room: windows, curtains, tables, rugs, board, shelves, chair |
+| `first-days` | First-day pacing, mandatory greeting, paired first purchases, window repair |
 | `first-opening` | First-entry assembly, exact saves and the first ordinary sale |
-| `gathering` | Ida's reading afternoon: her proposal on a later visit (idle hides it) with either rule; nothing booked that day; her next visit bringing the readers she knows ahead of other guests, each with their own book (Kasper's laptop closed); the invitation waiting and never playing itself; the wide scene voiced only by who came; memories afterwards; a reload mid-scene resuming at the next line on her next visit; an unbegun afternoon going home at closing and returning; a small room fitting only a few |
+| `gathering` | Ida's reading afternoon from proposal to the wide scene; never plays itself |
 | `gerda` | Window gate, attended choices, table and pillow work, thank-you reloads |
-| `gifts` | Keira asking once more and taking the photograph, her two prints on a later visit pinned by the till or taken upstairs beside the harbour print, a second "not yet" ending it; Tomas's loaf remembered once at supper after a reload, and his frame fitted wherever the prints are; Gerda asked, knitting yellow with a rust stripe, showing the scarf and wearing it after a reload |
+| `gifts` | Keira's prints, Tomas's loaf and frame, Gerda's scarf |
 | `hearth` | Fireplace unlock, bare reopening, later mantel, ladder descent at closing |
 | `holger` | Conversation travel, speech, choices and persistence |
+| `holger-books` | Holger's offer, promise, box, handover and library gift across reloads |
 | `home` | Apartment tutorial and bedtime journeys with save round trips |
-| `hours` | Empty/busy closing, late queued service, perches, reopening, natural nights, pending story |
-| `idle-arcs` | The idle café advances the ambient arcs, holds a readied beat for the tap, plays and saves it under its own key; no hellos, moments or mode switch; quiet play unchanged |
-| `idle-boot` | The idle café boots near its occupancy target at 3/9/12/16/20: regulars only after their hour, in their usual seats, once a day; varied stays with leavers and fresh cups; at most one guest at the counter; no rush at the door; the game's boot seeds unchanged |
-| `intro` | First-morning dialogue lines and where they are said, pause/skip/reveal, finished work in place while she talks, door and sign continuity, the first-day clock, finale and restoration |
+| `hours` | Empty/busy closing, late queued service, reopening, natural nights |
+| `idle-arcs` | The idle café advances ambient arcs, holds beats for the tap, saves under its own key |
+| `idle-boot` | The idle café boots near its occupancy target at 3/9/12/16/20 |
+| `intro` | First-morning dialogue, pause/skip/reveal, door and sign continuity, finale |
 | `invitations` | Accepting during real work; the room keeps living; held clocks; cancellation |
-| `life` | Nights in both modes, plant stages, reloads, identity and duplicate prevention |
-| `motion` | No human pose pops at 12 fps in busy rooms (cat pops reported); see [animations.md](animations.md) |
+| `keepsakes` | Calandra's letter, the old mug, Gerda's blanket |
+| `life` | Nights in both modes, plant stages, reloads, duplicate prevention |
+| `lighting` | The cached light map stays render-only and faithful to installed furniture and each source's power |
+| `motion` | No human pose pops at 12 fps in busy rooms ([animations.md](animations.md)) |
+| `naming` | The naming arc to Café Flourish: scenes, sign carry, reload, later mentions |
+| `neighbourhood` | Marcel's one presence, Ida's rhythm, Elody and Maud |
 | `nora-routing` | Lunafreya's route pairs, blocked routes and complete care chores |
+| `old-friends` | Aksel with Holger at one table, both orders of their stories, Kasper's paragraph |
 | `pathing` | Sampled obstacle clearance and real walker arrival across patron routes |
+| `piano` | The piano: offer, delivery, Saira's tuning and playing, four hands |
 | `projects` | Orders interrupt hand work; overnight/reload/mode resumption; queued jobs |
-| `reading-chair` | Offered once the little shelves are up and never beside the fireside pair; one charge across a reload; Keira's blanket-wrapped delivery; three unwrapping phases each surviving a reload, never redelivered; the worksite released; one chair and side table; Holger reads in his usual seat; the evening lamp; closing mid-job resumes the next morning |
-| `birgit` | Birgit on her rhythm from day 8, only before noon, ordering the café's bun; her hello on the second visit; closing habits recalling "no shop talk" and the old mug downstairs, a mid-scene reload resuming; the tastes bag on the counter, taken home when ignored and gone once shared; the recipe card titled by her chosen taste, by the cake stand or on the kitchen wall; one scene per visit, idle hides them |
-| `saira` | Saira on her rhythm from day 7, tapping whole phrases softly and stopping within a bar for a nearby reader (a caption notices); her hello on the second visit with the dentist line following the actual drink; her eight bars hummed once as their line begins and the cat's key, a mid-scene reload resuming; that evening's receipts left until morning (the cloth recalled, Lunafreya humming); the score recalling the room's sound and the cloth, pinned behind the counter and hummed there once a day, or pinned above the bed upstairs and kept after a reload; one scene per visit, idle hides them |
-| `second-visits` | Holger's fire story by a working or cold hearth and then, on a later visit, Aksel; Kasper's endings (recalling the reading afternoon and his three good lines) with a mid-scene reload resuming; Nora's three portrait answers; Antonia's bench remembered at home that night, and a second asking that ends kindly; one scene per visit, idle hides them, musings remember |
+| `reading-chair` | The reading chair: offer, delivery, unwrapping phases, reloads |
+| `saira` | Her rhythm and tapping, hello, the eight bars, the score pinned or upstairs |
+| `second-visits` | Second scenes for Holger, Kasper, Nora and Antonia; one scene per visit |
 | `ship` | Sailing ship movement, window visits, seat reservations, closing |
-| `stages` | The autoplayer plays a new café through the whole shipped story (every hello, the full room, the piano, the name, every box) without getting stuck; every morning is a clean save that runs an hour with clean audits; skipping to the next morning plays no story and buys nothing; last answers play through; the playthrough is cached, reused and extended |
+| `stages` | The autoplayer plays the whole shipped story without getting stuck; clean mornings |
+| `unpacking` | One box an evening through each phase; reloads; seven evenings place everything |
 | `visitors` | Keira and Tomas: jobs, separate greetings, customer visits, both modes |
 | `waterfront` | Terrace orders, weather returns, cleanup and closing |
+
+Each suite's header comment lists exactly what it covers.
 
 ### UI flows (`tools/ui/<name>.js`, run as `ui:<name>`)
 

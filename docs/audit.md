@@ -1,52 +1,41 @@
-# Audit: workflow, scalability and animation
+# Audit: code, checks and agent workflow
 
-24 September 2026, at `b9fef12`, followed the same day by fixes for most
-findings. This replaces the 6 September pre-development audit and the
-7 September scalability audit (both in git history). It is a sampled review
-with measurements, not a certification of every browser or behaviour.
+20 November 2026, at `46a594a`, with the fixes below made the same week. It
+replaces the 24 September audit (in git history), whose findings were all fixed
+except the ones carried into "Still open". It is a sampled review with
+measurements, not a certification of every browser or behaviour.
 
 ## Verdict
 
-The café's foundation (plain scripts, one composition path, a dt-driven
-simulation, private test worlds) still fits the planned game; nothing points to
-an engine rewrite. The costs were elsewhere: deployment was not gated on tests,
-the docs were turning into changelogs, each feature touched ~27–31 files through
-character-specific branches in shared code, and the animation had a realism
-ceiling that the tests could not see (every sit-down and stand-up snapped in one
-frame). Performance was never the constraint.
+The foundation (plain scripts, one composition path, a dt-driven simulation,
+private test worlds, CI-gated deploys) still fits the game. The checks were
+worth keeping but slow for one reason unrelated to what they test: the route
+planner. The other cost was reading: the docs had grown back into dated
+per-feature notes.
 
 ## Findings and what changed
 
-| Finding (24 Sep) | Evidence | Status |
+| Finding | Evidence | Status |
 | --- | --- | --- |
-| Deploy not gated on tests | Pages built from `main` in parallel with CI; 2 failing commits (8 Sep) deployed | **Fixed**: Pages deploys only from CI's `deploy` job after all checks pass |
-| Browser checks local-only; 18 UI scripts wired to nothing | CI ran only save/audio/syntax/soak | **Fixed**: `tools/run-suites.js` runs 27 in-page suites and 17 UI flows (`tools/ui/`) in CI, each in a fresh browser context; the complete local run (with Node checks and soak) takes ~4 minutes |
-| Local runner fragile | Default `127.0.0.1` could not reach the IPv6-only preview server; `-File` with comma lists failed; soak not run locally; agent-browser sessions needed manual cleanup | **Fixed**: dual-stack no-store `tools/serve.js`; one Node runner; `verify-project.ps1` wraps it and runs the soak |
-| Manual `?v=` cache tags | `index.html` touched by 52 of 60 commits | **Fixed**: `tools/build-site.js` stamps content hashes at deploy |
-| Docs growing as dated logs | `docs/**` +46% in 4 days (55k → 81k words); 65% of development.md was pass logs; art-pass reading path ~38–49k tokens | **Fixed**: development.md 5.9k → 1.5k words, art-workflow.md 2.9k → 0.8k; evidence now goes in commit messages |
-| Owner name contradiction | CLAUDE.md "as Nora" vs AGENTS.md "as Lunafreya"; README "a barista named Nora"; code ID `nora` = Lunafreya | **Fixed**, with a Names-and-IDs section in AGENTS.md |
-| Retired handoff at repo root with 275 uncommitted lines | 10.7k words beside AGENTS.md | **Archived** to `docs/archive/` with its edits |
-| Save migrations per feature | v1 → v14 in 6 days; per-version hard-coded validation | **Fixed for development**: v15, no migrations; older saves open a fresh café (owner direction) |
-| Named special cases in shared loops | Per-id `canBuy` branches; Holger/Gerda/visitor code in drawing, tap, HTML buttons and main.js | **Fixed**: data-driven improvement fields and generated planner; `SIM.addInvitation` and `SIM.gateRegular` registries |
-| One flag, three meanings | `full-counter` in 28 checks across 11 files: menu, "started modest" (first days, Holger's hello) and lamps; menu list and first-day test duplicated | **Fixed**: `SCENE.fullCounter`, `startedModest`, `pendantsLit`; one menu, one first-day test |
-| 580-line `drawPerson` | one function for every pose | **Fixed**: per-pose functions via `personFrame`; proved pixel-identical over 60,288 frames |
-| Duplicate random names | 3× "Ida" at once in one room | **Fixed** |
-| Sit/stand snapped in one frame | 35 transitions in 10 simulated minutes, head jump median 9 px (max 22), body teleports up to 31 px, cup teleports, book pops in: ~3.5 pops/min | **Fixed**: posture easing, cup carried to the table, book opens, sill hop; `motion` suite: 0 human pops |
-| Station work indistinguishable | grind/tamp/pull/steam the same pose, hands at chest, never reaching the machine | **Fixed**: keyed, distinct gestures drawn behind her back |
-| Gestures as constant sine wobbles | 39 `Math.sin` oscillators, no keyframes | **Improved**: `SCENE._.keys` for gestures; sines kept for truly periodic motion |
-| Everyone walks alike | one stride for all | **Improved**: stride follows speed; passing lift |
-| Cat pose swaps | sleep ↔ sit ↔ groom in one frame | **Improved**: brief loaf in-between and eased head |
-| Tests blind to motion quality | suites checked planted feet and "frames differ" only | **Fixed**: `motion` suite and `__dev.film` filmstrips |
+| The route planner dominated every check | One `__dev.audit()` took about a second: each route re-tested every corner-to-corner leg against every box. The audit was 79% of the soak and is called from 105 places in the suites | **Fixed**: guest routes remember corner sightlines per layout (`cornerSight`); routes unchanged (soak reports byte-identical for two scenarios) |
+| Checks ran on few cores | Soak scenarios ran one after another; the browser runner defaulted to 1 job (3 through `verify-project.ps1`) on a 16-core machine | **Fixed**: scenarios run side by side; the runner uses half the cores, at most eight |
+| AGENTS.md cost every session | 4,160 words, a third of it a file table duplicating architecture.md | **Fixed**: 3132 words; the module list lives in architecture.md |
+| The suite table was a second changelog | development.md rows of 100+ words repeating each suite's header comment | **Fixed**: one line per suite |
+| Reference docs grew as dated notes | 92k words in `docs/`; architecture, art, characters and world each had a tail of "shipped <date>" sections repeating the same feature in four places | **Fixed** for art, characters and world: tails folded into their topics, undated (5 to 17% shorter; they are nearly all concrete facts). architecture.md is still to do |
+| An executed plan was still in `docs/plans/` | `regulars-and-conversations.md`, every phase marked done | **Deleted** (git history has it) |
+| Stale review captures | `.art-review/` held 3.6 GB in 158 folders, most from September | **Cleared**; it is ignored and regenerated by any check |
 
-## Measurements at the audit
+## Measurements
 
-| Measure | Value |
-| --- | --- |
-| Runtime JS | 25 scripts, 14.8k lines; `drawPerson` 562 lines, `updatePatron` 437, `updateBarista` 420 |
-| Composition, 15 guests (preview browser) | ~4,400 fillRect calls per frame; 2.5 ms median, 5.7 ms p95. People cost ~55–80 rects each |
-| Largest draw-call share | The outside view, ~45% of rects, repainted for each open window every frame |
-| Per-feature cost | JS per feature flat (~100–250 lines); files touched rose from 15–19 to 26–31; tests + docs now 53–76% of added lines |
-| Shared objects | `SIM._` 106 members; patrons carry ~100 fields each; no JSDoc |
+| Measure | Before | After |
+| --- | --- | --- |
+| One-hour soak (`node tools/test-soak.js 1`) | 131 s | 13 s |
+| 70 browser checks | 128 s at 3 jobs | 59 s at 8 jobs |
+| `tools/verify-project.ps1`, everything | about 4.5 min | 74 s |
+| CI, push to deploy | about 5 min | not re-measured |
+
+Runtime JS is 34 scripts and about 20k lines; the largest are `sim-core.js`,
+`characters-roster.js` and `sim-characters.js` at about 1,900 lines each.
 
 ## Still open
 
@@ -54,16 +43,23 @@ frame). Performance was never the constraint.
    step and tests for every shape change) and consider keeping the previous
    good save. Browser storage is not a backup; export/import exists.
 2. **Big functions and objects.** `updatePatron` and `updateBarista` are each
-   400+ lines and `drawStandingArms` 250 (held props drawn separately per view);
-   every patron carries every activity's timers. Split by state when next
-   touched, behaviour-preserving (hash the renders as the `drawPerson` split did).
-3. **A hired helper** needs claimable work (one owner per order/station) and
+   400+ lines and `drawStandingArms` 250; every patron carries every
+   activity's timers. Split by state when next touched, behaviour-preserving
+   (hash the renders, as the `drawPerson` split did).
+3. **Staff routes are not cached.** Lunafreya's and the visitors' routes adjust
+   their boxes per journey, so they still test every leg; they are most of
+   what remains in the soak.
+4. **Suite boilerplate is copied.** `check` is defined in 43 suites, `restore`
+   in 24, `until` in 19, `snap` in 16. A shared helper injected by the runner
+   would shrink every suite.
+5. **`ui:project-reloads` re-runs three whole suites** (`projects`, `c0`,
+   `first-opening`) to collect their saves, and `ui:entry` waits about 40 s for
+   one order in real time; together they set the floor of a parallel run.
+6. **architecture.md still has its dated tail** (about 10k words), and **story and plan docs were not tightened** (roadmap, story bible, narrative,
+   the community plan): they are the owner's direction, about 34k words.
+7. **A hired helper** needs claimable work (one owner per order/station) and
    safe interruption; do not copy the single-barista state machine.
-4. **Cache the outside view** if frame cost ever matters (it does not today).
-5. **Animation limits** listed in [animations.md](animations.md#known-limits):
-   one shared body template, no per-regular idle fidgets yet, a small shape
-   change into the bowl crouch, quieter back-view gestures.
-6. **Dialogue read flags** grow with authored lines (one per line read); bounded
-   by content, not play time. Revisit only if packets become very large.
-7. **Native Safari, OS sleep/resume and long real-time sessions** are checked by
-   hand, not in CI.
+8. **Cache the outside view** if frame cost ever matters (it does not today).
+9. **Animation limits** listed in [animations.md](animations.md#known-limits).
+10. **Native Safari, OS sleep/resume and long real-time sessions** are checked
+    by hand, not in CI.

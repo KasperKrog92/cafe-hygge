@@ -128,7 +128,7 @@ Rough order (each slice ships something lovely on its own):
 > shipped status are in [story-bible.md](story-bible.md). The owner largely
 > accepted [the larger community direction](plans/community-and-character-stories.md);
 > current execution order lives in [progression-roadmap.md](progression-roadmap.md),
-> superseding [the older regulars plan](plans/regulars-and-conversations.md).
+> superseding the older regulars plan (executed; in git history).
 
 1. **A roster of regulars.** Generalize Holger's one-off `makeRegular` into a
    data-driven `REGULARS` table (fixed appearance, drink, arrival window, seat

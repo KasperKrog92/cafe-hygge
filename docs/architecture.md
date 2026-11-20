@@ -1,6 +1,6 @@
 # Architecture
 
-Zero-dependency vanilla JS. Thirty-three IIFE scripts expose the production globals
+Zero-dependency vanilla JS. Thirty-four IIFE scripts expose the production globals
 (`IMPROVEMENTS`, `SND`, `SCENE`, `CAST`, `MEMORY`, `SIM`) plus the optional dev harness, loaded
 in dependency order by `index.html`:
 

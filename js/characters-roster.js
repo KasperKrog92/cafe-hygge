@@ -10,7 +10,7 @@
    the dev audit can all read it. Arc *definitions* live here; arc *state*
    (stage/progress/pendingBeat) lives in the MEMORY save (docs/narrative.md §4).
 
-   Entry shape (see docs/plans/regulars-and-conversations.md):
+   Entry shape:
      id         stable key — schedule + line lookup + continuity
      name       must live OUTSIDE PATRON_NAMES so no random patron shares it
      nameStyle  'masculine' | 'feminine' — drives beard/appearance coherence

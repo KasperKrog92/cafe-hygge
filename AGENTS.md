@@ -1,85 +1,78 @@
 # AGENTS.md — Café Hygge
 
-Guidance for AI agents (and future humans) working on this project. This file
-holds durable rules; what is shipped and what comes next lives in
-[docs/progression-roadmap.md](docs/progression-roadmap.md), and history lives
-in git.
+Durable rules for AI agents (and future humans). What is shipped and what comes
+next lives in [docs/progression-roadmap.md](docs/progression-roadmap.md);
+history lives in git.
 
 ## What this is
 
 Café Hygge is a **soft narrative game that is also a companion app**: a cozy
-pixel-art café that runs in the browser while its owner reads a book in real
-life. Autonomous characters (the café keeper, patrons, a cat) live their small
-lives; procedural ASMR-ish audio (rain, fire, espresso, page turns) plays
-underneath. Left alone it is pure ambience, whole if you never touch it.
-Attended to, it is a soft narrative: the regulars grow histories and small
-projects that advance in the background across café days, and turn to you —
-you keep the café as **Lunafreya** — when they have something to share. There
-is **no score and no fail state**; progression is patient, never pressure.
+pixel-art café that runs in the browser while its owner reads a book. Autonomous
+characters (the café keeper, patrons, a cat) live their small lives over
+procedural ASMR-ish audio. Left alone it is pure ambience. Attended to, it is a
+soft narrative: the regulars grow histories and small projects that advance
+across café days and turn to you (you keep the café as **Lunafreya**) when they
+have something to share. There is **no score and no fail state**.
 
 **The design bar for every change: does it make the café cozier, more
-glanceable, or gently more alive — without ever nagging or punishing absence?**
-A feature that adds challenge, pressure, decay, or UI noise does not belong; one
-that adds warmth, life, or a story beat that *waits for you* does. The rule that
-reconciles idle progression with never-miss-out — *arcs advance on their own;
-their payoffs never fire on their own and never expire* — lives in
-[docs/narrative.md](docs/narrative.md). See [docs/overview.md](docs/overview.md)
-for the full design ethos.
+glanceable, or gently more alive, without ever nagging or punishing absence?**
+Challenge, pressure, decay and UI noise do not belong; warmth, life and story
+beats that *wait for you* do. *Arcs advance on their own; their payoffs never
+fire on their own and never expire* ([docs/narrative.md](docs/narrative.md)).
+Design ethos: [docs/overview.md](docs/overview.md).
 
 ## Where the direction lives
 
-- **Build order, shipped milestones and the next brief:**
+- **Build order and the next brief:**
   [progression-roadmap.md](docs/progression-roadmap.md). Its explicit direction
   supersedes older bans on money/upgrades; the no-pressure principle remains.
-  Build the named milestone on the current café, keeping later ideas out of it.
+  Build the named milestone on the current café and keep later ideas out of it.
 - **Cast and story:** the accepted
   [community and character plan](docs/plans/community-and-character-stories.md)
-  is the working creative direction (details revisable as scenes are written);
-  [story-bible.md](docs/story-bible.md) separates shipped facts from plans;
-  [narrative.md](docs/narrative.md) owns choices, attendance and lasting effects.
-  Acceptance of the larger plan does not mean its cast or systems should be
-  built in one task.
-- **Startup:** choose the saved game or a fully furnished idle café. Idle uses
-  the current renderer and simulation, stays open through day/night, and has
-  no tutorials, conversations, planning or home life; sound changes stay
-  session-only. Since 12 November 2026 it runs the ambient story arcs (scarf,
-  paintings, street painter): they advance on the café clock, wait as tappable
-  beats, and persist in the idle café's own save (`cafe-hygge-idle`, under its
-  own web lock; later idle tabs run unsaved). It never owns or touches the
-  game's save or lock. The game's existing quiet-play setting remains separate
-  (`life.mode`); it still saves progress.
+  is the creative direction (details revisable as scenes are written; accepting
+  it does not mean building its cast or systems in one task).
+  [story-bible.md](docs/story-bible.md) separates shipped facts from plans; read
+  it before writing dialogue or a story beat, and preserve chosen Lunafreya
+  background flags. [narrative.md](docs/narrative.md) owns choices, attendance
+  and lasting effects.
+- **Startup:** the player chooses the saved game or a fully furnished idle café.
+  Idle uses the same renderer and simulation, stays open through day and night,
+  and has no tutorials, conversations, planning or home life; its sound changes
+  are session-only. It runs the ambient story arcs (scarf, paintings, street
+  painter): they advance on the café clock, wait as tappable beats and persist
+  in the idle café's own save (`cafe-hygge-idle`, under its own web lock; later
+  idle tabs run unsaved). It never touches the game's save or lock. The game's
+  quiet-play setting (`life.mode`) is separate and still saves progress.
 - **The one mandatory moment:** Holger's first introduction on a new game's
-  first day waits at the counter (softly pulsing) until opened, including quiet play,
-  and holds service time until it is complete. This tutorial exception does not
-  make any later story beat mandatory.
+  first day waits at the counter (softly pulsing) until opened, including in
+  quiet play, and holds service time until it is complete. No later story beat
+  is mandatory.
 
 ## Working with the owner
 
-- **Place furniture against the room's future use as well as today's routes.**
-  Before choosing a location, read the progression roadmap, relevant improvement
-  briefs and [the spatial guidance](docs/art.md#placement-and-future-room-use).
-  Check planned window repair/use, doors, sightlines, later furnishings and
-  improvements, and their delivery, work and interaction access. Boarded windows,
-  temporary disrepair and not-yet-shipped features do not make their places free
-  space. Both café windows must remain available for repair and their eventual
-  views; do not put a bookshelf in front of either. A passing collision/path
-  audit verifies current routes, not placement approval. If a candidate conflicts
-  with documented future use, or the docs leave a necessary layout decision
-  unsettled, raise that specific decision with the owner before placing it.
-  Do not invent the rest of the future layout to resolve it.
 - **Explicit direction is a spec, not a suggestion.** When the owner says how
-  something should look or behave — especially art, layout, or framing —
-  implement *exactly that*, then show the result. Do not re-derive their intent,
-  substitute your own mental model, or argue the design mid-task. If you
-  genuinely believe a different approach is better, build what was asked first
-  and offer the alternative *after*. (Learned the hard way: an armchair redesign
-  took three passes because the agent kept re-imposing a front-view reading over
-  the owner's clearly stated **side-view** one.)
-- **Show, don't explain.** For anything visual, a rendered screenshot ends the
-  argument faster than paragraphs; for anything that moves, a filmstrip
-  (`__dev.film`). Skip explanatory diagrams and option menus unless asked.
-- **Act on a clear instruction immediately.** Don't burn the turn scoping,
+  something should look or behave, especially art, layout or framing, build
+  *exactly that*, then show the result. Do not re-derive their intent or argue
+  the design mid-task. If you believe another approach is better, build what was
+  asked first and offer the alternative after. (An armchair redesign took three
+  passes because the agent kept imposing a front view over the owner's clearly
+  stated **side view**.)
+- **Show, don't explain.** A rendered screenshot for anything visual, a
+  filmstrip (`__dev.film`) for anything that moves. No explanatory diagrams or
+  option menus unless asked.
+- **Act on a clear instruction immediately.** Don't spend the turn scoping,
   hedging, or verifying things the owner didn't ask about.
+- **Place furniture against the room's future use, not only today's routes.**
+  Before choosing a location, read the roadmap, relevant improvement briefs and
+  [the spatial guidance](docs/art.md#placement-and-future-room-use): planned
+  window repair and use, doors, sightlines, later furnishings, and their
+  delivery, work and interaction access. Boarded windows, temporary disrepair
+  and unshipped features do not make their places free. Both café windows stay
+  available for repair and their views; no bookshelf in front of either. A
+  passing collision/path audit verifies current routes, not placement. If a
+  candidate conflicts with documented future use, or the docs leave a needed
+  layout decision open, raise that one decision with the owner; do not invent
+  the rest of the layout to resolve it.
 
 ## Names and IDs
 
@@ -87,222 +80,190 @@ Display names and save/code IDs differ on purpose; never rename an ID to match
 a display name. **Lunafreya** (the player's café keeper) is `world.barista` with
 the code/route ID `nora` (`__dev.shot('nora')`, `__dev.noraDo`,
 `verify-nora-routing`). **Nora** (the artist regular) has the regular ID
-`lunafreya`. The two were swapped on 7 September 2026; older text may still use
-the old names. Settled names are in [story-bible.md](docs/story-bible.md).
+`lunafreya`. The display names were swapped on 7 September 2026; older text may
+use the old ones. Settled names: [story-bible.md](docs/story-bible.md).
 
-## Running & testing
+## Running and testing
 
-- **Desktop only until the owner says otherwise** (Chrome and Safari). Mobile
-  layouts and verification are deferred; do not expand a desktop task into them.
-- **Serve and look:** `node tools/serve.js` (preview config `cafe`), then open
-  `http://localhost:8137/?dev` — with `?dev`, which boots straight into the café
-  with `SCENE`, `SIM`, `__dev` and `__world` ready and no splash click (audio
-  still needs a real click). The bare URL is for the real entry/audio flow.
-  `file://` also works (this is why there are no ES modules).
-- **See without the pane:** if the in-app preview is not visibly displayed its
-  animation frames pause and screenshots fail. `__dev.shot(target)` renders the
-  live world headlessly through the shipping draw list (`SCENE.composeFrame`)
-  and returns a PNG data URL: a region from `__dev.regions`, an entity name
-  (`nora`, `cat`, a patron) or a `{x,y,w,h,scale}` crop.
-  `__dev.study({hour, rain, seats})` makes a detached art fixture for
-  `__dev.shot(name, {world})`; never assign a study to `__world` or tick it.
+Commands, every check and the dev shortcuts are in
+[docs/development.md](docs/development.md). The essentials:
+
+- **Desktop only** (Chrome and Safari) until the owner says otherwise. Do not
+  expand a desktop task into mobile layouts or verification.
+- **Serve and look:** `node tools/serve.js` (preview config `cafe`), then
+  `http://localhost:8137/?dev`. `?dev` boots straight into the café with
+  `SCENE`, `SIM`, `__dev` and `__world` ready and no splash click (audio still
+  needs a real click). The bare URL is the real entry/audio flow. `file://`
+  also works, which is why there are no ES modules.
+- **See without the pane:** a preview that is not visibly displayed pauses its
+  animation frames and screenshots fail. `__dev.shot(target)` renders the live
+  world headlessly through the shipping draw list and returns a PNG data URL: a
+  region from `__dev.regions`, an entity name (`nora`, `cat`, a patron) or a
+  `{x,y,w,h,scale}` crop. `__dev.study({hour, rain, seats})` makes a detached
+  art fixture for `__dev.shot(name, {world})`; never assign a study to
+  `__world` or tick it.
 - **See motion:** `__dev.film({world, target, start, ...})` returns a filmstrip
-  of one entity in a private world. Stills cannot show snaps; see
-  [docs/animations.md](docs/animations.md).
+  of one entity in a private world ([docs/animations.md](docs/animations.md)).
 - **Verify:** `powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-project.ps1`
-  runs everything CI runs: Node save/audio regressions, syntax, the one-hour
-  soak and every browser check (in-page suites `tools/verify-*.js` and UI flows
-  `tools/ui/*.js`) through `node tools/run-suites.js`, each in a fresh browser
-  context. One-time setup: `npm ci --prefix tools` (pinned playwright-core; it
-  drives the installed Chrome). See [docs/development.md](docs/development.md).
-- **Art passes** start with [docs/art-workflow.md](docs/art-workflow.md):
-  `node tools/art-review.js --label before`, then `--label after --verify`.
+  runs everything CI runs (Node save/audio regressions, syntax, the one-hour
+  soak, every browser check) in about a minute and a half.
+  `node tools/run-suites.js --suite a,ui:b` runs chosen browser checks. One-time
+  setup: `npm ci --prefix tools`.
 - **End every layout or sim change** with `__dev.audit()` → 0 problems (the
   full checks include it).
-- **Private simulations:** use `SIM.create({ random: SIM.seededRandom(42) })`,
-  `__dev.furnishedWorld(o)` or `__dev.modestWorld(o)` for tests, or supply
-  `memory: MEMORY.createStore({ state })`. No-argument creation is the
-  production persistence/audio context. Private worlds have silent sound,
-  private IDs/timers and no storage side effects. `SIM.dislodgeCat(world, patron)`
-  and `SIM._.makePatron(world, name)` require an explicit world.
-- `window.__world` is the live world object — inspect or poke it freely.
-- **Temporary apartment shortcut:** **apartment (dev)** in the control bar, or
-  `__dev.home()`, runs the real closing into a game-mode home that waits for
-  **go to sleep**.
-- **Later stages without waiting:** **stages (dev)** in the `?dev` control bar
-  opens any morning of a quick autoplayed playthrough (each day lists what
-  happened in it), skips to the next morning, keeps bookmarks and calls
-  regulars in. `?dev&day=12` boots the morning of café day 12 (1 = a new
-  café) and then keeps playing from there. `__dev.play(o)` runs the
-  autoplayer in a private world (the `stages` suite plays the whole story with
-  it, so a new beat that can get stuck fails there). See `js/dev-stages.js`.
+- **Art passes** follow [docs/art-workflow.md](docs/art-workflow.md):
+  `node tools/art-review.js --label before`, then `--label after --verify`.
+- **Private simulations** for tests: `SIM.create({ random: SIM.seededRandom(42) })`,
+  `__dev.furnishedWorld(o)`, `__dev.modestWorld(o)`, or supply
+  `memory: MEMORY.createStore({ state })`. They have silent sound, private
+  IDs/timers and no storage side effects. No-argument `SIM.create()` is the
+  production persistence/audio context. `SIM.dislodgeCat(world, patron)` and
+  `SIM._.makePatron(world, name)` require an explicit world.
+- **Any point of the game without waiting:** **stages (dev)** in the `?dev`
+  control bar, `?dev&day=12`, or `__dev.play(o)` (`js/dev-stages.js`). The
+  `stages` suite plays the whole story with the autoplayer, so a new beat that
+  can get stuck fails there.
 - **Dev harness** (`js/dev.js`, inert until invoked): the authoritative list of
-  URL flags and console calls is the comment at the top of that file. The ones
-  used most: `?dev&hour=20`, `?dev&overlay`, `?dev&audit`,
-  `?dev&arc=id&stage=n&progress=n&ready`, `__dev.hour(h)`, `__dev.ff(s)`,
-  `__dev.spawn({...})`, `__dev.regular(id)`, `__dev.arc(id, o)`,
-  `__dev.noraDo(name)`, `__dev.catDo(name)`, `__dev.shot()`, `__dev.film()`,
-  `__dev.audit()`.
+  URL flags and console calls is the comment at the top of that file.
+  `window.__world` is the live world; inspect or poke it freely.
 
 ## Git and deployment
 
-- Commit and push directly to `main` unless the owner explicitly asks for a
-  different branch or a pull request.
+- Commit and push directly to `main` unless the owner asks for a branch or a
+  pull request.
 - Live at <https://hygge.kasper-krog.dk>. **GitHub Pages deploys only from CI**
-  (`.github/workflows/ci.yml`), after the Node checks, the soak and every
-  browser check pass. A failing push does not change the site.
-- **No cache tags to maintain.** `tools/build-site.js` stamps every script and
-  style URL with a content hash at deploy time; source `index.html` has none.
+  (`.github/workflows/ci.yml`) after every check passes; a failing push does
+  not change the site.
+- **No cache tags to maintain.** `tools/build-site.js` stamps script and style
+  URLs with a content hash at deploy time.
 - Put the verification record (commands, failures and fixes) in the commit
   message, not in the docs.
-- Finish after a successful push. Do not routinely wait for deployment or check
-  the live site; the owner will report if an update seems missing.
-- `main` is the shared café foundation, consolidated on 6 September 2026. The
-  retired `archive/idle-2026-09-06` and `archive/game-2026-09-06` tags are
-  reference material; do not resume the separate game engine or merge it.
+- Finish after a successful push. Do not wait for deployment or check the live
+  site; the owner will report if an update seems missing.
+- `main` is the shared café foundation. The `archive/idle-2026-09-06` and
+  `archive/game-2026-09-06` tags are reference material; do not resume the
+  separate game engine or merge it.
 
-## Architecture (34 scripts, deliberate order)
+## Architecture
 
-| File | Global | Role |
-| --- | --- | --- |
-| `js/improvements.js` | `IMPROVEMENTS` | Improvement definitions (price, phases, planner label, unlock flag, furniture rules, capabilities) and the shared `offered`/`canBuy` rules; no runtime state. |
-| `js/audio.js` | `SND` | Web Audio synthesis. Buses, ambience loops, one-shot sounds, music box. No samples (yet — see roadmap). |
-| `js/scene-core.js` | `SCENE` | Creates the renderer global; owns `SCENE.L`, palette interpolation, shared drawing helpers and `keys()` keyframes. |
-| `js/scene-waterfront.js` | `SCENE` | Continuous exterior, sun/window-light geometry, far-bank painter, lake and terrace rendering. |
-| `js/scene-bg.js` | `SCENE` | Static background cache and the dynamic wall layer: window, door, fireplace, shelves, lamps, and espresso machine. |
-| `js/scene-furniture.js` | `SCENE` | Depth-sorted furniture drawables: tables, chairs, bookshelf, lamps, counter, plants, and the easel station/canvas. |
-| `js/scene-people.js` | `SCENE` | People (walking, posture crouches, station work, seated activities), the cat, speech bubbles and order icons. |
-| `js/scene-fx.js` | `SCENE` | Lighting, particles, captions, and `SCENE.composeFrame` — the one depth-sorted frame composition used by `main.js` and `__dev.shot()`. |
-| `js/scene-home.js` | `SCENE` | Sparse apartment and saved plant/table/hearth work drawables. |
-| `js/scene-intro.js` | `SCENE` | First-morning speech bubbles, handmade sign and doorway porch. |
-| `js/characters-roster.js` | `CAST` | The regulars and visitors **and story arcs** as pure data: looks, drinks, habits, usual seats, line pools, dialogue packets. |
-| `js/memory.js` | `MEMORY` | The persistent save (`cafe-hygge-save`): versioned JSON (arcs, bonds, flags, life), strict validation and a fresh-café fallback. Loaded before sim-core. |
-| `js/sim-core.js` | `SIM` | World creation, shared movement and **posture easing**, clock/weather/door/spawning, captions, particles, and the **invitation and regular-gate registries**. |
-| `js/sim-waterfront.js` | `SIM` | Dt-driven boats, birds and planes; terrace reservations, guests and cleanup journeys. |
-| `js/sim-patrons.js` | `SIM` | Patron seating, ordering, reading, chatting, and departure state machine. |
-| `js/sim-shop.js` | `SIM` | Opening/closing lifecycle factory: clock hold, daily rituals and shop routes. |
-| `js/sim-characters.js` | `SIM` | Lunafreya and cat state machines, the main `SIM.update` and the entity-drawable bridge. |
-| `js/sim-life.js` | `SIM` | Shared home, presentation, plant, interruptible projects, window/mantel work and first-opening assembly. |
-| `js/sim-intro.js` | `SIM` | Saved first-morning dialogue, cat hug, silent breath and sign placement. |
-| `js/sim-moments.js` | `SIM` | Shared attended conversations, saved acknowledgements/replies, approach and return; Holger's introduction (registers its invitation). |
-| `js/sim-holger.js` | `SIM` | Holger after his introduction: the books offer and handover (registers his later invitation and his visit gate). |
-| `js/sim-regulars.js` | `SIM` | Data-driven introductions (`CAST.introductions`) and later stories (`CAST.regularStories`) for regulars: invitations, visit gates, parcels and keepsake gifts. |
-| `js/sim-marcel.js` | `SIM` | Marcel's one presence: visits only when he could not be painting across the lake. |
-| `js/sim-gerda.js` | `SIM` | Gerda's window gate, pillow offer, gift placement and thank-you (registers her invitation and visit gate). |
-| `js/sim-visitors.js` | `SIM` | Keira and Tomas: jobs, visits and saved greetings (registers their invitations). |
-| `js/sim-home.js` | `SIM` | Saved first apartment tour, required first planner and bedtime sequence. |
-| `js/sim-evenings.js` | `SIM` | Evening moments at home (`CAST.homeStories`: Calandra's letter, the old mug) and placing home keepsakes. |
-| `js/sim-gathering.js` | `SIM` | Gatherings: Ida's reading afternoon (`CAST.gathering`), booked on her visit, readers called in ahead of other guests, the wide saved scene. |
-| `js/sim-counter.js` | `SIM` | Lunafreya's slow spells at the counter (`SIM._.counterHabits`): her stool and a book, the crossword, a coffee of her own, chin in hand; each ends when someone needs her. |
-| `js/sim-expansion.js` | `SIM` | The room expansion: Tomas and his daughter take the partition down over two café days (their crew, saved phases, the propped door); finishing sets the saved room to `'full'`. |
-| `js/sim-saira.js` | `SIM` | Saira's score once it is pinned behind the counter: on a quiet spell, at most once a café day, Lunafreya steps over and hums its eight bars. |
-| `js/dev.js` | `__dev` | Dev/agent harness: `?dev` boot, clock/arc forcing, fast-forward, scenario forcing, fixtures, overlay, `shot`, `film`, invariant audit. Inert unless invoked. |
-| `js/dev-stages.js` | `__dev` | Getting to any point of the game: the autoplayer (`__dev.play`), a cached playthrough of every café morning (`?day=n`, `__dev.day`), skip to the next morning, bookmarks, and the **stages (dev)** panel. Inert unless invoked. |
-| `js/main.js` | — | Boot, rAF loop, present pass, UI controls; builds the planner and invitation buttons from the registries. |
+34 plain scripts, one global per file, loaded in a deliberate order by
+`index.html`. The module list with each file's role is at the top of
+[docs/architecture.md](docs/architecture.md); contracts follow it.
 
-Load order matters: improvements → audio → scene-core → scene-waterfront →
-scene-bg → scene-furniture → scene-people → scene-fx → scene-home → scene-intro →
-characters-roster → memory → sim-core → sim-waterfront → sim-patrons → sim-shop →
-sim-characters → sim-life → sim-intro → sim-moments → sim-holger → sim-regulars →
-sim-marcel → sim-gerda → sim-visitors → sim-home → sim-evenings → sim-gathering → sim-counter → sim-saira → sim-expansion → dev → dev-stages → main. Scene-core creates `SCENE` and the renderer siblings
-extend it; `CAST` is pure data; `MEMORY` loads the save; the nineteen sim scripts
-build `SIM` (sim-core first); dev consumes the `SIM._` contract; main reads all.
+- `IMPROVEMENTS` (`js/improvements.js`): improvement definitions and the shared
+  `offered`/`canBuy` rules; no runtime state.
+- `SND` (`js/audio.js`): Web Audio synthesis, buses, loops, one-shots. No samples.
+- `SCENE` (`js/scene-*.js`): the renderer. `scene-core.js` creates it and owns
+  `SCENE.L`, the palette and `keys()` keyframes; the siblings extend it.
+  `SCENE.composeFrame` (`scene-fx.js`) is the one depth-sorted frame composition
+  used by `main.js` and `__dev.shot()`.
+- `CAST` (`js/characters-roster.js`): regulars, visitors and story arcs as pure
+  data.
+- `MEMORY` (`js/memory.js`): the versioned save, strict validation, fresh-café
+  fallback.
+- `SIM` (`js/sim-*.js`): the simulation. `sim-core.js` first (world, movement,
+  posture easing, clock, captions, the invitation and regular-gate registries),
+  then one file per system or character.
+- `__dev` (`js/dev.js`, `js/dev-stages.js`): the harness; consumes the `SIM._`
+  contract.
+- `js/main.js`: boot, rAF loop, present pass, UI; builds the planner and
+  invitation buttons from the registries.
 
-Full detail: [docs/architecture.md](docs/architecture.md).
+Load order: improvements → audio → scene-core → the other scene files →
+characters-roster → memory → sim-core → the other sim files → dev →
+dev-stages → main. A new script goes into `index.html` at its place in that
+order and into the architecture.md list.
 
-## Invariants & gotchas (learned the hard way)
+## Invariants and gotchas (learned the hard way)
 
+- **The master canvas is 960×600 (16:10)**; everything renders in master
+  coordinates. A 16:9 window shows the 960×540 crop (rows 36–576); other aspects
+  get a variable crop (visible height 540–600, width 936–960). The overscan
+  strips are texture only: no characters, captions, furniture or interactive
+  anchors there. main.js cover-fits the window (integer device-pixel scales
+  pixelated, fractional ones sharp-bilinear). Draw in whole pixels; keep
+  coordinates integer.
 - **C0 uses a smaller 832×516 room (832×468 at 16:9)** with floor bounds in
-  `SCENE.L.rooms.small`. The room expansion upgrade (150 coins; the previous
-  tenant's partition comes down over two café days) opens the full room; its size
-  is saved separately as `life.room`. The view pulls back to the full framing as
-  soon as the work starts (`SCENE.presentation`), while floor bounds stay small
-  until it is done. The apartment always uses full framing. It opens floor only;
-  separate improvements then furnish it from the fuller room's established places.
-- **The master canvas is 960×600 (16:10)**; everything renders there in
-  master coordinates. A 16:9 window shows the 960×540 crop (rows 36–576);
-  other aspects get a variable crop (visible height 540–600, width 936–960 —
-  the overscan strips are texture only, never content: no characters,
-  captions, furniture or interactive anchors may live there). The viewport
-  manager in main.js cover-fits the window: exact integer device-pixel scales
-  present pixelated, fractional scales via sharp-bilinear. Draw in whole
-  pixels; keep coordinates integer.
-- **Depth sorting is painter's-algorithm by baseline y** (an entity's feet).
-  Furniture and characters go into one array sorted by `y`; ties resolve by
-  insertion order (furniture before entities). If a character appears in
-  front of / behind something wrongly, the fix is a baseline, not a z-index.
+  `SCENE.L.rooms.small`. The room expansion (150 coins; the partition comes down
+  over two café days) opens the full room, saved as `life.room`. The view pulls
+  back to the full framing when the work starts (`SCENE.presentation`) while
+  floor bounds stay small until it is done. The apartment always uses full
+  framing. The expansion opens floor only; separate improvements furnish it.
+- **Depth is painter's algorithm by baseline y** (an entity's feet). Furniture
+  and characters sort in one array; ties resolve by insertion order (furniture
+  before entities). A character wrongly in front of or behind something needs a
+  baseline fix, not a z-index.
 - **The barista stands at y=286** so she reads hip-up above the counter slab
-  (slab spans y 264–278; front face 278–306, baseline 306). Move her lower and
-  the counter swallows her entirely — this happened; don't repeat it.
+  (slab y 264–278; front face 278–306, baseline 306). Lower, and the counter
+  swallows her; this happened.
 - **One ruler: a standing character is 60 px (CH).** Size new art in CH against
   the ruler table in docs/art.md; the espresso machine and pastry case are
-  documented exceptions (slightly oversized hero props).
-- **All positions come from `SCENE.L`**. Never hardcode a coordinate in the sim
-  files that exists in `L`. If you add furniture patrons interact with, add it
-  to `L`.
+  documented, slightly oversized exceptions.
+- **All positions come from `SCENE.L`.** Never hardcode a coordinate in the sim
+  that exists in `L`. Furniture patrons interact with goes into `L`.
 - **Keep the lane clear** (`L.lane = 368`) between wall furniture and tables.
-  `makePath` finds direct or visible-corner routes around all furniture, with
-  shoulder clearance. Never replace this with unchecked straight paths.
+  `makePath` finds direct or visible-corner routes around all furniture with
+  shoulder clearance. Never replace it with unchecked straight paths.
 - **Cat aerial anchors are exempt from floor footprint rules**: sill, bookshelf,
   counter, machine, back-shelf and lap anchors are checked against their
-  declared surface instead.
-- **Bodies never snap between poses.** Sitting, kneeling and crouching go through
-  `SIM._.settlePosture` (`LOW_POSES`); walking waits until the body has risen;
-  props move with hands (`placeItem`). A change that swaps a silhouette in one
-  frame fails the `motion` suite. See [docs/animations.md](docs/animations.md).
+  declared surface.
+- **Bodies never snap between poses.** Sitting, kneeling and crouching go
+  through `SIM._.settlePosture` (`LOW_POSES`); walking waits until the body has
+  risen; props move with hands (`placeItem`). A one-frame silhouette swap fails
+  the `motion` suite ([docs/animations.md](docs/animations.md)).
 - **Every sound is gain-staged quietly** (one-shots mostly 0.02–0.08 peak) and
-  routed through a compressor. Err on the side of too quiet — this app plays
-  next to someone reading.
+  routed through a compressor. Err on the side of too quiet: this plays next to
+  someone reading.
 - **Captions are rate-limited** (6 s minimum gap, queue cap 2, shown 4.4 s).
-  Emit captions through `caption(world, text, rules)` only; conditional claims
-  need the live rules in [docs/ambience.md](docs/ambience.md). Initial
+  Emit them through `caption(world, text, rules)` only; conditional claims need
+  the live rules in [docs/ambience.md](docs/ambience.md). Initial
   capitalization is automatic; use `withArticle()` for drink names.
 - **One clock, many drivers** (main.js): `advance(now)` ticks the sim by real
   elapsed time in ≤0.25 s chunks from rAF, the hidden-tab interval and refocus,
-  so browser throttling never slows the café. New periodic logic must live in
+  so browser throttling never slows the café. Periodic logic lives in
   `SIM.update`/`SND.update` (dt-driven), never in rAF-only code, and never
-  assume a dt ceiling below 0.25 s.
+  assumes a dt ceiling below 0.25 s.
 - **The first-morning intro is attended.** Its dialogue and assembly hold when
   hidden, paused or in Settings. Skipping dialogue releases that hold; the
-  actual assembly, hug, breath and sign placement still finish normally. This
-  one-time exception must never stop ordinary background café progression.
-- Settings persist in `localStorage` under `cafe-hygge-audio` via `SND.save()`.
-- **The narrative save is separate** (`cafe-hygge-save` via `MEMORY.save()`).
-  **Development phase (owner, 24 September 2026): nobody plays yet, so saves
+  assembly, hug, breath and sign placement still finish normally. This one-time
+  exception must never stop ordinary background progression.
+- **Two saves.** Settings persist under `cafe-hygge-audio` via `SND.save()`;
+  the narrative save is `cafe-hygge-save` via `MEMORY.save()`.
+- **Development phase (owner, 24 September 2026): nobody plays yet, so saves
   are not migrated.** Bump `MEMORY.VERSION` whenever the saved shape changes;
   any other version opens a fresh café, never an error. The migration ladder
-  stays for when real players exist. Arc *state* lives in the save; arc
-  *definitions* live in `CAST.arcs`. **Arcs ride the café's own clock:**
-  progress accrues only in `updateNarrative` (dt-driven, one row per 24-minute
-  café day while the café runs — hidden tabs included; a closed café holds
-  still), and `reconcileNarrative` at boot only rebinds, clamps and re-applies —
-  it never adds time. A ready beat never plays itself — it waits as an
-  invitation until tapped. The audit guards all of this.
+  stays for when real players exist.
+- **Arcs ride the café's own clock.** Arc state lives in the save, definitions
+  in `CAST.arcs`. Progress accrues only in `updateNarrative` (dt-driven, one row
+  per 24-minute café day while the café runs, hidden tabs included; a closed
+  café holds still). `reconcileNarrative` at boot only rebinds, clamps and
+  re-applies; it never adds time. A ready beat never plays itself; it waits as
+  an invitation until tapped. The audit guards all of this.
 
 ## Change playbooks
 
-Each names the exact files so a session can start with two targeted reads
-instead of seven. Every playbook ends the same way: the full checks pass
-(`__dev.audit()` → 0 included) and the matching doc is updated in the same change.
+Each names the files so a session can start with two targeted reads. Every
+playbook ends the same way: the full checks pass (`__dev.audit()` → 0 included)
+and the matching doc is updated in the same change.
 
 ### Add furniture
 
-1. Coordinates into `SCENE.L` (`js/scene-core.js`) — never inline.
+1. Coordinates into `SCENE.L` (`js/scene-core.js`), never inline.
 2. Draw it. Wall-mounted → the background layer in `js/scene-bg.js` (static
    cache for what never changes, per-frame wall pass for what does).
-   Floor-standing → push a `{y, draw}` drawable with a correct baseline in
+   Floor-standing → a `{y, draw}` drawable with a correct baseline in
    `SCENE.furnitureDrawables` (`js/scene-furniture.js`).
 3. Tall enough to fully hide a walker? Declare it in `L.occluders`. Floor pieces
-   also need a footprint: additions to an existing `L` list get one derived
-   automatically; a new *kind* needs its own `L.footprints` entry (mark
-   torso-height tables `passable: true`; seats never are — see art.md).
-4. Does it glow? Add a `glow()` call in `SCENE.drawLighting` (`js/scene-fx.js`)
+   need a footprint: additions to an existing `L` list get one automatically; a
+   new *kind* needs its own `L.footprints` entry (torso-height tables are
+   `passable: true`; seats never are, see art.md).
+4. Does it glow? A `glow()` call in `SCENE.drawLighting` (`js/scene-fx.js`)
    scaled by `pal.lamp` (candles scale with darkness).
-5. Do characters use it? Add seats / walk targets in the sim reading from `L`
+5. Do characters use it? Seats and walk targets in the sim read from `L`
    (seating lives in `js/sim-patrons.js`); keep targets out of occluder spans
    and clear of the lane (`L.lane` ± 16). Items set on it need an anchor in
    `SCENE.tableItemAnchor`.
-6. Verify: `?dev&overlay` screenshot for placement, the art.md furniture
+6. Verify: a `?dev&overlay` screenshot for placement, the art.md furniture
    checklist, the full checks. Doc: art.md (and world.md for lighting).
 
 ### Add an improvement (something the owner can buy)
@@ -324,7 +285,7 @@ instead of seven. Every playbook ends the same way: the full checks pass
 1. Lines and identity in `CAST` (`js/characters-roster.js`); settled facts in
    story-bible.md.
 2. The character's own `js/sim-<name>.js`: availability, the conversation via
-   the shared saved-moment boundary (`js/sim-moments.js`), then register it:
+   the shared saved-moment boundary (`js/sim-moments.js`), then
    `SIM.addInvitation({ key, actors(world), start(world, actor) })`. Bubbles,
    the canvas tap and the accessible `#meet-<key>` button follow automatically.
    Visit gates and arrival lines: `SIM.gateRegular(id, { mayVisit, due, arrivalLine })`.
@@ -334,69 +295,60 @@ instead of seven. Every playbook ends the same way: the full checks pass
 
 ### Add patron behavior
 
-1. Hook it in `js/sim-patrons.js`: a new state in the patron state machine,
-   or — for at-the-table flavor — a timer in `updateSeated`. New personality
-   traits go on the patron object at spawn in `js/sim-core.js`.
-2. Caption it (optional, probability-gated so it stays sparse):
-   `caption(world, text)` — rate limiting is inside; `withArticle()` for drink
-   names; quiet, sentence-case voice.
-3. Sound it (optional): an existing `SND` one-shot or a new one (see below),
-   triggered from the state code, never from render.
-4. If the body changes shape (sits, crouches, kneels), use a low pose so it
-   eases; film it (`__dev.film`). Doc: characters.md, world.md for captions.
+1. Hook it in `js/sim-patrons.js`: a new state in the patron state machine, or,
+   for at-the-table flavor, a timer in `updateSeated`. New personality traits go
+   on the patron object at spawn in `js/sim-core.js`.
+2. Caption it (optional, probability-gated so it stays sparse) and sound it
+   (optional) from the state code, never from render; see below.
+3. If the body changes shape (sits, crouches, kneels), use a low pose so it
+   eases, and film it. Doc: characters.md, world.md for captions.
 
 ### Add or change an animation
 
 1. Timing in the simulation (dt-driven state/timers); the renderer only reads
    state. Gestures use `SCENE._.keys`, and hands reach real anchors from `L`.
 2. Body height or shape changes go through posture (`LOW_POSES`) or get their
-   own in-between; props travel with hands. See the recipe in animations.md.
+   own in-between; props travel with hands (recipe in animations.md).
 3. Film it and keep the `motion` suite at zero pops. Show the owner the strip.
 
-### Add a sound / a caption
+### Add a sound or a caption
 
-- **Sound:** synth function in `js/audio.js`, routed to the right bus (sfx /
+- **Sound:** a synth function in `js/audio.js`, routed to the right bus (sfx /
   amb / fire / music; bell-like sounds take the delay send). Peak gain
-  0.02–0.08 — if it sounds satisfying at demo volume it's too loud. Trigger
+  0.02–0.08: if it sounds satisfying at demo volume it is too loud. Trigger
   from dt-driven sim code. Doc: a row in sounds.md's one-shot catalog.
 - **Caption:** `caption(world, text)` at the trigger site, probability-gated
   (existing gates run 0.12–0.7; only once-per-visit milestones go ungated).
-  Voice: warm, understated, quiet, sentence-case, Danish flavor welcome.
   Doc: the caption/event list in world.md.
 
 ## Conventions
 
-- Vanilla ES5-ish JS in IIFEs exposing one global per file. `'use strict'`.
-  No classes, no modules, no external libraries in the shipped game. Dev
-  tooling may use pinned packages under `tools/`.
-- Colors are hex literals chosen from the warm palette in
-  [docs/art.md](docs/art.md); reuse existing swatches before inventing new ones.
+- Vanilla ES5-ish JS in IIFEs exposing one global per file, `'use strict'`. No
+  classes, no modules, no external libraries in the shipped game. Dev tooling
+  may use pinned packages under `tools/`.
+- Colors are hex literals from the warm palette in [docs/art.md](docs/art.md);
+  reuse existing swatches before inventing new ones.
 - Randomness through the local `rnd(a, b)` / `pick(arr)` helpers.
-- Captions are written in a warm, understated narrator voice — quiet,
-  sentence-case, never jokey-loud. Danish flavor is welcome ("tak!").
-- Character names may be Danish, international or unusually literary. The
-  Copenhagen/Christianshavn inspiration includes a community with varied
-  backgrounds; do not restrict the cast to Nordic names. Random patrons draw
+- Captions use a warm, understated narrator voice: quiet, sentence-case, never
+  jokey-loud. Danish flavor is welcome ("tak!").
+- Character names may be Danish, international or unusually literary; the
+  Christianshavn-inspired community has varied backgrounds. Random patrons draw
   from `PATRON_NAMES` in `sim-core.js` (never two of the same name in the room
   at once); keep them distinct from named regulars.
 
 ## Docs index
-
-For character dialogue and new story beats, read [docs/story-bible.md](docs/story-bible.md)
-first. Preserve chosen Lunafreya background flags and distinguish shipped beats
-from planned directions.
 
 | Doc | Contents |
 | --- | --- |
 | [docs/overview.md](docs/overview.md) | Vision, design principles, what this is and isn't |
 | [docs/progression-roadmap.md](docs/progression-roadmap.md) | Shipped milestones, the next brief, café/home stages, upgrades |
 | [docs/development.md](docs/development.md) | Session workflow, tooling, every check and how CI deploys |
-| [docs/audit.md](docs/audit.md) | Latest workflow/scalability/animation audit, what was fixed and what is open |
+| [docs/audit.md](docs/audit.md) | Latest audit: what was measured, what was fixed, what is open |
 | [docs/narrative.md](docs/narrative.md) | The soft-narrative contract: invitation-waits rule, arcs, café-day progression, the save model, conversations |
 | [docs/story-bible.md](docs/story-bible.md) | Cast identities and voices, remembered choices, shipped and planned story beats |
 | [docs/plans/community-and-character-stories.md](docs/plans/community-and-character-stories.md) | Accepted ensemble direction, Lunafreya's history, shared arcs, gifts and romance |
 | [docs/architecture.md](docs/architecture.md) | Modules, render pipeline, update loop, data shapes, contracts |
-| [docs/characters.md](docs/characters.md) | Lunafreya, patrons, the cat — identities and behavior state machines |
+| [docs/characters.md](docs/characters.md) | Lunafreya, patrons, the cat: identities and behavior state machines |
 | [docs/animations.md](docs/animations.md) | How characters move, the posture and gesture systems, motion checks and limits |
 | [docs/world.md](docs/world.md) | Time, weather, lighting, spawning, captions/events |
 | [docs/sounds.md](docs/sounds.md) | Every sound: how it's synthesized, when it triggers, gain levels |
@@ -407,6 +359,6 @@ from planned directions.
 | [docs/plans/](docs/plans/) | Concrete execution plans. Executed plans are deleted; find them in git history |
 | [docs/archive/](docs/archive/) | Retired material kept for reference only (not instructions) |
 
-Keep these docs true: when you change behavior, sounds, layout, or characters,
+Keep these docs true: when you change behavior, sounds, layout or characters,
 update the matching doc in the same change. Rewrite a rule where it lives
 rather than appending a dated note; history belongs in git.

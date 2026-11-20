@@ -774,7 +774,7 @@ the gap below that target, including in the evening, and established guests stay
 longer so the room becomes a lived-in reading place. Opening, departures and
 cleanup allow natural temporary gaps. Working visitors and reserved terrace
 customers do not consume the indoor target; off-duty neighbours do. See
-[world.md](world.md#popularity-and-occupancy--shipped-8-september-2026) for timing,
+[world.md](world.md#popularity-and-occupancy) for timing,
 save migration and capacity rules. Walk-ins and regulars share one spaced
 arrival budget. No first-day couples or influx of overdue regulars. The extra
 table uses the existing interruptible assembly; window work belongs to the
