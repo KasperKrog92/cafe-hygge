@@ -318,7 +318,9 @@ waypoints), sets `pose` (`walk`/`stand`), `facing`, and `heading` (`'down'`
 front/back-view switch, cleared on horizontal legs and on arrival), and
 returns `true` on arrival. `makePath(e, tx, ty)` takes a direct line where clear,
 otherwise finds the shortest visible-corner route around `L.footprints` and
-`L.occluders`. Obstacles include low tables and reserve 18 px on each side
+`L.occluders`. Guest routes remember which corners see each other for the
+current layout (`cornerSight`, reset with `SCENE.layoutKey`); staff routes
+adjust their boxes per journey and test every leg. Obstacles include low tables and reserve 18 px on each side
 and 14 px in floor depth; seats reserve 22 px on each side and 24 px in depth
 for knees and personal space, occupied or empty. Wing chairs reserve 48 px
 in front (`frontClearance`) so a standing walker does not overlap the reader

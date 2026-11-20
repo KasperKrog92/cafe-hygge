@@ -8,7 +8,8 @@ param(
     # Suite names, as an array or one comma-separated string (works with -File too).
     [string[]]$Suite = @(),
     [ValidatePattern('^[a-zA-Z0-9_-]+$')][string]$Label = 'project-check',
-    [int]$Jobs = 3,
+    # 0 lets the runner choose: half the cores, at most eight.
+    [int]$Jobs = 0,
     # Optional: test an already running server instead of the runner's own.
     [string]$Url = '',
     [switch]$SkipSoak
@@ -31,7 +32,8 @@ if (!$SkipSoak) { Invoke-Checked 'Soak' { node (Join-Path $PSScriptRoot 'test-so
 if (!(Test-Path (Join-Path $PSScriptRoot 'node_modules/playwright-core'))) {
     Invoke-Checked 'Installing pinned dev tools' { npm ci --prefix $PSScriptRoot }
 }
-$runnerArgs = @((Join-Path $PSScriptRoot 'run-suites.js'), '--label', $Label, '--jobs', $Jobs)
+$runnerArgs = @((Join-Path $PSScriptRoot 'run-suites.js'), '--label', $Label)
+if ($Jobs -gt 0) { $runnerArgs += @('--jobs', $Jobs) }
 $names = @($Suite | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 if ($names.Count) { $runnerArgs += @('--suite', ($names -join ',')) }
 if ($Url) { $runnerArgs += @('--url', $Url) }

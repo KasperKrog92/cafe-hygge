@@ -689,6 +689,10 @@
   // approach their own furniture through walkClear's first/last-leg rules.
   // Even low tables block shortcuts: depth sorting alone isn't a walkable gap.
   let walkBoxes = [], staffBoxes = [], walkCorners = [], navigationKey = null;
+  // Corner-to-corner sightlines for the current layout (0 unknown, 1 clear,
+  // 2 blocked), filled as routes ask. They depend on furniture alone, so only
+  // the legs touching a route's own start and end are tested per route.
+  let cornerSight = null;
   function ensureNavigation() {
     const w = {memory: (activeContext || productionContext).memory.state};
     const key = SCENE.layoutKey(w);
@@ -712,6 +716,7 @@
       return Object.assign({}, staff, { x0: L.baristaExitX, y0: core.y0, core: core });
     });
     walkCorners = cornersFor(walkBoxes);
+    cornerSight = new Int8Array(walkCorners.length * walkCorners.length);
   }
 
   function insideWalkBox(p, b) {
@@ -720,17 +725,24 @@
 
   // Exact slab intersection, including diagonal paths (no sampling gaps).
   function walkHits(a, z, b) {
+    // Written out per axis: this is the planner's innermost test, and building
+    // property names here made a route audit take about a second.
     let lo = 0, hi = 1;
-    for (const axis of ['x', 'y']) {
-      const d = z[axis] - a[axis];
-      if (Math.abs(d) < 0.000001) {
-        if (a[axis] <= b[axis + '0'] || a[axis] >= b[axis + '1']) return false;
-      } else {
-        const t0 = (b[axis + '0'] - a[axis]) / d;
-        const t1 = (b[axis + '1'] - a[axis]) / d;
-        lo = Math.max(lo, Math.min(t0, t1)); hi = Math.min(hi, Math.max(t0, t1));
-        if (lo >= hi) return false;
-      }
+    const dx = z.x - a.x;
+    if (Math.abs(dx) < 0.000001) {
+      if (a.x <= b.x0 || a.x >= b.x1) return false;
+    } else {
+      const t0 = (b.x0 - a.x) / dx, t1 = (b.x1 - a.x) / dx;
+      lo = Math.max(lo, Math.min(t0, t1)); hi = Math.min(hi, Math.max(t0, t1));
+      if (lo >= hi) return false;
+    }
+    const dy = z.y - a.y;
+    if (Math.abs(dy) < 0.000001) {
+      if (a.y <= b.y0 || a.y >= b.y1) return false;
+    } else {
+      const t0 = (b.y0 - a.y) / dy, t1 = (b.y1 - a.y) / dy;
+      lo = Math.max(lo, Math.min(t0, t1)); hi = Math.min(hi, Math.max(t0, t1));
+      if (lo >= hi) return false;
     }
     return hi > 0 && lo < 1;
   }
@@ -797,9 +809,11 @@
   function findWalkPath(e, tx, ty) {
     ensureNavigation();
     const start = { x: e.x, y: e.y }, end = { x: tx, y: ty };
-    const boxes = (e.kind === 'barista' || e.kind === 'visitor') ? staffRouteBoxes(start, end) : walkBoxes;
+    const staff = e.kind === 'barista' || e.kind === 'visitor';
+    const boxes = staff ? staffRouteBoxes(start, end) : walkBoxes;
+    const sight = staff ? null : cornerSight, span = walkCorners.length;
     if (walkClear(start, end, boxes, start, end)) { e.path = [end]; return; }
-    const nodes = [start, end].concat((e.kind === 'barista' || e.kind === 'visitor') ? cornersFor(boxes) : walkCorners);
+    const nodes = [start, end].concat(staff ? cornersFor(boxes) : walkCorners);
     const costs = nodes.map(function () { return Infinity; }), prev = [], done = [];
     costs[0] = 0;
     for (let n = 0; n < nodes.length; n++) {
@@ -812,9 +826,14 @@
       for (let j = 1; j < nodes.length; j++) {
         if (done[j]) continue;
         const cost = costs[at] + Math.hypot(nodes[j].x - nodes[at].x, nodes[j].y - nodes[at].y);
-        if (cost < costs[j] && walkClear(nodes[at], nodes[j], boxes, start, end)) {
-          costs[j] = cost; prev[j] = at;
-        }
+        if (cost >= costs[j]) continue;
+        let clear;
+        if (sight && at > 1 && j > 1) {
+          const k = (at - 2) * span + j - 2;
+          if (!sight[k]) sight[k] = walkClear(nodes[at], nodes[j], boxes, start, end) ? 1 : 2;
+          clear = sight[k] === 1;
+        } else clear = walkClear(nodes[at], nodes[j], boxes, start, end);
+        if (clear) { costs[j] = cost; prev[j] = at; }
       }
     }
     const path = [];

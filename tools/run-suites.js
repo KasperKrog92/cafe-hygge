@@ -9,14 +9,17 @@
    npm ci --prefix tools          once: pinned playwright-core, no browser download
    node tools/run-suites.js [--suite a,ui:b] [--label name] [--jobs n] [--url base]
 
+   --jobs defaults to half the cores (at most 8).
    Uses the installed Google Chrome (GitHub's Ubuntu runners include it).
    Without --url it serves this checkout itself on a free port. */
 'use strict';
-const fs = require('fs'), path = require('path');
+const fs = require('fs'), path = require('path'), os = require('os');
 const serve = require('./serve.js');
 
 function args() {
-  const o = { suite: null, label: 'project-check', jobs: 1, url: null, headed: false };
+  // Half the cores, at most eight: each job is a Chrome page running a simulation.
+  const o = { suite: null, label: 'project-check', jobs: Math.max(1, Math.min(8, Math.floor(os.availableParallelism() / 2))),
+    url: null, headed: false };
   const a = process.argv.slice(2);
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--suite') o.suite = a[++i].split(',').map(s => s.trim()).filter(Boolean);

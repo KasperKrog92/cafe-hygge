@@ -83,11 +83,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/verify-project.ps1
 It runs the Node save/audio regressions, syntax-checks every script, runs the
 one-hour soak (`-SkipSoak` to skip) and then every browser check through
 `node tools/run-suites.js`. `-Suite a,b` (a comma list works with `-File`)
-narrows the browser checks; `-Label name` picks the output folder. The same
+narrows the browser checks; `-Label name` picks the output folder. The soak's
+four scenarios run side by side and the browser checks use half the cores (at
+most eight; `-Jobs n` / `--jobs n` to choose), so the whole run takes about a
+minute and a half on the owner's machine. Its floor is `ui:entry`, which waits
+some 40 s for one order served in real time. The same
 browser runner works directly on any OS:
 
 ```bash
-node tools/run-suites.js --jobs 3                       # everything
+node tools/run-suites.js                                # everything
 node tools/run-suites.js --suite motion,animations      # a few in-page suites
 node tools/run-suites.js --suite ui:first-hello         # one UI flow
 ```

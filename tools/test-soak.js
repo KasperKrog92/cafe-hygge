@@ -1,4 +1,5 @@
 /* Optional long simulation audit: node tools/test-soak.js [hours per scenario] [modest:42|modest:84|furnished:42|furnished:84].
+   Without a scenario all four run side by side, one process each.
    Uses shipped scripts and private worlds; no browser, audio or real storage.
    This establishes simulated continuity, not background-browser or memory-leak certification. */
 'use strict';
@@ -9,6 +10,27 @@ const assert = require('node:assert/strict');
 const root = path.join(__dirname, '..');
 const hours = Number(process.argv[2] || 6);
 assert(Number.isFinite(hours) && hours >= 1 && hours <= 48, 'Choose 1–48 hours per scenario');
+const SCENARIOS = ['modest:42', 'modest:84', 'furnished:42', 'furnished:84'];
+if (!process.argv[3]) {
+  // The scenarios share nothing, so each gets its own process and core.
+  const { spawn } = require('node:child_process');
+  let left = SCENARIOS.length, failed = 0;
+  SCENARIOS.forEach(scenario => {
+    const child = spawn(process.execPath, [__filename, String(hours), scenario]);
+    let out = '';
+    child.stdout.on('data', d => { out += d; });
+    child.stderr.on('data', d => { out += d; });
+    child.on('close', code => {
+      if (code) failed++;
+      // Each child's own PASS line would read as the whole soak passing.
+      process.stdout.write(out.replace(/^PASS .*\r?\n/m, ''));
+      if (--left) return;
+      if (failed) { console.error('Soak found failures in ' + failed + ' scenario(s); inspect the reports above'); process.exitCode = 1; }
+      else console.log('PASS ' + SCENARIOS.length + ' scenarios / ' + hours * SCENARIOS.length + ' simulated hours');
+    });
+  });
+  return;
+}
 const sandbox = {
   console: Object.assign({}, console, {log(...args) {
     if (!String(args[0]).startsWith('[dev]')) console.log(...args);
@@ -27,8 +49,8 @@ for (const match of html.matchAll(/<script\s+src="([^"?]+)(?:\?[^"]*)?"/g)) {
   vm.runInContext(fs.readFileSync(path.join(root, match[1]), 'utf8'), context, {filename: match[1]});
 }
 sandbox.soakHours = hours;
-sandbox.soakScenario = process.argv[3] || 'all';
-assert(['all','modest:42','modest:84','furnished:42','furnished:84'].includes(sandbox.soakScenario), 'Unknown scenario');
+sandbox.soakScenario = process.argv[3];
+assert(SCENARIOS.includes(sandbox.soakScenario), 'Unknown scenario');
 const result = vm.runInContext(`(() => {
   const reports = [];
   for (const full of [false, true]) for (const seed of [42, 84]) {
